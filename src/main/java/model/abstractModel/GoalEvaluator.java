@@ -2,6 +2,6 @@ package model.abstractModel;
 
 import model.Tile;
 
-public interface iPersonalGoal {
+public interface GoalEvaluator {
     public boolean evaluate(Tile[][] playerShelf);
 }

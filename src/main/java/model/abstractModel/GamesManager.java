@@ -5,7 +5,7 @@ import model.Match;
 import java.util.List;
 
 
-public interface iGamesManager {
+public interface GamesManager {
     public void addMatch(Match newMatch);
 
     public List<Match> getMatches();
