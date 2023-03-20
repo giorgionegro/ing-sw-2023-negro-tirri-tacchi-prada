@@ -1,14 +1,20 @@
 package model;
 
+import model.abstractModel.PersonalGoal;
+
+import java.util.List;
+
 public class Player {
 
     private String idPlayer;
     private Tile[][] shelf;
-    private PersonalGoal personalGoal;
-    public Player(String idPlayer){
-        this.idPlayer = idPlayer;
-        this.shelf = new Tile[5][6];
-        //TODO Assegnagnare il personalGoal
+    private int points;
+    private List<PersonalGoal> personalGoal;
+
+    private List<Token> tokens;
+
+    public Player(){
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 
     public String getId(){
@@ -22,4 +28,10 @@ public class Player {
     public void setShelf(Tile[][] modifiedShelf){
         throw new UnsupportedOperationException("Not implemented yet"); //TODO meglio copiare la modifiedShelf
     }
+
+    public void assignToken(Token newToken){
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
+
+
 }
