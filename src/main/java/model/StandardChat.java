@@ -1,21 +1,20 @@
 package model;
 
-import java.util.ArrayList;
+import model.abstractModel.Chat;
+import model.abstractModel.Message;
+
 import java.util.List;
 
-public class Chat {
+public class StandardChat implements Chat {
 
     private List<Message> messages;
-
-    public Chat(){
-        this.messages = new ArrayList<>();
-    }
 
     public List<Message> getMessages(String idDest){
         throw new UnsupportedOperationException("Not implemented yet");
     }
 
-    public void addMessage(Message message){
+    @Override
+    public void addMessage(model.abstractModel.Message newMessage) {
         throw new UnsupportedOperationException("Not implemented yet");
     }
 }

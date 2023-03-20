@@ -1,14 +1,14 @@
 package model.abstractModel;
 
-import model.Match;
+import model.Game;
 
 import java.util.List;
 
 
 public interface GamesManager {
-    public void addMatch(Match newMatch);
+    public void addMatch(Game newMatch);
 
-    public List<Match> getMatches();
+    public List<Game> getMatches();
 
-    public Match getMatch();
+    public Game getMatch();
 }
