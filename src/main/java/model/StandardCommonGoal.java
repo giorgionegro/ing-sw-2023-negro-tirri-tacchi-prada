@@ -6,6 +6,7 @@ import model.abstractModel.GoalEvaluator;
 public class StandardCommonGoal extends CommonGoal {
     @Override
     public void fillStack() {
+
         throw new UnsupportedOperationException("not implemented yet");
     }
 
