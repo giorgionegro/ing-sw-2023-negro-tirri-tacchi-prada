@@ -7,7 +7,5 @@ public abstract class GoalEvaluator {
 
     public abstract boolean evaluate(Tile[][] playerShelf);
 
-    public String getDescription(){
-        return description;
-    }
+    public abstract void getDescription();
 }
