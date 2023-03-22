@@ -2,15 +2,25 @@ package model;
 
 import model.abstractModel.Message;
 
-import java.time.LocalDate;
-import java.util.Date;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 public class StandardMessage implements Message {
 
-    private String idSender;
-    private String idDestination;
-    private String text;
-    private String timestamp;
+    private final String idSender;
+    private final String idDestination;
+    private final String text;
+    private final String timestamp;
+
+    public StandardMessage(String idSender, String idDestination, String text){
+        this.idSender = idSender;
+        this.idDestination = idDestination;
+        this.text = text;
+        this.timestamp = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss").withLocale(Locale.getDefault()).withZone(ZoneId.systemDefault()).format(Instant.now());
+    }
+
 
     @Override
     public String getSender() {
@@ -29,6 +39,13 @@ public class StandardMessage implements Message {
     @Override
     public String getTimestamp() {
         return timestamp;
+    }
+    @Override
+    public String toString(){
+        return "Sender: "+idSender+"\n"
+                +"Receiver: "+idDestination+"\n"
+                +"Text: "+text+"\n"
+                +"TimeStamp: "+timestamp+"\n";
     }
 }
 
