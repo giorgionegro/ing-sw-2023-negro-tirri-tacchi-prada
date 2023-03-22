@@ -5,9 +5,20 @@ import model.Token;
 import java.util.Stack;
 
 public abstract class CommonGoal {
-    private Stack<Token> tokenStack;
-    public abstract void fillStack();
-    public abstract GoalEvaluator getEvaluator();
-    public abstract Token getTopToken();
-    public abstract Token popToken();
+
+    public CommonGoal(GoalEvaluator evaluator){
+        this.tokenStack = new Stack<>();
+        this.evaluator = evaluator;
+    }
+    protected Stack<Token> tokenStack;
+    private final GoalEvaluator evaluator;
+    public GoalEvaluator getEvaluator(){
+        return evaluator;
+    }
+    public Token getTopToken(){
+        return tokenStack.lastElement();
+    }
+    public Token popToken(){
+        return tokenStack.pop();
+    }
 }

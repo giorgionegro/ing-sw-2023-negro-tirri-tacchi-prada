@@ -3,18 +3,23 @@ package model;
 import model.abstractModel.Chat;
 import model.abstractModel.Message;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class StandardChat implements Chat {
 
-    private List<Message> messages;
+    private final List<Message> messages;
+
+    public StandardChat(){
+        this.messages = new ArrayList<>();
+    }
 
     public List<Message> getMessages(String idDest){
-        throw new UnsupportedOperationException("Not implemented yet");
+        return messages.stream().filter(message -> message.getDestination().equals("") || message.getDestination().equals(idDest)).toList();
     }
 
     @Override
     public void addMessage(model.abstractModel.Message newMessage) {
-        throw new UnsupportedOperationException("Not implemented yet");
+        this.messages.add(newMessage);
     }
 }
