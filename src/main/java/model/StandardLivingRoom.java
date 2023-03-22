@@ -11,8 +11,8 @@ public class StandardLivingRoom implements LivingRoom {
 
     public StandardLivingRoom(int nPlayers){
         this.numberOfPlayers = nPlayers;
-        this.board = new Tile[9][9];
         this.bag = loadBag();
+        this.board = new Tile[9][9];
         refillAlgorythm(board);
     }
     @Override
