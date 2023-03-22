@@ -11,8 +11,9 @@ public class StandardLivingRoom implements LivingRoom {
 
     public StandardLivingRoom(int nPlayers){
         this.numberOfPlayers = nPlayers;
-        this.bag = new Stack<>();
-        throw new UnsupportedOperationException("not implemented yet");
+        this.board = new Tile[9][9];
+        this.bag = loadBag();
+        refillAlgorythm(board);
     }
     @Override
     public Tile[][] getBoard() {
@@ -30,11 +31,12 @@ public class StandardLivingRoom implements LivingRoom {
             Tile[][] newBoard = getBoard();
             refillAlgorythm(newBoard);
         }
-        throw new UnsupportedOperationException("not implemented yet");
     }
 
-    private List<Tile> loadBag(){
-        return new ArrayList<>();//TODO aggiungere tiles e fare sorting casuale
+    private Stack<Tile> loadBag(){
+        Stack<Tile> bag = new Stack<>();
+        initializeBag(bag);
+        return bag;
     }
 
     private boolean needsToBeRefilled(){
@@ -166,14 +168,36 @@ public class StandardLivingRoom implements LivingRoom {
     }
 
     private void initializeBag(Stack<Tile> initialBag){
-        throw new UnsupportedOperationException("not implemented yet");
+        fillBag7(initialBag);
+        fillBag8(initialBag);
+        Collections.shuffle(initialBag);
     }
 
-    private void fillBag8(Stack<Tile> bag, Tile tile){
-        throw new UnsupportedOperationException("not implemented yet");
+    private void fillBag8(Stack<Tile> bag){
+        for(int i=0; i<8; i++){
+            bag.push(Tile.BOOKS_1);
+            bag.push(Tile.CATS_1);
+            bag.push(Tile.FRAMES_1);
+            bag.push(Tile.GAMES_1);
+            bag.push(Tile.PLANTS_1);
+            bag.push(Tile.TROPHIES_1);
+        }
     }
 
-    private void fillBag7(Stack<Tile> bag, Tile tile){
-        throw new UnsupportedOperationException("not implemented yet");
+    private void fillBag7(Stack<Tile> bag){
+        for(int i=0; i<7; i++){
+            bag.push(Tile.BOOKS_2);
+            bag.push(Tile.BOOKS_3);
+            bag.push(Tile.CATS_2);
+            bag.push(Tile.CATS_3);
+            bag.push(Tile.FRAMES_2);
+            bag.push(Tile.FRAMES_3);
+            bag.push(Tile.GAMES_2);
+            bag.push(Tile.GAMES_3);
+            bag.push(Tile.PLANTS_2);
+            bag.push(Tile.PLANTS_3);
+            bag.push(Tile.TROPHIES_2);
+            bag.push(Tile.TROPHIES_3);
+        }
     }
 }
