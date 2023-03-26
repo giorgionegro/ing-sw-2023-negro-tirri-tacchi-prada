@@ -13,7 +13,6 @@ public class StandardLivingRoom implements LivingRoom {
         this.numberOfPlayers = nPlayers;
         this.bag = loadBag();
         this.board = new Tile[9][9];
-        refillAlgorythm(board);
     }
     @Override
     public Tile[][] getBoard() {
@@ -22,15 +21,22 @@ public class StandardLivingRoom implements LivingRoom {
 
     @Override
     public void setBoard(Tile[][] modifiedBoard) {
+        //TODO: check modifiedBoard is valid (correct empty spaces in relation to number of Players)
         board = Arrays.stream(modifiedBoard).map(Tile[]::clone).toArray(Tile[][]::new);
     }
 
     @Override
-    public void refillBoard() {
+    public Tile[][] refillBoard() {
         if(needsToBeRefilled()){
             Tile[][] newBoard = getBoard();
             refillAlgorythm(newBoard);
+            return newBoard;
         }
+        return getBoard();
+    }
+
+    public Stack<Tile> getBag(){
+        return bag;
     }
 
     private Stack<Tile> loadBag(){
@@ -68,8 +74,8 @@ public class StandardLivingRoom implements LivingRoom {
     }
 
     private void fillCenterSquare(Tile[][] board){
-        for(int i=4; i<7; i++){
-            for(int j=4; j<7; j++){
+        for(int i=3; i<6; i++){
+            for(int j=3; j<6; j++){
                 if(board[i][j] == null){
                     try{
                         board[i][j] = bag.pop();
@@ -110,9 +116,9 @@ public class StandardLivingRoom implements LivingRoom {
     private void fillMissingCells(Tile[][] board){
         try {
             board[2][5] = bag.pop();
+            board[3][2] = bag.pop();
             board[5][6] = bag.pop();
-            board[6][4] = bag.pop();
-            board[4][1] = bag.pop();
+            board[6][3] = bag.pop();
         }
         catch (Exception e){
             if(e instanceof EmptyStackException){
@@ -127,13 +133,13 @@ public class StandardLivingRoom implements LivingRoom {
     private void fillMissingCells3Players(Tile[][] board){
         try{
             board[1][3] = bag.pop();
+            board[2][2] = bag.pop();
             board[2][6] = bag.pop();
             board[3][8] = bag.pop();
             board[6][6] = bag.pop();
             board[8][5] = bag.pop();
             board[6][2] = bag.pop();
             board[5][0] = bag.pop();
-            board[2][2] = bag.pop();
         }
         catch (Exception e){
             if(e instanceof EmptyStackException){
