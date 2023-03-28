@@ -18,7 +18,8 @@ class StandardLivingRoomTest {
     @Test
     void twoPlayerBoardHasCorrectEmptyTiles(){
         StandardLivingRoom test = new StandardLivingRoom(2);
-        test.setBoard(test.refillBoard());
+        test.refillBoard();
+        test.setBoard(test.getBoard());
         Tile[][] actualBoard = test.getBoard();
         for(int i=0; i<3; i++){
             for(int j=0; j<3; j++){
@@ -74,7 +75,8 @@ class StandardLivingRoomTest {
     @Test
     void twoPlayerBoardFilledCorrectly(){
         StandardLivingRoom test = new StandardLivingRoom(2);
-        test.setBoard(test.refillBoard());
+        test.refillBoard();
+        test.setBoard(test.getBoard());
         Tile[][] actualBoard = test.getBoard();
         for(int i=3; i<6; i++){
             for(int j=3; j<6; j++){
@@ -124,7 +126,8 @@ class StandardLivingRoomTest {
     @Test
     void threePlayerBoardHasCorrectEmptyTiles(){
         StandardLivingRoom test = new StandardLivingRoom(3);
-        test.setBoard(test.refillBoard());
+        test.refillBoard();
+        test.setBoard(test.getBoard());
         Tile[][] actualBoard = test.getBoard();
         for(int i=0; i<3; i++){
             for(int j=0; j<2; j++){
@@ -184,7 +187,8 @@ class StandardLivingRoomTest {
     @Test
     void threePlayerBoardFilledCorrectly(){
         StandardLivingRoom test = new StandardLivingRoom(3);
-        test.setBoard(test.refillBoard());
+        test.refillBoard();
+        test.setBoard(test.getBoard());
         Tile[][] actualBoard = test.getBoard();
 
         for(int i=3; i<6; i++){
@@ -246,7 +250,8 @@ class StandardLivingRoomTest {
     @Test
     void fourPlayerBoardHasCorrectEmptyTiles(){
         StandardLivingRoom test = new StandardLivingRoom(4);
-        test.setBoard(test.refillBoard());
+        test.refillBoard();
+        test.setBoard(test.getBoard());
         Tile[][] actualBoard = test.getBoard();
         for(int i=0; i<3; i++){
             for(int j=0; j<2; j++){
@@ -298,7 +303,8 @@ class StandardLivingRoomTest {
     @Test
     void fourPlayerBoardFilledCorrectly(){
         StandardLivingRoom test = new StandardLivingRoom(4);
-        test.setBoard(test.refillBoard());
+        test.refillBoard();
+        test.setBoard(test.getBoard());
         Tile[][] actualBoard = test.getBoard();
 
         for(int i=3; i<6; i++){
@@ -368,10 +374,12 @@ class StandardLivingRoomTest {
     @Test
     void boardFilledRandomly(){
         StandardLivingRoom test1 = new StandardLivingRoom(4);
-        test1.setBoard(test1.refillBoard());
+        test1.refillBoard();
+        test1.setBoard(test1.getBoard());
         Tile[][] board1 = test1.getBoard();
         StandardLivingRoom test2 = new StandardLivingRoom(4);
-        test2.setBoard(test2.refillBoard());
+        test1.refillBoard();
+        test2.setBoard(test2.getBoard());
         Tile[][] board2 = test2.getBoard();
         assertFalse(Arrays.deepEquals(board1, board2));
     }
@@ -379,7 +387,8 @@ class StandardLivingRoomTest {
     @Test
     void SetGetBoard(){
         StandardLivingRoom test = new StandardLivingRoom(4);
-        test.setBoard(test.refillBoard());
+        test.refillBoard();
+        test.setBoard(test.getBoard());
         Tile[][] initialBoard = test.getBoard();
         Tile[][] newBoard = new Tile[9][9];
         newBoard[4][4] = test.getBag().pop();
@@ -394,26 +403,53 @@ class StandardLivingRoomTest {
         newBoard[4][4] = test.getBag().pop();
         test.setBoard(newBoard);
         assertTrue(Arrays.deepEquals(newBoard, test.getBoard()));
-        test.setBoard(test.refillBoard());
+        test.refillBoard();
+        test.setBoard(test.getBoard());
         assertTrue(!Arrays.deepEquals(newBoard, test.getBoard()));
     }
 
     @Test
-    void boardNotRefilledWhenNotOnlyIsalnds(){
+    void boardNotRefilledWhenNotOnlyIslands(){
         StandardLivingRoom test = new StandardLivingRoom(4);
         Tile[][] newBoard1 = new Tile[9][9];
         newBoard1[4][4] = test.getBag().pop();
         newBoard1[4][1] = test.getBag().pop();
         newBoard1[5][1] = test.getBag().pop();
         test.setBoard(newBoard1);
-        test.setBoard(test.refillBoard());
+        test.refillBoard();
+        test.setBoard(test.getBoard());
         assertTrue(Arrays.deepEquals(newBoard1, test.getBoard()));
         Tile[][] newBoard2 = new Tile[9][9];
         newBoard2[4][4] = test.getBag().pop();
         newBoard2[4][1] = test.getBag().pop();
         newBoard2[4][2] = test.getBag().pop();
         test.setBoard(newBoard2);
-        test.setBoard(test.refillBoard());
+        test.refillBoard();
+        test.setBoard(test.getBoard());
         assertTrue(Arrays.deepEquals(newBoard2, test.getBoard()));
+    }
+
+    @Test
+    void bagWorksCorrectly2Players(){
+        StandardLivingRoom test = new StandardLivingRoom(2);
+        test.refillBoard();
+        test.setBoard(test.getBoard());
+        assertTrue(test.getBag().size() == 132-29);
+    }
+
+    @Test
+    void bagWorksCorrectly3Players(){
+        StandardLivingRoom test = new StandardLivingRoom(3);
+        test.refillBoard();
+        test.setBoard(test.getBoard());
+        assertTrue(test.getBag().size() == 132-37);
+    }
+
+    @Test
+    void bagWorksCorrectly4Players(){
+        StandardLivingRoom test = new StandardLivingRoom(4);
+        test.refillBoard();
+        test.setBoard(test.getBoard());
+        assertTrue(test.getBag().size() == 132-45);
     }
 }

@@ -5,5 +5,5 @@ import model.Tile;
 public interface LivingRoom {
     public Tile[][] getBoard();
     public void setBoard(Tile[][] modifiedBoard);
-    public Tile[][] refillBoard();
+    public void refillBoard();
 }

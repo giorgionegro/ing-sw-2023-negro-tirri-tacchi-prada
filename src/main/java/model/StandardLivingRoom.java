@@ -9,7 +9,10 @@ public class StandardLivingRoom implements LivingRoom {
     private final Stack<Tile> bag;
     private final int numberOfPlayers;
 
-    public StandardLivingRoom(int nPlayers){
+    public StandardLivingRoom(int nPlayers) throws IllegalArgumentException{
+        if(nPlayers <2 || nPlayers > 4){
+            throw new IllegalArgumentException("Number of players must be between 2 and 4.");
+        }
         this.numberOfPlayers = nPlayers;
         this.bag = loadBag();
         this.board = new Tile[9][9];
@@ -26,13 +29,12 @@ public class StandardLivingRoom implements LivingRoom {
     }
 
     @Override
-    public Tile[][] refillBoard() {
+    public void refillBoard() {
         if(needsToBeRefilled()){
             Tile[][] newBoard = getBoard();
             refillAlgorythm(newBoard);
-            return newBoard;
+            setBoard(newBoard);
         }
-        return getBoard();
     }
 
     public Stack<Tile> getBag(){
