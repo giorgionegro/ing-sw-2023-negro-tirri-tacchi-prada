@@ -14,18 +14,18 @@ public class StandardPersonalGoal extends PersonalGoal {
     }
 
     @Override
-    public void getDescription() {
-        System.out.println("Put Tile " + this.Tile.getColor() + " in row: " + this.row + " and column " + this.column);
+    public String getDescription() {
+        return "Put Tile " + this.Tile.getColor() + " in row: " + this.row + " and column " + this.column;
     }
 
     @Override
     public boolean evaluate(model.Tile[][] playerShelf) {
         if(playerShelf.length < this.row && playerShelf[0].length < this.column){
-            throw new UnsupportedOperationException("Shelf not big enough, cannot achieved the goal");//TODO CAMBIARE IL TIPO DI ERRORE
+            throw new IndexOutOfBoundsException("Shelf not big enough, cannot achieved the goal");
         }
-        if ((this.Tile.getColor()).equals(playerShelf[row][column].getColor())){
-            return true;
+        if(playerShelf[row][column] == null){
+            throw new NullPointerException("Cella vuota");
         }
-        return false;
+        return (this.Tile.getColor()).equals(playerShelf[row][column].getColor());
     }
 }
