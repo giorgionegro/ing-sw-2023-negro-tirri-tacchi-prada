@@ -9,10 +9,13 @@ public class StandardLivingRoom implements LivingRoom {
     private final Stack<Tile> bag;
     private final int numberOfPlayers;
 
-    public StandardLivingRoom(int nPlayers){
+    public StandardLivingRoom(int nPlayers) throws IllegalArgumentException{
+        if(nPlayers <2 || nPlayers > 4){
+            throw new IllegalArgumentException("Number of players must be between 2 and 4.");
+        }
         this.numberOfPlayers = nPlayers;
-        this.bag = new Stack<>();
-        throw new UnsupportedOperationException("not implemented yet");
+        this.bag = loadBag();
+        this.board = new Tile[9][9];
     }
     @Override
     public Tile[][] getBoard() {
@@ -21,6 +24,7 @@ public class StandardLivingRoom implements LivingRoom {
 
     @Override
     public void setBoard(Tile[][] modifiedBoard) {
+        //TODO: check modifiedBoard is valid (correct empty spaces in relation to number of Players)
         board = Arrays.stream(modifiedBoard).map(Tile[]::clone).toArray(Tile[][]::new);
     }
 
@@ -29,12 +33,18 @@ public class StandardLivingRoom implements LivingRoom {
         if(needsToBeRefilled()){
             Tile[][] newBoard = getBoard();
             refillAlgorythm(newBoard);
+            setBoard(newBoard);
         }
-        throw new UnsupportedOperationException("not implemented yet");
     }
 
-    private List<Tile> loadBag(){
-        return new ArrayList<>();//TODO aggiungere tiles e fare sorting casuale
+    public Stack<Tile> getBag(){
+        return bag;
+    }
+
+    private Stack<Tile> loadBag(){
+        Stack<Tile> bag = new Stack<>();
+        initializeBag(bag);
+        return bag;
     }
 
     private boolean needsToBeRefilled(){
@@ -66,8 +76,8 @@ public class StandardLivingRoom implements LivingRoom {
     }
 
     private void fillCenterSquare(Tile[][] board){
-        for(int i=4; i<7; i++){
-            for(int j=4; j<7; j++){
+        for(int i=3; i<6; i++){
+            for(int j=3; j<6; j++){
                 if(board[i][j] == null){
                     try{
                         board[i][j] = bag.pop();
@@ -108,9 +118,9 @@ public class StandardLivingRoom implements LivingRoom {
     private void fillMissingCells(Tile[][] board){
         try {
             board[2][5] = bag.pop();
+            board[3][2] = bag.pop();
             board[5][6] = bag.pop();
-            board[6][4] = bag.pop();
-            board[4][1] = bag.pop();
+            board[6][3] = bag.pop();
         }
         catch (Exception e){
             if(e instanceof EmptyStackException){
@@ -125,13 +135,13 @@ public class StandardLivingRoom implements LivingRoom {
     private void fillMissingCells3Players(Tile[][] board){
         try{
             board[1][3] = bag.pop();
+            board[2][2] = bag.pop();
             board[2][6] = bag.pop();
             board[3][8] = bag.pop();
             board[6][6] = bag.pop();
             board[8][5] = bag.pop();
             board[6][2] = bag.pop();
             board[5][0] = bag.pop();
-            board[2][2] = bag.pop();
         }
         catch (Exception e){
             if(e instanceof EmptyStackException){
@@ -166,14 +176,36 @@ public class StandardLivingRoom implements LivingRoom {
     }
 
     private void initializeBag(Stack<Tile> initialBag){
-        throw new UnsupportedOperationException("not implemented yet");
+        fillBag7(initialBag);
+        fillBag8(initialBag);
+        Collections.shuffle(initialBag);
     }
 
-    private void fillBag8(Stack<Tile> bag, Tile tile){
-        throw new UnsupportedOperationException("not implemented yet");
+    private void fillBag8(Stack<Tile> bag){
+        for(int i=0; i<8; i++){
+            bag.push(Tile.BOOKS_1);
+            bag.push(Tile.CATS_1);
+            bag.push(Tile.FRAMES_1);
+            bag.push(Tile.GAMES_1);
+            bag.push(Tile.PLANTS_1);
+            bag.push(Tile.TROPHIES_1);
+        }
     }
 
-    private void fillBag7(Stack<Tile> bag, Tile tile){
-        throw new UnsupportedOperationException("not implemented yet");
+    private void fillBag7(Stack<Tile> bag){
+        for(int i=0; i<7; i++){
+            bag.push(Tile.BOOKS_2);
+            bag.push(Tile.BOOKS_3);
+            bag.push(Tile.CATS_2);
+            bag.push(Tile.CATS_3);
+            bag.push(Tile.FRAMES_2);
+            bag.push(Tile.FRAMES_3);
+            bag.push(Tile.GAMES_2);
+            bag.push(Tile.GAMES_3);
+            bag.push(Tile.PLANTS_2);
+            bag.push(Tile.PLANTS_3);
+            bag.push(Tile.TROPHIES_2);
+            bag.push(Tile.TROPHIES_3);
+        }
     }
 }
