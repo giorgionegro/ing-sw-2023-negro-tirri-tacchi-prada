@@ -78,19 +78,18 @@ public class StandardLivingRoom implements LivingRoom {
     private void fillCenterSquare(Tile[][] board){
         for(int i=3; i<6; i++){
             for(int j=3; j<6; j++){
-                if(board[i][j] == null){
+                if(board[i][j] == null && bag.size() != 0){
                     try{
                         board[i][j] = bag.pop();
+                        if (bag.size() == 0)
+                            break;
                     }
-                    catch (Exception e){
-                        if(e instanceof EmptyStackException){
-                            System.out.println("Stack vuoto\n");
-                        }
-                        else {
-                            System.out.println("Altra eccezione");
-                        }
+                    catch (EmptyStackException e){
+                        System.out.println("Stack vuoto\n");
                     }
                 }
+                else if(bag.isEmpty())
+                        break;
             }
         }
     }
@@ -102,13 +101,8 @@ public class StandardLivingRoom implements LivingRoom {
                     try{
                         board[i][j] = bag.pop();
                     }
-                    catch (Exception e){
-                        if(e instanceof EmptyStackException){
-                            System.out.println("Stack vuoto\n");
-                        }
-                        else {
-                            System.out.println("Altra eccezione");
-                        }
+                    catch (EmptyStackException e){
+                        System.out.println("Stack vuoto\n");
                     }
                 }
             }
@@ -122,13 +116,8 @@ public class StandardLivingRoom implements LivingRoom {
             board[5][6] = bag.pop();
             board[6][3] = bag.pop();
         }
-        catch (Exception e){
-            if(e instanceof EmptyStackException){
-                System.out.println("Stack vuoto\n");
-            }
-            else {
-                System.out.println("Altra eccezione");
-            }
+        catch (EmptyStackException e){
+            System.out.println("Stack vuoto\n");
         }
     }
 
@@ -143,13 +132,8 @@ public class StandardLivingRoom implements LivingRoom {
             board[6][2] = bag.pop();
             board[5][0] = bag.pop();
         }
-        catch (Exception e){
-            if(e instanceof EmptyStackException){
-                System.out.println("Stack vuoto\n");
-            }
-            else {
-                System.out.println("Altra eccezione");
-            }
+        catch (EmptyStackException e){
+            System.out.println("Stack vuoto\n");
         }
     }
 
@@ -165,13 +149,8 @@ public class StandardLivingRoom implements LivingRoom {
             board[4][0] = bag.pop();
             board[3][1] = bag.pop();
         }
-        catch (Exception e){
-            if(e instanceof EmptyStackException){
-                System.out.println("Stack vuoto\n");
-            }
-            else {
-                System.out.println("Altra eccezione");
-            }
+        catch (EmptyStackException e){
+            System.out.println("Stack vuoto\n");
         }
     }
 
