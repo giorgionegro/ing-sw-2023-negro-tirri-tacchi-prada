@@ -11,6 +11,8 @@ public class Standard4Groups4Tiles extends GoalEvaluator {
     }
     @Override
     public boolean evaluate(Tile[][] playerShelf) {
+
+        int counter = 0; // counts the number of groups of 4 tiles of the same type
         throw new UnsupportedOperationException("Not implemented yet");
     }
 }
