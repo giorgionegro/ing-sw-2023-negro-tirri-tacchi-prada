@@ -4,7 +4,6 @@ import model.Tile;
 import model.abstractModel.GoalEvaluator;
 
 import java.util.Arrays;
-import java.util.stream.Collectors;
 
 public class Standard2ColumnsOfDifferentTiles extends GoalEvaluator {
     @Override
@@ -18,11 +17,11 @@ public class Standard2ColumnsOfDifferentTiles extends GoalEvaluator {
         int counter = 0; // counts the number of columns with 6 different tiles colors
         for (int i = 0; i < playerShelf[0].length; i++) {
             //check if every line is different
-            String[] colors = new String[6];
+            String[] colors = new String[playerShelf.length];
             for (int j = 0; j < playerShelf.length; j++) {
                 colors[j] = playerShelf[j][i].getColor();
             }
-            if (Arrays.stream(colors).distinct().collect(Collectors.toList()).size()==colors.length) {//check if every line is different by comparing the number of distinct colors
+            if (Arrays.stream(colors).distinct().count() ==colors.length) {//check if every line is different by comparing the number of distinct colors
                 counter++;
             }
         }

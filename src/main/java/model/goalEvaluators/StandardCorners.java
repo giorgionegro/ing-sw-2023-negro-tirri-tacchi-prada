@@ -10,6 +10,12 @@ public class StandardCorners extends GoalEvaluator {
     }
     @Override
     public boolean evaluate(Tile[][] playerShelf) {
-        throw new UnsupportedOperationException("Not implemented yet");
+        Tile topLeft = playerShelf[0][0];
+        Tile topRight = playerShelf[0][playerShelf[0].length-1];
+        Tile bottomLeft = playerShelf[playerShelf.length-1][0];
+        Tile bottomRight = playerShelf[playerShelf.length-1][playerShelf[0].length-1];
+        return topLeft.getColor().equals(topRight.getColor()) &&
+                topLeft.getColor().equals(bottomLeft.getColor()) &&
+                topLeft.getColor().equals(bottomRight.getColor());
     }
 }

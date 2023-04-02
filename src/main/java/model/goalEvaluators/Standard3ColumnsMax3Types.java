@@ -4,13 +4,11 @@ import model.Tile;
 import model.abstractModel.GoalEvaluator;
 
 import java.util.Arrays;
-import java.util.stream.Collectors;
 
 public class Standard3ColumnsMax3Types extends GoalEvaluator {
     @Override
     public void getDescription(){
-        System.out.println("Three columns each formed by 6 tiles of one, two or three different types." +
-                "Different columns may have different combinations of tile types.");
+        System.out.printf("Three columns each formed by 6 tiles of one, two or three different types.Different columns may have different combinations of tile types.%n");
     }
     @Override
     public boolean evaluate(Tile[][] playerShelf) {
@@ -18,11 +16,11 @@ public class Standard3ColumnsMax3Types extends GoalEvaluator {
 
 for (int i = 0; i < playerShelf[0].length; i++) {
             //check if every line is different
-            String[] colors = new String[6];
+            String[] colors = new String[playerShelf.length];
             for (int j = 0; j < playerShelf.length; j++) {
                 colors[j] = playerShelf[j][i].getColor();
             }
-            if (Arrays.stream(colors).distinct().collect(Collectors.toList()).size()<=3)
+            if (Arrays.stream(colors).distinct().count() <=3)
             {
                 counter++;
             }
