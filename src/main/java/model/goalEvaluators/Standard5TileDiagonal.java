@@ -6,8 +6,9 @@ import model.abstractModel.GoalEvaluator;
 public class Standard5TileDiagonal extends GoalEvaluator {
 
     @Override
-    public void getDescription(){
-        System.out.println("Five tiles of the same type that form a diagonal.");
+    public String getDescription(){
+
+        return "Five tiles of the same type that form a diagonal.";
     }
     @Override
     public boolean evaluate(Tile[][] playerShelf) {
@@ -18,7 +19,9 @@ public class Standard5TileDiagonal extends GoalEvaluator {
                 if(playerShelf[i][j].getColor().equals(playerShelf[i+1][j+1].getColor()) &&
                         playerShelf[i][j].getColor().equals(playerShelf[i+2][j+2].getColor()) &&
                         playerShelf[i][j].getColor().equals(playerShelf[i+3][j+3].getColor()) &&
-                        playerShelf[i][j].getColor().equals(playerShelf[i+4][j+4].getColor())){
+                        playerShelf[i][j].getColor().equals(playerShelf[i+4][j+4].getColor())&&
+                        !(playerShelf[i][j]!=Tile.EMPTY)
+                ){
                     return true;
                 }
             }
@@ -29,7 +32,8 @@ public class Standard5TileDiagonal extends GoalEvaluator {
                 if(playerShelf[i][j].getColor().equals(playerShelf[i+1][j-1].getColor()) &&
                         playerShelf[i][j].getColor().equals(playerShelf[i+2][j-2].getColor()) &&
                         playerShelf[i][j].getColor().equals(playerShelf[i+3][j-3].getColor()) &&
-                        playerShelf[i][j].getColor().equals(playerShelf[i+4][j-4].getColor())){
+                        playerShelf[i][j].getColor().equals(playerShelf[i+4][j-4].getColor()) &&
+                        !(playerShelf[i][j]!=Tile.EMPTY)){
                     return true;
                 }
             }

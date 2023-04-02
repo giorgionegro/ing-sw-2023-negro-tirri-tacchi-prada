@@ -5,8 +5,8 @@ import model.abstractModel.GoalEvaluator;
 
 public class StandardStairs extends GoalEvaluator {
     @Override
-    public void getDescription() {
-        System.out.printf("Five columns of increasing height or descending: starting from the first column\nleft or right, each successive column it must be formed by an extra tile.\nTiles can be of any type.%n");
+    public String getDescription() {
+        return "Five columns of increasing height or descending: starting from the first column\nleft or right, each successive column it must be formed by an extra tile.\nTiles can be of any type.%n";
     }
 
 
@@ -18,7 +18,7 @@ public class StandardStairs extends GoalEvaluator {
             // we check the first column from the bottom to the top, and we count the number of tiles
             int counter = 0;
             for (int j = playerShelf.length - 1; j >= 0; j--) {
-                if (playerShelf[j][i].getColor() != null) {
+                if (playerShelf[j][i].getColor() != "White") {
                     counter++;
                 }
             }
@@ -28,7 +28,7 @@ public class StandardStairs extends GoalEvaluator {
             // we check the second column from the bottom to the top, and we count the number of tiles
             int counter2 = 0;
             for (int j = playerShelf.length - 1; j >= 0; j--) {
-                if (playerShelf[j][i + 1].getColor() != null) {
+                if (playerShelf[j][i + 1].getColor() != "White") {
                     counter2++;
                 }
             }
@@ -38,7 +38,7 @@ public class StandardStairs extends GoalEvaluator {
             counter = counter2;
             counter2 = 0;
             for (int j = playerShelf.length - 1; j >= 0; j--) {
-                if (playerShelf[j][i + 2].getColor() != null) {
+                if (playerShelf[j][i + 2].getColor() != "White") {
                     counter2++;
                 }
             }
@@ -48,7 +48,7 @@ public class StandardStairs extends GoalEvaluator {
             counter = counter2;
             counter2 = 0;
             for (int j = playerShelf.length - 1; j >= 0; j--) {
-                if (playerShelf[j][i + 3].getColor() != null) {
+                if (playerShelf[j][i + 3].getColor() != "White") {
                     counter2++;
                 }
             }
@@ -58,7 +58,7 @@ public class StandardStairs extends GoalEvaluator {
             counter = counter2;
             counter2 = 0;
             for (int j = playerShelf.length - 1; j >= 0; j--) {
-                if (playerShelf[j][i + 4].getColor() != null) {
+                if (playerShelf[j][i + 4].getColor() != "White") {
                     counter2++;
                 }
             }
@@ -73,7 +73,7 @@ public class StandardStairs extends GoalEvaluator {
             // we check the first column from the bottom to the top, and we count the number of tiles
             int counter = 0;
             for (int j = playerShelf.length - 1; j >= 0; j--) {
-                if (playerShelf[j][i].getColor() != null) {
+                if (playerShelf[j][i].getColor() != "White") {
                     counter++;
                 }
             }
@@ -83,7 +83,7 @@ public class StandardStairs extends GoalEvaluator {
             // we check the second column from the bottom to the top, and we count the number of tiles
             int counter2 = 0;
             for (int j = playerShelf.length - 1; j >= 0; j--) {
-                if (playerShelf[j][i - 1].getColor() != null) {
+                if (playerShelf[j][i - 1].getColor() != "White") {
                     counter2++;
                 }
             }
@@ -94,7 +94,7 @@ public class StandardStairs extends GoalEvaluator {
             counter = counter2;
             counter2 = 0;
             for (int j = playerShelf.length - 1; j >= 0; j--) {
-                if (playerShelf[j][i - 2].getColor() != null) {
+                if (playerShelf[j][i - 2].getColor() != "White") {
                     counter2++;
                 }
             }
@@ -104,7 +104,7 @@ public class StandardStairs extends GoalEvaluator {
             counter = counter2;
             counter2 = 0;
             for (int j = playerShelf.length - 1; j >= 0; j--) {
-                if (playerShelf[j][i - 3].getColor() != null) {
+                if (playerShelf[j][i - 3].getColor() != "White") {
                     counter2++;
                 }
             }
@@ -114,7 +114,7 @@ public class StandardStairs extends GoalEvaluator {
             counter = counter2;
             counter2 = 0;
             for (int j = playerShelf.length - 1; j >= 0; j--) {
-                if (playerShelf[j][i - 4].getColor() != null) {
+                if (playerShelf[j][i - 4].getColor() != "White") {
                     counter2++;
                 }
             }

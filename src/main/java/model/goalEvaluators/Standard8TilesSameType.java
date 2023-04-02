@@ -9,18 +9,19 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class Standard8TilesSameType extends GoalEvaluator {
     private final int numberOfTiles = 8;
     @Override
-    public void getDescription(){
-        System.out.println("Eight tiles of the same type. There are restrictions on the location of these tiles.");
+    public String getDescription(){
+        return "Eight tiles of the same type. There are restrictions on the location of these tiles.";
     }
     @Override
     public boolean evaluate(Tile[][] playerShelf) {
       AtomicBoolean flag = new AtomicBoolean(false);
         //get every color and check if there are 8 tiles of that color
-        Arrays.stream(Tile.values()).toList().forEach(color -> {
+        Arrays.stream(Tile.values()).map(Tile::getColor).filter(colour -> !colour.equals("White")).distinct().toList().forEach(color -> {
             int counter = numberOfTiles;
             for (Tile[] tiles : playerShelf) {
                 for (int j = 0; j < playerShelf[0].length; j++) {
-                    if (tiles[j].getColor().equals(color.getColor())) {
+                    if (tiles[j].getColor().equals(color)
+                    ) {
                         counter--;
                     }
                 }

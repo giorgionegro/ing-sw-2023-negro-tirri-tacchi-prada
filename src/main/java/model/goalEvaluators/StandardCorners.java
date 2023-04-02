@@ -5,8 +5,9 @@ import model.abstractModel.GoalEvaluator;
 
 public class StandardCorners extends GoalEvaluator {
     @Override
-    public void getDescription(){
-        System.out.println("4 tiles of the same type in the 4 corners of the library\n");
+    public String getDescription(){
+
+        return "4 tiles of the same type in the 4 corners of the library\n";
     }
     @Override
     public boolean evaluate(Tile[][] playerShelf) {
@@ -16,6 +17,7 @@ public class StandardCorners extends GoalEvaluator {
         Tile bottomRight = playerShelf[playerShelf.length-1][playerShelf[0].length-1];
         return topLeft.getColor().equals(topRight.getColor()) &&
                 topLeft.getColor().equals(bottomLeft.getColor()) &&
-                topLeft.getColor().equals(bottomRight.getColor());
+                topLeft.getColor().equals(bottomRight.getColor()) &&
+                !topLeft.getColor().equals("White");
     }
 }
