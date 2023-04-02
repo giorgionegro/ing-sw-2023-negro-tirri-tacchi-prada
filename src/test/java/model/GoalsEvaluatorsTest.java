@@ -49,10 +49,10 @@ class GoalsEvaluatorsTest {
     void testStandard4Groups4Tiles()
     {
         Standard4Groups4Tiles goal = new Standard4Groups4Tiles();
-        Tile[][] shelf = StringToTileArray(new String[]{"RRRRGG", "GGGGYG", "YYYYMG", "RGLMGY", "RGLMGY", "MMMGMM"});
+        Tile[][] shelf = StringToTileArray(new String[]{"RRRRGG", "GGGGYG", "YYYYMG", "RGLMGG", "RGLMGY", "MMMGMM"});
         assertTrue(goal.evaluate(shelf));
         //Test 2 missing columns
-        shelf = StringToTileArray(new String[]{"RRRRRR", "GGGGGG", "YYYYYY", "BBBBBB", "LLLLLL", "RRRRRR"});
+        shelf = StringToTileArray(new String[]{"RGYBLM","MLYBGR","YBGRML","BGRMLY","GRMLYB","RMLYBG"});
         assertFalse(goal.evaluate(shelf));
         //test get description
         assertNotEquals(null, goal.getDescription());
