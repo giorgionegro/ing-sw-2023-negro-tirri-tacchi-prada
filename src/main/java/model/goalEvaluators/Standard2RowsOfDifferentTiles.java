@@ -20,7 +20,7 @@ public class Standard2RowsOfDifferentTiles extends GoalEvaluator {
             for (int j = 0; j < playerShelf[0].length; j++) {
                 colors[j] = tiles[j].getColor();
             }
-            if (Arrays.stream(colors).filter(colour -> !colour.equals("White")).distinct().count() == colors.length) {//check if every column is different by comparing the number of distinct colors
+            if (Arrays.stream(colors).filter(colour -> !colour.equals(Tile.EMPTY.getColor())).distinct().count() == colors.length) {//check if every column is different by comparing the number of distinct colors
                 counter++;
             }
         }

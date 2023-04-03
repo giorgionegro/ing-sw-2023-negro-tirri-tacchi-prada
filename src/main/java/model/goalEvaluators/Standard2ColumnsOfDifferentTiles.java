@@ -21,8 +21,8 @@ public class Standard2ColumnsOfDifferentTiles extends GoalEvaluator {
             for (int j = 0; j < playerShelf.length; j++) {
                 colours[j] = playerShelf[j][i].getColor();
             }
-            //remove White tiles
-            if (Arrays.stream(colours).filter(colour -> !colour.equals("White")).distinct().count()==colours.length) {//check if every line is different by comparing the number of distinct colours
+            //remove Empty tiles
+            if (Arrays.stream(colours).filter(colour -> !colour.equals(Tile.EMPTY.getColor())).distinct().count()==colours.length) {//check if every line is different by comparing the number of distinct colours
                 counter++;
             }
         }

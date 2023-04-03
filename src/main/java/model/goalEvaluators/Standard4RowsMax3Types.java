@@ -20,7 +20,11 @@ public class Standard4RowsMax3Types extends GoalEvaluator {
             for (int j = 0; j < playerShelf[0].length; j++) {
                 colors[j] = tiles[j].getColor();
             }
-            if (Arrays.stream(colors).filter(colour -> !colour.equals("White")).distinct().count() <= 3) {
+            //if colors contains EMPTY, we skip the line
+            if (Arrays.stream(colors).anyMatch(colour -> colour.equals(Tile.EMPTY.getColor()))) {
+                continue;
+            }
+            if (Arrays.stream(colors).filter(colour -> !colour.equals(Tile.EMPTY.getColor())).distinct().count() <= 3) {
                 counter++;
             }
         }

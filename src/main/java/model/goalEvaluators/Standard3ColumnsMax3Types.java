@@ -20,7 +20,12 @@ for (int i = 0; i < playerShelf[0].length; i++) {
             for (int j = 0; j < playerShelf.length; j++) {
                 colors[j] = playerShelf[j][i].getColor();
             }
-            if (Arrays.stream(colors).filter(colour -> !colour.equals("White")).distinct().count() <=3)
+            //if colors contains EMPTY, we skip the line
+            if (Arrays.stream(colors).anyMatch(colour -> colour.equals(Tile.EMPTY.getColor())))
+            {
+                continue;
+            }
+            if (Arrays.stream(colors).filter(colour -> !colour.equals(Tile.EMPTY.getColor())).distinct().count() <=3)
             {
                 counter++;
             }

@@ -21,7 +21,8 @@ public enum Tile {
     PLANTS_2("Magenta"),
 
     PLANTS_3("Magenta"),
-    EMPTY("White");
+
+    EMPTY("Empty");
 
 
 

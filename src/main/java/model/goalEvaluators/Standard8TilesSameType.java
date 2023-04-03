@@ -16,7 +16,7 @@ public class Standard8TilesSameType extends GoalEvaluator {
     public boolean evaluate(Tile[][] playerShelf) {
       AtomicBoolean flag = new AtomicBoolean(false);
         //get every color and check if there are 8 tiles of that color
-        Arrays.stream(Tile.values()).map(Tile::getColor).filter(colour -> !colour.equals("White")).distinct().toList().forEach(color -> {
+        Arrays.stream(Tile.values()).map(Tile::getColor).filter(colour -> !colour.equals(Tile.EMPTY.getColor())).distinct().toList().forEach(color -> {
             int counter = numberOfTiles;
             for (Tile[] tiles : playerShelf) {
                 for (int j = 0; j < playerShelf[0].length; j++) {

@@ -20,7 +20,7 @@ public class StandardSixGroup2Tiles extends GoalEvaluator {
         for (Tile[] tiles : clone) {
             for (int j = 0; j < clone[0].length - 1; j++) {
                 if (tiles[j].getColor().equals(tiles[j + 1].getColor()) &&
-                        !(tiles[j]!=Tile.EMPTY)){
+                        (tiles[j]!=Tile.EMPTY)){
                     //if we find a group of 2 tiles of the same type, we remove them from the array
                     tiles[j]= Tile.EMPTY;
                     tiles[j+1]= Tile.EMPTY;
@@ -32,7 +32,7 @@ public class StandardSixGroup2Tiles extends GoalEvaluator {
             for(int i = 0; i < clone.length-1; i++)
                 for (int j = 0; j < clone[0].length; j++) {
                     if (clone[i][j].getColor().equals(clone[i + 1][j].getColor()) &&
-                            !(clone[i][j]!=Tile.EMPTY)) {
+                            (clone[i][j]!=Tile.EMPTY)) {
                         //if we find a group of 2 tiles of the same type, we remove them from the array
                         clone[i][j] = Tile.EMPTY;
                         clone[i + 1][j] = Tile.EMPTY;

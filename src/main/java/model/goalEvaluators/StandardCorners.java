@@ -18,6 +18,6 @@ public class StandardCorners extends GoalEvaluator {
         return topLeft.getColor().equals(topRight.getColor()) &&
                 topLeft.getColor().equals(bottomLeft.getColor()) &&
                 topLeft.getColor().equals(bottomRight.getColor()) &&
-                !topLeft.getColor().equals("White");
+                topLeft!=Tile.EMPTY;
     }
 }

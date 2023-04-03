@@ -20,7 +20,7 @@ public class Standard5TileDiagonal extends GoalEvaluator {
                         playerShelf[i][j].getColor().equals(playerShelf[i+2][j+2].getColor()) &&
                         playerShelf[i][j].getColor().equals(playerShelf[i+3][j+3].getColor()) &&
                         playerShelf[i][j].getColor().equals(playerShelf[i+4][j+4].getColor())&&
-                        !(playerShelf[i][j]!=Tile.EMPTY)
+                        (playerShelf[i][j]!=Tile.EMPTY)
                 ){
                     return true;
                 }
@@ -33,7 +33,7 @@ public class Standard5TileDiagonal extends GoalEvaluator {
                         playerShelf[i][j].getColor().equals(playerShelf[i+2][j-2].getColor()) &&
                         playerShelf[i][j].getColor().equals(playerShelf[i+3][j-3].getColor()) &&
                         playerShelf[i][j].getColor().equals(playerShelf[i+4][j-4].getColor()) &&
-                        !(playerShelf[i][j]!=Tile.EMPTY)){
+                        (playerShelf[i][j]!=Tile.EMPTY)){
                     return true;
                 }
             }

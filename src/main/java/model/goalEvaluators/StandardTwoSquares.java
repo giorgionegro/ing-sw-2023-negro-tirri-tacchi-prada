@@ -21,7 +21,7 @@ int counter = 0;
                 if(clone[i][j].getColor().equals(clone[i][j+1].getColor()) &&
                         clone[i][j].getColor().equals(clone[i+1][j].getColor()) &&
                         clone[i][j].getColor().equals(clone[i+1][j+1].getColor())
-                        && !(clone[i][j]!=Tile.EMPTY)){
+                        && (clone[i][j]!=Tile.EMPTY)){
 //if we find a group of 4 tiles of the same type, we remove them from the array
                     clone[i][j]= Tile.EMPTY;
                     clone[i][j+1]= Tile.EMPTY;

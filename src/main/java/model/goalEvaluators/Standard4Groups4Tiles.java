@@ -21,7 +21,7 @@ public class Standard4Groups4Tiles extends GoalEvaluator {
                 if (tiles[j].getColor().equals(tiles[j + 1].getColor()) &&
                         tiles[j].getColor().equals(tiles[j + 2].getColor()) &&
                         tiles[j].getColor().equals(tiles[j + 3].getColor()) &&
-                        !(tiles[j]!=Tile.EMPTY)
+                        (tiles[j]!=Tile.EMPTY)
                 ) {
                     //if we find a group of 4 tiles of the same type, we remove them from the array
                     tiles[j]= Tile.EMPTY;
@@ -38,7 +38,7 @@ public class Standard4Groups4Tiles extends GoalEvaluator {
                 if(clone[i][j].getColor().equals(clone[i+1][j].getColor()) &&
                         clone[i][j].getColor().equals(clone[i+2][j].getColor()) &&
                         clone[i][j].getColor().equals(clone[i+3][j].getColor()) &&
-                        !clone[i][j].getColor().equals("White")){
+                        clone[i][j]!=Tile.EMPTY ){
                     //if we find a group of 4 tiles of the same type, we remove them from the array
                     clone[i][j]= Tile.EMPTY;
                     clone[i+1][j]= Tile.EMPTY;
