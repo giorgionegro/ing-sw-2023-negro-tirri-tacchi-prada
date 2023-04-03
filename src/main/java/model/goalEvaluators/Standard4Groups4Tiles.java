@@ -3,7 +3,7 @@ package model.goalEvaluators;
 import model.Tile;
 import model.abstractModel.GoalEvaluator;
 
-import static model.goalEvaluators.evaluatorsutil.cloneTile;
+import static model.goalEvaluators.evaluators_utils.cloneTileMatrix;
 
 public class Standard4Groups4Tiles extends GoalEvaluator {
     @Override
@@ -13,7 +13,7 @@ public class Standard4Groups4Tiles extends GoalEvaluator {
     @Override
     public boolean evaluate(Tile[][] playerShelf) {
         //clone the array
-        Tile[][] clone =cloneTile(playerShelf);
+        Tile[][] clone = cloneTileMatrix(playerShelf);
         int counter = 0; // counts the number of groups of 4 tiles of the same type
                 //first we check the horizontal groups
         for (Tile[] tiles : clone) {
