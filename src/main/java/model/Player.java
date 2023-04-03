@@ -22,7 +22,7 @@ public class Player {
     }
 
     public Tile[][] getShelf() {
-        throw new UnsupportedOperationException("Not implemented yet"); //TODO meglio passare una copia di shelf non un riferimento alla stessa
+        throw new UnsupportedOperationException("Not implemented yet"); //TODO meglio passare una copia di shelf non un riferimento alla stessa, vedi cloneTileMatrix in evaluators_utils
     }
 
     public void setShelf(Tile[][] modifiedShelf){
