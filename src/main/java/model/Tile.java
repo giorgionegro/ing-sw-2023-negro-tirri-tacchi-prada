@@ -19,7 +19,11 @@ public enum Tile {
     TROPHIES_3("LightBlue"),
     PLANTS_1("Magenta"),
     PLANTS_2("Magenta"),
-    PLANTS_3("Magenta");
+
+    PLANTS_3("Magenta"),
+
+    EMPTY("Empty");
+
 
 
     private final String color;
