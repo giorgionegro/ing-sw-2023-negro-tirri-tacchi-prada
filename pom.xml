@@ -15,7 +15,7 @@
         </dependency>
     </dependencies>
     <build>
-        <testSourceDirectory>src/test</testSourceDirectory>
+        <testSourceDirectory>src/test/java/model</testSourceDirectory>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
