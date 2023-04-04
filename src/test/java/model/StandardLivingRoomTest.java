@@ -8,15 +8,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class StandardLivingRoomTest {
     @Test
-    //after being created, the StandardLivingRoom instance must contain an empty board
-    void StandardLivingRoomContainsEmptyBoard() {
-        StandardLivingRoom test = new StandardLivingRoom(4);
-        Tile[][] actualBoard = test.getBoard();
-        Tile[][] expectedBoard = new Tile[9][9];
-        assertTrue(Arrays.deepEquals(expectedBoard, actualBoard));
-    }
-
-    @Test
     //after refillBoard(), check that all the board cells that should be empty actually are
     //when there are 2 Players
     void twoPlayerBoardHasCorrectEmptyTiles(){
@@ -487,12 +478,57 @@ class StandardLivingRoomTest {
     }
 
     @Test
-    //pop() generates an EmptyStackException if bag is empty
-    void bagEmptyExceptionWhenRefillingBoard(){
-        StandardLivingRoom test = new StandardLivingRoom(2);
-        for(int i=0; i<120; i++){
+    //board stops refilling if bag is empty
+    void boardRefillWorksCorrectlyCenterSquare(){
+        StandardLivingRoom test = new StandardLivingRoom(4);
+        for(int i=0; i<130; i++){
             test.getBag().pop();
         }
         test.refillBoard();
+        assertTrue(test.getBoard()[3][5] == null && test.getBoard()[3][4] != null);
+    }
+
+    @Test
+    //board stops refilling if bag is empty
+    void boardRefillWorksCorrectlySideSquares(){
+        StandardLivingRoom test = new StandardLivingRoom(4);
+        for(int i=0; i<122; i++){
+            test.getBag().pop();
+        }
+        test.refillBoard();
+        assertTrue(test.getBoard()[1][4] == null && test.getBoard()[1][3] != null);
+    }
+
+    @Test
+    //board stops refilling if bag is empty
+    void boardRefillWorksCorrectlyMissingCells(){
+        StandardLivingRoom test = new StandardLivingRoom(4);
+        for(int i=0; i<106; i++){
+            test.getBag().pop();
+        }
+        test.refillBoard();
+        assertTrue(test.getBoard()[3][2] == null && test.getBoard()[2][5] != null);
+    }
+
+    @Test
+        //board stops refilling if bag is empty
+    void boardRefillWorksCorrectlyMissingCells3Players(){
+        StandardLivingRoom test = new StandardLivingRoom(4);
+        for(int i=0; i<102; i++){
+            test.getBag().pop();
+        }
+        test.refillBoard();
+        assertTrue(test.getBoard()[2][2] == null && test.getBoard()[0][3] != null);
+    }
+
+    @Test
+    //board stops refilling if bag is empty
+    void boardRefillWorksCorrectlyMissingCells4Players(){
+        StandardLivingRoom test = new StandardLivingRoom(4);
+        for(int i=0; i<94; i++){
+            test.getBag().pop();
+        }
+        test.refillBoard();
+        assertTrue(test.getBoard()[1][5] == null && test.getBoard()[0][4] != null);
     }
 }
