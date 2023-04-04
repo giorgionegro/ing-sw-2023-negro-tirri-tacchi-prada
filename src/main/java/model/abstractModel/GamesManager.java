@@ -1,14 +1,15 @@
 package model.abstractModel;
 
-import model.Game;
+import model.exceptions.*;
 
 import java.util.List;
 
 
 public interface GamesManager {
-    public void addMatch(Game newMatch);
 
-    public List<Game> getMatches();
+    public void addGame(String gameId, Game newMatch) throws GameAlreadyExistsException;
 
-    public Game getMatch();
+    public List<Game> getGames();
+
+    public Game getGame(String gameId) throws GameNotExistsException;
 }
