@@ -15,16 +15,15 @@
         </dependency>
     </dependencies>
     <build>
-        <testSourceDirectory>src/test/java/model</testSourceDirectory>
+        <testSourceDirectory>src/test/java/</testSourceDirectory>
         <plugins>
- <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-surefire-plugin</artifactId>
-            <version>3.0.0</version>
-            <configuration>
-            </configuration>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.0.0</version>
+                <configuration>
+                </configuration>
             </plugin>
-            
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
