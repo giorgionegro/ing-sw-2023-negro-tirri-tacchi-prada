@@ -9,7 +9,7 @@ public class StandardCommonGoal extends CommonGoal {
         fillStack(nPlayer);
     }
 
-    private void fillStack(int nPlayers) {
+    protected void fillStack(int nPlayers) {
         if(nPlayers<5){
             tokenStack.push(Token.TOKEN_2_POINTS);
             tokenStack.push(Token.TOKEN_4_POINTS);

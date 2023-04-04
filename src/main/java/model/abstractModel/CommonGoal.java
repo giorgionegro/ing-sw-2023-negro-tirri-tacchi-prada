@@ -12,6 +12,8 @@ public abstract class CommonGoal {
     }
     protected Stack<Token> tokenStack;
     private final GoalEvaluator evaluator;
+
+    protected abstract void fillStack(int nPlayers);
     public GoalEvaluator getEvaluator(){
         return evaluator;
     }
