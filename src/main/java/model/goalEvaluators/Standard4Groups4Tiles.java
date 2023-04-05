@@ -5,11 +5,25 @@ import model.abstractModel.GoalEvaluator;
 
 import static model.goalEvaluators.evaluators_utils.cloneTileMatrix;
 
-public class Standard4Groups4Tiles extends GoalEvaluator {
+/**
+ * This class is the goal evaluator for the Standard4Groups4Tiles goal
+ * It implements the GoalEvaluator abstract class
+ * It is used by the CommonGoal class
+ **/
+public class
+Standard4Groups4Tiles extends GoalEvaluator {
+    /**
+     * @return the description of the goal
+     */
     @Override
     public String getDescription(){
          return "Four separate groups formed each from four adjacent tiles of the same type. The tiles of a group can be different from those of another group.\n%n";
     }
+
+    /**
+     * @param playerShelf the player's shelf to evaluate
+     * @return true if the player has at least 4 groups of 4 tiles of the same type
+     */
     @Override
     public boolean evaluate(Tile[][] playerShelf) {
         //clone the array
