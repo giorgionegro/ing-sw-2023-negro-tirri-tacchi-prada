@@ -5,11 +5,25 @@ import model.abstractModel.GoalEvaluator;
 
 import static model.goalEvaluators.evaluators_utils.cloneTileMatrix;
 
+/**
+ * This class is the goal evaluator for the StandardTwoSquares goal
+ * It implements the GoalEvaluator abstract class
+ * It is used by the CommonGoal class
+ **/
 public class StandardTwoSquares extends GoalEvaluator {
+    /**
+     * This method returns the description of the goal
+     * @return String
+     */
     @Override
     public String getDescription(){
         return "Two separate groups of 4 tiles same type that form a 2x2 square.\nThe tiles of the two groups must be of the same type.%n";
     }
+    /**
+     * This method evaluates the player's shelf
+     * @param playerShelf the player's shelf to evaluate
+     * @return true if the player has at least 2 groups of 2x2 tiles of the same type
+     */
     @Override
     public boolean evaluate(Tile[][] playerShelf) {
 

@@ -1,8 +1,9 @@
 package model;
 
+import model.abstractModel.GoalEvaluator;
 import org.junit.jupiter.api.Test;
 import model.goalEvaluators.*;
-import model.Tile;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class GoalsEvaluatorsTest {
@@ -10,7 +11,7 @@ class GoalsEvaluatorsTest {
     @Test
     void testStandard2ColumnsOfDifferentTiles()
     {
-        Standard2ColumnsOfDifferentTiles goal = new Standard2ColumnsOfDifferentTiles();
+        Standard2ColumnsRowOfDifferentTiles goal = new Standard2ColumnsRowOfDifferentTiles(true);
         Tile[][] shelf = StringToTileArray(new String[]{"RRRRRR", "GGGGGG", "YYYYYY", "BBBBBB", "LLLLLL", "MMMMMM"});
         assertTrue(goal.evaluate(shelf));
         //Test 2 missing columns
@@ -23,7 +24,7 @@ class GoalsEvaluatorsTest {
     @Test
     void testStandard2RowsOfDifferentTiles()
     {
-       Standard2RowsOfDifferentTiles goal = new Standard2RowsOfDifferentTiles();
+        Standard2ColumnsRowOfDifferentTiles goal = new Standard2ColumnsRowOfDifferentTiles(false);
          Tile[][] shelf = StringToTileArray(new String[]{"RRRRRR", "RGYBLM", "YYYYYY", "MGYBLR", "LLLLLL", "MMMMMM"});
         assertTrue(goal.evaluate(shelf));
         //test false
@@ -33,13 +34,21 @@ class GoalsEvaluatorsTest {
     }
 
     @Test
-    void testStandard3ColumnsMax3Types()
+    void testStandard34ColumnsRowMax3Types()
     {
-        Standard3ColumnsMax3Types goal = new Standard3ColumnsMax3Types();
+        GoalEvaluator goal = new Standard3or4ColumnsRowMax3Types(true);
         Tile[][] shelf = StringToTileArray(new String[]{"RRRRRR", "GGGGGG", "YYYYYY", "GGGGGG", "YYYYYY", "RRRRRR"});
         assertTrue(goal.evaluate(shelf));
         //Test 2 missing columns
         shelf = StringToTileArray(new String[]{"RRRRRR", "GGGGGG", "RGGYYY", "RGGBBB", "RGGLLL", "RGWMMM"});
+        assertFalse(goal.evaluate(shelf));
+        //test get description
+        assertNotEquals(null, goal.getDescription());
+         goal = new Standard3or4ColumnsRowMax3Types(false);
+        shelf = StringToTileArray(new String[]{"RGYBLM","MBBBBR","YGGGLL","BMMMMY","GWWWWB","RMMMMG"});
+        assertTrue(goal.evaluate(shelf));
+        //Test 2 missing columns
+        shelf = StringToTileArray(new String[]{"WWWWWM","WWWWWM","WWWWWM","WWWWWM","WWWWWM","RMLYBG"});
         assertFalse(goal.evaluate(shelf));
         //test get description
         assertNotEquals(null, goal.getDescription());
@@ -58,18 +67,7 @@ class GoalsEvaluatorsTest {
         assertNotEquals(null, goal.getDescription());
     }
 
-    @Test
-    void testStandard4RowsMax3Types()
-    {
-        Standard4RowsMax3Types goal = new Standard4RowsMax3Types();
-        Tile[][] shelf = StringToTileArray(new String[]{"RGYBLM","MBBBBR","YGGGLL","BMMMMY","GWWWWB","RMMMMG"});
-        assertTrue(goal.evaluate(shelf));
-        //Test 2 missing columns
-        shelf = StringToTileArray(new String[]{"WWWWWM","WWWWWM","WWWWWM","WWWWWM","WWWWWM","RMLYBG"});
-        assertFalse(goal.evaluate(shelf));
-        //test get description
-        assertNotEquals(null, goal.getDescription());
-    }
+
 
     @Test
     void testStandard5TileDiagonal()
