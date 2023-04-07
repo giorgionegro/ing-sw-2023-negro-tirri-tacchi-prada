@@ -27,12 +27,13 @@ public abstract class CommonGoal {
      * The goal evaluator, defining the goal description and the evaluation method
      */
     private final GoalEvaluator evaluator;
+
+
+    protected abstract void fillStack(int nPlayers);
     /**
      * This method returns the goal evaluator
      * @return the goal evaluator
      **/
-
-    protected abstract void fillStack(int nPlayers);
     public GoalEvaluator getEvaluator(){
         return evaluator;
     }
