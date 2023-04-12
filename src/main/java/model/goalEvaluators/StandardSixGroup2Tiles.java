@@ -5,11 +5,25 @@ import model.abstractModel.GoalEvaluator;
 
 import static model.goalEvaluators.evaluators_utils.cloneTileMatrix;
 
+/**
+ * This class is the goal evaluator for the StandardSixGroup2Tiles goal
+ * It implements the GoalEvaluator abstract class
+ * It is used by the CommonGoal class
+ **/
 public class StandardSixGroup2Tiles extends GoalEvaluator {
+    /**
+     * This method returns the description of the goal
+     * @return String
+     */
     @Override
     public String getDescription(){
         return "Six separate groups formed each\nfrom two adjacent tiles of the same type. The tiles of a group can\nbe different from those of another group.%n";
     }
+    /**
+     * This method evaluates the player's shelf
+     * @param playerShelf the player's shelf to evaluate
+     * @return true if the player has at least 6 groups of 2 tiles of the same type
+     */
     @Override
     public boolean evaluate(Tile[][] playerShelf) {
 
