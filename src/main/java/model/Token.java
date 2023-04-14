@@ -5,10 +5,9 @@ public enum Token {
     TOKEN_6_POINTS(6),
     TOKEN_4_POINTS(4),
     TOKEN_2_POINTS(2),
-    TOKEN_EMPTY(0),
     TOKEN_GAME_END(1);
 
-    private int value;
+    private final int value;
     Token(int value){
         this.value = value;
     }
