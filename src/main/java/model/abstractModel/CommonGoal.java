@@ -7,7 +7,8 @@ import java.util.Stack;
 
 /**
  * This class is the abstract class for the goals,
- * It contains all the necessary methods for the common goals
+ * <p>
+ * It contains all the methods required to manage common goal information
  **/
 public abstract class CommonGoal extends Observable<CommonGoal.CommonGoalEvent> {
 
@@ -22,7 +23,7 @@ public abstract class CommonGoal extends Observable<CommonGoal.CommonGoalEvent> 
     }
 
     /**
-     * Constructor for the CommonGoal class
+     * Constructor for the CommonGoal class with empty token stack, but initialized with the given Evaluator
      * @param evaluator the goal evaluator
      **/
     public CommonGoal(GoalEvaluator evaluator){
@@ -31,16 +32,16 @@ public abstract class CommonGoal extends Observable<CommonGoal.CommonGoalEvent> 
     }
 
     /**
-     * The token stack, rappresenting the points achivable by the players
+     * The token stack ({@link Stack} of {@link Token})
      */
     protected Stack<Token> tokenStack;
     /**
-     * The goal evaluator, defining the goal description and the evaluation method
+     * The goal evaluator associated to this common goal
      */
     private final GoalEvaluator evaluator;
 
     /**
-     * This method initialize the tokenStack
+     * This method initialize {@link #tokenStack}
      * @param nToken number of token to add to tokenStack
      */
     protected abstract void fillStack(int nToken);
@@ -52,16 +53,16 @@ public abstract class CommonGoal extends Observable<CommonGoal.CommonGoalEvent> 
         return evaluator;
     }
     /**
-     * This method returns the top token of the token stack
-     * @return the top token of the token stack
+     * This method returns the top token of {@link #tokenStack}
+     * @return the top token of {@link #tokenStack}
      **/
     public Token getTopToken(){
         return tokenStack.lastElement();
     }
 
     /**
-     * This method pops the top token of the token stack
-     * @return the top token of the token stack
+     * This method pops the top token of {@link #tokenStack}
+     * @return the top token of {@link #tokenStack}
      */
     public Token popToken(){
         return tokenStack.pop();
