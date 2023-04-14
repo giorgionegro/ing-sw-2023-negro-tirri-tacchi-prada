@@ -10,13 +10,13 @@ import java.util.Locale;
 public class StandardMessage implements Message {
 
     private final String idSender;
-    private final String idDestination;
+    private final MessageSubject subject;
     private final String text;
     private final String timestamp;
 
-    public StandardMessage(String idSender, String idDestination, String text){
+    public StandardMessage(String idSender, MessageSubject subject, String text){
         this.idSender = idSender;
-        this.idDestination = idDestination;
+        this.subject = subject;
         this.text = text;
         this.timestamp = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss").withLocale(Locale.getDefault()).withZone(ZoneId.systemDefault()).format(Instant.now());
     }
@@ -28,8 +28,8 @@ public class StandardMessage implements Message {
     }
 
     @Override
-    public String getDestination() {
-        return idDestination;
+    public MessageSubject getSubject() {
+        return subject;
     }
 
     public String getText() {
@@ -40,10 +40,11 @@ public class StandardMessage implements Message {
     public String getTimestamp() {
         return timestamp;
     }
+
     @Override
     public String toString(){
         return "Sender: "+idSender+"\n"
-                +"Receiver: "+idDestination+"\n"
+                +"Receiver: "+subject.getSubjectId()+"\n"
                 +"Text: "+text+"\n"
                 +"TimeStamp: "+timestamp+"\n";
     }

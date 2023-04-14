@@ -1,14 +1,25 @@
 package model.abstractModel;
 
 import model.Token;
+import util.Observable;
 
 import java.util.Stack;
 
 /**
- * This class is the abstract class for the goals
+ * This class is the abstract class for the goals,
  * It contains all the necessary methods for the common goals
  **/
-public abstract class CommonGoal {
+public abstract class CommonGoal extends Observable<CommonGoal.CommonGoalEvent> {
+
+    /**
+     * This enumeration contains all the goal events that can be sent to observers
+     */
+    public enum CommonGoalEvent{
+        /**
+         * This event is sent whenever a token is picked from tokenStack
+         */
+        TOKEN_PICKED
+    }
 
     /**
      * Constructor for the CommonGoal class
@@ -28,8 +39,11 @@ public abstract class CommonGoal {
      */
     private final GoalEvaluator evaluator;
 
-
-    protected abstract void fillStack(int nPlayers);
+    /**
+     * This method initialize the tokenStack
+     * @param nToken number of token to add to tokenStack
+     */
+    protected abstract void fillStack(int nToken);
     /**
      * This method returns the goal evaluator
      * @return the goal evaluator
