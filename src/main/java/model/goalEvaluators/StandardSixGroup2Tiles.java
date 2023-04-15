@@ -3,7 +3,7 @@ package model.goalEvaluators;
 import model.Tile;
 import model.abstractModel.GoalEvaluator;
 
-import static model.goalEvaluators.evaluators_utils.cloneTileMatrix;
+import java.util.Arrays;
 
 /**
  * This class is the goal evaluator for the StandardSixGroup2Tiles goal
@@ -29,7 +29,7 @@ public class StandardSixGroup2Tiles extends GoalEvaluator {
 
             int counter = 0; // counts the number of groups of 2 tiles of the same type
         //clone
-        Tile[][] clone = cloneTileMatrix(playerShelf);
+        Tile[][] clone = Arrays.stream(playerShelf).map(Tile[]::clone).toArray(Tile[][]::new);
         //first we check the horizontal groups
         for (Tile[] tiles : clone) {
             for (int j = 0; j < clone[0].length - 1; j++) {

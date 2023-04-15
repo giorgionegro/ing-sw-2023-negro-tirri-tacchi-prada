@@ -3,7 +3,7 @@ package model.goalEvaluators;
 import model.Tile;
 import model.abstractModel.GoalEvaluator;
 
-import static model.goalEvaluators.evaluators_utils.cloneTileMatrix;
+import java.util.Arrays;
 
 /**
  * This class is the goal evaluator for the Standard4Groups4Tiles goal
@@ -27,7 +27,7 @@ Standard4Groups4Tiles extends GoalEvaluator {
     @Override
     public boolean evaluate(Tile[][] playerShelf) {
         //clone the array
-        Tile[][] clone = cloneTileMatrix(playerShelf);
+        Tile[][] clone = Arrays.stream(playerShelf).map(Tile[]::clone).toArray(Tile[][]::new);
         int counter = 0; // counts the number of groups of 4 tiles of the same type
                 //first we check the horizontal groups
         for (Tile[] tiles : clone) {

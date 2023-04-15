@@ -3,7 +3,7 @@ package model.goalEvaluators;
 import model.Tile;
 import model.abstractModel.GoalEvaluator;
 
-import static model.goalEvaluators.evaluators_utils.cloneTileMatrix;
+import java.util.Arrays;
 
 /**
  * This class is the goal evaluator for the StandardTwoSquares goal
@@ -29,7 +29,7 @@ public class StandardTwoSquares extends GoalEvaluator {
 
         //clone the array
 int counter = 0;
-        Tile[][] clone = cloneTileMatrix(playerShelf);
+        Tile[][] clone = Arrays.stream(playerShelf).map(Tile[]::clone).toArray(Tile[][]::new);
         for(int i =0; i < clone.length-1; i++){
             for(int j = 0; j < clone[0].length-1; j++){
                 if(clone[i][j].getColor().equals(clone[i][j+1].getColor()) &&
