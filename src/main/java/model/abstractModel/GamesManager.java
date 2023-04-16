@@ -1,15 +1,17 @@
 package model.abstractModel;
 
 import model.exceptions.*;
+import util.Observable;
 
-import java.util.List;
 
+public abstract class GamesManager extends Observable<GamesManager.GamesManagerEvent>{
 
-public interface GamesManager {
+    public enum GamesManagerEvent{
 
-    public void addGame(String gameId, Game newMatch) throws GameAlreadyExistsException;
+    }
 
-    public List<Game> getGames();
+    public abstract void addGame(String gameId, Game newMatch) throws GameAlreadyExistsException;
 
-    public Game getGame(String gameId) throws GameNotExistsException;
+    public abstract Game getGame(String gameId) throws GameNotExistsException;
+
 }
