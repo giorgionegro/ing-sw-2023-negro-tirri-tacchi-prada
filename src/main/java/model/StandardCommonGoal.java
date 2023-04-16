@@ -38,7 +38,7 @@ public class StandardCommonGoal extends CommonGoal {
                 }
             }
         }else{
-            throw new UnsupportedOperationException("The number of players is more than the maximum accepted (4max)"); //TODO change error type
+            throw new UnsupportedOperationException("The number of players is more than the maximum accepted (4max)");
         }
     }
 }
