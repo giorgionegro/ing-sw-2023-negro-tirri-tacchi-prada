@@ -1,6 +1,7 @@
 package model.abstractModel;
 
 import model.StandardGame;
+import model.exceptions.GameEndedException;
 import model.exceptions.MatchmakingClosedException;
 import model.exceptions.PlayerAlreadyExistsException;
 import model.exceptions.PlayerNotExistsException;
@@ -36,22 +37,18 @@ public abstract class Game extends Observable<Game.GameEvent>{
         GAME_ENDED
     }
 
-    public enum GameType{
-        STANDARD
-    }
-
     /**
      * This enumeration represents all the statuses of the game
      */
     public enum GameStatus{
         MATCHMAKING,
         STARTED,
-        FINISHED
+        ENDED
     }
 
-    static public Game gameFactory(GameType type, String id, int playerNumber){
+    static public Game gameFactory(String type, String id, int playerNumber){
         return switch (type){
-            case STANDARD -> new StandardGame(id, playerNumber);
+            case "STANDARD" -> new StandardGame(id, playerNumber);
             default -> new StandardGame(id, playerNumber);
         };
     }
@@ -88,9 +85,10 @@ public abstract class Game extends Observable<Game.GameEvent>{
     public abstract String getTurnPlayerId();
 
     /**
-     * This method update turn sequence in order to give to next player the turn
+     * This method give the turn to the next player
+     * @throws GameEndedException if turn can't be given to the next player because game is ended
      */
-    public abstract void updatePlayersTurn();
+    public abstract void updatePlayersTurn() throws GameEndedException;
 
     /**
      * This method add a new Player to game, the new Player is referenced by playerId. After this method has been
