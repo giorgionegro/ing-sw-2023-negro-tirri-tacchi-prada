@@ -2,28 +2,73 @@ package model;
 
 import model.abstractModel.PersonalGoal;
 
+/**
+ * This class is an implementation of {@link PersonalGoal}.
+ * <p>
+ * In order to achieve this personal goal there must be a particular {@link #tile} in a particular position in the shelf, defined as {@link #row} and {@link #column}
+ */
 public class StandardPersonalGoal extends PersonalGoal {
-    private final Tile Tile;
+    /**
+     * Tile type target of the goal
+     */
+    private final Tile tile;
+    /**
+     * Shelf's row target of the goal
+     */
     private final int row;
+    /**
+     * Shelf's column target of the goal
+     */
     private final int column;
+    /**
+     * Signal of achieved goal
+     */
+    private boolean achieved;
 
+    /**
+     * Constructor of StandardPersonalGoal not achieved and parameterized with given tile, row and column
+     * @param tile tile type target of the goal
+     * @param row row target of the goal
+     * @param column column target of the goal
+     */
     public StandardPersonalGoal(model.Tile tile, int row, int column) {
-        Tile = tile;
+        this.tile = tile;
         this.row = row;
         this.column = column;
+        this.achieved = false;
     }
 
     /**
-     * Tells the description of the Personal Goal
+     * {@inheritDoc}
      * @return a string with the description of the personal Goal
      */
     @Override
     public String getDescription() {
-        return "Put Tile " + this.Tile.getColor() + " in row: " + this.row + " and column " + this.column;
+        return "Put Tile " + this.tile.getColor() + " in row: " + this.row + " and column " + this.column;
     }
 
     /**
-     * This method evaluates if the player achieved the personal goal
+     * {@inheritDoc}
+     * @return {@link #achieved}
+     */
+    @Override
+    public boolean isAchieved() {
+        return achieved;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setAchieved() {
+        achieved = true;
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * The implementation tests if there is a {@link Tile} equivalent to {@link #tile} in given shelf representation at
+     * the position defined by {@link #row} and {@link #column}
      * @param playerShelf  matrix of Tiles representing player shelf
      * @return true if the player achieved the goal, false otherwise.
      */
@@ -35,6 +80,6 @@ public class StandardPersonalGoal extends PersonalGoal {
         if(playerShelf[row][column] == null){
             throw new NullPointerException("Cella vuota");
         }
-        return (this.Tile.getColor()).equals(playerShelf[row][column].getColor());
+        return (this.tile.getColor()).equals(playerShelf[row][column].getColor());
     }
 }
