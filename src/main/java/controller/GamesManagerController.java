@@ -1,40 +1,47 @@
 package controller;
 
-import model.StandardGame;
+import distibuted.interfaces.ClientInterface;
+import model.GameInfo;
 import model.abstractModel.Game;
-import model.abstractModel.GamesManager;
 import model.exceptions.GameAlreadyExistsException;
 import model.exceptions.GameNotExistsException;
-import model.exceptions.PlayerAlreadyExistsException;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class GamesManagerController {
 
-    private final GamesManager gamesManager;
+    private final Map<String,GameController> gameControllers;
 
-    public GamesManagerController(GamesManager gamesManager) {
-        this.gamesManager = gamesManager;
+    public GamesManagerController() {
+        this.gameControllers = new HashMap<>();
     }
 
-    public void connect(String playerId, String gameId){
+    public GameController getGameController(ClientInterface client, String gameId) {
         try {
-            gamesManager.getGame(gameId).addPlayer(playerId);
-        } catch (PlayerAlreadyExistsException e) {
-            throw new RuntimeException(e); //TODO mandare errore alla view
+            if(!gameControllers.containsKey(gameId))
+                throw new GameNotExistsException();
+
+            return gameControllers.get(gameId);
+
         } catch (GameNotExistsException e) {
-            throw new RuntimeException(e); //TODO mandare errore alla view
+            //TODO mandare errore alla view
         }
+
+        return null;
     }
 
-    public void createGame(String matchId, GameType gameType, int playerNum){
-        try{
-            Game newGame = new StandardGame(playerNum);
-            gamesManager.addGame(matchId, newGame);
+    public void createGame(ClientInterface client, GameInfo gameInfo) {
+        try {
+            if(gameControllers.containsKey(gameInfo.getGameId()))
+                throw new GameAlreadyExistsException();
+
+            Game newGame = Game.gameFactory(gameInfo.getType(), gameInfo.getGameId(), gameInfo.getPlayerNumber());
+
+            gameControllers.put(gameInfo.getGameId(), new GameController(newGame));
+
         } catch (GameAlreadyExistsException e) {
-            throw new RuntimeException(e); //TODO inviare errore alla view
+            //TODO inviare errore alla view
         }
     }
-}
-
-enum GameType{
-
 }

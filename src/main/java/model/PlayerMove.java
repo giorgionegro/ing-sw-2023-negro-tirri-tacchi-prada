@@ -3,7 +3,7 @@ package model;
 import java.util.List;
 
 /**
- * Class that represents a player move000
+ * Class that represents a player move
  */
 public class PlayerMove {
     /**

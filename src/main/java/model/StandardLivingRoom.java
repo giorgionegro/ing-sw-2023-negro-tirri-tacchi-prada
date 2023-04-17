@@ -4,7 +4,7 @@ import model.abstractModel.LivingRoom;
 
 import java.util.*;
 
-public class StandardLivingRoom implements LivingRoom {
+public class StandardLivingRoom extends LivingRoom {
     private Tile[][] board;
     private final Stack<Tile> bag;
     private final int numberOfPlayers;
