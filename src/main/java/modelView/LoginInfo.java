@@ -3,8 +3,8 @@ package modelView;
 import java.io.Serializable;
 
 public class LoginInfo implements Serializable {
-    private String playerId;
-    private String gameId;
+    private final String playerId;
+    private final String gameId;
 
     public LoginInfo(String playerId, String gameId) {
         this.playerId = playerId;

@@ -1,6 +1,5 @@
 package model.abstractModel;
 
-import model.StandardGame;
 import model.exceptions.GameEndedException;
 import model.exceptions.MatchmakingClosedException;
 import model.exceptions.PlayerAlreadyExistsException;

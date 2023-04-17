@@ -12,11 +12,11 @@ public class PlayerMove implements Serializable {
     /**
      * list of picked tiles
      */
-    private List<PickedTile> pickedTiles;
+    private final List<PickedTile> pickedTiles;
     /**
      * column where the player wants to insert the tiles
      */
-    private int columnToInsert;
+    private final int columnToInsert;
 
     /**
      * @param pickedTiles list of picked tiles

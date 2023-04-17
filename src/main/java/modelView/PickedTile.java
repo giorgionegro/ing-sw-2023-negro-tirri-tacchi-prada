@@ -12,14 +12,14 @@ public class PickedTile implements Serializable{
      * row of the tile
      */
 
-    private int row;
+    private final int row;
 
 
     /**
      * column of the tile
      */
 
-    private int col;
+    private final int col;
 
     /**
      * Constructor

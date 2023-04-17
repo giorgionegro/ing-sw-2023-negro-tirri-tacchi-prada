@@ -31,7 +31,7 @@ public class ProvaCLI {
                     String gameId = readLine();
                     System.out.println("Write PlayerNumber (between 2 and 4)");
                     String p = readLine();
-                    int k = 0;
+                    int k;
                     k = Integer.parseInt(p);
                     if(k>1 && k<5) {
                         sInt.createNewGame(client, new GameInfo(gameId, "STANDARD", k));
