@@ -46,13 +46,6 @@ public abstract class Game extends Observable<Game.GameEvent>{
         ENDED
     }
 
-    static public Game gameFactory(String type, String id, int playerNumber){
-        return switch (type){
-            case "STANDARD" -> new StandardGame(id, playerNumber);
-            default -> new StandardGame(id, playerNumber);
-        };
-    }
-
     /**
      * This method returns the gameId
      * @return the gameId
