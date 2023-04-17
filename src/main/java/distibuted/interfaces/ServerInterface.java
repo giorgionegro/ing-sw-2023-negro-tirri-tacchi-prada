@@ -1,10 +1,16 @@
 package distibuted.interfaces;
 
-import model.GameInfo;
-import model.PlayerMove;
+import model.abstractModel.Message;
+import modelView.GameInfo;
+import modelView.PlayerMove;
 
-public interface ServerInterface {
-    void connectToGame(ClientInterface client, String playerId, String gameId);
-    void createNewGame(ClientInterface client, GameInfo newGameInfo);
-    void makeMove(ClientInterface client, PlayerMove move);
+import java.rmi.Remote;
+import java.rmi.RemoteException;
+
+public interface ServerInterface extends Remote {
+    void register(ClientInterface client) throws RemoteException;
+    void connectToGame(ClientInterface client, String playerId, String gameId) throws  RemoteException;
+    void createNewGame(ClientInterface client, GameInfo newGameInfo) throws  RemoteException;
+    void makeMove(ClientInterface client, PlayerMove move)throws  RemoteException;
+    void sendMessage(ClientInterface client, Message message)throws  RemoteException;
 }
