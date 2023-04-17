@@ -1,9 +1,11 @@
-package model;
+package modelView;
+
+import java.io.Serializable;
 
 /**
  * Class that represents a picked tile
  */
-public class PickedTile {
+public class PickedTile implements Serializable{
 
 
     /**

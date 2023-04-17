@@ -1,11 +1,14 @@
-package model;
+package modelView;
 
+import modelView.PickedTile;
+
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Class that represents a player move
  */
-public class PlayerMove {
+public class PlayerMove implements Serializable {
     /**
      * list of picked tiles
      */
