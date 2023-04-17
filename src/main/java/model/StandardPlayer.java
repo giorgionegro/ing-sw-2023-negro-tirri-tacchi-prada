@@ -29,7 +29,7 @@ public class StandardPlayer extends Player {
     /**
      * common goals of the player (map of common goals descriptions and tokens)
      */
-    private Map<String, Token> achievedCommonGoals;
+    private final Map<String, Token> achievedCommonGoals;
 
     /**
      * chat of the player
