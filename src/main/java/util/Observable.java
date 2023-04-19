@@ -63,7 +63,7 @@ public class Observable<Event extends Enum<Event>> {
             throw new NullPointerException();
         if (!obs.contains(o)) {
             obs.addElement(o);
-            ((Observer<Observable<Event>, Event>)o).update(this, null); //TODO rivederne l'utilizzo (serve per aggiornare subito l'observer di essere stato attaccato)
+            ((Observer<Observable<Event>, Event>)o).update(this, null);
         }
     }
 
@@ -139,6 +139,17 @@ public class Observable<Event extends Enum<Event>> {
         for (int i = arrLocal.length-1; i>=0; i--)
             ((Observer<Observable<Event>, Event>)arrLocal[i]).update(this, arg);
     }
+
+    //TODO riverdere l'implementazione
+    public void forceNotifyObservers(){
+        forceNotifyObservers(null);
+    }
+
+    public void forceNotifyObservers(Event arg){
+        setChanged();
+        notifyObservers(arg);
+    }
+
 
     /**
      * Clears the observer list so that this object no longer has any observers.

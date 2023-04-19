@@ -102,6 +102,8 @@ public class CLI {
     }
 
     public void updatePlayerChat(PlayerChatInfo pC){
+        for(int o = 0; o<playerChatBuffer.length-1; o++)
+            playerChatBuffer[o]="";
         List<Message> messages = pC.getMessages();
         if(messages.size()>10)
             messages.subList(pC.getMessages().size()-10,pC.getMessages().size());
@@ -111,7 +113,7 @@ public class CLI {
             String bufferId = " ";
             for(int k=0; k<8; k++){
                 try {
-                    bufferId+=m.getSubject().charAt(k);
+                    bufferId+=m.getSender().charAt(k);
                 }catch (IndexOutOfBoundsException e){
                     bufferId+=" ";
                 }
