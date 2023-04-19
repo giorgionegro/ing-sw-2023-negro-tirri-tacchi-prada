@@ -4,7 +4,7 @@ import model.abstractModel.LivingRoom;
 
 import java.util.*;
 
-public class StandardLivingRoom implements LivingRoom {
+public class StandardLivingRoom extends LivingRoom {
     private Tile[][] board;
     private final Stack<Tile> bag;
     private final int numberOfPlayers;
@@ -40,6 +40,8 @@ public class StandardLivingRoom implements LivingRoom {
     public void setBoard(Tile[][] modifiedBoard) {
         //TODO: check modifiedBoard is valid (correct empty spaces in relation to number of Players)
         board = Arrays.stream(modifiedBoard).map(Tile[]::clone).toArray(Tile[][]::new);
+        setChanged();
+        notifyObservers(LivingRoomEvent.BOARD_MODIFIED);
     }
 
     /**

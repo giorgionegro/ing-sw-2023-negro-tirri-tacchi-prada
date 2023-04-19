@@ -30,12 +30,8 @@ public class StandardStairs extends GoalEvaluator {
         int numRows = playerShelf.length;
         for(int dir = 0; dir < 2; dir++) {
             // Check if the first column has at least numTiles tiles
-
             int counter = countTilesInColumn(playerShelf, (dir==0)?0:numColumns-1);
-
             if (counter < numColumns) continue;
-
-
             int jstart = (dir==0)?1:numColumns-2;
             int jend = (dir==0)?numColumns:-1;
             boolean continueOuterLoop = false;
@@ -51,13 +47,9 @@ public class StandardStairs extends GoalEvaluator {
             }
             if (continueOuterLoop) continue;
             return true;
-
-
-
             // If all columns meet the requirements, return true
         }
         return false;
-
     }
     private int countTilesInColumn(Tile[][] playerShelf, int colIndex) {
         int numRows = playerShelf.length;
@@ -68,5 +60,4 @@ public class StandardStairs extends GoalEvaluator {
             }
         }
         return counter;}
-
 }
