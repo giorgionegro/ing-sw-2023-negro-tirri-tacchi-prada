@@ -1,14 +1,12 @@
 package modelView;
 
-import modelView.PickedTile;
-
 import java.io.Serializable;
 import java.util.List;
 
 /**
  * Class that represents a player move
  */
-public class PlayerMove implements Serializable {
+public class PlayerMoveInfo implements Serializable {
     /**
      * list of picked tiles
      */
@@ -22,7 +20,7 @@ public class PlayerMove implements Serializable {
      * @param pickedTiles list of picked tiles
      * @param columnToInsert column where the player wants to insert the tiles
      */
-    public PlayerMove(List<PickedTile> pickedTiles, int columnToInsert) {
+    public PlayerMoveInfo(List<PickedTile> pickedTiles, int columnToInsert) {
         this.pickedTiles = pickedTiles;
         this.columnToInsert = columnToInsert;
     }

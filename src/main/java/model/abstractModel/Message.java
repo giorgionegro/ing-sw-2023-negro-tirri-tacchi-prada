@@ -1,9 +1,11 @@
 package model.abstractModel;
 
+import java.io.Serializable;
+
 /**
  * This interface define the method to access to message data
  */
-public interface Message {
+public interface Message extends Serializable {
     /**
      * This method returns the id of the sender of the message
      * @return the id of the sender of the message

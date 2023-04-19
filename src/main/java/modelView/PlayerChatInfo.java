@@ -6,10 +6,10 @@ import model.abstractModel.PlayerChat;
 import java.io.Serializable;
 import java.util.List;
 
-public class PlayerChatView implements Serializable {
+public class PlayerChatInfo implements Serializable {
     private final List<Message> messages;
 
-    public PlayerChatView(PlayerChat chat){
+    public PlayerChatInfo(PlayerChat chat){
         messages = chat.getMessages();
     }
 

@@ -4,11 +4,11 @@ import model.Token;
 
 import java.io.Serializable;
 
-public class CommonGoalView implements Serializable {
+public class CommonGoalInfo implements Serializable {
     private final Token tokenState;
     private final String description;
 
-    public CommonGoalView(String description, Token tokenState) {
+    public CommonGoalInfo(String description, Token tokenState) {
         this.tokenState = tokenState;
         this.description = description;
     }

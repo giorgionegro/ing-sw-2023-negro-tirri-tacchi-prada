@@ -3,6 +3,7 @@ package model;
 import model.abstractModel.PersonalGoal;
 import model.abstractModel.Player;
 import model.abstractModel.PlayerChat;
+import model.abstractModel.Shelf;
 
 import java.util.*;
 
@@ -20,7 +21,7 @@ public class StandardPlayer extends Player {
     /**
      * shelf of the player (2D array of tiles)
      */
-    private Tile[][] shelf;
+    private Shelf shelf;
     /**
      * personal goals of the player (list of personal goals)
      */
@@ -44,7 +45,7 @@ public class StandardPlayer extends Player {
      */
     public StandardPlayer(String idPlayer, List<PersonalGoal> personalGoal){
         this.idPlayer = idPlayer;
-        this.shelf = new Tile[6][5];
+        this.shelf = new StandardShelf();
         this.personalGoal = new ArrayList<>(personalGoal);
         this.achievedCommonGoals = new HashMap<>();
         this.chat = new StandardPlayerChat();
@@ -64,17 +65,8 @@ public class StandardPlayer extends Player {
      * @return a copy of {@link #shelf}
      */
     @Override
-    public Tile[][] getShelf() {
-        return Arrays.stream(shelf).map(Tile[]::clone).toArray(Tile[][]::new);
-    }
-
-    /**
-     * {@inheritDoc}
-     * @param modifiedShelf modified shelf of the player
-     */
-    @Override
-    public void setShelf(Tile[][] modifiedShelf){
-        this.shelf = Arrays.stream(modifiedShelf).map(Tile[]::clone).toArray(Tile[][]::new);
+    public Shelf getShelf() {
+        return shelf;
     }
 
     /**
