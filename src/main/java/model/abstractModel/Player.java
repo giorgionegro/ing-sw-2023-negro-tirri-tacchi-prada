@@ -18,10 +18,11 @@ public abstract class Player extends Observable<Player.PlayerEvent> {
      * This enumeration contains all the events that can be sent to observers
      */
     public enum PlayerEvent{
-        /**
-         * This event is sent whenever the player shelf has been modified
-         */
-        SHELF_MODIFIED,
+        COMMONGOAL_ACHIEVED,
+        MALFORMED_MOVE,
+        NOT_ALLOWED,
+        GAME_NOT_STARTED,
+
     }
 
     /**
@@ -34,13 +35,7 @@ public abstract class Player extends Observable<Player.PlayerEvent> {
      * This method returns a copy of the current representation of the player shelf
      * @return a copy of the current representation of the player shelf
      */
-    public abstract Tile[][] getShelf();
-
-    /**
-     * This method update the current representation of the player shelf
-     * @param modifiedShelf the new representation of the player shelf
-     */
-    public abstract void setShelf(Tile[][] modifiedShelf);
+    public abstract Shelf getShelf();
 
     /**
      * This method returns a copy of the list of the personal goals of the player
