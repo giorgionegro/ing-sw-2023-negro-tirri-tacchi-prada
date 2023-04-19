@@ -5,13 +5,12 @@ import model.Tile;
 import java.io.Serializable;
 import java.util.Arrays;
 
-public class ShelfView implements Serializable {
-
+public class ShelfInfo implements Serializable {
     private final Tile[][] shelf;
 
     private final String playerId;
 
-    public ShelfView(String playerId, Tile[][] shelf){
+    public ShelfInfo(String playerId, Tile[][] shelf){
         this.playerId = playerId;
         this.shelf = Arrays.stream(shelf).map(Tile[]::clone).toArray(Tile[][]::new);
     }

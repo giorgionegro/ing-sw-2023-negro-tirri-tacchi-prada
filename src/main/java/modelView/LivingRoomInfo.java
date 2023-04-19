@@ -5,9 +5,9 @@ import model.Tile;
 import java.io.Serializable;
 import java.util.Arrays;
 
-public class LivingRoomView implements Serializable {
+public class LivingRoomInfo implements Serializable {
     private final Tile[][] board;
-    public LivingRoomView(Tile[][] board){
+    public LivingRoomInfo(Tile[][] board){
         this.board = Arrays.stream(board).map(Tile[]::clone).toArray(Tile[][]::new);
     }
 

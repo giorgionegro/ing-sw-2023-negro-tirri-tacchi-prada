@@ -1,49 +1,58 @@
 package distibuted;
 
 import distibuted.interfaces.ClientInterface;
-import distibuted.interfaces.ServerInterface;
+import model.abstractModel.*;
 import modelView.*;
+import view.CLI;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
-public class ClientEndPoint extends UnicastRemoteObject implements ClientInterface{
+public class ClientEndPoint extends UnicastRemoteObject implements ClientInterface {
 
-    public ClientEndPoint(ServerInterface server) throws RemoteException {
+    CLI cli;
+    public ClientEndPoint(CLI cli) throws RemoteException {
         super();
-    }
-    @Override
-    public synchronized void updateGameStatus(GameView o, Object arg) {
-        System.out.println("GameView:: "+o.getStatus()+" "+o.getPlayerOnTurn()+" "+o.isLastTurn());
+        this.cli = cli;
     }
 
     @Override
-    public synchronized void updateCommonGoal(CommonGoalView o, Object arg) {
-        System.out.println("CommonGoalView:: "+o.getDescription()+" "+o.getTokenState());
+    public void update(GamesManagerInfo o, GamesManager.GamesManagerEvent evt) {
+
     }
 
     @Override
-    public synchronized void updateShelf(ShelfView o, Object arg) {
-        System.out.println("ShelfView:: "+o.getPlayerId());
+    public void update(LivingRoomInfo o, LivingRoom.LivingRoomEvent evt) {
+        cli.updateLivingRoom(o);
     }
 
     @Override
-    public synchronized void updateLivingRoom(LivingRoomView o, Object arg) {
-        System.out.println("LivingRoomView:: ");
-    }
-
-    @Override
-    public synchronized void updatePlayerChat(PlayerChatView o, Object arg) {
-        System.out.println("PlayerChatView:: "+o.getMessages().size()+" messages");
-    }
-
-    @Override
-    public synchronized void updatePersonalGoal(PersonalGoalView  o, Object arg) {
+    public void update(PersonalGoalInfo o, PersonalGoal.PersonalGoalEvent evt) {
         System.out.println("PersonalGoalView:: "+o.isAchieved());
     }
 
     @Override
-    public synchronized void signalError(String error) throws RemoteException {
-        System.out.println(error);
+    public void update(PlayerChatInfo o, PlayerChat.PlayerChatEvent evt) {
+        cli.updatePlayerChat(o);
+    }
+
+    @Override
+    public void update(PlayerInfo o, Player.PlayerEvent evt) {
+        System.out.println(o.getMessage());
+    }
+
+    @Override
+    public void update(ShelfInfo o, Shelf.ShelfEvent evt) {
+        cli.updateShelf(o);
+    }
+
+    @Override
+    public void update(GameInfo o, Game.GameEvent evt) {
+        System.out.println("GameView:: "+o.getStatus()+" "+o.getPlayerOnTurn()+" "+o.isLastTurn());
+    }
+
+    @Override
+    public void update(CommonGoalInfo o, CommonGoal.CommonGoalEvent evt) {
+        System.out.println("CommonGoalView:: "+o.getDescription()+" "+o.getTokenState());
     }
 }

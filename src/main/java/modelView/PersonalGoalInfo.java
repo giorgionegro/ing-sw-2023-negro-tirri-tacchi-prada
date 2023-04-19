@@ -2,14 +2,14 @@ package modelView;
 
 import java.io.Serializable;
 
-public class PersonalGoalView implements Serializable {
+public class PersonalGoalInfo implements Serializable {
 
     private final boolean achieved;
     private final String description;
 
-    public PersonalGoalView(boolean achieved, String description) {
+    public PersonalGoalInfo(boolean achieved, String description) {
         this.achieved = achieved;
-        this.description = description;
+        this.description = description;//TODO cambiare rappresentazione personal GOAL
     }
 
     public boolean isAchieved() {

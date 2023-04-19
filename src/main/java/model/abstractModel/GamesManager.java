@@ -7,7 +7,7 @@ import util.Observable;
 public abstract class GamesManager extends Observable<GamesManager.GamesManagerEvent>{
 
     public enum GamesManagerEvent{
-
+        GAME_CREATED
     }
 
     public abstract void addGame(String gameId, Game newMatch) throws GameAlreadyExistsException;
