@@ -2,6 +2,7 @@ package distibuted.socket.middleware;
 
 import distibuted.interfaces.ClientInterface;
 import distibuted.interfaces.ServerInterface;
+import model.abstractModel.*;
 import modelView.*;
 
 import java.io.IOException;
@@ -28,17 +29,13 @@ public class ClientSkeleton implements ClientInterface {
         }
     }
 
-    public void receive(ServerInterface server) throws RemoteException {
+    public void waitForReceive(ServerInterface server) throws RemoteException {
         Object o;
         try {
             o = ois.readObject();
-            if(o instanceof GameInfo gI){
-                server.createNewGame(this, gI);
-            } else if (o instanceof LoginInfo l) {
-                server.connectToGame(this, l.getPlayerId(), l.getPlayerId());
-            } else if (o instanceof PlayerMove pM) {
-                server.makeMove(this, pM);
-            }
+            //TODO server.send(o,null);
+
+
         } catch (IOException e) {
             throw new RemoteException("Cannot receive choice from client", e);
         } catch (ClassNotFoundException e) {
@@ -46,8 +43,75 @@ public class ClientSkeleton implements ClientInterface {
         }
     }
 
-    @Override
-    public void updateGameStatus(GameView o, Object arg) throws RemoteException {
+    public void update(GameInfo o, Object arg) throws RemoteException {
+        try {
+            oos.writeObject(o);
+        } catch (IOException e) {
+            throw new RemoteException("Cannot send model view", e);
+        }
+        try {
+            oos.writeObject(arg);
+        } catch (IOException e) {
+            throw new RemoteException("Cannot send event", e);
+        }
+    }
+
+
+    public void update(CommonGoalInfo o, Object arg) throws RemoteException {
+        try {
+            oos.writeObject(o);
+        } catch (IOException e) {
+            throw new RemoteException("Cannot send model view", e);
+        }
+        try {
+            oos.writeObject(arg);
+        } catch (IOException e) {
+            throw new RemoteException("Cannot send event", e);
+        }
+    }
+
+    public void update(ShelfInfo o, Object arg) throws RemoteException {
+        try {
+            oos.writeObject(o);
+        } catch (IOException e) {
+            throw new RemoteException("Cannot send model view", e);
+        }
+        try {
+            oos.writeObject(arg);
+        } catch (IOException e) {
+            throw new RemoteException("Cannot send event", e);
+        }
+    }
+
+
+    public void update(LivingRoomInfo o, Object arg) throws RemoteException {
+        try {
+            oos.writeObject(o);
+        } catch (IOException e) {
+            throw new RemoteException("Cannot send model view", e);
+        }
+        try {
+            oos.writeObject(arg);
+        } catch (IOException e) {
+            throw new RemoteException("Cannot send event", e);
+        }
+    }
+
+
+    public void update(PlayerChatInfo o, Object arg) throws RemoteException {
+        try {
+            oos.writeObject(o);
+        } catch (IOException e) {
+            throw new RemoteException("Cannot send model view", e);
+        }
+        try {
+            oos.writeObject(arg);
+        } catch (IOException e) {
+            throw new RemoteException("Cannot send event", e);
+        }
+    }
+
+    public void update(PersonalGoalInfo o, Object arg) throws RemoteException {
         try {
             oos.writeObject(o);
         } catch (IOException e) {
@@ -61,86 +125,42 @@ public class ClientSkeleton implements ClientInterface {
     }
 
     @Override
-    public void updateCommonGoal(CommonGoalView o, Object arg) throws RemoteException {
-        try {
-            oos.writeObject(o);
-        } catch (IOException e) {
-            throw new RemoteException("Cannot send model view", e);
-        }
-        try {
-            oos.writeObject(arg);
-        } catch (IOException e) {
-            throw new RemoteException("Cannot send event", e);
-        }
+    public void update(CommonGoalInfo info, CommonGoal.CommonGoalEvent evt) {
+
     }
 
     @Override
-    public void updateShelf(ShelfView o, Object arg) throws RemoteException {
-        try {
-            oos.writeObject(o);
-        } catch (IOException e) {
-            throw new RemoteException("Cannot send model view", e);
-        }
-        try {
-            oos.writeObject(arg);
-        } catch (IOException e) {
-            throw new RemoteException("Cannot send event", e);
-        }
+    public void update(GamesManagerInfo o, GamesManager.GamesManagerEvent evt) {
+
     }
 
     @Override
-    public void updateLivingRoom(LivingRoomView o, Object arg) throws RemoteException {
-        try {
-            oos.writeObject(o);
-        } catch (IOException e) {
-            throw new RemoteException("Cannot send model view", e);
-        }
-        try {
-            oos.writeObject(arg);
-        } catch (IOException e) {
-            throw new RemoteException("Cannot send event", e);
-        }
+    public void update(LivingRoomInfo o, LivingRoom.LivingRoomEvent evt) {
+
     }
 
     @Override
-    public void updatePlayerChat(PlayerChatView o, Object arg) throws RemoteException {
-        try {
-            oos.writeObject(o);
-        } catch (IOException e) {
-            throw new RemoteException("Cannot send model view", e);
-        }
-        try {
-            oos.writeObject(arg);
-        } catch (IOException e) {
-            throw new RemoteException("Cannot send event", e);
-        }
+    public void update(PersonalGoalInfo o, PersonalGoal.PersonalGoalEvent evt) {
+
     }
 
     @Override
-    public void updatePersonalGoal(PersonalGoalView o, Object arg) throws RemoteException {
-        try {
-            oos.writeObject(o);
-        } catch (IOException e) {
-            throw new RemoteException("Cannot send model view", e);
-        }
-        try {
-            oos.writeObject(arg);
-        } catch (IOException e) {
-            throw new RemoteException("Cannot send event", e);
-        }
+    public void update(PlayerChatInfo o, PlayerChat.PlayerChatEvent evt) {
+
     }
 
     @Override
-    public void signalError(String error) throws RemoteException {
-        try {
-            oos.writeObject(error);
-        } catch (IOException e) {
-            throw new RemoteException("Cannot send model view", e);
-        }
-        try {
-            oos.writeObject(new Object());
-        } catch (IOException e) {
-            throw new RemoteException("Cannot send event", e);
-        }
+    public void update(PlayerInfo o, Player.PlayerEvent evt) {
+
+    }
+
+    @Override
+    public void update(ShelfInfo o, Shelf.ShelfEvent evt) {
+
+    }
+
+    @Override
+    public void update(GameInfo o, Game.GameEvent evt) {
+
     }
 }

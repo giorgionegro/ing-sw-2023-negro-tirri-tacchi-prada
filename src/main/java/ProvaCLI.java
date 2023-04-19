@@ -27,111 +27,128 @@ public class ProvaCLI {
         ClientInterface client = new ClientEndPoint(cli);
 
         ServerInterface sInt = server.connect();
-        System.out.println("Connesso");
+        System.out.println("Connected to server");
 
         sc = new Scanner(System.in);
 
         boolean exit = false;
-        while(!exit){
-            System.out.print("-> ");
-            String readLine = readLine();
-            switch(readLine){
+        while(!exit) {
+            String readLine = readLine("(h for commands)-> ");
+            switch (readLine) {
+                case "h" -> {
+                    System.out.println("1: Create a game");
+                    System.out.println("2: Join a game");
+                    System.out.println("exit: Close this window");
+                }
                 case "1" -> createGame(client, sInt);
                 case "2" -> joinGame(cli, client, sInt);
                 case "exit" -> exit = true;
-                default -> System.out.println("HAI SBAGLIATO COMANDO");
+                default -> printError("Wrong command");
             }
         }
     }
 
     private static void createGame(ClientInterface client, ServerInterface sInt) throws RemoteException {
-        System.out.println("Write gameId:");
-        String gameId = readLine();
-        System.out.println("Write PlayerNumber (between 2 and 4)");
-        String p = readLine();
+        String gameId = readLine("GameId: ");
+        String p = readLine("PlayerNumber (between 2 and 4): ");
         int k = Integer.parseInt(p);
         if(k>1 && k<5) {
             if(sInt.createNewGame(client, new NewGameInfo(gameId, "STANDARD", k)) == ServerInterface.ServerEvent.GAME_CREATED)
-                System.out.println("Gioco creato");
+                System.out.println("Game created");
             else
-                System.out.println("Gioco non creato");
+                printError("Game not created");
         }else{
-            System.out.println("Parametri scritti male");
+            printError("Wrong parameters");
         }
     }
 
     private static void joinGame(CLI cli, ClientInterface client, ServerInterface sInt) throws RemoteException {
-        System.out.println("Write gameId:");
-        String gameId = readLine();
+        String gameId = readLine("GameId: ");
         if(sInt.getGame(client,gameId)== ServerInterface.ServerEvent.GAME_RETRIEVED){
             GameController.Event e;
             String playerId;
             do {
-                System.out.println("Write playerId, empty to exit");
-                playerId = readLine();
+                playerId = readLine("Write playerId (empty to exit): ");
                 if(playerId.equals(""))
-                    e = GameController.Event.NOT_JOINED;
+                    break;
                 else
                     e = sInt.join(client,playerId);
                 if (e == GameController.Event.JOINED){
-                    System.out.println("Connesso alla partita");
+                    System.out.println("Joined the game");
                     gameRoutine(cli, client, sInt, playerId);
                 } else {
-                    System.err.println("ID already taken, chose another id");
+                    printError("ID already taken, chose another id");
                 }
             }while(e != GameController.Event.JOINED);
         }else{
-            System.err.println("GAME NOT RETRIEVED");
+            printError("GAME NOT RETRIEVED");
         }
     }
 
     private static void gameRoutine(CLI cli, ClientInterface client, ServerInterface sInt, String playerId) throws RemoteException {
         String readLine;
         while (true) {
-            System.out.print("-> ");
-            readLine = readLine();
+            readLine = readLine("(h for commands)-> ");
             switch (readLine) {
+                case "h" -> {
+                    System.out.println("1: Update view status");
+                    System.out.println("2: Pick tiles");
+                    System.out.println("3: Send message");
+                }
                 case "1" -> cli.updateCLI();
                 case "2" -> {
                     List<PickedTile> tiles = new ArrayList<>();
                     int pickableNum = 3;
+                    boolean choising = true;
                     do {
                         System.out.println("Remaining pickable tiles: "+pickableNum);
-                        System.out.println("Write - to stop");
-                        System.out.print("Row: ");
-                        String row = readLine();
-                        if(row.equals("-"))
-                            break;
-                        System.out.print("Col: ");
-                        String col = readLine();
-                        if(col.equals("-"))
-                            break;
-                        int r;
-                        int c;
-                        r = Integer.parseInt(row);
-                        c = Integer.parseInt(col);
-                        tiles.add(new PickedTile(r, c));
-                        pickableNum--;
-                    }while(pickableNum>0);
-                    System.out.print("Shelf col: ");
-                    String sCol = readLine();
+                        System.out.println("Empty to stop, + to add, - to remove last chosen tile");
+                        String choice = readLine("-> ");
+                        switch (choice){
+                            case "+" ->{
+                                if(pickableNum>0) {
+                                    String row = readLine("Row: ");
+                                    String col = readLine("Col: ");
+                                    int r;
+                                    int c;
+                                    r = Integer.parseInt(row);
+                                    c = Integer.parseInt(col);
+                                    tiles.add(new PickedTile(r, c));
+                                    pickableNum--;
+                                }else{
+                                    System.out.println("No more tiles to pick");
+                                }
+                            }
+                            case "-" -> {
+                                if(tiles.size()>0)
+                                    tiles.remove(tiles.size()-1);
+                            }
+                            case "" -> choising=false;
+                            default -> System.out.println("Wrong command");
+                        }
+                    }while(choising);
+                    String sCol = readLine("Shelf col: ");
                     int sC;
                     sC = Integer.parseInt(sCol);
                     sInt.doPlayerMove(client, new PlayerMoveInfo(tiles, sC));
                 }
                 case "3" -> {
-                    System.out.print("Message Subject (empty for everyone): ");
-                    String subject = readLine();
-                    System.out.print("Message content: ");
-                    String content = readLine();
+                    String subject = readLine("Message Subject (empty for everyone): ");
+                    String content = readLine("Message content: ");
                     sInt.sendMessage(client, new StandardMessage(playerId,subject,content));
                 }
+                default -> printError("Wrong command");
             }
         }
     }
 
 
-    public static String readLine(){
+    public static String readLine(String message){
+            System.out.print((char)27+"[33m"+message+(char)27+"[39m");
             return sc.nextLine();
+    }
+    
+    public static void printError(String message){
+        System.out.println((char)27+"[31m"+message+(char)27+"[39m");
     }
 }
