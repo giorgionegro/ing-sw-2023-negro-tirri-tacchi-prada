@@ -143,11 +143,11 @@ public class StandardGameController implements GameController {
             game.updatePlayersTurn();
 
         } catch (MalformedPlayerMoveException e) {
-            playerAssociation.get(client).notifyObservers(Player.PlayerEvent.MALFORMED_MOVE);
+            playerAssociation.get(client).forceNotifyObservers(Player.PlayerEvent.MALFORMED_MOVE);
         } catch (ClientNotAllowedException e) {
-            playerAssociation.get(client).notifyObservers(Player.PlayerEvent.NOT_ALLOWED);
+            playerAssociation.get(client).forceNotifyObservers(Player.PlayerEvent.NOT_ALLOWED);
         } catch (GameNotStartedException e) {
-            playerAssociation.get(client).notifyObservers(Player.PlayerEvent.GAME_NOT_STARTED);
+            playerAssociation.get(client).forceNotifyObservers(Player.PlayerEvent.GAME_NOT_STARTED);
         } catch (GameEndedException e) {
             throw new RuntimeException(e);//TODO
         }

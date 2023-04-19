@@ -28,6 +28,7 @@ public class GamesManagerController {
             if(gameControllers.containsKey(gameInfo.getGameId()))
                 throw new GameAlreadyExistsException();
 
+            //TODO rivedere per la creazione di game di diverso tipo
             Game newGame = new StandardGame(gameInfo.getGameId(), gameInfo.getPlayerNumber());
 
             gameControllers.put(gameInfo.getGameId(), new StandardGameController(newGame));

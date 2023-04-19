@@ -20,7 +20,7 @@ public class PlayerChatNetworkObserver implements Observer<PlayerChat, PlayerCha
                 view.update(new PlayerChatInfo(pC), arg);
             } else {
                 switch (arg) {
-                    case MESSAGE_RECEIVED -> view.update(new PlayerChatInfo(pC), arg); //TODO switch with event
+                    case MESSAGE_RECEIVED -> view.update(new PlayerChatInfo(pC), arg);
                 }
             }
         } catch (RemoteException e) {

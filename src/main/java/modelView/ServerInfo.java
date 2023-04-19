@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+
+//TODO DA ELIMINARE ??
 public class ServerInfo implements Serializable {
 
     private final String error; //TODO Change definition of error
