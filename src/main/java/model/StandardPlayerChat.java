@@ -32,6 +32,8 @@ public class StandardPlayerChat extends PlayerChat {
     @Override
     public void addMessage(Message newMessage) {
         this.messages.add(newMessage);
+        setChanged();
+        notifyObservers(PlayerChatEvent.MESSAGE_RECEIVED);
     }
 
     /**
