@@ -1,3 +1,4 @@
+package distibuted.interfaces;
 
 import distibuted.interfaces.ServerInterface;
 

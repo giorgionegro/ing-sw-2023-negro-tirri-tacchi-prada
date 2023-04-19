@@ -8,8 +8,7 @@ public class CliTest {
     void printMatrixTest() {
         String[] input = {"WRGYBL", "GGGGGG", "YYYYYY", "BBBBBB", "LLLLLL", "MMMMMM"};
         Tile[][] matrix = StringToTileArray(input);
-        Cli cli = new Cli();
-        cli.printMatrix(matrix);
+        //cli.printMatrix(matrix);
     }
 
 

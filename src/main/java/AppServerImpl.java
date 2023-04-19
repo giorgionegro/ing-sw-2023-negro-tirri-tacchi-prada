@@ -1,3 +1,4 @@
+import distibuted.interfaces.AppServer;
 import controller.GamesManagerController;
 import distibuted.ServerEndpoint;
 import distibuted.interfaces.ServerInterface;
@@ -30,7 +31,26 @@ public class AppServerImpl extends UnicastRemoteObject implements AppServer
             try {
                 startRMI();
             } catch (RemoteException e) {
-                System.err.println("Cannot start RMI. This protocol will be disabled.");
+                System.err.println("Cannot start RMI. Trying to start RMI on port 1099...");
+                //try to start RMI "manually" by executing the rmiregistry command on classpath
+                try {
+                    //find the classpath
+                    String classpath = System.getProperty("java.class.path");
+                    System.err.println("Classpath: " + classpath);
+                    //execute the command in classpath directory
+                    Process process = Runtime.getRuntime().exec("rmiregistry", null, new java.io.File(classpath));
+                    //wait for the process to end or kill it after 5 seconds
+                    process.waitFor(5, java.util.concurrent.TimeUnit.SECONDS);
+                    if (process.isAlive()) {
+                        process.destroy();
+                    }
+                    //start RMI
+                    startRMI();
+                } catch (Exception e1) {
+                    System.err.println("Cannot start RMI. This protocol will be disabled.");
+                }
+
+
             }
         });
 

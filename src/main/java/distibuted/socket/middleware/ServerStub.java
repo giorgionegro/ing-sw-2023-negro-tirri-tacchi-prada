@@ -7,7 +7,6 @@ import modelView.NewGameInfo;
 import modelView.PlayerMoveInfo;
 import modelView.*;
 
-import javax.imageio.IIOException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;

@@ -1,3 +1,4 @@
+import distibuted.interfaces.AppServer;
 import controller.interfaces.GameController;
 import distibuted.ClientEndPoint;
 import distibuted.interfaces.ClientInterface;
@@ -75,6 +76,8 @@ public class ProvaCLI {
                     e = sInt.join(client,playerId);
                 if (e == GameController.Event.JOINED){
                     System.out.println("Joined the game");
+                    System.out.println("Connesso alla partita");
+                    cli.setThisPlayerId(playerId);
                     gameRoutine(cli, client, sInt, playerId);
                 } else {
                     printError("ID already taken, chose another id");
@@ -147,7 +150,7 @@ public class ProvaCLI {
             System.out.print((char)27+"[33m"+message+(char)27+"[39m");
             return sc.nextLine();
     }
-    
+
     public static void printError(String message){
         System.out.println((char)27+"[31m"+message+(char)27+"[39m");
     }
