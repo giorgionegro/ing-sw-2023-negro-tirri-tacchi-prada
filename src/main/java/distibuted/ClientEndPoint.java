@@ -1,0 +1,58 @@
+package distibuted;
+
+import distibuted.interfaces.ClientInterface;
+import model.abstractModel.*;
+import modelView.*;
+import view.CLI;
+
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
+
+public class ClientEndPoint extends UnicastRemoteObject implements ClientInterface {
+
+    CLI cli;
+    public ClientEndPoint(CLI cli) throws RemoteException {
+        super();
+        this.cli = cli;
+    }
+
+    @Override
+    public void update(GamesManagerInfo o, GamesManager.GamesManagerEvent evt) {
+
+    }
+
+    @Override
+    public void update(LivingRoomInfo o, LivingRoom.LivingRoomEvent evt) {
+        cli.updateLivingRoom(o);
+    }
+
+    @Override
+    public void update(PersonalGoalInfo o, PersonalGoal.PersonalGoalEvent evt) {
+        System.out.println("PersonalGoalView:: "+o.isAchieved());
+    }
+
+    @Override
+    public void update(PlayerChatInfo o, PlayerChat.PlayerChatEvent evt) {
+        cli.updatePlayerChat(o);
+    }
+
+    @Override
+    public void update(PlayerInfo o, Player.PlayerEvent evt) {
+        System.out.println(o.getMessage());
+    }
+
+    @Override
+    public void update(ShelfInfo o, Shelf.ShelfEvent evt) {
+        cli.updateShelf(o);
+    }
+
+    @Override
+    public void update(GameInfo o, Game.GameEvent evt) {
+        System.out.println("GameView:: "+o.getStatus()+" "+o.getPlayerOnTurn()+" "+o.isLastTurn());
+    }
+
+    @Override
+    public void update(CommonGoalInfo o, CommonGoal.CommonGoalEvent evt) {
+        System.out.println("CommonGoalView:: "+o.getDescription()+" "+o.getTokenState());
+    }
+}

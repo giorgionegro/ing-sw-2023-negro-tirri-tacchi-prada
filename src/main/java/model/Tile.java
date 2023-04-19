@@ -1,7 +1,6 @@
 package model;
 
 public enum Tile {
-
     CATS_1("Green"),
     CATS_2("Green"),
     CATS_3("Green"),
@@ -19,12 +18,9 @@ public enum Tile {
     TROPHIES_3("LightBlue"),
     PLANTS_1("Magenta"),
     PLANTS_2("Magenta"),
-
     PLANTS_3("Magenta"),
 
     EMPTY("Empty");
-
-
 
     private final String color;
     Tile(String color){

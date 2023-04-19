@@ -5,14 +5,12 @@ import model.abstractModel.GamesManager;
 import model.exceptions.GameAlreadyExistsException;
 import model.exceptions.GameNotExistsException;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-public class StandardGamesManager implements GamesManager {
+public class StandardGamesManager extends GamesManager{
 
-    private Map<String, Game> games;
+    private final Map<String, Game> games;
 
     public StandardGamesManager(){
         this.games = new HashMap<>();
@@ -23,11 +21,7 @@ public class StandardGamesManager implements GamesManager {
         if(games.containsKey(gameId))
             throw new GameAlreadyExistsException();
         games.put(gameId, newMatch);
-    }
 
-    @Override
-    public List<Game> getGames() {
-        return new ArrayList<>(games.values());
     }
 
     @Override
@@ -36,4 +30,5 @@ public class StandardGamesManager implements GamesManager {
             return games.get(gameId);
         throw new GameNotExistsException();
     }
+
 }

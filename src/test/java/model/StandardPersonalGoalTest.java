@@ -12,6 +12,17 @@ class StandardPersonalGoalTest {
         assertEquals("Put Tile White in row: 3 and column 5", test.getDescription());
     }
 
+    @Test
+    void testAchieving(){
+        StandardPersonalGoal test = new StandardPersonalGoal(Tile.BOOKS_2, 3, 5);
+        if(test.isAchieved())
+            fail("Goal achieved at instance");
+
+        test.setAchieved();
+        if(!test.isAchieved())
+            fail("Goal achieved is not set as achieved");
+    }
+
     @Test //Test Tile out of bound.
     void TestEvaluate() {
         StandardPersonalGoal test = new StandardPersonalGoal(Tile.BOOKS_2, 3, 5);
