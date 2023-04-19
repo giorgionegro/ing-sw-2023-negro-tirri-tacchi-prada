@@ -9,7 +9,7 @@ import java.rmi.RemoteException;
 
 public class LivingRoomNetworkObserver implements Observer<LivingRoom, LivingRoom.LivingRoomEvent> {
 
-    LivingRoomView view;
+    private final LivingRoomView view;
 
     public LivingRoomNetworkObserver(LivingRoomView view) {
         this.view = view;

@@ -9,7 +9,7 @@ import java.rmi.RemoteException;
 
 public class PersonalGoalNetworkObserver implements Observer<PersonalGoal,PersonalGoal.PersonalGoalEvent> {
 
-    PersonalGoalView view;
+    private final PersonalGoalView view;
     public PersonalGoalNetworkObserver(PersonalGoalView view) {
         this.view = view;
     }

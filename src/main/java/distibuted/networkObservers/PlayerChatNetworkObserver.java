@@ -8,7 +8,7 @@ import view.interfaces.PlayerChatView;
 import java.rmi.RemoteException;
 
 public class PlayerChatNetworkObserver implements Observer<PlayerChat, PlayerChat.PlayerChatEvent> {
-    PlayerChatView view;
+    private final PlayerChatView view;
     public PlayerChatNetworkObserver(PlayerChatView view) {
         this.view = view;
     }

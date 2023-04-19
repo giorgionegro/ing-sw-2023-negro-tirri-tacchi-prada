@@ -1,6 +1,5 @@
 package model.abstractModel;
 
-import model.Tile;
 import model.Token;
 import util.Observable;
 

@@ -5,12 +5,11 @@ import modelView.PlayerInfo;
 import util.Observer;
 import view.interfaces.PlayerView;
 
-import java.net.NetworkInterface;
 import java.rmi.RemoteException;
 
 public class PlayerNetworkObserver implements Observer<Player,Player.PlayerEvent> {
 
-    PlayerView view;
+    private final PlayerView view;
     public PlayerNetworkObserver(PlayerView view) {
         this.view = view;
     }

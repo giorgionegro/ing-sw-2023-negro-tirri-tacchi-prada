@@ -1,9 +1,7 @@
 package distibuted.interfaces;
 
 import controller.interfaces.GameController;
-import model.abstractModel.Message;
 import modelView.NewGameInfo;
-import modelView.PlayerMoveInfo;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;

@@ -12,7 +12,6 @@ import modelView.PlayerMoveInfo;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.Objects;
 
 public class ServerEndpoint extends UnicastRemoteObject implements ServerInterface {
 

@@ -8,7 +8,7 @@ import view.interfaces.CommonGoalView;
 import java.rmi.RemoteException;
 
 public class CommonGoalNetworkObserver implements Observer<CommonGoal, CommonGoal.CommonGoalEvent> {
-    CommonGoalView view;
+    private final CommonGoalView view;
     public CommonGoalNetworkObserver(CommonGoalView view)
     {
         this.view = view;

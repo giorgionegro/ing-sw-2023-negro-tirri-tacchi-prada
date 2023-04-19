@@ -21,7 +21,7 @@ public class StandardPlayer extends Player {
     /**
      * shelf of the player (2D array of tiles)
      */
-    private Shelf shelf;
+    private final Shelf shelf;
     /**
      * personal goals of the player (list of personal goals)
      */

@@ -9,7 +9,7 @@ import java.rmi.RemoteException;
 
 public class GamesManagerNetworkObserver implements Observer<GamesManager, GamesManager.GamesManagerEvent> {
 
-    GamesManagerView view;
+    private final GamesManagerView view;
     public GamesManagerNetworkObserver(GamesManagerView view) {this.view = view;
     }
 

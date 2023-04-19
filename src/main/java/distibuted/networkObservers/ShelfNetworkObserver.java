@@ -9,8 +9,8 @@ import java.rmi.RemoteException;
 
 public class ShelfNetworkObserver implements Observer<Shelf, Shelf.ShelfEvent> {
 
-    private String playerId;
-    private ShelfView view;
+    private final String playerId;
+    private final ShelfView view;
     public ShelfNetworkObserver(ShelfView view, String playerId) {
         this.view = view;
         this.playerId = playerId;
