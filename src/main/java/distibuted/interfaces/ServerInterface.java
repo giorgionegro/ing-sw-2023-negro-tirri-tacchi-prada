@@ -1,16 +1,21 @@
 package distibuted.interfaces;
 
+import controller.interfaces.GameController;
 import model.abstractModel.Message;
-import modelView.GameInfo;
-import modelView.PlayerMove;
+import modelView.NewGameInfo;
+import modelView.PlayerMoveInfo;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
-public interface ServerInterface extends Remote {
+public interface ServerInterface extends Remote, GameController {
+    enum ServerEvent{
+        GAME_CREATED,
+        GAME_NOT_CREATED,
+        GAME_RETRIEVED,
+        GAME_NOT_RETRIEVED
+    }
     void register(ClientInterface client) throws RemoteException;
-    void connectToGame(ClientInterface client, String playerId, String gameId) throws  RemoteException;
-    void createNewGame(ClientInterface client, GameInfo newGameInfo) throws  RemoteException;
-    void makeMove(ClientInterface client, PlayerMove move)throws  RemoteException;
-    void sendMessage(ClientInterface client, Message message)throws  RemoteException;
+    ServerEvent getGame(ClientInterface client, String gameId) throws  RemoteException;
+    ServerEvent createNewGame(ClientInterface client, NewGameInfo newGameInfo) throws  RemoteException;
 }

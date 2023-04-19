@@ -1,20 +1,23 @@
 package distibuted;
 
-import controller.GameController;
+import controller.StandardGameController;
 import controller.GamesManagerController;
 import distibuted.interfaces.ClientInterface;
 import distibuted.interfaces.ServerInterface;
 import model.abstractModel.Message;
-import modelView.GameInfo;
-import modelView.PlayerMove;
+import model.exceptions.GameAlreadyExistsException;
+import model.exceptions.GameNotExistsException;
+import modelView.NewGameInfo;
+import modelView.PlayerMoveInfo;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.Objects;
 
 public class ServerEndpoint extends UnicastRemoteObject implements ServerInterface {
 
     private final GamesManagerController gamesManagerController;
-    private GameController gameController;
+    private StandardGameController gameController;
 
     public ServerEndpoint(GamesManagerController gamesManagerController) throws RemoteException {
         super();
@@ -28,27 +31,41 @@ public class ServerEndpoint extends UnicastRemoteObject implements ServerInterfa
     }
 
     @Override
-    public synchronized void connectToGame(ClientInterface client, String playerId, String gameId) {
-        GameController gameController = this.gamesManagerController.getGameController(client, gameId);
-        if(gameController!=null){
-            gameController.join(client, playerId);
-            this.gameController = gameController;
+    public synchronized ServerEvent getGame(ClientInterface client, String gameId) {
+        try{
+            this.gameController = this.gamesManagerController.getGameController(gameId);
+            return ServerEvent.GAME_RETRIEVED;
+        } catch (GameNotExistsException e) {
+            return ServerEvent.GAME_NOT_RETRIEVED;
         }
     }
 
     @Override
-    public synchronized void createNewGame(ClientInterface client, GameInfo newGameInfo) {
-        gamesManagerController.createGame(client,newGameInfo);
+    public synchronized ServerEvent createNewGame(ClientInterface client, NewGameInfo newGameInfo) {
+        try {
+            gamesManagerController.createGame(newGameInfo);
+            return ServerEvent.GAME_CREATED;
+        } catch (GameAlreadyExistsException | IllegalArgumentException e) {
+            return ServerEvent.GAME_NOT_CREATED;
+        }
     }
 
     @Override
-    public synchronized void makeMove(ClientInterface client, PlayerMove move) {
+    public Event join(ClientInterface newClient, String playerId) {
         if(gameController!=null)
-            gameController.doPlayerMove(client,move);
+            return gameController.join(newClient, playerId);
+        return Event.NOT_JOINED;
+    }
+
+    @Override
+    public void doPlayerMove(ClientInterface client, PlayerMoveInfo move) {
+        if(gameController!=null)
+            gameController.doPlayerMove(client, move);
     }
 
     @Override
     public void sendMessage(ClientInterface client, Message message) {
-        gameController.sendMessage(client, message);
+        if(gameController!=null)
+            gameController.sendMessage(client, message);
     }
 }
