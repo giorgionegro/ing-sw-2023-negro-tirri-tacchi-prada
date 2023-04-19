@@ -102,7 +102,7 @@ public class CLI {
     }
 
     public void updatePlayerChat(PlayerChatInfo pC){
-        for(int o = 0; o<playerChatBuffer.length-1; o++)
+        for(int o = 0; o<playerChatBuffer.length; o++)
             playerChatBuffer[o]="";
         List<Message> messages = pC.getMessages();
         if(messages.size()>10)
@@ -118,7 +118,7 @@ public class CLI {
                     bufferId+=" ";
                 }
             }
-            temp +=bufferId +": "+m.getText();
+            temp +=m.getTimestamp()+" : "+bufferId +" : "+m.getText();
             playerChatBuffer[i]=temp;
             i++;
         }
@@ -169,7 +169,6 @@ public class CLI {
     public static int BLUE = 34;
     public static int MAGENTA = 35;
     public static int CYAN = 36;
-
     public static int DEFAULT = 39;
 
     public static String coloredText(int colorInt, String text){
