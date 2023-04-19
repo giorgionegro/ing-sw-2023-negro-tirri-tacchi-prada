@@ -111,7 +111,7 @@ public class StandardGame extends Game {
             throw new PlayerAlreadyExistsException();
 
         /* Initialize Player model */
-        List<PersonalGoal> personalGoals = null; //TODO pick personalGoals
+        List<PersonalGoal> personalGoals = new ArrayList<>(); //TODO pick personalGoals
         Player newPlayer = new StandardPlayer(playerId, personalGoals);
 
         /* Associate Player with playerId */
@@ -206,6 +206,9 @@ public class StandardGame extends Game {
     public void updatePlayersTurn() throws GameEndedException{
         Player p = playerTurnQueue.remove(0);
         playerTurnQueue.add(p);
+
+        setChanged();
+        notifyObservers(GameEvent.NEXT_TURN);
 
         if(p.equals(firstPlayer) && lastTurn){
             this.status = GameStatus.ENDED;

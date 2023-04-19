@@ -1,6 +1,5 @@
 package model.abstractModel;
 
-import model.StandardGame;
 import model.exceptions.GameEndedException;
 import model.exceptions.MatchmakingClosedException;
 import model.exceptions.PlayerAlreadyExistsException;
@@ -44,13 +43,6 @@ public abstract class Game extends Observable<Game.GameEvent>{
         MATCHMAKING,
         STARTED,
         ENDED
-    }
-
-    static public Game gameFactory(String type, String id, int playerNumber){
-        return switch (type){
-            case "STANDARD" -> new StandardGame(id, playerNumber);
-            default -> new StandardGame(id, playerNumber);
-        };
     }
 
     /**

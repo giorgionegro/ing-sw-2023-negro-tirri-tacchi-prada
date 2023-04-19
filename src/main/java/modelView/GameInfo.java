@@ -1,9 +1,11 @@
-package model;
+package modelView;
+
+import java.io.Serializable;
 
 /**
  * This class represents a collection of information that characterize a game
  */
-public class GameInfo {
+public class GameInfo implements Serializable{
     /**
      * The game id
      */
@@ -11,7 +13,7 @@ public class GameInfo {
     /**
      * The {@link String} representation of game type
      */
-    private final String type;
+    private final String type; //TODO rivedere il game type
     /**
      * The number of player that are going to play the game
      */

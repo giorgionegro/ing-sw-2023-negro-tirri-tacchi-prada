@@ -8,6 +8,7 @@ import model.abstractModel.*;
 import model.exceptions.*;
 import modelView.*;
 
+import java.rmi.RemoteException;
 import java.util.*;
 
 public class GameController {
@@ -19,7 +20,7 @@ public class GameController {
         this.playerAssociation = new HashMap<>();
     }
 
-    public void join(ClientInterface newClient, String playerId) {
+    public synchronized void join(ClientInterface newClient, String playerId) {
         try {
             game.addPlayer(playerId);
 
@@ -28,18 +29,30 @@ public class GameController {
             /* Add Game status observer */
             game.addObserver((o, arg) -> {
                 Game g = (Game) o;
-                newClient.updateGameStatus(new GameView(g.getGameStatus(), g.isLastTurn(), g.getTurnPlayerId()), arg);
+                try {
+                    newClient.updateGameStatus(new GameView(g.getGameStatus(), g.isLastTurn(), g.getTurnPlayerId()), arg);
+                } catch (RemoteException e) {
+                    throw new RuntimeException(e);
+                }
             });
 
             /* Add CommonGoal status observers */
             for (CommonGoal goal : game.getCommonGoals()) {
                 goal.addObserver((o, arg) -> {
                     CommonGoal g = (CommonGoal) o;
-                    switch (arg) {
-                        case TOKEN_PICKED ->
-                            newClient.updateCommonGoal(new CommonGoalView(g.getEvaluator().getDescription(), g.getTopToken()),arg);
-                        default ->
-                            newClient.updateCommonGoal(new CommonGoalView(g.getEvaluator().getDescription(), g.getTopToken()),arg);
+                    try {
+                        if (arg == null) {
+                            newClient.updateCommonGoal(new CommonGoalView(g.getEvaluator().getDescription(), g.getTopToken()), arg);
+                        } else {
+                            switch (arg) {
+                                case TOKEN_PICKED ->
+                                        newClient.updateCommonGoal(new CommonGoalView(g.getEvaluator().getDescription(), g.getTopToken()), arg);
+                                default ->
+                                        newClient.updateCommonGoal(new CommonGoalView(g.getEvaluator().getDescription(), g.getTopToken()), arg);
+                            }
+                        }
+                    } catch (RemoteException e) {
+                        throw new RuntimeException(e);
                     }
                 });
             }
@@ -47,30 +60,53 @@ public class GameController {
             /* Add LivingRoom status observer */
             game.getLivingRoom().addObserver((o, arg) -> {
                 LivingRoom lR = (LivingRoom) o;
-                switch (arg) {
-                    case BOARD_MODIFIED -> newClient.updateLivingRoom(new LivingRoomView(lR.getBoard()), arg);
+                try {
+                    if (arg == null) {
+                        newClient.updateLivingRoom(new LivingRoomView(lR.getBoard()), arg);
+                    } else {
+                        switch (arg) {
+                            case BOARD_MODIFIED -> newClient.updateLivingRoom(new LivingRoomView(lR.getBoard()), arg);
+                        }
+                    }
+                } catch (RemoteException e) {
+                    throw new RuntimeException(e);
                 }
             });
 
             /* Add PlayerChat status observer */
             newPlayer.getPlayerChat().addObserver((o, arg) -> {
                 PlayerChat pC = (PlayerChat) o;
-                newClient.updatePlayerChat(new PlayerChatView(pC), arg); //TODO switch with event
+                try {
+                    newClient.updatePlayerChat(new PlayerChatView(pC), arg); //TODO switch with event
+                } catch (RemoteException e) {
+                    throw new RuntimeException(e);
+                }
             });
 
             /* Add PersonalGoals status observer */
             for (PersonalGoal personalGoal : newPlayer.getPersonalGoals()) {
                 personalGoal.addObserver((o, arg) -> {
                     PersonalGoal pG = (PersonalGoal) o;
-                    newClient.updatePersonalGoal(new PersonalGoalView(pG.isAchieved(),pG.getDescription()),arg);
+                    try {
+                        newClient.updatePersonalGoal(new PersonalGoalView(pG.isAchieved(), pG.getDescription()), arg);
+                    } catch (RemoteException e) {
+                        throw new RuntimeException(e);
+                    }
                 });
             }
 
             /* Add Shelf status observer */
             newPlayer.addObserver((o, arg) -> {
                 Player p = (Player) o;
-                if(arg.equals(Player.PlayerEvent.SHELF_MODIFIED))
-                    newClient.updateShelf(new ShelfView(p.getId(), p.getShelf()), arg);
+                try {
+                    if (arg == null) {
+                        newClient.updateShelf(new ShelfView(p.getId(), p.getShelf()), arg);
+                    } else if (arg.equals(Player.PlayerEvent.SHELF_MODIFIED)) {
+                        newClient.updateShelf(new ShelfView(p.getId(), p.getShelf()), arg);
+                    }
+                } catch (RemoteException e) {
+                    throw new RuntimeException(e);
+                }
             });
 
             /* Add Shelf status observer of new player to all already joined players */
@@ -78,13 +114,27 @@ public class GameController {
             playerAssociation.forEach((joinedClient, joinedPlayer) -> {
                 joinedPlayer.addObserver((o, arg) -> {
                     Player p = (Player) o;
-                    if(arg.equals(Player.PlayerEvent.SHELF_MODIFIED))
-                        newClient.updateShelf(new ShelfView(p.getId(), p.getShelf()), arg);
+                    try {
+                        if (arg == null) {
+                            newClient.updateShelf(new ShelfView(p.getId(), p.getShelf()), arg);
+                        } else if (arg.equals(Player.PlayerEvent.SHELF_MODIFIED)) {
+                            newClient.updateShelf(new ShelfView(p.getId(), p.getShelf()), arg);
+                        }
+                    } catch (RemoteException e) {
+                        throw new RuntimeException(e);
+                    }
                 });
                 newPlayer.addObserver((o, arg) -> {
                     Player p = (Player) o;
-                    if(arg.equals(Player.PlayerEvent.SHELF_MODIFIED))
-                        joinedClient.updateShelf(new ShelfView(p.getId(), p.getShelf()),arg);
+                    try {
+                        if (arg == null) {
+                            joinedClient.updateShelf(new ShelfView(p.getId(), p.getShelf()), arg);
+                        }else if (arg.equals(Player.PlayerEvent.SHELF_MODIFIED)) {
+                            joinedClient.updateShelf(new ShelfView(p.getId(), p.getShelf()), arg);
+                        }
+                    } catch (RemoteException e) {
+                        throw new RuntimeException(e);
+                    }
                 });
             });
 
@@ -92,21 +142,36 @@ public class GameController {
             playerAssociation.put(newClient, newPlayer);
 
             /* If game is ready to be started we force the first */
-            if(game.getGameStatus().equals(Game.GameStatus.STARTED))
+            if (game.getGameStatus().equals(Game.GameStatus.STARTED))
                 game.updatePlayersTurn();
 
         } catch (PlayerAlreadyExistsException e) {
+            try {
+                newClient.signalError("PLAYER ID ALREADY EXISTS");
+            } catch (RemoteException ex) {
+                throw new RuntimeException(ex);
+            }
             //TODO send error to client
         } catch (PlayerNotExistsException e) {
+            try {
+                newClient.signalError("PLAYER ID DOES NOT EXISTS");
+            } catch (RemoteException ex) {
+                throw new RuntimeException(ex);
+            }
             //TODO send error to client
         } catch (MatchmakingClosedException e) {
+            try {
+                newClient.signalError("MATCHMAKING CLOSED");
+            } catch (RemoteException ex) {
+                throw new RuntimeException(ex);
+            }
             //TODO send error to client
         } catch (GameEndedException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(e); //TODO routine di fine partita
         }
     }
 
-    public void doPlayerMove(ClientInterface client, PlayerMove move) {
+    public synchronized void doPlayerMove(ClientInterface client, PlayerMove move) {
         try {
             /* If we receive a request from an invalid client we discard it */
             if (!playerAssociation.containsKey(client))
@@ -155,8 +220,8 @@ public class GameController {
             /* If shelf has been filled we signal that this will be the last round of turns */
             if (evaluateFullShelf(shelf)) {
                 /* If nobody else has already completed the shelf we assign a "GAME_END" token*/
-                if(!game.isLastTurn())
-                    player.addAchievedCommonGoal("First player that have completed the shelf",Token.TOKEN_GAME_END);
+                if (!game.isLastTurn())
+                    player.addAchievedCommonGoal("First player that have completed the shelf", Token.TOKEN_GAME_END);
 
                 game.setLastTurn();
             }
@@ -180,9 +245,9 @@ public class GameController {
         }
     }
 
-    public void sendMessage(ClientInterface client, Message newMessage) {
-        try{
-            if(!playerAssociation.containsKey(client))
+    public synchronized void sendMessage(ClientInterface client, Message newMessage) {
+        try {
+            if (!playerAssociation.containsKey(client))
                 throw new ClientNotAllowedException();
 
             for (Player p : playerAssociation.values()) {
