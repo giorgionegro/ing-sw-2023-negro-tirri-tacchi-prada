@@ -99,7 +99,7 @@ public class StandardGameController implements GameController {
             if (move == null || move.getPickedTiles() == null || move.getPickedTiles().size() == 0)
                 throw new MalformedPlayerMoveException("Malformed move object");
 
-            if (move.getColumnToInsert() < 0 || move.getColumnToInsert() > shelf.length - 1)
+            if (move.getColumnToInsert() < 0 || move.getColumnToInsert() > shelf[0].length - 1)
                 throw new MalformedPlayerMoveException("Column index out of bounds");
 
             if(!areTilesDifferent(move.getPickedTiles()))
@@ -123,6 +123,7 @@ public class StandardGameController implements GameController {
 
             /* Update board and player shelf status*/
             game.getLivingRoom().setBoard(board);
+            game.getLivingRoom().refillBoard();
             player.getShelf().setShelf(shelf);
 
             /* If shelf has been filled we signal that this will be the last round of turns */
@@ -164,7 +165,7 @@ public class StandardGameController implements GameController {
             }
 
         } catch (ClientNotAllowedException e) {
-            playerAssociation.get(client).notifyObservers(Player.PlayerEvent.NOT_ALLOWED);
+            playerAssociation.get(client).forceNotifyObservers(Player.PlayerEvent.NOT_ALLOWED);
         }
     }
 

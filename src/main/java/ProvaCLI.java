@@ -30,6 +30,7 @@ public class ProvaCLI {
         ServerInterface sInt = server.connect();
         System.out.println("Connected to server");
 
+        System.out.flush();
         sc = new Scanner(System.in);
 
         boolean exit = false;
@@ -74,6 +75,7 @@ public class ProvaCLI {
                     break;
                 else
                     e = sInt.join(client,playerId);
+
                 if (e == GameController.Event.JOINED){
                     System.out.println("Joined the game");
                     System.out.println("Connesso alla partita");
@@ -98,7 +100,9 @@ public class ProvaCLI {
                     System.out.println("2: Pick tiles");
                     System.out.println("3: Send message");
                 }
-                case "1" -> cli.updateCLI();
+                case "1" -> {
+
+                }
                 case "2" -> {
                     List<PickedTile> tiles = new ArrayList<>();
                     int pickableNum = 3;
@@ -114,10 +118,14 @@ public class ProvaCLI {
                                     String col = readLine("Col: ");
                                     int r;
                                     int c;
-                                    r = Integer.parseInt(row);
-                                    c = Integer.parseInt(col);
-                                    tiles.add(new PickedTile(r, c));
-                                    pickableNum--;
+                                    try {
+                                        r = Integer.parseInt(row);
+                                        c = Integer.parseInt(col);
+                                        tiles.add(new PickedTile(r, c));
+                                        pickableNum--;
+                                    }catch(NumberFormatException e){
+                                        printError("Not a number");
+                                    }
                                 }else{
                                     System.out.println("No more tiles to pick");
                                 }
@@ -130,9 +138,17 @@ public class ProvaCLI {
                             default -> System.out.println("Wrong command");
                         }
                     }while(choising);
-                    String sCol = readLine("Shelf col: ");
-                    int sC;
-                    sC = Integer.parseInt(sCol);
+                    choising=true;
+                    int sC = 0;
+                    do {
+                        try {
+                            String sCol = readLine("Shelf col: ");
+                            sC = Integer.parseInt(sCol);
+                            choising=false;
+                        }catch(NumberFormatException e){
+                            printError("Not a number");
+                        }
+                    }while(choising);
                     sInt.doPlayerMove(client, new PlayerMoveInfo(tiles, sC));
                 }
                 case "3" -> {
@@ -147,11 +163,11 @@ public class ProvaCLI {
 
 
     public static String readLine(String message){
-            System.out.print((char)27+"[33m"+message+(char)27+"[39m");
-            return sc.nextLine();
+        System.out.print("\u001B[33m"+message+"\u001B[39m");
+        return sc.nextLine();
     }
 
     public static void printError(String message){
-        System.out.println((char)27+"[31m"+message+(char)27+"[39m");
+        System.out.println("\u001B[31m"+message+"\u001B[39m");
     }
 }

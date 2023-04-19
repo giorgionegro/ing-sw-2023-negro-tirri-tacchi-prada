@@ -48,7 +48,9 @@ public class ClientEndPoint extends UnicastRemoteObject implements ClientInterfa
 
     @Override
     public void update(GameInfo o, Game.GameEvent evt) {
-        System.out.println("GameView:: "+o.getStatus()+" "+o.getPlayerOnTurn()+" "+o.isLastTurn());
+        //cli.updateGameState(o);
+        //if(evt!=null && evt.equals(Game.GameEvent.NEXT_TURN))
+          //  cli.updateCLI();
     }
 
     @Override
