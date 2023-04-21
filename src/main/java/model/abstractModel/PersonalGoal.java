@@ -23,7 +23,7 @@ public abstract class PersonalGoal extends Observable<PersonalGoal.PersonalGoalE
      * This method returns the description of the personal goal requirements to be achieved
      * @return the description of the personal goal requirements to be achieved
      */
-    public abstract String getDescription();
+    public abstract Tile[][] getDescription();
 
     /**
      * This method returns true if the goal has been achieved
