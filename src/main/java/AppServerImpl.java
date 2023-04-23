@@ -41,9 +41,7 @@ public class AppServerImpl extends UnicastRemoteObject implements AppServer
                     Process process = Runtime.getRuntime().exec("rmiregistry", null, new java.io.File(classpath));
                     //wait for the process to end or kill it after 5 seconds
                     process.waitFor(5, java.util.concurrent.TimeUnit.SECONDS);
-                    if (process.isAlive()) {
-                        process.destroy();
-                    }
+
                     //start RMI
                     startRMI();
                 } catch (Exception e1) {
@@ -74,4 +72,7 @@ public class AppServerImpl extends UnicastRemoteObject implements AppServer
     public ServerInterface connect() throws RemoteException {
         return new ServerEndpoint(gamesManagerController);
     }
+
+
+
 }

@@ -2,24 +2,24 @@ package view;
 
 import model.Tile;
 import model.abstractModel.Message;
-import modelView.LivingRoomInfo;
-import modelView.PlayerChatInfo;
-import modelView.ShelfInfo;
+import modelView.*;
 
 import java.io.PrintStream;
 import java.util.*;
 
 public class CLI {
 
-    static PrintStream out = System.out;
+    static final PrintStream out = System.out;
     private LivingRoomInfo currentLivingRoom;
     private PlayerChatInfo currentPlayerChat;
     private String thisPlayerId;
     private final Map<String,ShelfInfo> currentShelfs;
     static final int renderHeight = 50;
     static final int renderWidth = 150;
-    char[][] cliPixel = new char[renderHeight][renderWidth];
-    int[][] cliPixelColor = new int[renderHeight][renderWidth];
+    final char[][] cliPixel = new char[renderHeight][renderWidth];
+    final int[][] cliPixelColor = new int[renderHeight][renderWidth];
+    private CommonGoalInfo commonGoal;
+    private GameInfo currentGameState;
 
     public CLI() {
         currentShelfs = new HashMap<>();
@@ -57,55 +57,48 @@ public class CLI {
         render();
     }
 
-    public static int WHITE = 37;
-    public static int GREEEN = 32;
-    public static int YELLOW = 33;
-    public static int BLUE = 34;
-    public static int MAGENTA = 35;
-    public static int CYAN = 36;
+    public static final int WHITE = 37;
+    public static final int GREEEN = 32;
+    public static final int YELLOW = 33;
+    public static final int BLUE = 34;
+    public static final int MAGENTA = 35;
+    public static final int CYAN = 36;
 
-    public static int RED = 31;
+    public static final int RED = 31;
 
-    public static int DEFAULT = 39;
+    public static final int DEFAULT = 39;
 
     private void initBox() {
         //draw border
-        for (int i = 0; i < renderHeight; i++) {
-            for (int j = 0; j < renderWidth; j++) {
-                if (i == 0 || i == renderHeight-1) {
-                    cliPixel[i][j] = '─';
-                    cliPixelColor[i][j] = DEFAULT;
-                } else if (j == 0 || j == renderWidth-1) {
-                    cliPixel[i][j] = '│';
-                    cliPixelColor[i][j] = DEFAULT;
-                } else {
-                    cliPixel[i][j] = ' ';
-                    cliPixelColor[i][j] = DEFAULT;
-                }
-            }
-        }
-
-        cliPixel[0][0] = '┌';
-        cliPixel[0][renderWidth-1] = '┐';
-        cliPixel[renderHeight-1][0] = '└';
-        cliPixel[renderHeight-1][renderWidth-1]='┘';
+//        for (int i = 0; i < renderHeight; i++) {
+//            for (int j = 0; j < renderWidth; j++) {
+//                if (i == 0 || i == renderHeight-1) {
+//                    cliPixel[i][j] = '─';
+//                    cliPixelColor[i][j] = DEFAULT;
+//                } else if (j == 0 || j == renderWidth-1) {
+//                    cliPixel[i][j] = '│';
+//                    cliPixelColor[i][j] = DEFAULT;
+//                } else {
+//                    cliPixel[i][j] = ' ';
+//                    cliPixelColor[i][j] = DEFAULT;
+//                }
+//            }
+//        }
+//
+//        cliPixel[0][0] = '┌';
+//        cliPixel[0][renderWidth-1] = '┐';
+//        cliPixel[renderHeight-1][0] = '└';
+//        cliPixel[renderHeight-1][renderWidth-1]='┘';
+        drawBox(0,0, renderHeight, renderWidth, DEFAULT);
     }
 
-    private void render() {
-        //flush the console
-        ClearConsole();
-        for (int i = 0; i < cliPixel.length; i++) {
-            for (int j = 0; j < cliPixel[0].length; j++) {
-                out.print(renderPixel(i,j));
-            }
-            out.println();
-        }
-    }
+
 
     private String renderPixel(int x, int y){
         return "\u001B["+cliPixelColor[x][y]+"m"+cliPixel[x][y]+"\u001B[0m";
     }
-    public static void ClearConsole(){
+    public static void ClearScreen(){
+
         try{
             String operatingSystem = System.getProperty("os.name"); //Check the current operating system
 
@@ -185,34 +178,34 @@ public class CLI {
                     default-> color = DEFAULT;//Empty
 
                 }            //draw block of color  if not empty
-                String top="";
+                String first="";//first part of the block
                 if(i==0 && j==0){//tor right
-                    top = topLeft;
+                    first = topLeft;
                 } else if (i==0&&j!=(board[0].length-1)) {//top center
-                    top=topCenter;
+                    first=topCenter;
                 } else if (i==0&&j==(board[0].length-1)) {
-                    top=topRight;
+                    first=topRight;
                 } else if (i!=0&&j==0) {
-                    top=centerLeft;
+                    first=centerLeft;
                 } else if (i!=0&&j!=(board[0].length-1)) {
-                    top=centerCenter;
+                    first=centerCenter;
                 } else if (i!=0&&j==(board[0].length-1)) {
-                    top=centerRight;
+                    first=centerRight;
                 }
-                String middle = "│   ";
+                String second = "│   ";
                 if (!tile.equals("Empty"))
-                    middle="│███";
+                    second="│███";
 
-                if(j==board[0].length-1)
-                    middle+="│";
+                if(j==board[0].length-1)//if last column add right border
+                    second+="│";
 
-                for (int c =0; c<top.length();c++) {
-                    cliPixel[1+i*2][1+j*4+c]=top.charAt(c);
+                for (int c =0; c<first.length();c++) {
+                    cliPixel[1+i*2][1+j*4+c]=first.charAt(c);
                     cliPixelColor[1+i*2][1+j*4+c]=DEFAULT;
                 }
-                for(int c=0; c<middle.length();c++)
+                for(int c=0; c<second.length();c++)
                     {
-                        cliPixel[2+i*2][1+j*4+c]=middle.charAt(c);
+                        cliPixel[2+i*2][1+j*4+c]=second.charAt(c);
                         cliPixelColor[2+i*2][1+j*4+c]=color;
                     }
                 cliPixelColor[2+i*2][1+j*4]=DEFAULT;
@@ -253,30 +246,30 @@ public class CLI {
                         case "Magenta" -> colour = MAGENTA;
                         default -> colour = DEFAULT;
                     }
-                    String top="";
+                    String first="";
                     if(i==0){//tor right
-                        top = tops;
+                        first = tops;
                     } else if (j==0) {
-                        top=centerLeft;
+                        first=centerLeft;
                     } else if (j!=(shelf[0].length-1)) {
-                        top=centerCenter;
+                        first=centerCenter;
                     } else if (j==(shelf[0].length-1)) {
-                        top=centerRight;
+                        first=centerRight;
                     }
-                    String middle = "│   ";
+                    String second = "│   ";
                     if (colour!=DEFAULT)
-                        middle="│███";
+                        second="│███";
 
                     if(j==shelf[0].length-1)
-                        middle+="│";
+                        second+="│";
 
-                    for (int c =0; c<top.length();c++) {
-                        cliPixel[1+i*2][start+1+j*4+c]=top.charAt(c);
+                    for (int c =0; c<first.length();c++) {
+                        cliPixel[1+i*2][start+1+j*4+c]=first.charAt(c);
                         cliPixelColor[1+i*2][start+1+j*4+c]=DEFAULT;
                     }
-                    for(int c=0; c<middle.length();c++)
+                    for(int c=0; c<second.length();c++)
                     {
-                        cliPixel[2+i*2][start+1+j*4+c]=middle.charAt(c);
+                        cliPixel[2+i*2][start+1+j*4+c]=second.charAt(c);
                         cliPixelColor[2+i*2][start+1+j*4+c]=colour;
                     }
                     cliPixelColor[2+i*2][start+1+j*4]=DEFAULT;
@@ -293,22 +286,181 @@ public class CLI {
         for (int i = 0; i < currentShelfs.size(); i++) {
             ShelfInfo shelf = currentShelfs.values().stream().toList().get(i);
             Tile[][] shelfTile = shelf.getShelf();
-            if (shelf.getPlayerId().equals(thisPlayerId)) {
-                drawString("YOU", 1+shelfTile.length*2 +1, margin + i * (4*shelfTile[0].length+1) + 1, DEFAULT, shelfTile[0].length*4+1-2);
-            } else {
-                drawString(shelf.getPlayerId(), 1+shelfTile.length*2 +1 , margin + i * (4*shelfTile[0].length+1) +1, DEFAULT, shelfTile[0].length*4+1-2);
-            }
+
+        String toDraw = "";
+        if (shelf.getPlayerId().equals(thisPlayerId)) {
+            toDraw = "YOU";
+        } else {
+            toDraw = shelf.getPlayerId();
+
         }
+        if (currentGameState!=null && currentGameState.getPlayerOnTurn().equals(shelf.getPlayerId())) {
+            toDraw = ">"+toDraw+"<";
+        }
+        else {
+            toDraw = " "+toDraw+" ";
+        }
+        drawString(toDraw, 1+shelfTile.length*2 +1 , margin + i * (4*shelfTile[0].length+1) +1, DEFAULT, shelfTile[0].length*4+1-2);
+
+
+    }
     }
 
     //draw String from start coordinate
-    private void drawString(String toDraw, int startRow, int startCol, int color, int size) {
+    private void drawString(String toDraw, int Row, int startCol, int colour, int size) {
         if(toDraw.length()>size)
             toDraw = toDraw.substring(0,size);
 
         for(int i=0; i<toDraw.length(); i++) {
-            cliPixel[startRow][startCol+i] = toDraw.charAt(i);
-            cliPixelColor[startRow][startCol+1] = color;
+            cliPixel[Row][startCol+i] = toDraw.charAt(i);
+            cliPixelColor[Row][startCol+i] = colour;
         }
     }
-}
+    //move cursor to arbitrary position
+    public static void moveCursor(int x, int y) {
+        System.out.print("\033[" + x + ";" + y + "H");
+    }
+
+    private void drawBox(int x, int y, int height, int width, int colour) {//TODO implements colour
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                if (i == 0 && j == 0) cliPixel[x + i][y + j] = '┌';
+                else if (i == 0 && j == width - 1) cliPixel[x + i][y + j] = '┐';
+                else if (i == height - 1 && j == 0) {
+                    cliPixel[x + i][y + j] = '└';
+                } else if (i == height - 1 && j == width - 1) {
+                    cliPixel[x + i][y + j] = '┘';
+                } else if (i == 0) {
+                    cliPixel[x + i][y + j] = '─';
+                } else if (i == height - 1) {
+                    cliPixel[x + i][y + j] = '─';
+                } else if (j == 0) {
+                    cliPixel[x + i][y + j] = '│';
+                } else if (j == width - 1) {
+                    cliPixel[x + i][y + j] = '│';
+                }
+                else {
+                    cliPixel[x + i][y + j] = ' ';
+                }
+            }
+        }
+    }
+
+
+    //draw command line box 10*50 in the bottom left corner
+
+    private void drawCommandLine() {
+        drawBox(renderHeight-11, 2, 10, 50, DEFAULT);
+        drawString("Command Line", renderHeight -10, 3, DEFAULT, 50 - 2);
+        drawString(">", renderHeight - 3, 3, DEFAULT, 50 - 2);
+        drawOldCmds();
+    }
+
+
+
+    //old cmds to be shifted up
+    List<Pair> oldCmds = new ArrayList<>();
+    private void drawOldCmds() {
+        while (oldCmds.size()>5)
+            oldCmds.remove(0);
+        for (int i = 0; i < oldCmds.size(); i++) {
+            drawString(oldCmds.get(i).getString(), renderHeight - 9 + i, 3, oldCmds.get(i).getColour(), 50 - 2);
+        }
+    }
+    public String readCommandLine(String message) {
+        moveCursor(renderHeight - 2, 4);
+        System.out.print(message+" ");
+        Scanner scanner = new Scanner(System.in);
+        String cmd= scanner.nextLine();
+        oldCmds.add(new Pair(message+" "+cmd, DEFAULT));
+        //trim old cmds to 8
+        while (oldCmds.size()>8)
+            oldCmds.remove(0);
+        drawCommandLine();
+        render();
+        //move cursor back to command line
+        moveCursor(renderHeight - 2, 5);
+        return cmd;
+    }
+
+    public void printCommandLine(String toPrint) {
+     oldCmds.add(new Pair(toPrint, DEFAULT));
+        while (oldCmds.size()>8)
+            oldCmds.remove(0);
+        drawCommandLine();
+        render();
+        moveCursor(renderHeight - 2, 5);
+    }
+    public void printCommandLine(String toPrint, int colour) {
+        oldCmds.add(new Pair(toPrint, colour));
+        while (oldCmds.size()>8)
+            oldCmds.remove(0);
+        drawCommandLine();
+        render();
+        moveCursor(renderHeight - 2, 5);
+    }
+    private void render() {
+
+        ClearScreen();
+        if (currentGameState != null) {
+            drawGameState();
+        }
+        for (int i = 0; i < cliPixel.length; i++) {
+            for (int j = 0; j < cliPixel[0].length; j++) {
+                out.print(renderPixel(i,j));
+            }
+            out.println();
+        }
+        moveCursor(renderHeight - 2, 5);
+
+    }
+
+
+    public void updateCommonGoal(CommonGoalInfo o) {
+        commonGoal = o;
+        drawCommonGoal();
+        render();
+    }
+
+    //TODO test if it works properly, spoiler: it will not with more than 1 common goal
+    private void drawCommonGoal() {
+        String description = commonGoal.getDescription();
+        //y 52 x renderHeight-10
+        drawString(description, renderHeight-10, 52, DEFAULT, 50 - 2);
+        
+    }
+
+    public void updateGameState(GameInfo o) {
+        currentGameState = o;
+        drawGameState();
+        render();
+    }
+
+    private void drawGameState() {
+        //redraw shelfs with new current player
+        if (currentLivingRoom!= null && currentShelfs!=null &&currentLivingRoom.getBoard()!=null && currentLivingRoom.getBoard().length>0 && currentShelfs.size()>0&& currentLivingRoom.getBoard()[0].length>0)
+            drawShelfs();
+        //draw is last turn if it is
+        if(currentGameState.isLastTurn())
+            drawString("Last Turn", renderHeight-10, 30, DEFAULT, 50 - 2);
+    }
+
+    private static class Pair {
+        String string;
+        int colour = DEFAULT;
+
+        public Pair(String string, int colour) {
+            this.string = string;
+            this.colour = colour;
+        }
+
+        //getter and setter
+        public String getString() {
+            return string;
+        }
+        public int getColour() {
+            return colour;
+        }
+
+    }
+    }

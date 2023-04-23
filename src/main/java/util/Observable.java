@@ -39,6 +39,7 @@ import java.util.Vector;
  * @implNote
  * This class is a Generic Implementation of the deprecated {@link java.util.Observable}.
  */
+@SuppressWarnings("deprecation")
 public class Observable<Event extends Enum<Event>> {
     private boolean changed = false;
     private Vector<Observer<? extends Observable<Event>, Event>> obs;

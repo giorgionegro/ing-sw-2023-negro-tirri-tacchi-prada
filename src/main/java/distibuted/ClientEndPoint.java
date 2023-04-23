@@ -48,13 +48,14 @@ public class ClientEndPoint extends UnicastRemoteObject implements ClientInterfa
 
     @Override
     public void update(GameInfo o, Game.GameEvent evt) {
-        //cli.updateGameState(o);
+        cli.updateGameState(o);
         //if(evt!=null && evt.equals(Game.GameEvent.NEXT_TURN))
           //  cli.updateCLI();
     }
 
     @Override
     public void update(CommonGoalInfo o, CommonGoal.CommonGoalEvent evt) {
+        cli.updateCommonGoal(o);
         System.out.println("CommonGoalView:: "+o.getDescription()+" "+o.getTokenState());
     }
 }

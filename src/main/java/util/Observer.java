@@ -13,6 +13,7 @@ package util;
  * @implNote
  * This class is a Generic Implementation of the deprecated {@link java.util.Observer}.
  */
+@SuppressWarnings("deprecation")
 public interface Observer<SubjectType extends Observable<Event>, Event extends Enum<Event>> {
     /**
      * This method is called whenever the observed object is changed. An
