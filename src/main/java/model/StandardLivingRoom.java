@@ -21,6 +21,7 @@ public class StandardLivingRoom extends LivingRoom {
         this.numberOfPlayers = nPlayers;
         this.bag = loadBag();
         this.board = new Tile[9][9];
+        Arrays.stream(this.board).forEach(a -> Arrays.fill(a, Tile.EMPTY));
     }
 
     /**
@@ -82,8 +83,8 @@ public class StandardLivingRoom extends LivingRoom {
     private boolean needsToBeRefilled(){
         for(int i=0; i< board.length-1; i++){
             for(int j=0; j<board[i].length-1; j++){
-                if(board[i][j] != null){
-                    if(board[i+1][j] != null || board[i][j+1] != null){
+                if(board[i][j] != Tile.EMPTY){
+                    if(board[i+1][j] != Tile.EMPTY || board[i][j+1] != Tile.EMPTY){
                         return false;
                     }
                 }
@@ -125,7 +126,7 @@ public class StandardLivingRoom extends LivingRoom {
     private void fillCenterSquare(Tile[][] board){
         for(int i=3; i<6; i++){
             for(int j=3; j<6; j++){
-                if(board[i][j] == null && bag.size() != 0){
+                if(board[i][j] == Tile.EMPTY && bag.size() != 0){
                     board[i][j] = bag.pop();
                     if (bag.size() == 0)
                         break;
@@ -147,7 +148,7 @@ public class StandardLivingRoom extends LivingRoom {
     private void fillSideSquares(Tile[][] board, int row, int col){
         for(int i=row; i<row+2; i++){
             for(int j=col; j<col+2; j++){
-                if(board[i][j] == null && bag.size() != 0){
+                if(board[i][j] == Tile.EMPTY && bag.size() != 0){
                     board[i][j] = bag.pop();
                     if (bag.size() == 0)
                         break;
@@ -167,7 +168,7 @@ public class StandardLivingRoom extends LivingRoom {
     private void fillMissingCells(Tile[][] board){
         int[] pairs = new int[] {2,5,3,2,5,6,6,3};
         for(int i=0; i<pairs.length; i=i+2){
-            if(board[pairs[i]][pairs[i+1]] == null && bag.size() != 0){
+            if(board[pairs[i]][pairs[i+1]] == Tile.EMPTY && bag.size() != 0){
                 board[pairs[i]][pairs[i+1]] = bag.pop();
                 if (bag.size() == 0)
                     break;
@@ -186,7 +187,7 @@ public class StandardLivingRoom extends LivingRoom {
     private void fillMissingCells3Players(Tile[][] board){
         int[] pairs = new int[] {0,3,2,2,2,6,3,8,6,6,8,5,6,2,5,0};
         for(int i=0; i<pairs.length; i=i+2){
-            if(board[pairs[i]][pairs[i+1]] == null && bag.size() != 0){
+            if(board[pairs[i]][pairs[i+1]] == Tile.EMPTY && bag.size() != 0){
                 board[pairs[i]][pairs[i+1]] = bag.pop();
                 if (bag.size() == 0)
                     break;
@@ -205,7 +206,7 @@ public class StandardLivingRoom extends LivingRoom {
         fillMissingCells3Players(board);
         int[] pairs = new int[] {0,4,1,5,4,8,5,7,8,4,7,3,4,0,3,1};
         for(int i=0; i<pairs.length; i=i+2){
-            if(board[pairs[i]][pairs[i+1]] == null && bag.size() != 0){
+            if(board[pairs[i]][pairs[i+1]] == Tile.EMPTY && bag.size() != 0){
                 board[pairs[i]][pairs[i+1]] = bag.pop();
                 if (bag.size() == 0)
                     break;

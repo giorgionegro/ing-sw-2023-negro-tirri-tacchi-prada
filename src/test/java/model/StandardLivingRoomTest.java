@@ -16,7 +16,7 @@ class StandardLivingRoomTest {
         Tile[][] actualBoard = test.getBoard();
         for(int i=0; i<3; i++){
             for(int j=0; j<3; j++){
-                if(actualBoard[i][j] != null){
+                if(actualBoard[i][j] != Tile.EMPTY){
                     fail();
                 }
             }
@@ -24,7 +24,7 @@ class StandardLivingRoomTest {
 
         for(int i=6; i<9; i++){
             for(int j=0; j<3; j++){
-                if(actualBoard[i][j] != null){
+                if(actualBoard[i][j] != Tile.EMPTY){
                     fail();
                 }
             }
@@ -32,7 +32,7 @@ class StandardLivingRoomTest {
 
         for(int i=0; i<3; i++){
             for(int j=6; j<9; j++){
-                if(actualBoard[i][j] != null){
+                if(actualBoard[i][j] != Tile.EMPTY){
                     fail();
                 }
             }
@@ -40,27 +40,27 @@ class StandardLivingRoomTest {
 
         for(int i=6; i<9; i++){
             for(int j=6; j<9; j++){
-                if(actualBoard[i][j] != null){
+                if(actualBoard[i][j] != Tile.EMPTY){
                     fail();
                 }
             }
         }
 
-        if( actualBoard[0][3] != null ||
-                actualBoard[0][4] != null ||
-                actualBoard[0][5] != null ||
-                actualBoard[1][5] != null ||
-                actualBoard[3][0] != null ||
-                actualBoard[3][1] != null ||
-                actualBoard[3][8] != null ||
-                actualBoard[4][0] != null ||
-                actualBoard[4][8] != null ||
-                actualBoard[5][0] != null ||
-                actualBoard[5][7] != null ||
-                actualBoard[5][8] != null ||
-                actualBoard[7][3] != null ||
-                actualBoard[8][4] != null ||
-                actualBoard[8][5] != null){
+        if( actualBoard[0][3] != Tile.EMPTY ||
+                actualBoard[0][4] != Tile.EMPTY ||
+                actualBoard[0][5] != Tile.EMPTY ||
+                actualBoard[1][5] != Tile.EMPTY ||
+                actualBoard[3][0] != Tile.EMPTY ||
+                actualBoard[3][1] != Tile.EMPTY ||
+                actualBoard[3][8] != Tile.EMPTY ||
+                actualBoard[4][0] != Tile.EMPTY ||
+                actualBoard[4][8] != Tile.EMPTY ||
+                actualBoard[5][0] != Tile.EMPTY ||
+                actualBoard[5][7] != Tile.EMPTY ||
+                actualBoard[5][8] != Tile.EMPTY ||
+                actualBoard[7][3] != Tile.EMPTY ||
+                actualBoard[8][4] != Tile.EMPTY ||
+                actualBoard[8][5] != Tile.EMPTY){
             fail();
         }
     }
@@ -74,7 +74,7 @@ class StandardLivingRoomTest {
         Tile[][] actualBoard = test.getBoard();
         for(int i=3; i<6; i++){
             for(int j=3; j<6; j++){
-                if(actualBoard[i][j] == null){
+                if(actualBoard[i][j] == Tile.EMPTY){
                     fail();
                 }
             }
@@ -82,7 +82,7 @@ class StandardLivingRoomTest {
 
         for(int i=1; i<3; i++){
             for(int j=3; j<5; j++){
-                if(actualBoard[i][j] == null){
+                if(actualBoard[i][j] == Tile.EMPTY){
                     fail();
                 }
             }
@@ -90,7 +90,7 @@ class StandardLivingRoomTest {
 
         for(int i=3; i<5; i++){
             for(int j=6; j<8; j++){
-                if(actualBoard[i][j] == null){
+                if(actualBoard[i][j] == Tile.EMPTY){
                     fail();
                 }
             }
@@ -98,7 +98,7 @@ class StandardLivingRoomTest {
 
         for(int i=4; i<6; i++){
             for(int j=1; j<3; j++){
-                if(actualBoard[i][j] == null){
+                if(actualBoard[i][j] == Tile.EMPTY){
                     fail();
                 }
             }
@@ -106,13 +106,13 @@ class StandardLivingRoomTest {
 
         for(int i=6; i<8; i++){
             for(int j=4; j<6; j++){
-                if(actualBoard[i][j] == null){
+                if(actualBoard[i][j] == Tile.EMPTY){
                     fail();
                 }
             }
         }
 
-        if(actualBoard[2][5] == null || actualBoard[5][6] == null || actualBoard[6][4] == null || actualBoard[4][1] == null){
+        if(actualBoard[2][5] == Tile.EMPTY || actualBoard[5][6] == Tile.EMPTY || actualBoard[6][4] == Tile.EMPTY || actualBoard[4][1] == Tile.EMPTY){
             fail();
         }
     }
@@ -126,7 +126,7 @@ class StandardLivingRoomTest {
         Tile[][] actualBoard = test.getBoard();
         for(int i=0; i<3; i++){
             for(int j=0; j<2; j++){
-                if(actualBoard[i][j] != null){
+                if(actualBoard[i][j] != Tile.EMPTY){
                     fail();
                 }
             }
@@ -134,7 +134,7 @@ class StandardLivingRoomTest {
 
         for(int i=6; i<9; i++){
             for(int j=0; j<2; j++){
-                if(actualBoard[i][j] != null){
+                if(actualBoard[i][j] != Tile.EMPTY){
                     fail();
                 }
             }
@@ -142,7 +142,7 @@ class StandardLivingRoomTest {
 
         for(int i=0; i<3; i++){
             for(int j=7; j<9; j++){
-                if(actualBoard[i][j] != null){
+                if(actualBoard[i][j] != Tile.EMPTY){
                     fail();
                 }
             }
@@ -150,31 +150,31 @@ class StandardLivingRoomTest {
 
         for(int i=6; i<9; i++){
             for(int j=7; j<9; j++){
-                if(actualBoard[i][j] != null){
+                if(actualBoard[i][j] != Tile.EMPTY){
                     fail();
                 }
             }
         }
 
-        if( actualBoard[0][2] != null ||
-                actualBoard[0][4] != null ||
-                actualBoard[0][5] != null ||
-                actualBoard[1][2] != null ||
-                actualBoard[1][5] != null ||
-                actualBoard[1][6] != null ||
-                actualBoard[3][0] != null ||
-                actualBoard[3][1] != null ||
-                actualBoard[4][0] != null ||
-                actualBoard[4][8] != null ||
-                actualBoard[5][7] != null ||
-                actualBoard[5][8] != null ||
-                actualBoard[7][2] != null ||
-                actualBoard[7][3] != null ||
-                actualBoard[7][6] != null ||
-                actualBoard[8][2] != null ||
-                actualBoard[8][3] != null ||
-                actualBoard[8][4] != null ||
-                actualBoard[8][6] != null){
+        if( actualBoard[0][2] != Tile.EMPTY ||
+                actualBoard[0][4] != Tile.EMPTY ||
+                actualBoard[0][5] != Tile.EMPTY ||
+                actualBoard[1][2] != Tile.EMPTY ||
+                actualBoard[1][5] != Tile.EMPTY ||
+                actualBoard[1][6] != Tile.EMPTY ||
+                actualBoard[3][0] != Tile.EMPTY ||
+                actualBoard[3][1] != Tile.EMPTY ||
+                actualBoard[4][0] != Tile.EMPTY ||
+                actualBoard[4][8] != Tile.EMPTY ||
+                actualBoard[5][7] != Tile.EMPTY ||
+                actualBoard[5][8] != Tile.EMPTY ||
+                actualBoard[7][2] != Tile.EMPTY ||
+                actualBoard[7][3] != Tile.EMPTY ||
+                actualBoard[7][6] != Tile.EMPTY ||
+                actualBoard[8][2] != Tile.EMPTY ||
+                actualBoard[8][3] != Tile.EMPTY ||
+                actualBoard[8][4] != Tile.EMPTY ||
+                actualBoard[8][6] != Tile.EMPTY){
             fail();
         }
     }
@@ -189,7 +189,7 @@ class StandardLivingRoomTest {
 
         for(int i=3; i<6; i++){
             for(int j=3; j<6; j++){
-                if(actualBoard[i][j] == null){
+                if(actualBoard[i][j] == Tile.EMPTY){
                     fail();
                 }
             }
@@ -197,7 +197,7 @@ class StandardLivingRoomTest {
 
         for(int i=1; i<3; i++){
             for(int j=3; j<5; j++){
-                if(actualBoard[i][j] == null){
+                if(actualBoard[i][j] == Tile.EMPTY){
                     fail();
                 }
             }
@@ -205,7 +205,7 @@ class StandardLivingRoomTest {
 
         for(int i=3; i<5; i++){
             for(int j=6; j<8; j++){
-                if(actualBoard[i][j] == null){
+                if(actualBoard[i][j] == Tile.EMPTY){
                     fail();
                 }
             }
@@ -213,7 +213,7 @@ class StandardLivingRoomTest {
 
         for(int i=4; i<6; i++){
             for(int j=1; j<3; j++){
-                if(actualBoard[i][j] == null){
+                if(actualBoard[i][j] == Tile.EMPTY){
                     fail();
                 }
             }
@@ -221,24 +221,24 @@ class StandardLivingRoomTest {
 
         for(int i=6; i<8; i++){
             for(int j=4; j<6; j++){
-                if(actualBoard[i][j] == null){
+                if(actualBoard[i][j] == Tile.EMPTY){
                     fail();
                 }
             }
         }
 
-        if(actualBoard[2][5] == null ||
-                actualBoard[5][6] == null ||
-                actualBoard[6][4] == null ||
-                actualBoard[4][1] == null ||
-                actualBoard[1][3] == null ||
-                actualBoard[2][6] == null ||
-                actualBoard[3][8] == null ||
-                actualBoard[6][6] == null ||
-                actualBoard[8][5] == null ||
-                actualBoard[6][2] == null ||
-                actualBoard[5][0] == null ||
-                actualBoard[2][2] == null){
+        if(actualBoard[2][5] == Tile.EMPTY ||
+                actualBoard[5][6] == Tile.EMPTY ||
+                actualBoard[6][4] == Tile.EMPTY ||
+                actualBoard[4][1] == Tile.EMPTY ||
+                actualBoard[1][3] == Tile.EMPTY ||
+                actualBoard[2][6] == Tile.EMPTY ||
+                actualBoard[3][8] == Tile.EMPTY ||
+                actualBoard[6][6] == Tile.EMPTY ||
+                actualBoard[8][5] == Tile.EMPTY ||
+                actualBoard[6][2] == Tile.EMPTY ||
+                actualBoard[5][0] == Tile.EMPTY ||
+                actualBoard[2][2] == Tile.EMPTY){
             fail();
         }
     }
@@ -252,7 +252,7 @@ class StandardLivingRoomTest {
         Tile[][] actualBoard = test.getBoard();
         for(int i=0; i<3; i++){
             for(int j=0; j<2; j++){
-                if(actualBoard[i][j] != null){
+                if(actualBoard[i][j] != Tile.EMPTY){
                     fail();
                 }
             }
@@ -260,7 +260,7 @@ class StandardLivingRoomTest {
 
         for(int i=6; i<9; i++){
             for(int j=0; j<2; j++){
-                if(actualBoard[i][j] != null){
+                if(actualBoard[i][j] != Tile.EMPTY){
                     fail();
                 }
             }
@@ -268,7 +268,7 @@ class StandardLivingRoomTest {
 
         for(int i=0; i<3; i++){
             for(int j=7; j<9; j++){
-                if(actualBoard[i][j] != null){
+                if(actualBoard[i][j] != Tile.EMPTY){
                     fail();
                 }
             }
@@ -276,23 +276,23 @@ class StandardLivingRoomTest {
 
         for(int i=6; i<9; i++){
             for(int j=7; j<9; j++){
-                if(actualBoard[i][j] != null){
+                if(actualBoard[i][j] != Tile.EMPTY){
                     fail();
                 }
             }
         }
 
-        if( actualBoard[0][2] != null ||
-                actualBoard[0][5] != null ||
-                actualBoard[1][2] != null ||
-                actualBoard[1][6] != null ||
-                actualBoard[3][0] != null ||
-                actualBoard[5][8] != null ||
-                actualBoard[7][2] != null ||
-                actualBoard[7][6] != null ||
-                actualBoard[8][2] != null ||
-                actualBoard[8][3] != null ||
-                actualBoard[8][6] != null){
+        if( actualBoard[0][2] != Tile.EMPTY ||
+                actualBoard[0][5] != Tile.EMPTY ||
+                actualBoard[1][2] != Tile.EMPTY ||
+                actualBoard[1][6] != Tile.EMPTY ||
+                actualBoard[3][0] != Tile.EMPTY ||
+                actualBoard[5][8] != Tile.EMPTY ||
+                actualBoard[7][2] != Tile.EMPTY ||
+                actualBoard[7][6] != Tile.EMPTY ||
+                actualBoard[8][2] != Tile.EMPTY ||
+                actualBoard[8][3] != Tile.EMPTY ||
+                actualBoard[8][6] != Tile.EMPTY){
             fail();
         }
     }
@@ -307,7 +307,7 @@ class StandardLivingRoomTest {
 
         for(int i=3; i<6; i++){
             for(int j=3; j<6; j++){
-                if(actualBoard[i][j] == null){
+                if(actualBoard[i][j] == Tile.EMPTY){
                     fail();
                 }
             }
@@ -315,7 +315,7 @@ class StandardLivingRoomTest {
 
         for(int i=1; i<3; i++){
             for(int j=3; j<5; j++){
-                if(actualBoard[i][j] == null){
+                if(actualBoard[i][j] == Tile.EMPTY){
                     fail();
                 }
             }
@@ -323,7 +323,7 @@ class StandardLivingRoomTest {
 
         for(int i=3; i<5; i++){
             for(int j=6; j<8; j++){
-                if(actualBoard[i][j] == null){
+                if(actualBoard[i][j] == Tile.EMPTY){
                     fail();
                 }
             }
@@ -331,7 +331,7 @@ class StandardLivingRoomTest {
 
         for(int i=4; i<6; i++){
             for(int j=1; j<3; j++){
-                if(actualBoard[i][j] == null){
+                if(actualBoard[i][j] == Tile.EMPTY){
                     fail();
                 }
             }
@@ -339,32 +339,32 @@ class StandardLivingRoomTest {
 
         for(int i=6; i<8; i++){
             for(int j=4; j<6; j++){
-                if(actualBoard[i][j] == null){
+                if(actualBoard[i][j] == Tile.EMPTY){
                     fail();
                 }
             }
         }
 
-        if(actualBoard[2][5] == null ||
-                actualBoard[5][6] == null ||
-                actualBoard[6][4] == null ||
-                actualBoard[4][1] == null ||
-                actualBoard[1][3] == null ||
-                actualBoard[2][6] == null ||
-                actualBoard[3][8] == null ||
-                actualBoard[6][6] == null ||
-                actualBoard[8][5] == null ||
-                actualBoard[6][2] == null ||
-                actualBoard[5][0] == null ||
-                actualBoard[0][4] == null ||
-                actualBoard[1][5] == null ||
-                actualBoard[4][8] == null ||
-                actualBoard[5][7] == null ||
-                actualBoard[8][4] == null ||
-                actualBoard[7][3] == null ||
-                actualBoard[4][0] == null ||
-                actualBoard[3][1] == null ||
-                actualBoard[2][2] == null){
+        if(actualBoard[2][5] == Tile.EMPTY ||
+                actualBoard[5][6] == Tile.EMPTY ||
+                actualBoard[6][4] == Tile.EMPTY ||
+                actualBoard[4][1] == Tile.EMPTY ||
+                actualBoard[1][3] == Tile.EMPTY ||
+                actualBoard[2][6] == Tile.EMPTY ||
+                actualBoard[3][8] == Tile.EMPTY ||
+                actualBoard[6][6] == Tile.EMPTY ||
+                actualBoard[8][5] == Tile.EMPTY ||
+                actualBoard[6][2] == Tile.EMPTY ||
+                actualBoard[5][0] == Tile.EMPTY ||
+                actualBoard[0][4] == Tile.EMPTY ||
+                actualBoard[1][5] == Tile.EMPTY ||
+                actualBoard[4][8] == Tile.EMPTY ||
+                actualBoard[5][7] == Tile.EMPTY ||
+                actualBoard[8][4] == Tile.EMPTY ||
+                actualBoard[7][3] == Tile.EMPTY ||
+                actualBoard[4][0] == Tile.EMPTY ||
+                actualBoard[3][1] == Tile.EMPTY ||
+                actualBoard[2][2] == Tile.EMPTY){
             fail();
         }
     }
@@ -485,7 +485,7 @@ class StandardLivingRoomTest {
             test.getBag().pop();
         }
         test.refillBoard();
-        assertTrue(test.getBoard()[3][5] == null && test.getBoard()[3][4] != null);
+        assertTrue(test.getBoard()[3][5] == Tile.EMPTY && test.getBoard()[3][4] != Tile.EMPTY);
     }
 
     @Test
@@ -496,7 +496,7 @@ class StandardLivingRoomTest {
             test.getBag().pop();
         }
         test.refillBoard();
-        assertTrue(test.getBoard()[1][4] == null && test.getBoard()[1][3] != null);
+        assertTrue(test.getBoard()[1][4] == Tile.EMPTY && test.getBoard()[1][3] != Tile.EMPTY);
     }
 
     @Test
@@ -507,7 +507,7 @@ class StandardLivingRoomTest {
             test.getBag().pop();
         }
         test.refillBoard();
-        assertTrue(test.getBoard()[3][2] == null && test.getBoard()[2][5] != null);
+        assertTrue(test.getBoard()[3][2] == Tile.EMPTY && test.getBoard()[2][5] != Tile.EMPTY);
     }
 
     @Test
@@ -518,7 +518,7 @@ class StandardLivingRoomTest {
             test.getBag().pop();
         }
         test.refillBoard();
-        assertTrue(test.getBoard()[2][2] == null && test.getBoard()[0][3] != null);
+        assertTrue(test.getBoard()[2][2] == Tile.EMPTY && test.getBoard()[0][3] != Tile.EMPTY);
     }
 
     @Test
@@ -529,6 +529,6 @@ class StandardLivingRoomTest {
             test.getBag().pop();
         }
         test.refillBoard();
-        assertTrue(test.getBoard()[1][5] == null && test.getBoard()[0][4] != null);
+        assertTrue(test.getBoard()[1][5] == Tile.EMPTY && test.getBoard()[0][4] != Tile.EMPTY);
     }
 }
