@@ -17,13 +17,7 @@ public class PersonalGoalNetworkObserver implements Observer<PersonalGoal, Perso
     @Override
     public void update(PersonalGoal pG, PersonalGoal.Event arg) {
         try {
-            if (arg == null) {
-                view.update(new PersonalGoalInfo(pG.isAchieved(), pG.getDescription()), arg);
-            } else {
-                switch (arg) {
-                    case GOAL_ACHIEVED -> view.update(new PersonalGoalInfo(pG.isAchieved(), pG.getDescription()), arg);
-                }
-            }
+            view.update(new PersonalGoalInfo(pG.isAchieved(), pG.getDescription()),arg);
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }

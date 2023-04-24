@@ -18,13 +18,7 @@ public class LivingRoomNetworkObserver implements Observer<LivingRoom, LivingRoo
     @Override
     public void update(LivingRoom lR, LivingRoom.Event arg) {
         try {
-            if (arg == null) {
-                view.update(new LivingRoomInfo(lR.getBoard()), arg);
-            } else {
-                switch (arg) {
-                    case BOARD_MODIFIED -> view.update(new LivingRoomInfo(lR.getBoard()), arg);
-                }
-            }
+            view.update(new LivingRoomInfo(lR.getBoard()),arg);
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }

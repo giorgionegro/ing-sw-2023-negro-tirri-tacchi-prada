@@ -17,16 +17,7 @@ public class GameNetworkObserver implements Observer<Game, Game.Event> {
     @Override
     public void update(Game o, Game.Event arg) {
         try {
-            if (arg == null) {
-                view.update(new GameInfo(o.getGameStatus(), o.isLastTurn(), o.getTurnPlayerId()), arg);
-            } else {
-                switch (arg) {
-                    case GAME_STARTED ->
-                            view.update(new GameInfo(o.getGameStatus(), o.isLastTurn(), o.getTurnPlayerId()), arg);
-                    case NEXT_TURN ->
-                            view.update(new GameInfo(o.getGameStatus(), o.isLastTurn(), o.getTurnPlayerId()), arg);
-                }
-            }
+            view.update(new GameInfo(o.getGameStatus(), o.isLastTurn(), o.getTurnPlayerId()), arg);
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }

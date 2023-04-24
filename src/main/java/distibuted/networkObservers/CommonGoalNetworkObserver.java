@@ -17,16 +17,7 @@ public class CommonGoalNetworkObserver implements Observer<CommonGoal, CommonGoa
     @Override
     public void update(CommonGoal g, CommonGoal.Event evt) {
         try{
-            if (evt == null) {
-                view.update(new CommonGoalInfo(g.getEvaluator().getDescription(), g.getTopToken()), evt);
-            } else {
-                switch (evt) {
-                    case TOKEN_PICKED ->
-                            view.update(new CommonGoalInfo(g.getEvaluator().getDescription(), g.getTopToken()), evt);
-                    default ->
-                            view.update(new CommonGoalInfo(g.getEvaluator().getDescription(), g.getTopToken()), evt);
-                }
-            }
+            view.update(new CommonGoalInfo(g.getEvaluator().getDescription(), g.getTopToken()), evt);
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }

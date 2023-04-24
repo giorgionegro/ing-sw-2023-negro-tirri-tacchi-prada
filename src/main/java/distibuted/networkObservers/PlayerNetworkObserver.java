@@ -17,15 +17,7 @@ public class PlayerNetworkObserver implements Observer<Player, Player.Event> {
     @Override
     public void update(Player o, Player.Event arg) {
         try {
-            if (arg == null) {
-
-            } else {
-                switch (arg) {
-                    case MALFORMED_MOVE -> view.update(new PlayerInfo("Malformed Move"), arg);
-                    case NOT_ALLOWED -> view.update(new PlayerInfo("Not allowed"),arg);
-                    case COMMONGOAL_ACHIEVED -> view.update(new PlayerInfo("Achieved a common goal"),arg);
-                }
-            }
+            view.update(new PlayerInfo(o.getReportedError(),o.getAchievedCommonGoals()),arg);
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }

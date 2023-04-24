@@ -19,11 +19,7 @@ public class ShelfNetworkObserver implements Observer<Shelf, Shelf.Event> {
     @Override
     public void update(Shelf s, Shelf.Event arg) {
         try{
-            if (arg == null) {
-                view.update(new ShelfInfo(this.playerId, s.getShelf()), arg);
-            } else if (arg.equals(Shelf.Event.SHELF_MODIFIED)) {
-                view.update(new ShelfInfo(this.playerId, s.getShelf()), arg);
-            }
+            view.update(new ShelfInfo(this.playerId, s.getShelf()), arg);
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }

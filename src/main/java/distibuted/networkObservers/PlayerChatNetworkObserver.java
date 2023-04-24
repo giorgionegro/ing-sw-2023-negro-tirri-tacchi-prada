@@ -16,13 +16,7 @@ public class PlayerChatNetworkObserver implements Observer<PlayerChat, PlayerCha
     @Override
     public void update(PlayerChat pC, PlayerChat.Event arg) {
         try {
-            if (arg == null) {
-                view.update(new PlayerChatInfo(pC), arg);
-            } else {
-                switch (arg) {
-                    case MESSAGE_RECEIVED -> view.update(new PlayerChatInfo(pC), arg);
-                }
-            }
+            view.update(new PlayerChatInfo(pC),arg);
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }

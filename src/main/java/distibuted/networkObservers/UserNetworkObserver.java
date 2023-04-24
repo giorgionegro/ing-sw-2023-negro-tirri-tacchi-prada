@@ -1,7 +1,6 @@
 package distibuted.networkObservers;
 
 import model.User;
-import model.abstractModel.Shelf;
 import modelView.UserInfo;
 import util.Observer;
 import view.interfaces.UserView;
@@ -18,11 +17,7 @@ public class UserNetworkObserver implements Observer<User, User.Event> {
     @Override
     public void update(User o, User.Event arg) {
         try{
-            if (arg == null) {
-                view.update(new UserInfo(o), arg);
-            } else if (arg == User.Event.STATUS_CHANGED) {
-                view.update(new UserInfo(o), arg);
-            }
+            view.update(new UserInfo(o),arg);
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
