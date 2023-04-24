@@ -90,7 +90,7 @@ public class CLI {
                         String choice = readCommandLine("-> ");
                         String[] split = choice.split(" ");
                         //if more than 3 tiles are picked ignores the rest
-                        List<PickedTile> tTiles = new ArrayList<PickedTile>();
+                        List<PickedTile> tTiles = new ArrayList<>();
                         for (int i = 0; i < split.length && i < 3; i++) {
                             try {
                                 String[] split1 = split[i].split(",");
@@ -390,7 +390,7 @@ public class CLI {
             ShelfInfo shelf = currentShelfs.values().stream().toList().get(i);
             Tile[][] shelfTile = shelf.getShelf();
 
-        String toDraw = "";
+        String toDraw;
         if (shelf.getPlayerId().equals(thisPlayerId)) {
             toDraw = "YOU";
         } else {
@@ -432,19 +432,26 @@ public class CLI {
                 else if (i == 0 && j == width - 1) cliPixel[x + i][y + j] = '┐';
                 else if (i == height - 1 && j == 0) {
                     cliPixel[x + i][y + j] = '└';
+                    cliPixelColor[x + i][y + j] = colour;
                 } else if (i == height - 1 && j == width - 1) {
                     cliPixel[x + i][y + j] = '┘';
+                    cliPixelColor[x + i][y + j] = colour;
                 } else if (i == 0) {
                     cliPixel[x + i][y + j] = '─';
+                    cliPixelColor[x + i][y + j] = colour;
                 } else if (i == height - 1) {
                     cliPixel[x + i][y + j] = '─';
+                    cliPixelColor[x + i][y + j] = colour;
                 } else if (j == 0) {
                     cliPixel[x + i][y + j] = '│';
+                    cliPixelColor[x + i][y + j] = colour;
                 } else if (j == width - 1) {
                     cliPixel[x + i][y + j] = '│';
+                    cliPixelColor[x + i][y + j] = colour;
                 }
                 else {
                     cliPixel[x + i][y + j] = ' ';
+                    cliPixelColor[x + i][y + j] = DEFAULT;
                 }
             }
         }
@@ -562,7 +569,7 @@ public class CLI {
 
     private static class Pair {
         final String string;
-        int colour = DEFAULT;
+        int colour;
 
         public Pair(String string, int colour) {
             this.string = string;
