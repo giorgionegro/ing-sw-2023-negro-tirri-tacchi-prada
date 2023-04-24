@@ -1,8 +1,7 @@
 package controller;
 
-import controller.exceptions.ClientNotAllowedException;
-import controller.exceptions.MalformedPlayerMoveException;
 import controller.interfaces.GameController;
+import controller.interfaces.LobbyController;
 import distibuted.interfaces.ClientInterface;
 import distibuted.networkObservers.*;
 import model.*;
@@ -11,7 +10,7 @@ import model.exceptions.*;
 import modelView.*;
 import java.util.*;
 
-public class StandardGameController implements GameController {
+public class StandardGameController implements GameController, LobbyController {
     private final Game game;
     private final Map<ClientInterface, Player> playerAssociation;
 
@@ -20,7 +19,7 @@ public class StandardGameController implements GameController {
         this.playerAssociation = new HashMap<>();
     }
 
-    public synchronized GameController.Event join(ClientInterface newClient, String playerId) {
+    public synchronized void joinPlayer(ClientInterface newClient, String playerId) {
         try {
             game.addPlayer(playerId);
 
@@ -66,9 +65,8 @@ public class StandardGameController implements GameController {
                 game.updatePlayersTurn();
             }
 
-            return Event.JOINED;
         } catch (PlayerAlreadyExistsException | PlayerNotExistsException | MatchmakingClosedException e) {
-            return Event.NOT_JOINED;
+
         } catch (GameEndedException e) {
             throw new RuntimeException(e); //TODO routine di fine partita
         }
@@ -78,7 +76,7 @@ public class StandardGameController implements GameController {
         try {
             /* If we receive a request from an invalid client we discard it */
             if (!playerAssociation.containsKey(client))
-                throw new ClientNotAllowedException();
+                throw new IllegalArgumentException();
 
             /* If game is not started we discard the request*/
             if (!game.getGameStatus().equals(Game.GameStatus.STARTED))
@@ -89,7 +87,7 @@ public class StandardGameController implements GameController {
 
             /* If it isn't player turn we discard the request*/
             if (!player.getId().equals(game.getTurnPlayerId()))
-                throw new ClientNotAllowedException();
+                throw new IllegalArgumentException();
 
             /* Get board and player shelf status */
             Tile[][] shelf = player.getShelf().getShelf();
@@ -97,22 +95,22 @@ public class StandardGameController implements GameController {
 
             /* Do some checks on "move" object, if malformed we discard it */
             if (move == null || move.getPickedTiles() == null || move.getPickedTiles().size() == 0)
-                throw new MalformedPlayerMoveException("Malformed move object");
+                throw new IllegalArgumentException("Malformed move object");
 
             if (move.getColumnToInsert() < 0 || move.getColumnToInsert() > shelf[0].length - 1)
-                throw new MalformedPlayerMoveException("Column index out of bounds");
+                throw new IllegalArgumentException("Column index out of bounds");
 
             if(!areTilesDifferent(move.getPickedTiles()))
-                throw new MalformedPlayerMoveException("Tiles are not different");
+                throw new IllegalArgumentException("Tiles are not different");
 
             //TODO controllo che le tile scelte siano in linea
 
             for (PickedTile tile : move.getPickedTiles())
                 if (!isTilePickable(tile.getRow(), tile.getCol(), board))
-                    throw new MalformedPlayerMoveException("Tile not pickable");
+                    throw new IllegalArgumentException("Tile not pickable");
 
             if (move.getPickedTiles().size() > freeShelfColumnSpaces(move.getColumnToInsert(), shelf))
-                throw new MalformedPlayerMoveException("Not enough space to insert tiles in shelf");
+                throw new IllegalArgumentException("Not enough space to insert tiles in shelf");
 
             /* Foreach tile we pick it from board and put it on the shelf */
             for (PickedTile tile : move.getPickedTiles()) {
@@ -143,12 +141,10 @@ public class StandardGameController implements GameController {
             /* Pass turn to next player */
             game.updatePlayersTurn();
 
-        } catch (MalformedPlayerMoveException e) {
-            playerAssociation.get(client).forceNotifyObservers(Player.PlayerEvent.MALFORMED_MOVE);
-        } catch (ClientNotAllowedException e) {
-            playerAssociation.get(client).forceNotifyObservers(Player.PlayerEvent.NOT_ALLOWED);
+        } catch (IllegalArgumentException e) {
+            playerAssociation.get(client).forceNotifyObservers(Player.Event.MALFORMED_MOVE);//TODO sistemare gli errori
         } catch (GameNotStartedException e) {
-            playerAssociation.get(client).forceNotifyObservers(Player.PlayerEvent.GAME_NOT_STARTED);
+            playerAssociation.get(client).forceNotifyObservers(Player.Event.GAME_NOT_STARTED);
         } catch (GameEndedException e) {
             throw new RuntimeException(e);//TODO
         }
@@ -157,15 +153,15 @@ public class StandardGameController implements GameController {
     public synchronized void sendMessage(ClientInterface client, Message newMessage) {
         try {
             if (!playerAssociation.containsKey(client))
-                throw new ClientNotAllowedException();
+                throw new IllegalArgumentException();
 
             for (Player p : playerAssociation.values()) {
                 if (newMessage.getSubject().isEmpty() || newMessage.getSubject().equals(p.getId()))
                     p.getPlayerChat().addMessage(newMessage);
             }
 
-        } catch (ClientNotAllowedException e) {
-            playerAssociation.get(client).forceNotifyObservers(Player.PlayerEvent.NOT_ALLOWED);
+        } catch (IllegalArgumentException e) {
+            playerAssociation.get(client).forceNotifyObservers(Player.Event.NOT_ALLOWED);
         }
     }
 
