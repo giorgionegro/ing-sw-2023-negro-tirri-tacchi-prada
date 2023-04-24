@@ -7,5 +7,5 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 public interface PersonalGoalView extends Remote {
-    void update(PersonalGoalInfo o, PersonalGoal.PersonalGoalEvent evt) throws RemoteException;
+    void update(PersonalGoalInfo o, PersonalGoal.Event evt) throws RemoteException;
 }

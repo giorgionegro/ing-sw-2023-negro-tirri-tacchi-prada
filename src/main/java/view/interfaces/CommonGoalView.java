@@ -7,5 +7,5 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 public interface CommonGoalView extends Remote {
-    void update(CommonGoalInfo o, CommonGoal.CommonGoalEvent evt) throws RemoteException;
+    void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException;
 }

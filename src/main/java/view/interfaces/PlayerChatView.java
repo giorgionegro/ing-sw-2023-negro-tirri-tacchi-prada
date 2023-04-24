@@ -7,5 +7,5 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 public interface PlayerChatView extends Remote {
-    void update(PlayerChatInfo o, PlayerChat.PlayerChatEvent evt) throws RemoteException;
+    void update(PlayerChatInfo o, PlayerChat.Event evt) throws RemoteException;
 }

@@ -7,5 +7,5 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 public interface PlayerView extends Remote {
-    void update(PlayerInfo o, Player.PlayerEvent evt) throws RemoteException;
+    void update(PlayerInfo o, Player.Event evt) throws RemoteException;
 }
