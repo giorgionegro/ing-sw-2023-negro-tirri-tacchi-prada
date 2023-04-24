@@ -1,4 +1,5 @@
 import distibuted.interfaces.AppServer;
+import controller.interfaces.GameController;
 import distibuted.ClientEndPoint;
 import distibuted.interfaces.ClientInterface;
 import distibuted.interfaces.ServerInterface;

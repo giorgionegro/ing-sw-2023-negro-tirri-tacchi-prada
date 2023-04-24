@@ -42,7 +42,7 @@ import java.util.Vector;
 @SuppressWarnings("deprecation")
 public class Observable<Event extends Enum<Event>> {
     private boolean changed = false;
-    private Vector<Observer<? extends Observable<Event>, Event>> obs;
+    private final Vector<Observer<? extends Observable<Event>, Event>> obs;
 
     /** Construct an Observable with zero Observers. */
 
