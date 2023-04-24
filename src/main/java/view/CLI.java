@@ -22,9 +22,9 @@ public class CLI {
     static final int renderWidth = 150;
     final char[][] cliPixel = new char[renderHeight][renderWidth];
     final int[][] cliPixelColor = new int[renderHeight][renderWidth];
-    private CommonGoalInfo commonGoal;
+    private List<CommonGoalInfo> commonGoals;
     private GameInfo currentGameState;
-
+    private Tile[][] personalGoal;
     public CLI() {
         currentShelfs = new HashMap<>();
         initBox();
@@ -200,7 +200,7 @@ public class CLI {
     private String renderPixel(int x, int y){
         return "\u001B["+cliPixelColor[x][y]+"m"+cliPixel[x][y]+"\u001B[0m";
     }
-    public static void ClearScreen(){
+    public void ClearScreen(){
 
         try{
             String operatingSystem = System.getProperty("os.name"); //Check the current operating system
@@ -216,7 +216,7 @@ public class CLI {
                 startProcess.waitFor();
             }
         }catch(Exception e){
-            System.out.println(e);
+            printCommandLine("Error: " + e.getMessage(), RED);
         }
     }
 
@@ -424,6 +424,7 @@ public class CLI {
         System.out.print("\033[" + x + ";" + y + "H");
     }
 
+    @SuppressWarnings("SameParameterValue")
     private void drawBox(int x, int y, int height, int width, int colour) {//TODO implements colour
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
@@ -462,7 +463,7 @@ public class CLI {
 
 
     //old cmds to be shifted up
-    List<Pair> oldCmds = new ArrayList<>();
+    final List<Pair> oldCmds = new ArrayList<>();
     private void drawOldCmds() {
         while (oldCmds.size()>5)
             oldCmds.remove(0);
@@ -520,17 +521,24 @@ public class CLI {
 
 
     public void updateCommonGoal(CommonGoalInfo o) {
-        commonGoal = o;
-        drawCommonGoal();
+
+         boolean present =commonGoals.stream().anyMatch(commonGoalInfo -> commonGoalInfo.getDescription().equals(o.getDescription()));
+        if (!present)
+            commonGoals.add(o);
+        else{
+            CommonGoalInfo o1 = (CommonGoalInfo) commonGoals.stream().filter(commonGoalInfo -> commonGoalInfo.getDescription().equals(o.getDescription())).toArray()[0];
+            commonGoals.set(commonGoals.indexOf(o1), o);
+        }
+        drawCommonGoals();
         render();
     }
 
-    //TODO test if it works properly, spoiler: it will not with more than 1 common goal
-    private void drawCommonGoal() {
-        String description = commonGoal.getDescription();
-        //y 52 x renderHeight-10
-        drawString(description, renderHeight-10, 52, DEFAULT, 50 - 2);
-        
+    private void drawCommonGoals() {
+        int i = 0;
+        for (CommonGoalInfo c: commonGoals) {
+            drawString(c.getDescription(), renderHeight-10-i, 52, DEFAULT, 50 - 2);
+            i++;
+        }
     }
 
     public void updateGameState(GameInfo o) {
@@ -548,8 +556,12 @@ public class CLI {
             drawString("Last Turn", renderHeight-10, 30, DEFAULT, 50 - 2);
     }
 
+    public void updatePersonalGoal(PersonalGoalInfo o) {
+        //TODO change type inside PGI from String to Tile matrix
+    }
+
     private static class Pair {
-        String string;
+        final String string;
         int colour = DEFAULT;
 
         public Pair(String string, int colour) {

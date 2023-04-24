@@ -29,7 +29,9 @@ public class ClientEndPoint extends UnicastRemoteObject implements ClientInterfa
 
     @Override
     public void update(PersonalGoalInfo o, PersonalGoal.Event evt) {
+        cli.updatePersonalGoal(o);
         System.out.println("PersonalGoalView:: "+o.isAchieved());
+
     }
 
     @Override
