@@ -66,7 +66,7 @@ public class StandardGameController implements GameController, LobbyController {
             }
 
         } catch (PlayerAlreadyExistsException | PlayerNotExistsException | MatchmakingClosedException e) {
-
+            //TODO
         } catch (GameEndedException e) {
             throw new RuntimeException(e); //TODO routine di fine partita
         }

@@ -5,7 +5,6 @@ import distibuted.interfaces.ClientInterface;
 import distibuted.socket.middleware.interfaces.SocketObject;
 import model.abstractModel.Message;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.rmi.RemoteException;
 

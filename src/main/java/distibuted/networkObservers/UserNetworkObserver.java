@@ -20,7 +20,7 @@ public class UserNetworkObserver implements Observer<User, User.Event> {
         try{
             if (arg == null) {
                 view.update(new UserInfo(o), arg);
-            } else if (arg.equals(Shelf.Event.SHELF_MODIFIED)) {
+            } else if (arg == User.Event.STATUS_CHANGED) {
                 view.update(new UserInfo(o), arg);
             }
         } catch (RemoteException e) {
