@@ -2,6 +2,9 @@ package distibuted.socket.middleware;
 
 import distibuted.interfaces.ClientInterface;
 import distibuted.interfaces.ServerInterface;
+import distibuted.socket.middleware.interfaces.SocketObject;
+import distibuted.socket.middleware.socketObjects.*;
+import model.User;
 import model.abstractModel.*;
 import modelView.*;
 
@@ -30,137 +33,100 @@ public class ClientSkeleton implements ClientInterface {
     }
 
     public void waitForReceive(ServerInterface server) throws RemoteException {
-        Object o;
         try {
-            o = ois.readObject();
-            //TODO server.send(o,null);
-
-
+            SocketObject no = (SocketObject) ois.readObject();
+            no.update(this, server);
         } catch (IOException e) {
-            throw new RemoteException("Cannot receive choice from client", e);
+            throw new RuntimeException(e);//TODO
         } catch (ClassNotFoundException e) {
-            throw new RemoteException("Cannot deserialize choice from client", e);
+            throw new RuntimeException(e);//TODO
         }
     }
 
-    public void update(GameInfo o, Object arg) throws RemoteException {
-        try {
-            oos.writeObject(o);
-        } catch (IOException e) {
-            throw new RemoteException("Cannot send model view", e);
-        }
-        try {
-            oos.writeObject(arg);
-        } catch (IOException e) {
-            throw new RemoteException("Cannot send event", e);
-        }
+    public synchronized void send(Object o) throws IOException {
+        oos.writeObject(o);
+        oos.flush();
+        oos.reset();
     }
 
-
-    public void update(CommonGoalInfo o, Object arg) throws RemoteException {
-        try {
-            oos.writeObject(o);
+    @Override
+    public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
+        try{
+            send(new SocketCommonGoalInfo(o,evt));
         } catch (IOException e) {
-            throw new RemoteException("Cannot send model view", e);
-        }
-        try {
-            oos.writeObject(arg);
-        } catch (IOException e) {
-            throw new RemoteException("Cannot send event", e);
-        }
-    }
-
-    public void update(ShelfInfo o, Object arg) throws RemoteException {
-        try {
-            oos.writeObject(o);
-        } catch (IOException e) {
-            throw new RemoteException("Cannot send model view", e);
-        }
-        try {
-            oos.writeObject(arg);
-        } catch (IOException e) {
-            throw new RemoteException("Cannot send event", e);
-        }
-    }
-
-
-    public void update(LivingRoomInfo o, Object arg) throws RemoteException {
-        try {
-            oos.writeObject(o);
-        } catch (IOException e) {
-            throw new RemoteException("Cannot send model view", e);
-        }
-        try {
-            oos.writeObject(arg);
-        } catch (IOException e) {
-            throw new RemoteException("Cannot send event", e);
-        }
-    }
-
-
-    public void update(PlayerChatInfo o, Object arg) throws RemoteException {
-        try {
-            oos.writeObject(o);
-        } catch (IOException e) {
-            throw new RemoteException("Cannot send model view", e);
-        }
-        try {
-            oos.writeObject(arg);
-        } catch (IOException e) {
-            throw new RemoteException("Cannot send event", e);
-        }
-    }
-
-    public void update(PersonalGoalInfo o, Object arg) throws RemoteException {
-        try {
-            oos.writeObject(o);
-        } catch (IOException e) {
-            throw new RemoteException("Cannot send model view", e);
-        }
-        try {
-            oos.writeObject(arg);
-        } catch (IOException e) {
-            throw new RemoteException("Cannot send event", e);
+            throw new RemoteException("Unable to send the socket object");
         }
     }
 
     @Override
-    public void update(CommonGoalInfo info, CommonGoal.CommonGoalEvent evt) {
-
+    public void update(GameInfo o, Game.Event evt) throws RemoteException {
+        try{
+            send(new SocketGameInfo(o,evt));
+        } catch (IOException e) {
+            throw new RemoteException("Unable to send the socket object");
+        }
     }
 
     @Override
-    public void update(GamesManagerInfo o, GamesManager.GamesManagerEvent evt) {
-
+    public void update(GamesManagerInfo o, GamesManager.Event evt) throws RemoteException {
+        try{
+            send(new SocketGamesManagerInfo(o,evt));
+        } catch (IOException e) {
+            throw new RemoteException("Unable to send the socket object");
+        }
     }
 
     @Override
-    public void update(LivingRoomInfo o, LivingRoom.LivingRoomEvent evt) {
-
+    public void update(LivingRoomInfo o, LivingRoom.Event evt) throws RemoteException {
+        try{
+            send(new SocketLivingRoomInfo(o,evt));
+        } catch (IOException e) {
+            throw new RemoteException("Unable to send the socket object");
+        }
     }
 
     @Override
-    public void update(PersonalGoalInfo o, PersonalGoal.PersonalGoalEvent evt) {
-
+    public void update(PersonalGoalInfo o, PersonalGoal.Event evt) throws RemoteException {
+        try{
+            send(new SocketPersonalGoalInfo(o,evt));
+        } catch (IOException e) {
+            throw new RemoteException("Unable to send the socket object");
+        }
     }
 
     @Override
-    public void update(PlayerChatInfo o, PlayerChat.PlayerChatEvent evt) {
-
+    public void update(PlayerChatInfo o, PlayerChat.Event evt) throws RemoteException {
+        try{
+            send(new SocketPlayerChatInfo(o,evt));
+        } catch (IOException e) {
+            throw new RemoteException("Unable to send the socket object");
+        }
     }
 
     @Override
-    public void update(PlayerInfo o, Player.PlayerEvent evt) {
-
+    public void update(ShelfInfo o, Shelf.Event evt) throws RemoteException {
+        try{
+            send(new SocketShelfInfo(o,evt));
+        } catch (IOException e) {
+            throw new RemoteException("Unable to send the socket object");
+        }
     }
 
     @Override
-    public void update(ShelfInfo o, Shelf.ShelfEvent evt) {
-
+    public void update(UserInfo o, User.Event evt) throws RemoteException {
+        try{
+            send(new SocketUserInfo(o,evt));
+        } catch (IOException e) {
+            throw new RemoteException("Unable to send the socket object");
+        }
     }
 
     @Override
-    public void update(GameInfo o, Game.GameEvent evt) {
-
+    public void update(PlayerInfo o, Player.Event evt) throws RemoteException {
+//        try{
+//            send(new SocketPlayerInfo(o,evt));
+//        } catch (IOException e) {
+//            throw new RemoteException("Unable to send the socket object");
+//        }
     }
 }
