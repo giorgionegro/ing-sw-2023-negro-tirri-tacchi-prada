@@ -1,10 +1,14 @@
 package view;
 
+import distibuted.interfaces.ClientInterface;
+import distibuted.interfaces.ServerInterface;
+import model.StandardMessage;
 import model.Tile;
 import model.abstractModel.Message;
 import modelView.*;
 
 import java.io.PrintStream;
+import java.rmi.RemoteException;
 import java.util.*;
 
 public class CLI {
@@ -26,6 +30,125 @@ public class CLI {
         initBox();
     }
 
+    public void runLoginView(ClientInterface client, ServerInterface server) throws RemoteException{
+        boolean exit = false;
+        while(!exit) {
+            String readLine = readCommandLine("(h for commands)-> ");
+            switch (readLine) {
+                case "h" -> {
+                    printCommandLine("1: Create a game");
+                    printCommandLine("2: Join a game");
+                    printCommandLine("exit: Close this window");
+                }
+                case "1" -> createGame(client, server);
+                case "2" -> joinGame(client, server);
+                case "exit" -> exit = true;
+                default -> printCommandLine("Wrong command",RED);
+            }
+        }
+    }
+
+
+    private void createGame(ClientInterface client, ServerInterface server) throws RemoteException {
+        String gameId = readCommandLine("GameId: ");
+        String p = readCommandLine("PlayerNumber (between 2 and 4): ");
+        int k = Integer.parseInt(p);
+        if(k>1 && k<5)
+            server.createGame(client, new NewGameInfo(gameId, "STANDARD", k));
+        else
+            printCommandLine("Wrong parameters (number between 2 and 4)",RED);
+    }
+
+    private void joinGame(ClientInterface client, ServerInterface server) throws RemoteException {
+        String gameId = readCommandLine("GameId: ");
+        String playerId = readCommandLine("Write playerId (empty to exit): ");
+        if(!playerId.equals(""))
+            server.joinGame(client,new LoginInfo(playerId,gameId));
+    }
+
+    private void gameRoutine(CLI cli, ClientInterface client, ServerInterface sInt, String playerId) throws RemoteException {
+        String readLine;
+        while (true) {
+            readLine = readCommandLine("(h for commands)-> ");
+
+            switch (readLine) {
+                case "h" -> {
+                    cli.printCommandLine("1: Update view status\nciao");
+                    cli.printCommandLine("2: Pick tiles");
+                    cli.printCommandLine("3: Send message");
+                }
+                case "1" -> {
+
+                }
+                case "2" -> {
+                    List<PickedTile> tiles = new ArrayList<>();
+                    int pickableNum = 3;
+                    boolean choising = true;
+                    do {
+                        cli.printCommandLine("Remaining pickable tiles: "+pickableNum);
+                        cli.printCommandLine("write x,y x2,y2 to pick up to three tiles");
+                        String choice = readCommandLine("-> ");
+                        String[] split = choice.split(" ");
+                        //if more than 3 tiles are picked ignores the rest
+                        List<PickedTile> tTiles = new ArrayList<PickedTile>();
+                        for (int i = 0; i < split.length && i < 3; i++) {
+                            try {
+                                String[] split1 = split[i].split(",");
+                                int x = Integer.parseInt(split1[0]);
+                                int y = Integer.parseInt(split1[1]);
+                                tTiles.add(new PickedTile(x, y));
+                            }
+                            catch (NumberFormatException e){
+                                printCommandLine("Illegal character",RED);
+                                break;
+                            }
+                            catch (ArrayIndexOutOfBoundsException e){
+                                printCommandLine("Wrong format, Should bex1,y1 x2,y2 x3,y3",RED);
+                                break;
+                            }
+                        }
+                        //check if the tiles are pickable, pickable if they are all in the same row or column and adiacent to each other
+                        boolean pickable = true;
+                        for (int i = 0; i < tTiles.size(); i++) {
+                            for (int j = i + 1; j < tTiles.size(); j++) {
+                                if (tTiles.get(i).getCol() != tTiles.get(j).getCol() && tTiles.get(i).getRow() != tTiles.get(j).getRow()) {
+                                    pickable = false;
+                                    break;
+                                }
+                            }
+                            if (!pickable)
+                                break;
+                        }
+                        if (pickable) {
+                            tiles.addAll(tTiles);
+                            pickableNum -= tTiles.size();
+                            choising = false;
+                        } else {
+                            printCommandLine("Tiles not pickable",RED);
+                        }
+                    }while(choising);
+                    choising=true;
+                    int sC = 0;
+                    do {
+                        try {
+                            String sCol = readCommandLine("Shelf col: ");
+                            sC = Integer.parseInt(sCol);
+                            choising=false;
+                        }catch(NumberFormatException e){
+                            printCommandLine("Not a number",RED);
+                        }
+                    }while(choising);
+                    sInt.doPlayerMove(client, new PlayerMoveInfo(tiles, sC));
+                }
+                case "3" -> {
+                    String subject = readCommandLine("Message Subject (empty for everyone): ");
+                    String content = readCommandLine("Message content: ");
+                    sInt.sendMessage(client, new StandardMessage(playerId,subject,content));
+                }
+                default -> printCommandLine("Wrong command",RED);
+            }
+        }
+    }
 
     public void setThisPlayerId(String playerId) {
         this.thisPlayerId = playerId;
@@ -69,26 +192,6 @@ public class CLI {
     public static final int DEFAULT = 39;
 
     private void initBox() {
-        //draw border
-//        for (int i = 0; i < renderHeight; i++) {
-//            for (int j = 0; j < renderWidth; j++) {
-//                if (i == 0 || i == renderHeight-1) {
-//                    cliPixel[i][j] = '─';
-//                    cliPixelColor[i][j] = DEFAULT;
-//                } else if (j == 0 || j == renderWidth-1) {
-//                    cliPixel[i][j] = '│';
-//                    cliPixelColor[i][j] = DEFAULT;
-//                } else {
-//                    cliPixel[i][j] = ' ';
-//                    cliPixelColor[i][j] = DEFAULT;
-//                }
-//            }
-//        }
-//
-//        cliPixel[0][0] = '┌';
-//        cliPixel[0][renderWidth-1] = '┐';
-//        cliPixel[renderHeight-1][0] = '└';
-//        cliPixel[renderHeight-1][renderWidth-1]='┘';
         drawBox(0,0, renderHeight, renderWidth, DEFAULT);
     }
 
