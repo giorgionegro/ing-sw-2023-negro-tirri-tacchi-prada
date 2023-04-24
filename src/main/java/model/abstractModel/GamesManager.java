@@ -4,9 +4,9 @@ import model.exceptions.*;
 import util.Observable;
 
 
-public abstract class GamesManager extends Observable<GamesManager.GamesManagerEvent>{
+public abstract class GamesManager extends Observable<GamesManager.Event>{
 
-    public enum GamesManagerEvent{
+    public enum Event {
         GAME_CREATED
     }
 

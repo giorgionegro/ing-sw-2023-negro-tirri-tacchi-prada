@@ -8,11 +8,11 @@ import util.Observable;
  * <p>
  * It defines all the required methods needed to manage living room board.
  */
-public abstract class Shelf extends Observable<Shelf.ShelfEvent> {
+public abstract class Shelf extends Observable<Shelf.Event> {
     /**
      * This enumeration contains all the living room events that can be sent to observers
      */
-    public enum ShelfEvent {
+    public enum Event {
         /**
          * This event is sent whenever the board has been modified
          */
@@ -31,5 +31,5 @@ public abstract class Shelf extends Observable<Shelf.ShelfEvent> {
      *
      * @param modifiedBoard the new representation of living room board
      */
-    public abstract void setShelf(Tile[][] modifiedBoard); //TODO cambiare nome funzione, brutto
+    public abstract void setShelf(Tile[][] modifiedBoard);
 }

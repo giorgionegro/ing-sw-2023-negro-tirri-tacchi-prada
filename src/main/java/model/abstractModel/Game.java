@@ -13,11 +13,11 @@ import java.util.List;
  * <p>
  * It defines all the required methods needed to access game components and status and to manage game's turn sequence.
  */
-public abstract class Game extends Observable<Game.GameEvent>{
+public abstract class Game extends Observable<Game.Event>{
     /**
      * This enumeration contains all the game events that can be sent to observers
      */
-    public enum GameEvent{
+    public enum Event {
         /**
          * This event is sent whenever a player joins the game
          */

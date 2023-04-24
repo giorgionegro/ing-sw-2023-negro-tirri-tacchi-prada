@@ -11,17 +11,16 @@ import java.util.Map;
  * <p>
  * It defines all the methods required to access player components and manage player information
  */
-public abstract class Player extends Observable<Player.PlayerEvent> {
+public abstract class Player extends Observable<Player.Event> {
 
     /**
      * This enumeration contains all the events that can be sent to observers
      */
-    public enum PlayerEvent{
+    public enum Event {
         COMMONGOAL_ACHIEVED,
         MALFORMED_MOVE,
         NOT_ALLOWED,
         GAME_NOT_STARTED,
-
     }
 
     /**
