@@ -21,6 +21,6 @@ public class StandardShelf extends Shelf {
     public void setShelf(Tile[][] modifiedShelf) {
         this.shelf = Arrays.stream(modifiedShelf).map(Tile[]::clone).toArray(Tile[][]::new);
         setChanged();
-        notifyObservers(ShelfEvent.SHELF_MODIFIED);
+        notifyObservers(Event.SHELF_MODIFIED);
     }
 }

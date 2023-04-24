@@ -208,7 +208,7 @@ public class StandardGame extends Game {
         playerTurnQueue.add(p);
 
         setChanged();
-        notifyObservers(GameEvent.NEXT_TURN);
+        notifyObservers(Event.NEXT_TURN);
 
         if(p.equals(firstPlayer) && lastTurn){
             this.status = GameStatus.ENDED;

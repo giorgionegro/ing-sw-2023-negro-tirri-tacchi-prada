@@ -42,7 +42,7 @@ public class StandardLivingRoom extends LivingRoom {
         //TODO: check modifiedBoard is valid (correct empty spaces in relation to number of Players)
         board = Arrays.stream(modifiedBoard).map(Tile[]::clone).toArray(Tile[][]::new);
         setChanged();
-        notifyObservers(LivingRoomEvent.BOARD_MODIFIED);
+        notifyObservers(Event.BOARD_MODIFIED);
     }
 
     /**

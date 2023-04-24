@@ -33,7 +33,7 @@ public class StandardPlayerChat extends PlayerChat {
     public void addMessage(Message newMessage) {
         this.messages.add(newMessage);
         setChanged();
-        notifyObservers(PlayerChatEvent.MESSAGE_RECEIVED);
+        notifyObservers(Event.MESSAGE_RECEIVED);
     }
 
     /**
