@@ -1,8 +1,8 @@
 package controller.interfaces;
 
+import controller.exceptions.GameAccessDeniedException;
 import distibuted.interfaces.ClientInterface;
-import model.exceptions.PlayerAlreadyExistsException;
 
 public interface LobbyController {
-    void joinPlayer(ClientInterface newClient, String playerId) throws PlayerAlreadyExistsException;
+    void joinPlayer(ClientInterface newClient, String playerId) throws GameAccessDeniedException;
 }
