@@ -37,6 +37,8 @@ public class StandardPlayer extends Player {
      */
     private final PlayerChat chat;
 
+    private String errorReport;
+
     /**
      * Constructor of a new Player with no achieved common goal and an empty chat, but initialized with the given shelf,
      * personal goals and playerId.
@@ -100,5 +102,16 @@ public class StandardPlayer extends Player {
      */
     public void addAchievedCommonGoal(String description, Token token){
         achievedCommonGoals.put(description, token);
+    }
+
+    public void reportError(String error){
+        this.errorReport = error;
+        setChanged();
+        notifyObservers(Event.ERROR_REPORTED);
+    }
+
+    @Override
+    public String getReportedError() {
+        return null;
     }
 }

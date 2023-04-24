@@ -18,9 +18,7 @@ public abstract class Player extends Observable<Player.Event> {
      */
     public enum Event {
         COMMONGOAL_ACHIEVED,
-        MALFORMED_MOVE,
-        NOT_ALLOWED,
-        GAME_NOT_STARTED,
+        ERROR_REPORTED
     }
 
     /**
@@ -59,4 +57,8 @@ public abstract class Player extends Observable<Player.Event> {
      * @param token the token won by achieving the common goal
      */
     public abstract void addAchievedCommonGoal(String description, Token token);
+
+    public abstract void reportError(String error);
+
+    public abstract String getReportedError();
 }

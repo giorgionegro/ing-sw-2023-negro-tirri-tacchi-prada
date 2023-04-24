@@ -39,7 +39,7 @@ public class ClientEndPoint extends UnicastRemoteObject implements ClientInterfa
 
     @Override
     public void update(PlayerInfo o, Player.Event evt) {
-        System.out.println(o.getMessage());
+        System.out.println(o.getErrorMessage());
     }
 
     @Override

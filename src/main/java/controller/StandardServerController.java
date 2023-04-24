@@ -1,5 +1,6 @@
 package controller;
 
+import controller.exceptions.GameAccessDeniedException;
 import controller.interfaces.GameController;
 import controller.interfaces.GameManagerController;
 import controller.interfaces.ServerController;
@@ -50,16 +51,17 @@ public class StandardServerController implements ServerController, GameManagerCo
     public void joinGame(ClientInterface client, LoginInfo info) throws RemoteException{
         try{
             this.gameControllers.get(info.getGameId()).joinPlayer(client,info.getPlayerId());
-        } catch (Exception e) {
-            users.get(client).forceNotifyObservers();//TODO
+        } catch (GameAccessDeniedException e) {
+            users.get(client).reportError(e.getMessage());
         }
     }
+
     @Override
     public void createGame(ClientInterface client, NewGameInfo gameInfo) throws RemoteException{
         try {
             createGame(gameInfo.getGameId(),gameInfo.getPlayerNumber());
         } catch (GameAlreadyExistsException e) {
-            users.get(client).forceNotifyObservers();//TODO aggiungere evento errore
+            users.get(client).reportError(e.getMessage());
         }
     }
 

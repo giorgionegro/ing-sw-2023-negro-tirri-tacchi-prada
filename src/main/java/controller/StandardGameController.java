@@ -1,5 +1,6 @@
 package controller;
 
+import controller.exceptions.GameAccessDeniedException;
 import controller.interfaces.GameController;
 import controller.interfaces.LobbyController;
 import distibuted.interfaces.ClientInterface;
@@ -19,7 +20,8 @@ public class StandardGameController implements GameController, LobbyController {
         this.playerAssociation = new HashMap<>();
     }
 
-    public synchronized void joinPlayer(ClientInterface newClient, String playerId) {
+    ///LOBBY CONTROLLER/////////////////////
+    public synchronized void joinPlayer(ClientInterface newClient, String playerId) throws GameAccessDeniedException {
         try {
             game.addPlayer(playerId);
 
@@ -65,10 +67,12 @@ public class StandardGameController implements GameController, LobbyController {
                 game.updatePlayersTurn();
             }
 
-        } catch (PlayerAlreadyExistsException | PlayerNotExistsException | MatchmakingClosedException e) {
-            //TODO
-        } catch (GameEndedException e) {
-            throw new RuntimeException(e); //TODO routine di fine partita
+        } catch (GameEndedException e){
+            throw new GameAccessDeniedException("Game already ended");
+        } catch(PlayerAlreadyExistsException | PlayerNotExistsException e){
+            throw new GameAccessDeniedException("Player id already exists");
+        } catch(MatchmakingClosedException e) {
+            throw new GameAccessDeniedException("Game matchmaking closed");
         }
     }
 
@@ -76,7 +80,7 @@ public class StandardGameController implements GameController, LobbyController {
         try {
             /* If we receive a request from an invalid client we discard it */
             if (!playerAssociation.containsKey(client))
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("User not allowed");
 
             /* If game is not started we discard the request*/
             if (!game.getGameStatus().equals(Game.GameStatus.STARTED))
@@ -87,7 +91,7 @@ public class StandardGameController implements GameController, LobbyController {
 
             /* If it isn't player turn we discard the request*/
             if (!player.getId().equals(game.getTurnPlayerId()))
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("Not player's turn");
 
             /* Get board and player shelf status */
             Tile[][] shelf = player.getShelf().getShelf();
@@ -141,19 +145,15 @@ public class StandardGameController implements GameController, LobbyController {
             /* Pass turn to next player */
             game.updatePlayersTurn();
 
-        } catch (IllegalArgumentException e) {
-            playerAssociation.get(client).forceNotifyObservers(Player.Event.MALFORMED_MOVE);//TODO sistemare gli errori
-        } catch (GameNotStartedException e) {
-            playerAssociation.get(client).forceNotifyObservers(Player.Event.GAME_NOT_STARTED);
-        } catch (GameEndedException e) {
-            throw new RuntimeException(e);//TODO
+        } catch (IllegalArgumentException | GameNotStartedException | GameEndedException e) {
+            playerAssociation.get(client).reportError(e.getMessage());
         }
     }
 
     public synchronized void sendMessage(ClientInterface client, Message newMessage) {
         try {
             if (!playerAssociation.containsKey(client))
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("User not allowed");
 
             for (Player p : playerAssociation.values()) {
                 if (newMessage.getSubject().isEmpty() || newMessage.getSubject().equals(p.getId()))
@@ -161,7 +161,7 @@ public class StandardGameController implements GameController, LobbyController {
             }
 
         } catch (IllegalArgumentException e) {
-            playerAssociation.get(client).forceNotifyObservers(Player.Event.NOT_ALLOWED);
+            playerAssociation.get(client).reportError(e.getMessage());
         }
     }
 
