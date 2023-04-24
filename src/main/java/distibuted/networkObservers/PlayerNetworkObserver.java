@@ -7,7 +7,7 @@ import view.interfaces.PlayerView;
 
 import java.rmi.RemoteException;
 
-public class PlayerNetworkObserver implements Observer<Player,Player.PlayerEvent> {
+public class PlayerNetworkObserver implements Observer<Player, Player.Event> {
 
     private final PlayerView view;
     public PlayerNetworkObserver(PlayerView view) {
@@ -15,7 +15,7 @@ public class PlayerNetworkObserver implements Observer<Player,Player.PlayerEvent
     }
 
     @Override
-    public void update(Player o, Player.PlayerEvent arg) {
+    public void update(Player o, Player.Event arg) {
         try {
             if (arg == null) {
 

@@ -7,7 +7,7 @@ import view.interfaces.CommonGoalView;
 
 import java.rmi.RemoteException;
 
-public class CommonGoalNetworkObserver implements Observer<CommonGoal, CommonGoal.CommonGoalEvent> {
+public class CommonGoalNetworkObserver implements Observer<CommonGoal, CommonGoal.Event> {
     private final CommonGoalView view;
     public CommonGoalNetworkObserver(CommonGoalView view)
     {
@@ -15,7 +15,7 @@ public class CommonGoalNetworkObserver implements Observer<CommonGoal, CommonGoa
     }
 
     @Override
-    public void update(CommonGoal g, CommonGoal.CommonGoalEvent evt) {
+    public void update(CommonGoal g, CommonGoal.Event evt) {
         try{
             if (evt == null) {
                 view.update(new CommonGoalInfo(g.getEvaluator().getDescription(), g.getTopToken()), evt);

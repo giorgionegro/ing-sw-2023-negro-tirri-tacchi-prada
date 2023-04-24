@@ -7,7 +7,7 @@ import view.interfaces.PersonalGoalView;
 
 import java.rmi.RemoteException;
 
-public class PersonalGoalNetworkObserver implements Observer<PersonalGoal,PersonalGoal.PersonalGoalEvent> {
+public class PersonalGoalNetworkObserver implements Observer<PersonalGoal, PersonalGoal.Event> {
 
     private final PersonalGoalView view;
     public PersonalGoalNetworkObserver(PersonalGoalView view) {
@@ -15,7 +15,7 @@ public class PersonalGoalNetworkObserver implements Observer<PersonalGoal,Person
     }
 
     @Override
-    public void update(PersonalGoal pG, PersonalGoal.PersonalGoalEvent arg) {
+    public void update(PersonalGoal pG, PersonalGoal.Event arg) {
         try {
             if (arg == null) {
                 view.update(new PersonalGoalInfo(pG.isAchieved(), pG.getDescription()), arg);

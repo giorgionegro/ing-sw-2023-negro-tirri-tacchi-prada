@@ -7,7 +7,7 @@ import view.interfaces.GameView;
 
 import java.rmi.RemoteException;
 
-public class GameNetworkObserver implements Observer<Game, Game.GameEvent> {
+public class GameNetworkObserver implements Observer<Game, Game.Event> {
 
     private final GameView view;
     public GameNetworkObserver(GameView view){
@@ -15,7 +15,7 @@ public class GameNetworkObserver implements Observer<Game, Game.GameEvent> {
     }
 
     @Override
-    public void update(Game o, Game.GameEvent arg) {
+    public void update(Game o, Game.Event arg) {
         try {
             if (arg == null) {
                 view.update(new GameInfo(o.getGameStatus(), o.isLastTurn(), o.getTurnPlayerId()), arg);

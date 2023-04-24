@@ -7,7 +7,7 @@ import view.interfaces.ShelfView;
 
 import java.rmi.RemoteException;
 
-public class ShelfNetworkObserver implements Observer<Shelf, Shelf.ShelfEvent> {
+public class ShelfNetworkObserver implements Observer<Shelf, Shelf.Event> {
 
     private final String playerId;
     private final ShelfView view;
@@ -17,11 +17,11 @@ public class ShelfNetworkObserver implements Observer<Shelf, Shelf.ShelfEvent> {
     }
 
     @Override
-    public void update(Shelf s, Shelf.ShelfEvent arg) {
+    public void update(Shelf s, Shelf.Event arg) {
         try{
             if (arg == null) {
                 view.update(new ShelfInfo(this.playerId, s.getShelf()), arg);
-            } else if (arg.equals(Shelf.ShelfEvent.SHELF_MODIFIED)) {
+            } else if (arg.equals(Shelf.Event.SHELF_MODIFIED)) {
                 view.update(new ShelfInfo(this.playerId, s.getShelf()), arg);
             }
         } catch (RemoteException e) {

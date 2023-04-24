@@ -7,7 +7,7 @@ import view.interfaces.LivingRoomView;
 
 import java.rmi.RemoteException;
 
-public class LivingRoomNetworkObserver implements Observer<LivingRoom, LivingRoom.LivingRoomEvent> {
+public class LivingRoomNetworkObserver implements Observer<LivingRoom, LivingRoom.Event> {
 
     private final LivingRoomView view;
 
@@ -16,7 +16,7 @@ public class LivingRoomNetworkObserver implements Observer<LivingRoom, LivingRoo
     }
 
     @Override
-    public void update(LivingRoom lR, LivingRoom.LivingRoomEvent arg) {
+    public void update(LivingRoom lR, LivingRoom.Event arg) {
         try {
             if (arg == null) {
                 view.update(new LivingRoomInfo(lR.getBoard()), arg);
