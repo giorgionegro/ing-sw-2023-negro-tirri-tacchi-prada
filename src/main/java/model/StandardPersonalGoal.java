@@ -62,6 +62,8 @@ public class StandardPersonalGoal extends PersonalGoal {
     @Override
     public void setAchieved() {
         achieved = true;
+        setChanged();
+        notifyObservers(Event.GOAL_ACHIEVED);
     }
 
     /**

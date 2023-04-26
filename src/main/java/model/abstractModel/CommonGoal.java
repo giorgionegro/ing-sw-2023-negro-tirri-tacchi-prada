@@ -65,6 +65,9 @@ public abstract class CommonGoal extends Observable<CommonGoal.Event> {
      * @return the top token of {@link #tokenStack}
      */
     public Token popToken(){
-        return tokenStack.pop();
+        Token t = tokenStack.pop();
+        setChanged();
+        notifyObservers(Event.TOKEN_PICKED);
+        return t;
     }
 }

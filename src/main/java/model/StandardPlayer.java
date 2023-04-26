@@ -102,6 +102,8 @@ public class StandardPlayer extends Player {
      */
     public void addAchievedCommonGoal(String description, Token token){
         achievedCommonGoals.put(description, token);
+        setChanged();
+        notifyObservers(Event.COMMONGOAL_ACHIEVED);
     }
 
     public void reportError(String error){
@@ -112,6 +114,6 @@ public class StandardPlayer extends Player {
 
     @Override
     public String getReportedError() {
-        return null;
+        return errorReport;
     }
 }

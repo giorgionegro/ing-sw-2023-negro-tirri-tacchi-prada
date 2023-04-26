@@ -120,6 +120,9 @@ public class StandardGame extends Game {
         /* Add Player to turnQueue */
         playerTurnQueue.add(newPlayer);
 
+        setChanged();
+        notifyObservers(Event.PLAYER_JOINED);
+
         /* If we have now reached the max playerNumber we set game ready to be started */
         if(players.size()==maxPlayerNumber) {
             this.status = GameStatus.STARTED;
@@ -127,6 +130,9 @@ public class StandardGame extends Game {
             /* Update turn sequence and firstPlayer */
             Collections.shuffle(playerTurnQueue);
             firstPlayer = playerTurnQueue.get(0);
+
+            setChanged();
+            notifyObservers(Event.GAME_STARTED);
         }
     }
 
@@ -170,6 +176,8 @@ public class StandardGame extends Game {
     @Override
     public void setLastTurn(){
         this.lastTurn = true;
+        setChanged();
+        notifyObservers(Event.LAST_TURN);
     }
 
     /**
@@ -212,6 +220,10 @@ public class StandardGame extends Game {
 
         if(p.equals(firstPlayer) && lastTurn){
             this.status = GameStatus.ENDED;
+
+            setChanged();
+            notifyObservers(Event.GAME_ENDED);
+
             throw new GameEndedException();
         }
     }

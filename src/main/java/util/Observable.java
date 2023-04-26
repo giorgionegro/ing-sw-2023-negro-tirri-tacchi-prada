@@ -141,17 +141,6 @@ public class Observable<Event extends Enum<Event>> {
             ((Observer<Observable<Event>, Event>)arrLocal[i]).update(this, arg);
     }
 
-    //TODO riverdere l'implementazione
-    public void forceNotifyObservers(){
-        forceNotifyObservers(null);
-    }
-
-    public void forceNotifyObservers(Event arg){
-        setChanged();
-        notifyObservers(arg);
-    }
-
-
     /**
      * Clears the observer list so that this object no longer has any observers.
      */
