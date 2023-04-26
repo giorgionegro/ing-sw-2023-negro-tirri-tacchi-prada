@@ -28,6 +28,8 @@ public class CLI {
     public CLI() {
         currentShelfs = new HashMap<>();
         initBox();
+        drawCommandLine();
+        render();
     }
 
     public void runLoginView(ClientInterface client, ServerInterface server) throws RemoteException{
