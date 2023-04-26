@@ -8,7 +8,6 @@ import distibuted.ServerEndpoint;
 import distibuted.interfaces.AppServer;
 import distibuted.interfaces.ClientInterface;
 import distibuted.interfaces.ServerInterface;
-import distibuted.networkObservers.UserNetworkObserver;
 import model.User;
 import model.exceptions.GameAlreadyExistsException;
 import model.exceptions.GameNotExistsException;
@@ -16,6 +15,8 @@ import modelView.LoginInfo;
 import modelView.NewGameInfo;
 import model.StandardGame;
 import model.abstractModel.Game;
+import modelView.UserInfo;
+import util.Observer;
 
 
 import java.rmi.RemoteException;
@@ -39,10 +40,24 @@ public class StandardServerController implements ServerController, GameManagerCo
     public ServerInterface connect(ClientInterface client) throws RemoteException {
 
         User newUser = new User();
-        newUser.addObserver(new UserNetworkObserver(client));
+        newUser.addObserver(
+                (Observer<User, User.Event>) (o, arg) -> {
+                    try{
+                        client.update(new UserInfo(o),arg);
+                    } catch (RemoteException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+        );
         users.put(client, newUser);
 
         return new ServerEndpoint(this,this);
+    }
+
+    @Override
+    public void disconnect(ClientInterface client) throws RemoteException {
+        User user = users.remove(client);
+        user.deleteObservers();
     }
 
     ///SERVER CONTROLLER//////////////////

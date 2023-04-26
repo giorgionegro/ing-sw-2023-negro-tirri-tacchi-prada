@@ -115,4 +115,9 @@ public class Server extends UnicastRemoteObject implements AppServer
     public ServerInterface connect(ClientInterface client) throws RemoteException {
         return serverController.connect(client);
     }
+
+    @Override
+    public void disconnect(ClientInterface client) throws RemoteException {
+        serverController.disconnect(client);
+    }
 }

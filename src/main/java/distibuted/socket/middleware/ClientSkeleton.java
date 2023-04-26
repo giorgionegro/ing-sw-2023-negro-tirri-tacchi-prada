@@ -3,10 +3,10 @@ package distibuted.socket.middleware;
 import distibuted.interfaces.ClientInterface;
 import distibuted.interfaces.ServerInterface;
 import distibuted.socket.middleware.interfaces.SocketObject;
-import distibuted.socket.middleware.socketObjects.*;
 import model.User;
 import model.abstractModel.*;
 import modelView.*;
+import view.interfaces.*;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -43,7 +43,7 @@ public class ClientSkeleton implements ClientInterface {
         }
     }
 
-    public synchronized void send(Object o) throws IOException {
+    public synchronized void send(SocketObject o) throws IOException {
         oos.writeObject(o);
         oos.flush();
         oos.reset();
@@ -52,7 +52,13 @@ public class ClientSkeleton implements ClientInterface {
     @Override
     public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
         try{
-            send(new SocketCommonGoalInfo(o,evt));
+            send((SocketObject) (sender, receiver) -> {
+                try {
+                    ((CommonGoalView) receiver).update(o, evt);
+                }catch (ClassCastException e){
+                    throw new RemoteException("Socket object not usable");
+                }
+            });
         } catch (IOException e) {
             throw new RemoteException("Unable to send the socket object");
         }
@@ -61,7 +67,13 @@ public class ClientSkeleton implements ClientInterface {
     @Override
     public void update(GameInfo o, Game.Event evt) throws RemoteException {
         try{
-            send(new SocketGameInfo(o,evt));
+            send((SocketObject) (sender, receiver) -> {
+                try {
+                    ((GameView) receiver).update(o, evt);
+                }catch (ClassCastException e){
+                    throw new RemoteException("Socket object not usable");
+                }
+            });
         } catch (IOException e) {
             throw new RemoteException("Unable to send the socket object");
         }
@@ -70,7 +82,13 @@ public class ClientSkeleton implements ClientInterface {
     @Override
     public void update(GamesManagerInfo o, GamesManager.Event evt) throws RemoteException {
         try{
-            send(new SocketGamesManagerInfo(o,evt));
+            send((SocketObject) (sender,receiver) -> {
+                try{
+                    ((GamesManagerView) receiver).update(o,evt);
+                }catch(ClassCastException e){
+                    throw new RemoteException("Socket object not usable");
+                }
+            });
         } catch (IOException e) {
             throw new RemoteException("Unable to send the socket object");
         }
@@ -79,7 +97,13 @@ public class ClientSkeleton implements ClientInterface {
     @Override
     public void update(LivingRoomInfo o, LivingRoom.Event evt) throws RemoteException {
         try{
-            send(new SocketLivingRoomInfo(o,evt));
+            send((SocketObject) (sender,receiver) -> {
+                try{
+                    ((LivingRoomView)receiver).update(o,evt);
+                }catch (ClassCastException e){
+                    throw new RemoteException("Socket object not usable");
+                }
+            });
         } catch (IOException e) {
             throw new RemoteException("Unable to send the socket object");
         }
@@ -88,7 +112,13 @@ public class ClientSkeleton implements ClientInterface {
     @Override
     public void update(PersonalGoalInfo o, PersonalGoal.Event evt) throws RemoteException {
         try{
-            send(new SocketPersonalGoalInfo(o,evt));
+            send((SocketObject) (sender,receiver) -> {
+                try{
+                    ((PersonalGoalView) receiver).update(o, evt);
+                }catch (ClassCastException e){
+                    throw new RemoteException("Socket object not usable");
+                }
+            });
         } catch (IOException e) {
             throw new RemoteException("Unable to send the socket object");
         }
@@ -97,7 +127,13 @@ public class ClientSkeleton implements ClientInterface {
     @Override
     public void update(PlayerChatInfo o, PlayerChat.Event evt) throws RemoteException {
         try{
-            send(new SocketPlayerChatInfo(o,evt));
+            send((SocketObject) (sender,receiver) -> {
+                try{
+                    ((PlayerChatView) receiver).update(o, evt);
+                }catch (ClassCastException e){
+                    throw new RemoteException("Socket object not usable");
+                }
+            });
         } catch (IOException e) {
             throw new RemoteException("Unable to send the socket object");
         }
@@ -106,7 +142,13 @@ public class ClientSkeleton implements ClientInterface {
     @Override
     public void update(ShelfInfo o, Shelf.Event evt) throws RemoteException {
         try{
-            send(new SocketShelfInfo(o,evt));
+            send((SocketObject) (sender,receiver) -> {
+                try{
+                    ((ShelfView)receiver).update(o, evt);
+                }catch (ClassCastException e){
+                    throw new RemoteException("Socket object not usable");
+                }
+            });
         } catch (IOException e) {
             throw new RemoteException("Unable to send the socket object");
         }
@@ -115,7 +157,13 @@ public class ClientSkeleton implements ClientInterface {
     @Override
     public void update(UserInfo o, User.Event evt) throws RemoteException {
         try{
-            send(new SocketUserInfo(o,evt));
+            send((SocketObject) (sender, receiver) -> {
+                try{
+                    ((UserView) receiver).update(o, evt);
+                }catch (ClassCastException e){
+                    throw new RemoteException("Socket object not usable");
+                }
+            });
         } catch (IOException e) {
             throw new RemoteException("Unable to send the socket object");
         }

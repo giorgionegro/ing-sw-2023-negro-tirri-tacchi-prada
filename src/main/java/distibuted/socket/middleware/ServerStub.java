@@ -1,13 +1,10 @@
 package distibuted.socket.middleware;
 
+import controller.interfaces.GameController;
 import distibuted.interfaces.AppServer;
 import distibuted.interfaces.ClientInterface;
 import distibuted.interfaces.ServerInterface;
 import distibuted.socket.middleware.interfaces.SocketObject;
-import distibuted.socket.middleware.socketObjects.SocketLoginInfo;
-import distibuted.socket.middleware.socketObjects.SocketMessage;
-import distibuted.socket.middleware.socketObjects.SocketNewGameInfo;
-import distibuted.socket.middleware.socketObjects.SocketPlayerMoveInfo;
 import model.abstractModel.Message;
 import modelView.LoginInfo;
 import modelView.NewGameInfo;
@@ -21,16 +18,46 @@ import java.rmi.RemoteException;
 
 public class ServerStub implements ServerInterface, AppServer {
 
-    String ip;
-    int port;
+    private final String ip;
+    private final int port;
     private ObjectOutputStream oos;
     private ObjectInputStream ois;
     private Socket socket;
+    private Thread receiverLoop;
 
     public ServerStub(String ip, int port) {
         this.ip = ip;
         this.port = port;
     }
+
+    public void waitForReceive(ClientInterface client) throws RemoteException {
+        try {
+            SocketObject no = (SocketObject) ois.readObject();
+            no.update(this, client);
+        } catch (IOException e) {
+            throw new RuntimeException(e);//TODO
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);//TODO
+        }
+    }
+
+    public synchronized void close() throws RemoteException {
+        try {
+            receiverLoop.interrupt();
+            socket.close();
+        } catch (IOException e) {
+            throw new RemoteException("Cannot close socket", e);
+        }
+    }
+
+    public synchronized void send(SocketObject o) throws IOException {
+        oos.writeObject(o);
+        oos.flush();
+        oos.reset();
+    }
+
+
+    ////APP SERVER//////////////////
 
     @Override
     public synchronized ServerInterface connect(ClientInterface client) throws RemoteException {
@@ -47,6 +74,18 @@ public class ServerStub implements ServerInterface, AppServer {
                 throw new RemoteException("Cannot create input stream", e);
             }
 
+            receiverLoop = new Thread(()->{
+                while(true){
+                    try {
+                        waitForReceive(client);
+                    } catch (RemoteException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            });
+
+            receiverLoop.start();
+
             return this; //TODO controllare meglio la posizione di questo return
 
         } catch (IOException e) {
@@ -54,36 +93,26 @@ public class ServerStub implements ServerInterface, AppServer {
         }
     }
 
-
-    public void waitForReceive(ClientInterface client) throws RemoteException {
-        try {
-            SocketObject no = (SocketObject) ois.readObject();
-            no.update(this, client);
-        } catch (IOException e) {
-            throw new RuntimeException(e);//TODO
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);//TODO
-        }
+    @Override
+    public void disconnect(ClientInterface client) throws RemoteException {
+        //TODO Manda segnale di disconnessione
+        close();
     }
 
-    public synchronized void close() throws RemoteException {
-        try {
-            socket.close();
-        } catch (IOException e) {
-            throw new RemoteException("Cannot close socket", e);
-        }
-    }
 
-    public synchronized void send(Object o) throws IOException {
-        oos.writeObject(o);
-        oos.flush();
-        oos.reset();
-    }
+    ///SERVER INTERFACE///////////////
+
 
     @Override
-    public void doPlayerMove(ClientInterface client, PlayerMoveInfo move) throws RemoteException {
+    public void doPlayerMove(ClientInterface client, PlayerMoveInfo info) throws RemoteException {
         try {
-            send(new SocketPlayerMoveInfo(move));
+            send((SocketObject) (sender,receiver) -> {
+                try{
+                    ((GameController) receiver).doPlayerMove((ClientInterface) sender, info);
+                }catch (ClassCastException e){
+                    throw new RemoteException("Socket object not usable");
+                }
+            });
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -92,7 +121,13 @@ public class ServerStub implements ServerInterface, AppServer {
     @Override
     public void sendMessage(ClientInterface client, Message newMessage) throws RemoteException {
         try {
-            send(new SocketMessage(newMessage));
+            send((SocketObject) (sender,receiver) -> {
+                try {
+                    ((GameController) receiver).sendMessage((ClientInterface) sender, newMessage);
+                }catch (ClassCastException e){
+                    throw new RemoteException("Socket object not usable");
+                }
+            });
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -101,7 +136,13 @@ public class ServerStub implements ServerInterface, AppServer {
     @Override
     public void joinGame(ClientInterface client, LoginInfo info) {
         try {
-            send(new SocketLoginInfo(info));
+            send((SocketObject) (sender,receiver) -> {
+                try {
+                    ((ServerInterface) receiver).joinGame((ClientInterface) sender, info);
+                }catch (ClassCastException e){
+                    throw new RemoteException("Socket object not usable");
+                }
+            });
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -110,7 +151,13 @@ public class ServerStub implements ServerInterface, AppServer {
     @Override
     public void createGame(ClientInterface client, NewGameInfo info) {
         try {
-            send(new SocketNewGameInfo(info));
+            send((SocketObject) (sender,receiver) -> {
+                try{
+                    ((ServerInterface) receiver).createGame((ClientInterface) sender, info);
+                }catch (ClassCastException e){
+                    throw new RemoteException("Socket object not usable");
+                }
+            });
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

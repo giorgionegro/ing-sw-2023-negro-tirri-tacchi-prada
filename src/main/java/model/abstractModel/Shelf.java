@@ -24,12 +24,12 @@ public abstract class Shelf extends Observable<Shelf.Event> {
      *
      * @return a copy of the representation of living room board
      */
-    public abstract Tile[][] getShelf();
+    public abstract Tile[][] getTiles();
 
     /**
      * this method update the current representation of living room board
      *
-     * @param modifiedBoard the new representation of living room board
+     * @param modifiedShelf the new representation of living room board
      */
-    public abstract void setShelf(Tile[][] modifiedBoard);
+    public abstract void setTiles(Tile[][] modifiedShelf);
 }

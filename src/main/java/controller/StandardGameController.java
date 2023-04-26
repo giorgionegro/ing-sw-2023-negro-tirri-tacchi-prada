@@ -4,11 +4,13 @@ import controller.exceptions.GameAccessDeniedException;
 import controller.interfaces.GameController;
 import controller.interfaces.LobbyController;
 import distibuted.interfaces.ClientInterface;
-import distibuted.networkObservers.*;
 import model.*;
 import model.abstractModel.*;
 import model.exceptions.*;
 import modelView.*;
+import util.Observer;
+
+import java.rmi.RemoteException;
 import java.util.*;
 
 public class StandardGameController implements GameController, LobbyController {
@@ -27,36 +29,7 @@ public class StandardGameController implements GameController, LobbyController {
 
             Player newPlayer = game.getPlayer(playerId);
 
-            newPlayer.addObserver(new PlayerNetworkObserver(newClient));
-
-            /* Add Game status observer */
-            game.addObserver(new GameNetworkObserver(newClient));
-
-            /* Add CommonGoal status observers */
-            for (CommonGoal goal : game.getCommonGoals()) {
-                goal.addObserver(new CommonGoalNetworkObserver(newClient));
-            }
-
-            /* Add LivingRoom status observer */
-            game.getLivingRoom().addObserver(new LivingRoomNetworkObserver(newClient));
-
-            /* Add PlayerChat status observer */
-            newPlayer.getPlayerChat().addObserver(new PlayerChatNetworkObserver(newClient));
-
-            /* Add PersonalGoals status observer */
-            for (PersonalGoal personalGoal : newPlayer.getPersonalGoals()) {
-                personalGoal.addObserver(new PersonalGoalNetworkObserver(newClient));
-            }
-
-            /* Add Shelf status observer */
-            newPlayer.getShelf().addObserver(new ShelfNetworkObserver(newClient, playerId));
-
-            /* Add Shelf status observer of new player to all already joined players */
-            /* Add Shelf status observer of all already joined players to new player */
-            playerAssociation.forEach((joinedClient, joinedPlayer) -> {
-                joinedPlayer.getShelf().addObserver(new ShelfNetworkObserver(newClient, joinedPlayer.getId()));
-                newPlayer.getShelf().addObserver(new ShelfNetworkObserver(joinedClient, playerId));
-            });
+            addObservers(newClient, newPlayer);
 
             /* Put newClient into known client */
             playerAssociation.put(newClient, newPlayer);
@@ -67,13 +40,118 @@ public class StandardGameController implements GameController, LobbyController {
                 game.updatePlayersTurn();
             }
 
-        } catch (GameEndedException e){
+        } catch (GameEndedException e) {
             throw new GameAccessDeniedException("Game already ended");
-        } catch(PlayerAlreadyExistsException | PlayerNotExistsException e){
+        } catch (PlayerAlreadyExistsException | PlayerNotExistsException e) {
             throw new GameAccessDeniedException("Player id already exists");
-        } catch(MatchmakingClosedException e) {
+        } catch (MatchmakingClosedException e) {
             throw new GameAccessDeniedException("Game matchmaking closed");
         }
+    }
+
+    private void addObservers(ClientInterface view, Player newPlayer) {
+        newPlayer.addObserver(
+            (Observer<Player, Player.Event>) (o, arg) -> {
+                try {
+                    view.update(new PlayerInfo(o.getReportedError(), o.getAchievedCommonGoals()), arg);
+                } catch (RemoteException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        );
+
+        /* Add Game status observer */
+        game.addObserver(
+            (Observer<Game, Game.Event>) (o, arg) -> {
+                try {
+                    view.update(new GameInfo(o.getGameStatus(), o.isLastTurn(), o.getTurnPlayerId()), arg);
+                } catch (RemoteException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        );
+
+        /* Add CommonGoal status observers */
+        for (CommonGoal goal : game.getCommonGoals()) {
+            goal.addObserver(
+                (Observer<CommonGoal, CommonGoal.Event>) (o, arg) -> {
+                    try {
+                        view.update(new CommonGoalInfo(o.getEvaluator().getDescription(), o.getTopToken()), arg);
+                    } catch (RemoteException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            );
+        }
+
+        /* Add LivingRoom status observer */
+        game.getLivingRoom().addObserver(
+            (Observer<LivingRoom, LivingRoom.Event>) (o, arg) -> {
+                try {
+                    view.update(new LivingRoomInfo(o.getBoard()), arg);
+                } catch (RemoteException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        );
+
+        /* Add PlayerChat status observer */
+        newPlayer.getPlayerChat().addObserver(
+            (Observer<PlayerChat, PlayerChat.Event>) (o, arg) -> {
+                try {
+                    view.update(new PlayerChatInfo(o), arg);
+                } catch (RemoteException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        );
+
+        /* Add PersonalGoals status observer */
+        for (PersonalGoal personalGoal : newPlayer.getPersonalGoals()) {
+            personalGoal.addObserver(
+                (Observer<PersonalGoal, PersonalGoal.Event>) (o, arg) -> {
+                    try {
+                        view.update(new PersonalGoalInfo(o.isAchieved(), o.getDescription()), arg);
+                    } catch (RemoteException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            );
+        }
+
+        /* Add Shelf status observer */
+        newPlayer.getShelf().addObserver(
+            (Observer<Shelf, Shelf.Event>) (o, arg) -> {
+                try {
+                    view.update(new ShelfInfo(newPlayer.getId(), o.getTiles()), arg);
+                } catch (RemoteException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        );
+
+        /* Add Shelf status observer of new player to all already joined players */
+        /* Add Shelf status observer of all already joined players to new player */
+        playerAssociation.forEach((joinedClient, joinedPlayer) -> {
+            joinedPlayer.getShelf().addObserver(
+                (Observer<Shelf, Shelf.Event>) (o, arg) -> {
+                    try {
+                        view.update(new ShelfInfo(joinedPlayer.getId(), o.getTiles()), arg);
+                    } catch (RemoteException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            );
+            newPlayer.getShelf().addObserver(
+                (Observer<Shelf, Shelf.Event>) (o, arg) -> {
+                    try {
+                        joinedClient.update(new ShelfInfo(newPlayer.getId(), o.getTiles()), arg);
+                    } catch (RemoteException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            );
+        });
     }
 
     public synchronized void doPlayerMove(ClientInterface client, PlayerMoveInfo move) {
@@ -94,7 +172,7 @@ public class StandardGameController implements GameController, LobbyController {
                 throw new IllegalArgumentException("Not player's turn");
 
             /* Get board and player shelf status */
-            Tile[][] shelf = player.getShelf().getShelf();
+            Tile[][] shelf = player.getShelf().getTiles();
             Tile[][] board = game.getLivingRoom().getBoard();
 
             /* Do some checks on "move" object, if malformed we discard it */
@@ -104,7 +182,7 @@ public class StandardGameController implements GameController, LobbyController {
             if (move.getColumnToInsert() < 0 || move.getColumnToInsert() > shelf[0].length - 1)
                 throw new IllegalArgumentException("Column index out of bounds");
 
-            if(!areTilesDifferent(move.getPickedTiles()))
+            if (!areTilesDifferent(move.getPickedTiles()))
                 throw new IllegalArgumentException("Tiles are not different");
 
             //TODO controllo che le tile scelte siano in linea
@@ -126,7 +204,7 @@ public class StandardGameController implements GameController, LobbyController {
             /* Update board and player shelf status*/
             game.getLivingRoom().setBoard(board);
             game.getLivingRoom().refillBoard();
-            player.getShelf().setShelf(shelf);
+            player.getShelf().setTiles(shelf);
 
             /* If shelf has been filled we signal that this will be the last round of turns */
             if (evaluateFullShelf(shelf)) {
@@ -166,10 +244,10 @@ public class StandardGameController implements GameController, LobbyController {
     }
 
     private boolean areTilesDifferent(List<PickedTile> pickedTiles) {
-        for(int i=0; i<pickedTiles.size()-2; i++){
-            for(int j=i+1; j<pickedTiles.size()-1; j++){
-                if(pickedTiles.get(i).getRow()==pickedTiles.get(j).getRow())
-                    if(pickedTiles.get(i).getCol()==pickedTiles.get(j).getCol())
+        for (int i = 0; i < pickedTiles.size() - 2; i++) {
+            for (int j = i + 1; j < pickedTiles.size() - 1; j++) {
+                if (pickedTiles.get(i).getRow() == pickedTiles.get(j).getRow())
+                    if (pickedTiles.get(i).getCol() == pickedTiles.get(j).getCol())
                         return false;
             }
         }
@@ -179,7 +257,7 @@ public class StandardGameController implements GameController, LobbyController {
     private int freeShelfColumnSpaces(int column, Tile[][] shelf) {
         int spaces = 0;
         for (Tile[] row : shelf) {
-            if (row[column]== null)// || row[column].equals(Tile.EMPTY))//TODO decidersi se null o EMPTY
+            if (row[column] == null)// || row[column].equals(Tile.EMPTY))//TODO decidersi se null o EMPTY
                 spaces++;
         }
         return spaces;
@@ -187,7 +265,7 @@ public class StandardGameController implements GameController, LobbyController {
 
     private void insertTileInShelf(int column, Tile[][] shelf, Tile tile) {
         int row = shelf.length - 1;
-        while (shelf[row][column]!=null)// || !shelf[row][column].equals(Tile.EMPTY)) //TODO null or EMPTY
+        while (shelf[row][column] != null)// || !shelf[row][column].equals(Tile.EMPTY)) //TODO null or EMPTY
             row--;
 
         shelf[row][column] = tile;

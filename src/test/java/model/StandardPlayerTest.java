@@ -57,9 +57,9 @@ class StandardPlayerTest {
         shelf[3][4] = Tile.CATS_1;
         shelf[2][3] = Tile.BOOKS_2;
 
-        p.getShelf().setShelf(shelf);
+        p.getShelf().setTiles(shelf);
 
-        Tile[][] shelfFromPlayer = p.getShelf().getShelf();
+        Tile[][] shelfFromPlayer = p.getShelf().getTiles();
 
         if(shelf.length != shelfFromPlayer.length)
             fail("Saved shelf has changed dimensions");
