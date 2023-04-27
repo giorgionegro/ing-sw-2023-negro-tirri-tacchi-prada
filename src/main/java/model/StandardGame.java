@@ -214,7 +214,6 @@ public class StandardGame extends Game {
     public void updatePlayersTurn() throws GameEndedException{
         Player p = playerTurnQueue.remove(0);
         playerTurnQueue.add(p);
-
         setChanged();
         notifyObservers(Event.NEXT_TURN);
 

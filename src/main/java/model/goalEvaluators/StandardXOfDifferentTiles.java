@@ -8,20 +8,21 @@ import model.abstractModel.GoalEvaluator;
  * It implements the GoalEvaluator abstract class
  * It is used by the CommonGoal class
  **/
-public class StandardXOfDifferentTiles extends GoalEvaluator
-{
+public class StandardXOfDifferentTiles extends GoalEvaluator {
     /**
      * This method returns the description of the goal
+     *
      * @return String
      */
     @Override
-    public String getDescription(){
+    public String getDescription() {
 
-       return "Five tiles of the same typem forming an X.";
+        return "Five tiles of the same typem forming an X.";
     }
 
     /**
      * This method evaluates if the player has reached the goal
+     *
      * @param playerShelf the player's shelf
      * @return true if the player has at least 5 tiles of the same type forming an X
      */
@@ -32,14 +33,14 @@ public class StandardXOfDifferentTiles extends GoalEvaluator
          0 X 0
          X 0 X
          */
-        for(int i = 0; i < playerShelf.length-2; i++){
-            for(int j = 0; j < playerShelf[0].length-2; j++){
-                if(playerShelf[i][j].getColor().equals(playerShelf[i+2][j].getColor()) &&
-                        playerShelf[i][j].getColor().equals(playerShelf[i+1][j+1].getColor()) &&
-                        playerShelf[i][j].getColor().equals(playerShelf[i][j+2].getColor()) &&
-                        playerShelf[i][j].getColor().equals(playerShelf[i+2][j+2].getColor())
-                        && playerShelf[i][j]!=Tile.EMPTY
-                ){
+        for (int i = 0; i < playerShelf.length - 2; i++) {
+            for (int j = 0; j < playerShelf[0].length - 2; j++) {
+                if (playerShelf[i][j].getColor().equals(playerShelf[i + 2][j].getColor()) &&
+                        playerShelf[i][j].getColor().equals(playerShelf[i + 1][j + 1].getColor()) &&
+                        playerShelf[i][j].getColor().equals(playerShelf[i][j + 2].getColor()) &&
+                        playerShelf[i][j].getColor().equals(playerShelf[i + 2][j + 2].getColor())
+                        && playerShelf[i][j] != Tile.EMPTY
+                ) {
                     return true;
                 }
             }

@@ -23,7 +23,7 @@ public class Standard2ColumnsRowOfDifferentTiles extends GoalEvaluator {
      * Constructor for Standard2ColumnsRowOfDifferentTiles
      * @param column true if the goal is to have 2 columns of 6 different tiles, false if the goal is to have 2 rows of 6 different tiles
      */
-    public Standard2ColumnsRowOfDifferentTiles( boolean column){
+    public Standard2ColumnsRowOfDifferentTiles(boolean column) {
         this.column = column;
     }
 
@@ -31,8 +31,8 @@ public class Standard2ColumnsRowOfDifferentTiles extends GoalEvaluator {
      * @return the description of the goal
      */
     @Override
-    public String getDescription(){
-        return (column)?"Two columns formed each from 6 different types of tiles":"Two lines formed each from 5 different types of tiles";
+    public String getDescription() {
+        return (column) ? "Two columns formed each from 6 different types of tiles" : "Two lines formed each from 5 different types of tiles";
     }
 
     /**
@@ -45,19 +45,20 @@ public class Standard2ColumnsRowOfDifferentTiles extends GoalEvaluator {
         int counter = 0;
         int columnLength = playerShelf[0].length;
         int rowLength = playerShelf.length;
-        int imax = (column)?columnLength:rowLength;
-        int jmax = (column)?rowLength:columnLength;
+        int imax = (column) ? columnLength : rowLength;
+        int jmax = (column) ? rowLength : columnLength;
 
         for (int i = 0; i < imax; i++) {
             //check if every line is different
-            String[] colours = new String[(column)?rowLength:columnLength];
+            String[] colours = new String[(column) ? rowLength : columnLength];
             for (int j = 0; j < jmax; j++) {
-                colours[j] = (column)?playerShelf[j][i].getColor():playerShelf[i][j].getColor();
+                colours[j] = (column) ? playerShelf[j][i].getColor() : playerShelf[i][j].getColor();
             }
             //remove Empty tiles
-            if (Arrays.stream(colours).filter(Objects::nonNull).filter(colour -> !colour.equals(Tile.EMPTY.getColor())).distinct().count()==colours.length) {//check if every line is different by comparing the number of distinct colours
+            if (Arrays.stream(colours).filter(Objects::nonNull).filter(colour -> !colour.equals(Tile.EMPTY.getColor())).distinct().count() == colours.length) {//check if every line is different by comparing the number of distinct colours
                 counter++;
             }
         }
-        return counter >= 2;    }
+        return counter >= 2;
+    }
 }
