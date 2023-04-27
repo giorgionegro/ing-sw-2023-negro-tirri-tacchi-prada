@@ -25,8 +25,8 @@ public class CLI {
     static final int renderWidth = 150;
     final char[][] cliPixel = new char[renderHeight][renderWidth];
     final int[][] cliPixelColor = new int[renderHeight][renderWidth];
-    private List<CommonGoalInfo> availableCommonGoals;
-    private List<CommonGoalInfo> achievedCommonGoals;
+    private final List<CommonGoalInfo> availableCommonGoals = new ArrayList<>();
+    private final List<CommonGoalInfo> achievedCommonGoals = new ArrayList<>();
 
 
 
@@ -59,11 +59,12 @@ public class CLI {
                     printCommandLine("1: Create a game");
                     printCommandLine("2: Join a game");
                     printCommandLine("exit: Close this window");
+                    render();
                 }
                 case "1" -> createGame(client, server);
                 case "2" -> joinGame(client, server);
                 case "exit" -> exit = true;
-                default -> printCommandLine("Wrong command",RED);
+                default -> {printCommandLine("Wrong command",RED);render();}
             }
         }
     }
@@ -92,13 +93,16 @@ public class CLI {
         render();
         if(!playerId.equals(""))
             server.joinGame(client,new LoginInfo(playerId,gameId));
-
+        synchronized (lock) {
         while (user != null && user.status() != User.Status.JOINED) {
             try {
-                lock.wait();
+
+                    lock.wait();
+
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
+        }
         }
         if(user != null)
         {
@@ -131,10 +135,11 @@ public class CLI {
                     render();
                 }
                 case "2" -> {
-                    synchronized (this) {
+
                         List<PickedTile> tiles = new ArrayList<>();
                         int pickableNum = 3;
                         boolean choising = true;
+                    synchronized (this) {
                         do {
                             cli.printCommandLine("Remaining pickable tiles: " + pickableNum);
                             cli.printCommandLine("write x,y x2,y2 to pick up to three tiles");
@@ -150,11 +155,15 @@ public class CLI {
                                     int x = Integer.parseInt(split1[0]);
                                     int y = Integer.parseInt(split1[1]);
                                     tTiles.add(new PickedTile(x, y));
+                                    printCommandLine("Tile " + x + "," + y + " picked", GREEN);
+                                    render();
                                 } catch (NumberFormatException e) {
                                     printCommandLine("Illegal character", RED);
+                                    render();
                                     break;
                                 } catch (ArrayIndexOutOfBoundsException e) {
                                     printCommandLine("Wrong format, Should bex1,y1 x2,y2 x3,y3", RED);
+                                    render();
                                     break;
                                 }
                             }
@@ -179,21 +188,27 @@ public class CLI {
                                 render();
                             }
                         } while (choising);
-                        choising = true;
-                        int sC = 0;
+                    }
+                    choising = true;
+                    int sC = 0;
+                    synchronized (this) {
+
                         do {
                             try {
                                 String sCol = readCommandLine("Shelf col: ");
                                 render();
                                 sC = Integer.parseInt(sCol);
+                                printCommandLine("Shelf " + sC + " choosen", GREEN);
                                 choising = false;
+                                render();
                             } catch (NumberFormatException e) {
                                 printCommandLine("Not a number", RED);
                                 render();
                             }
                         } while (choising);
-                        sInt.doPlayerMove(client, new PlayerMoveInfo(tiles, sC));
                     }
+                        sInt.doPlayerMove(client, new PlayerMoveInfo(tiles, sC));
+
                 }
                 case "3" -> {
                     synchronized (this) {
@@ -556,7 +571,6 @@ public class CLI {
         while (oldCmds.size()>8)
             oldCmds.remove(0);
         drawCommandLine();
-        render();
         moveCursor(renderHeight - 2, 5);
     }
     public void printCommandLine(String toPrint, int colour) {
@@ -564,7 +578,6 @@ public class CLI {
         while (oldCmds.size()>8)
             oldCmds.remove(0);
         drawCommandLine();
-        render();
         moveCursor(renderHeight - 2, 5);
     }
     public synchronized void render() {
@@ -640,7 +653,9 @@ public class CLI {
         } else if (event == User.Event.ERROR_REPORTED) {
             printCommandLine(o.errorMessage(), RED);
         }
-        lock.notify();
+        synchronized (lock) {
+            lock.notify();
+        }
         render();
     }
 
@@ -676,9 +691,18 @@ public class CLI {
     }
 
     public void updatePlayerInfo(PlayerInfo o, Player.Event evt) {
+        if (evt==null)
+        {
+            if (!login)
+                drawCommonGoals();
 
+            return;
+        }
         switch (evt) {
-            case ERROR_REPORTED -> printCommandLine(o.errorMessage(), RED);
+            case ERROR_REPORTED -> {printCommandLine(o.errorMessage(), RED);
+            render();
+            return;
+            }
             case COMMONGOAL_ACHIEVED -> {
                 //find if a common goal in o.achievedCommonGoals() is in availableCommonGoals
                 for (CommonGoalInfo commonGoalInfo : availableCommonGoals) {

@@ -23,6 +23,7 @@ public class ProvaCLI {
                         try {
                             app = (AppServer) LocateRegistry.getRegistry().lookup("server");
                             server = app.connect(client);
+                            cli.printCommandLine("Connected with RMI", CLI.GREEN);
                         } catch (RemoteException | NotBoundException e) {
                             printError("Unable to use RMI", cli);
                         }
@@ -31,6 +32,7 @@ public class ProvaCLI {
                         try {
                             app = new ServerStub("localhost", 1234);
                             server = app.connect(client);
+                            cli.printCommandLine("Connected with SOCKET", CLI.GREEN);
                         } catch (RemoteException e) {
                             printError("Unable to use SOCKET", cli);
                         }
