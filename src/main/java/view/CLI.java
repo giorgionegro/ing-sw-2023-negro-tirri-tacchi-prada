@@ -4,7 +4,10 @@ import distibuted.interfaces.ClientInterface;
 import distibuted.interfaces.ServerInterface;
 import model.StandardMessage;
 import model.Tile;
+import model.User;
+import model.abstractModel.GamesManager;
 import model.abstractModel.Message;
+import model.abstractModel.Player;
 import modelView.*;
 
 import java.io.PrintStream;
@@ -22,9 +25,22 @@ public class CLI {
     static final int renderWidth = 150;
     final char[][] cliPixel = new char[renderHeight][renderWidth];
     final int[][] cliPixelColor = new int[renderHeight][renderWidth];
-    private List<CommonGoalInfo> commonGoals;
+    private List<CommonGoalInfo> availableCommonGoals;
+    private List<CommonGoalInfo> achievedCommonGoals;
+
+
+
+
     private GameInfo currentGameState;
     private Tile[][] personalGoal;
+    private UserInfo user;
+    private final Object lock = new Object();
+    private final Scanner scanner = new Scanner(System.in);
+    private final List<GamesManagerInfo> games= new ArrayList<>();
+    /**
+     * true if the user is logging in
+     */
+    private boolean login = false;
     public CLI() {
         currentShelfs = new HashMap<>();
         initBox();
@@ -34,8 +50,10 @@ public class CLI {
 
     public void runLoginView(ClientInterface client, ServerInterface server) throws RemoteException{
         boolean exit = false;
+        login = true;
         while(!exit) {
             String readLine = readCommandLine("(h for commands)-> ");
+            render();
             switch (readLine) {
                 case "h" -> {
                     printCommandLine("1: Create a game");
@@ -51,103 +69,143 @@ public class CLI {
     }
 
 
-    private void createGame(ClientInterface client, ServerInterface server) throws RemoteException {
+    private synchronized void createGame(ClientInterface client, ServerInterface server) throws RemoteException {
         String gameId = readCommandLine("GameId: ");
+        render();
         String p = readCommandLine("PlayerNumber (between 2 and 4): ");
+        render();
         int k = Integer.parseInt(p);
         if(k>1 && k<5)
             server.createGame(client, new NewGameInfo(gameId, "STANDARD", k));
-        else
-            printCommandLine("Wrong parameters (number between 2 and 4)",RED);
+        else {
+            printCommandLine("Wrong parameters (number between 2 and 4)", RED);
+            render();
+        }
     }
 
     private void joinGame(ClientInterface client, ServerInterface server) throws RemoteException {
-        String gameId = readCommandLine("GameId: ");
-        String playerId = readCommandLine("Write playerId (empty to exit): ");
+        String gameId;
+        String playerId;
+            gameId = readCommandLine("GameId: ");
+        render();
+             playerId = readCommandLine("Write playerId (empty to exit): ");
+        render();
         if(!playerId.equals(""))
             server.joinGame(client,new LoginInfo(playerId,gameId));
+
+        while (user != null && user.status() != User.Status.JOINED) {
+            try {
+                lock.wait();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        if(user != null)
+        {
+            this.thisPlayerId = playerId;
+            login = false;
+            gameRoutine(this, client, server, playerId);
+    }
     }
 
     private void gameRoutine(CLI cli, ClientInterface client, ServerInterface sInt, String playerId) throws RemoteException {
         String readLine;
         while (true) {
             readLine = readCommandLine("(h for commands)-> ");
-
+            render();
             switch (readLine) {
                 case "h" -> {
-                    cli.printCommandLine("1: Update view status\nciao");
+                    cli.printCommandLine("1: Update view status");
                     cli.printCommandLine("2: Pick tiles");
                     cli.printCommandLine("3: Send message");
+                    render();
                 }
                 case "1" -> {
-
+                    ClearScreen();
+                    initBox();
+                    drawCommandLine();
+                    drawGameState();
+                    drawBoard();
+                    drawShelfs();
+                    drawChat();
+                    render();
                 }
                 case "2" -> {
-                    List<PickedTile> tiles = new ArrayList<>();
-                    int pickableNum = 3;
-                    boolean choising = true;
-                    do {
-                        cli.printCommandLine("Remaining pickable tiles: "+pickableNum);
-                        cli.printCommandLine("write x,y x2,y2 to pick up to three tiles");
-                        String choice = readCommandLine("-> ");
-                        String[] split = choice.split(" ");
-                        //if more than 3 tiles are picked ignores the rest
-                        List<PickedTile> tTiles = new ArrayList<>();
-                        for (int i = 0; i < split.length && i < 3; i++) {
-                            try {
-                                String[] split1 = split[i].split(",");
-                                int x = Integer.parseInt(split1[0]);
-                                int y = Integer.parseInt(split1[1]);
-                                tTiles.add(new PickedTile(x, y));
-                            }
-                            catch (NumberFormatException e){
-                                printCommandLine("Illegal character",RED);
-                                break;
-                            }
-                            catch (ArrayIndexOutOfBoundsException e){
-                                printCommandLine("Wrong format, Should bex1,y1 x2,y2 x3,y3",RED);
-                                break;
-                            }
-                        }
-                        //check if the tiles are pickable, pickable if they are all in the same row or column and adiacent to each other
-                        boolean pickable = true;
-                        for (int i = 0; i < tTiles.size(); i++) {
-                            for (int j = i + 1; j < tTiles.size(); j++) {
-                                if (tTiles.get(i).getCol() != tTiles.get(j).getCol() && tTiles.get(i).getRow() != tTiles.get(j).getRow()) {
-                                    pickable = false;
+                    synchronized (this) {
+                        List<PickedTile> tiles = new ArrayList<>();
+                        int pickableNum = 3;
+                        boolean choising = true;
+                        do {
+                            cli.printCommandLine("Remaining pickable tiles: " + pickableNum);
+                            cli.printCommandLine("write x,y x2,y2 to pick up to three tiles");
+                            render();
+                            String choice = readCommandLine("-> ");
+                            render();
+                            String[] split = choice.split(" ");
+                            //if more than 3 tiles are picked ignores the rest
+                            List<PickedTile> tTiles = new ArrayList<>();
+                            for (int i = 0; i < split.length && i < 3; i++) {
+                                try {
+                                    String[] split1 = split[i].split(",");
+                                    int x = Integer.parseInt(split1[0]);
+                                    int y = Integer.parseInt(split1[1]);
+                                    tTiles.add(new PickedTile(x, y));
+                                } catch (NumberFormatException e) {
+                                    printCommandLine("Illegal character", RED);
+                                    break;
+                                } catch (ArrayIndexOutOfBoundsException e) {
+                                    printCommandLine("Wrong format, Should bex1,y1 x2,y2 x3,y3", RED);
                                     break;
                                 }
                             }
-                            if (!pickable)
-                                break;
-                        }
-                        if (pickable) {
-                            tiles.addAll(tTiles);
-                            pickableNum -= tTiles.size();
-                            choising = false;
-                        } else {
-                            printCommandLine("Tiles not pickable",RED);
-                        }
-                    }while(choising);
-                    choising=true;
-                    int sC = 0;
-                    do {
-                        try {
-                            String sCol = readCommandLine("Shelf col: ");
-                            sC = Integer.parseInt(sCol);
-                            choising=false;
-                        }catch(NumberFormatException e){
-                            printCommandLine("Not a number",RED);
-                        }
-                    }while(choising);
-                    sInt.doPlayerMove(client, new PlayerMoveInfo(tiles, sC));
+                            //check if the tiles are pickable, pickable if they are all in the same row or column and adiacent to each other
+                            boolean pickable = true;
+                            for (int i = 0; i < tTiles.size(); i++) {
+                                for (int j = i + 1; j < tTiles.size(); j++) {
+                                    if (tTiles.get(i).col() != tTiles.get(j).col() && tTiles.get(i).row() != tTiles.get(j).row()) {
+                                        pickable = false;
+                                        break;
+                                    }
+                                }
+                                if (!pickable)
+                                    break;
+                            }
+                            if (pickable) {
+                                tiles.addAll(tTiles);
+                                pickableNum -= tTiles.size();
+                                choising = false;
+                            } else {
+                                printCommandLine("Tiles not pickable", RED);
+                                render();
+                            }
+                        } while (choising);
+                        choising = true;
+                        int sC = 0;
+                        do {
+                            try {
+                                String sCol = readCommandLine("Shelf col: ");
+                                render();
+                                sC = Integer.parseInt(sCol);
+                                choising = false;
+                            } catch (NumberFormatException e) {
+                                printCommandLine("Not a number", RED);
+                                render();
+                            }
+                        } while (choising);
+                        sInt.doPlayerMove(client, new PlayerMoveInfo(tiles, sC));
+                    }
                 }
                 case "3" -> {
-                    String subject = readCommandLine("Message Subject (empty for everyone): ");
-                    String content = readCommandLine("Message content: ");
-                    sInt.sendMessage(client, new StandardMessage(playerId,subject,content));
+                    synchronized (this) {
+                        String subject = readCommandLine("Message Subject (empty for everyone): ");
+                        render();
+                        String content = readCommandLine("Message content: ");
+                        render();
+                        sInt.sendMessage(client, new StandardMessage(playerId, subject, content));
+                    }
                 }
-                default -> printCommandLine("Wrong command",RED);
+                default -> {printCommandLine("Wrong command",RED);
+                    render();}
             }
         }
     }
@@ -167,7 +225,7 @@ public class CLI {
     public void updateShelf(ShelfInfo sV) {
         //set current shelf
 
-        currentShelfs.put(sV.getPlayerId(),sV);
+        currentShelfs.put(sV.playerId(),sV);
 
         drawShelfs();
 
@@ -183,7 +241,7 @@ public class CLI {
     }
 
     public static final int WHITE = 37;
-    public static final int GREEEN = 32;
+    public static final int GREEN = 32;
     public static final int YELLOW = 33;
     public static final int BLUE = 34;
     public static final int MAGENTA = 35;
@@ -223,7 +281,7 @@ public class CLI {
     }
 
     private void drawChat() {
-        List<Message> messages = currentPlayerChat.getMessages();
+        List<Message> messages = currentPlayerChat.messages();
         int startMessage = messages.size() - 5;
         if (startMessage < 0) {
             startMessage = 0;
@@ -266,7 +324,7 @@ public class CLI {
 
         final String centerRight ="┼───┤";
 
-        Tile[][] board = currentLivingRoom.getBoard();
+        Tile[][] board = currentLivingRoom.board();
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[0].length; j++) {
                 int color;
@@ -274,7 +332,7 @@ public class CLI {
                     board[i][j] = Tile.EMPTY;
                 String tile = board[i][j].getColor();
                 switch (tile) {
-                    case "Green" -> color = GREEEN;
+                    case "Green" -> color = GREEN;
                     case "White" -> color = WHITE;
                     case "Yellow" -> color = YELLOW;
                     case "Blue" -> color = BLUE;
@@ -330,10 +388,10 @@ public class CLI {
         final String centerCenter ="┼───";
         final String centerRight ="┼───┤";
 
-        int margin = 1 + 4*currentLivingRoom.getBoard()[0].length + 1 + 1;
+        int margin = 1 + 4*currentLivingRoom.board()[0].length + 1 + 1;
 
         for (int s = 0; s < currentShelfs.size(); s++) {
-            Tile[][] shelf = currentShelfs.values().stream().toList().get(s).getShelf();
+            Tile[][] shelf = currentShelfs.values().stream().toList().get(s).shelf();
             int start = margin + s * shelf[0].length*4 + s;
             for (int i = 0; i < shelf.length; i++) {
                 for (int j = 0; j < shelf[0].length; j++) {
@@ -343,7 +401,7 @@ public class CLI {
                         shelf[i][j] = Tile.EMPTY;
 
                     switch (shelf[i][j].getColor()) {
-                        case "Green" -> colour = GREEEN;
+                        case "Green" -> colour = GREEN;
                         case "White" -> colour = WHITE;
                         case "Yellow" -> colour = YELLOW;
                         case "Blue" -> colour = BLUE;
@@ -390,16 +448,16 @@ public class CLI {
         //draw under each shelf you if you are in that shelf or the number of player in the shelf
         for (int i = 0; i < currentShelfs.size(); i++) {
             ShelfInfo shelf = currentShelfs.values().stream().toList().get(i);
-            Tile[][] shelfTile = shelf.getShelf();
+            Tile[][] shelfTile = shelf.shelf();
 
         String toDraw;
-        if (shelf.getPlayerId().equals(thisPlayerId)) {
+        if (shelf.playerId().equals(thisPlayerId)) {
             toDraw = "YOU";
         } else {
-            toDraw = shelf.getPlayerId();
+            toDraw = shelf.playerId();
 
         }
-        if (currentGameState!=null && currentGameState.getPlayerOnTurn().equals(shelf.getPlayerId())) {
+        if (currentGameState!=null && currentGameState.playerOnTurn().equals(shelf.playerId())) {
             toDraw = ">"+toDraw+"<";
         }
         else {
@@ -469,31 +527,28 @@ public class CLI {
         drawOldCmds();
     }
 
-
-
     //old cmds to be shifted up
     final List<Pair> oldCmds = new ArrayList<>();
     private void drawOldCmds() {
         while (oldCmds.size()>5)
             oldCmds.remove(0);
         for (int i = 0; i < oldCmds.size(); i++) {
-            drawString(oldCmds.get(i).getString(), renderHeight - 9 + i, 3, oldCmds.get(i).getColour(), 50 - 2);
+            drawString(oldCmds.get(i).string(), renderHeight - 9 + i, 3, oldCmds.get(i).colour(), 50 - 2);
         }
     }
-    public String readCommandLine(String message) {
-        moveCursor(renderHeight - 2, 4);
-        System.out.print(message+" ");
-        Scanner scanner = new Scanner(System.in);
-        String cmd= scanner.nextLine();
-        oldCmds.add(new Pair(message+" "+cmd, DEFAULT));
-        //trim old cmds to 8
-        while (oldCmds.size()>8)
-            oldCmds.remove(0);
-        drawCommandLine();
-        render();
-        //move cursor back to command line
-        moveCursor(renderHeight - 2, 5);
-        return cmd;
+    public  String readCommandLine(String message) {
+            moveCursor(renderHeight - 2, 4);
+            System.out.print(message + " ");
+        String cmd = scanner.nextLine();
+            oldCmds.add(new Pair(message + " " + cmd, DEFAULT));
+            //trim old cmds to 8
+            while (oldCmds.size() > 8)
+                oldCmds.remove(0);
+            drawCommandLine();
+            //move cursor back to command line
+            moveCursor(renderHeight - 2, 5);
+            return cmd;
+
     }
 
     public void printCommandLine(String toPrint) {
@@ -512,31 +567,30 @@ public class CLI {
         render();
         moveCursor(renderHeight - 2, 5);
     }
-    private void render() {
-
-        ClearScreen();
-        if (currentGameState != null) {
-            drawGameState();
-        }
-        for (int i = 0; i < cliPixel.length; i++) {
-            for (int j = 0; j < cliPixel[0].length; j++) {
-                out.print(renderPixel(i,j));
+    public synchronized void render() {
+            ClearScreen();
+            if (currentGameState != null) {
+                drawGameState();
             }
-            out.println();
-        }
-        moveCursor(renderHeight - 2, 5);
-
+            for (int i = 0; i < cliPixel.length; i++) {
+                for (int j = 0; j < cliPixel[0].length; j++) {
+                    out.print(renderPixel(i, j));
+                }
+                out.println();
+            }
+            moveCursor(renderHeight - 2, 5);
     }
 
 
     public void updateCommonGoal(CommonGoalInfo o) {
 
-         boolean present =commonGoals.stream().anyMatch(commonGoalInfo -> commonGoalInfo.getDescription().equals(o.getDescription()));
+         boolean present = availableCommonGoals.stream().anyMatch(commonGoalInfo -> commonGoalInfo.description().equals(o.description())) || achievedCommonGoals.stream().anyMatch(commonGoalInfo -> commonGoalInfo.description().equals(o.description()));
+
         if (!present)
-            commonGoals.add(o);
+            availableCommonGoals.add(o);
         else{
-            CommonGoalInfo o1 = (CommonGoalInfo) commonGoals.stream().filter(commonGoalInfo -> commonGoalInfo.getDescription().equals(o.getDescription())).toArray()[0];
-            commonGoals.set(commonGoals.indexOf(o1), o);
+            CommonGoalInfo o1 = (CommonGoalInfo) availableCommonGoals.stream().filter(commonGoalInfo -> commonGoalInfo.description().equals(o.description())).toArray()[0];
+            availableCommonGoals.set(availableCommonGoals.indexOf(o1), o);
         }
         drawCommonGoals();
         render();
@@ -544,8 +598,19 @@ public class CLI {
 
     private void drawCommonGoals() {
         int i = 0;
-        for (CommonGoalInfo c: commonGoals) {
-            drawString(c.getDescription(), renderHeight-10-i, 52, DEFAULT, 50 - 2);
+        //draw: AVAILABLE COMMON GOALS
+        drawString("Available Common Goals", renderHeight-90-i, renderWidth-60, DEFAULT, 50 - 2);
+        for (CommonGoalInfo c: availableCommonGoals) {
+            // c.description()  points: c.Token().points()
+
+            drawString(c.description() + " points: " + c.tokenState().getPoints(), renderHeight-90-i, renderWidth-60, DEFAULT, 50 - 2);
+            i++;
+        }
+        //draw: ACHIEVED COMMON GOALS
+        drawString("Achieved Common Goals", renderHeight-90-i, renderWidth-60, DEFAULT, 50 - 2);
+        for (CommonGoalInfo c: achievedCommonGoals) {
+            // c.description()  points: c.Token().points()
+            drawString(c.description() + " points: " + c.tokenState().getPoints(), renderHeight-90-i, renderWidth-60, DEFAULT, 50 - 2);
             i++;
         }
     }
@@ -558,10 +623,10 @@ public class CLI {
 
     private void drawGameState() {
         //redraw shelfs with new current player
-        if (currentLivingRoom!= null && currentShelfs!=null &&currentLivingRoom.getBoard()!=null && currentLivingRoom.getBoard().length>0 && currentShelfs.size()>0&& currentLivingRoom.getBoard()[0].length>0)
+        if (currentLivingRoom!= null && currentShelfs!=null &&currentLivingRoom.board()!=null && currentLivingRoom.board().length>0 && currentShelfs.size()>0&& currentLivingRoom.board()[0].length>0)
             drawShelfs();
         //draw is last turn if it is
-        if(currentGameState.isLastTurn())
+        if(currentGameState.lastTurn())
             drawString("Last Turn", renderHeight-10, 30, DEFAULT, 50 - 2);
     }
 
@@ -569,22 +634,68 @@ public class CLI {
         //TODO change type inside PGI from String to Tile matrix
     }
 
-    private static class Pair {
-        final String string;
-        int colour;
+    public void updateUserInfo(UserInfo o, User.Event event) {
+        if (event == User.Event.STATUS_CHANGED) {
+            user = o;
+        } else if (event == User.Event.ERROR_REPORTED) {
+            printCommandLine(o.errorMessage(), RED);
+        }
+        lock.notify();
+        render();
+    }
 
-        public Pair(String string, int colour) {
-            this.string = string;
-            this.colour = colour;
+    public void updateGamesManager(GamesManagerInfo o, GamesManager.Event evt) {
+        switch (evt) {
+            case GAME_CREATED -> games.add(o);
+            case GAME_REMOVED -> games.remove(o);
         }
-
-        //getter and setter
-        public String getString() {
-            return string;
-        }
-        public int getColour() {
-            return colour;
-        }
+        if (login)
+            drawGameList();
 
     }
+
+    private void drawGameList() {
+        // a game will be | game name | max players | current players | joinable |
+        // a game will be | 10 chars   | 5 chars      | 5 chars          | 10 chars |
+        for (int i=0; i<games.size();i++)
+        {
+            String toDraw = games.get(i).gameId();
+            toDraw += " ".repeat(10 - toDraw.length());
+            toDraw += games.get(i).maxPlayers();
+            toDraw += " ".repeat(5-toDraw.length()+10);
+            toDraw +=  games.get(i).connectedPlayers();
+            toDraw +=  " ".repeat(5-toDraw.length()+15);
+            if (games.get(i).connectedPlayers()<games.get(i).maxPlayers())
+                toDraw += "joinable";
+            else
+                toDraw += "not joinable";
+            toDraw += " ".repeat(10 - toDraw.length() + 25);
+            drawString(toDraw, 10+i, 10, DEFAULT, 50 - 2);
+
+        }
+    }
+
+    public void updatePlayerInfo(PlayerInfo o, Player.Event evt) {
+
+        switch (evt) {
+            case ERROR_REPORTED -> printCommandLine(o.errorMessage(), RED);
+            case COMMONGOAL_ACHIEVED -> {
+                //find if a common goal in o.achievedCommonGoals() is in availableCommonGoals
+                for (CommonGoalInfo commonGoalInfo : availableCommonGoals) {
+                    if (o.achievedCommonGoals().getOrDefault(commonGoalInfo.description(), null) != null) {
+                        //remove it from availableCommonGoals
+                        availableCommonGoals.remove(commonGoalInfo);
+                        //add it to the achieved list
+                        achievedCommonGoals.add(commonGoalInfo);
+                    }
+                }
+
+            }
+        }
+        if (!login)
+            drawCommonGoals();
+    }
+
+
+    private record Pair(String string, int colour){}
     }

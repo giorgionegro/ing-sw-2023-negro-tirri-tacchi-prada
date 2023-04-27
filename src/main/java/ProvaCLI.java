@@ -47,8 +47,13 @@ public class ProvaCLI {
         }
     }
 
+
+
+
     public static String readLine(String message,CLI cli){
-        return cli.readCommandLine(message);
+        String s = cli.readCommandLine(message);
+        cli.render();
+        return s;
     }
 
     public static void printError(String message,CLI cli){
