@@ -171,10 +171,5 @@ public class ClientSkeleton implements ClientInterface {
 
     @Override
     public void update(PlayerInfo o, Player.Event evt) throws RemoteException {
-//        try{
-//            send(new SocketPlayerInfo(o,evt));
-//        } catch (IOException e) {
-//            throw new RemoteException("Unable to send the socket object");
-//        }
     }
 }
