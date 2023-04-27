@@ -43,7 +43,7 @@ public class StandardServerController implements ServerController, GameManagerCo
         newUser.addObserver(
                 (Observer<User, User.Event>) (o, arg) -> {
                     try{
-                        client.update(new UserInfo(o),arg);
+                        client.update(new UserInfo(o.getStatus(),o.getReportedError()),arg);
                     } catch (RemoteException e) {
                         throw new RuntimeException(e);
                     }
@@ -65,7 +65,7 @@ public class StandardServerController implements ServerController, GameManagerCo
     @Override
     public void joinGame(ClientInterface client, LoginInfo info) throws RemoteException{
         try{
-            this.gameControllers.get(info.getGameId()).joinPlayer(client,info.getPlayerId());
+            this.gameControllers.get(info.gameId()).joinPlayer(client,info.playerId());
         } catch (GameAccessDeniedException e) {
             users.get(client).reportError(e.getMessage());
         }
@@ -74,7 +74,7 @@ public class StandardServerController implements ServerController, GameManagerCo
     @Override
     public void createGame(ClientInterface client, NewGameInfo gameInfo) throws RemoteException{
         try {
-            createGame(gameInfo.getGameId(),gameInfo.getPlayerNumber());
+            createGame(gameInfo.gameId(),gameInfo.playerNumber());
         } catch (GameAlreadyExistsException e) {
             users.get(client).reportError(e.getMessage());
         }

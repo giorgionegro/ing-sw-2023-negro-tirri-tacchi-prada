@@ -53,7 +53,7 @@ public class StandardGameController implements GameController, LobbyController {
         newPlayer.addObserver(
             (Observer<Player, Player.Event>) (o, arg) -> {
                 try {
-                    view.update(new PlayerInfo(o.getReportedError(), o.getAchievedCommonGoals()), arg);
+                    view.update(new PlayerInfo(o.getReportedError(), new HashMap<>(o.getAchievedCommonGoals())), arg);
                 } catch (RemoteException e) {
                     throw new RuntimeException(e);
                 }
@@ -99,7 +99,7 @@ public class StandardGameController implements GameController, LobbyController {
         newPlayer.getPlayerChat().addObserver(
             (Observer<PlayerChat, PlayerChat.Event>) (o, arg) -> {
                 try {
-                    view.update(new PlayerChatInfo(o), arg);
+                    view.update(new PlayerChatInfo(o.getMessages()), arg);
                 } catch (RemoteException e) {
                     throw new RuntimeException(e);
                 }
@@ -176,29 +176,29 @@ public class StandardGameController implements GameController, LobbyController {
             Tile[][] board = game.getLivingRoom().getBoard();
 
             /* Do some checks on "move" object, if malformed we discard it */
-            if (move == null || move.getPickedTiles() == null || move.getPickedTiles().size() == 0)
+            if (move == null || move.pickedTiles() == null || move.pickedTiles().size() == 0)
                 throw new IllegalArgumentException("Malformed move object");
 
-            if (move.getColumnToInsert() < 0 || move.getColumnToInsert() > shelf[0].length - 1)
+            if (move.columnToInsert() < 0 || move.columnToInsert() > shelf[0].length - 1)
                 throw new IllegalArgumentException("Column index out of bounds");
 
-            if (!areTilesDifferent(move.getPickedTiles()))
+            if (!areTilesDifferent(move.pickedTiles()))
                 throw new IllegalArgumentException("Tiles are not different");
 
             //TODO controllo che le tile scelte siano in linea
 
-            for (PickedTile tile : move.getPickedTiles())
-                if (!isTilePickable(tile.getRow(), tile.getCol(), board))
+            for (PickedTile tile : move.pickedTiles())
+                if (!isTilePickable(tile.row(), tile.col(), board))
                     throw new IllegalArgumentException("Tile not pickable");
 
-            if (move.getPickedTiles().size() > freeShelfColumnSpaces(move.getColumnToInsert(), shelf))
+            if (move.pickedTiles().size() > freeShelfColumnSpaces(move.columnToInsert(), shelf))
                 throw new IllegalArgumentException("Not enough space to insert tiles in shelf");
 
             /* Foreach tile we pick it from board and put it on the shelf */
-            for (PickedTile tile : move.getPickedTiles()) {
-                Tile picked = board[tile.getRow()][tile.getCol()];
-                board[tile.getRow()][tile.getCol()] = Tile.EMPTY;
-                insertTileInShelf(move.getColumnToInsert(), shelf, picked);
+            for (PickedTile tile : move.pickedTiles()) {
+                Tile picked = board[tile.row()][tile.col()];
+                board[tile.row()][tile.col()] = Tile.EMPTY;
+                insertTileInShelf(move.columnToInsert(), shelf, picked);
             }
 
             /* Update board and player shelf status*/
@@ -246,8 +246,8 @@ public class StandardGameController implements GameController, LobbyController {
     private boolean areTilesDifferent(List<PickedTile> pickedTiles) {
         for (int i = 0; i < pickedTiles.size() - 2; i++) {
             for (int j = i + 1; j < pickedTiles.size() - 1; j++) {
-                if (pickedTiles.get(i).getRow() == pickedTiles.get(j).getRow())
-                    if (pickedTiles.get(i).getCol() == pickedTiles.get(j).getCol())
+                if (pickedTiles.get(i).row() == pickedTiles.get(j).row())
+                    if (pickedTiles.get(i).col() == pickedTiles.get(j).col())
                         return false;
             }
         }
@@ -278,17 +278,14 @@ public class StandardGameController implements GameController, LobbyController {
         if (row == 0 || column == 0 || row == board.length - 1 || column == board[0].length - 1)
             return true;
 
-        if (board[row - 1][column] == Tile.EMPTY
+        return board[row - 1][column] == Tile.EMPTY
                 || board[row + 1][column] == Tile.EMPTY
                 || board[row][column - 1] == Tile.EMPTY
                 || board[row][column + 1] == Tile.EMPTY
                 || board[row - 1][column] == null //TODO decidere se lasciare null o EMPTY
                 || board[row + 1][column] == null
                 || board[row][column - 1] == null
-                || board[row][column + 1] == null)
-            return true;
-
-        return false;
+                || board[row][column + 1] == null;
     }
 
     private boolean evaluateFullShelf(Tile[][] shelf) {
