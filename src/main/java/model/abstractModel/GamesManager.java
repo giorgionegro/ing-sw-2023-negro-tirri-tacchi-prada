@@ -8,6 +8,8 @@ public abstract class GamesManager extends Observable<GamesManager.Event>{
 
     public enum Event {
         GAME_CREATED
+        ,
+        GAME_REMOVED
     }
 
     public abstract void addGame(String gameId, Game newMatch) throws GameAlreadyExistsException;
