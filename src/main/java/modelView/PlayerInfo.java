@@ -6,20 +6,10 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class PlayerInfo implements Serializable {
+/**
+ * @param errorMessage error message
+ * @param achievedCommonGoals - map of achieved common goals
+ */
+public record PlayerInfo(String errorMessage, Map<String, Token> achievedCommonGoals) implements Serializable {
 
-    private final String errorMessage;
-    private final Map<String, Token> achievedCommonGoals;
-    public PlayerInfo(String errorMessage, Map<String,Token> achievedCommonGoals){
-        this.errorMessage = errorMessage;
-        this.achievedCommonGoals = new HashMap<>(achievedCommonGoals);
-    }
-
-    public String getErrorMessage(){
-        return errorMessage;
-    }
-
-    public Map<String,Token> getAchievedCommonGoals(){
-        return achievedCommonGoals;
-    }
 }

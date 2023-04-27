@@ -5,20 +5,13 @@ import model.Tile;
 import java.io.Serializable;
 import java.util.Arrays;
 
-public class ShelfInfo implements Serializable {
-    private final Tile[][] shelf;
-
-    private final String playerId;
-
-    public ShelfInfo(String playerId, Tile[][] shelf){
+/**
+ * @param playerId player id
+ * @param shelf   shelf of the player
+ */
+public record ShelfInfo(String playerId, Tile[][] shelf) implements Serializable {
+    public ShelfInfo(String playerId, Tile[][] shelf) {
         this.playerId = playerId;
         this.shelf = Arrays.stream(shelf).map(Tile[]::clone).toArray(Tile[][]::new);
-    }
-    public Tile[][] getShelf() {
-        return shelf;
-    }
-
-    public String getPlayerId() {
-        return playerId;
     }
 }

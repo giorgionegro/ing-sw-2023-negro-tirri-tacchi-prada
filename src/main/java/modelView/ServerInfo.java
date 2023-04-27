@@ -5,23 +5,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-//TODO DA ELIMINARE ??
-public class ServerInfo implements Serializable {
-
-    private final String error; //TODO Change definition of error
-
-    private final List<GamesManagerInfo> lobbies;
+/**
+ * @param error TODO Change definition of error
+ */ //TODO DA ELIMINARE ??
+public record ServerInfo(String error, List<GamesManagerInfo> lobbies) implements Serializable {
 
     public ServerInfo(String error, List<GamesManagerInfo> lobbies) {
         this.error = error;
         this.lobbies = new ArrayList<>(lobbies);
-    }
-
-    public String getError() {
-        return error;
-    }
-
-    public List<GamesManagerInfo> getLobbies() {
-        return lobbies;
     }
 }

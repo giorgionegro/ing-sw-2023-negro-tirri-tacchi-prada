@@ -19,6 +19,7 @@ public class ClientEndPoint extends UnicastRemoteObject implements ClientInterfa
 
     @Override
     public void update(GamesManagerInfo o, GamesManager.Event evt) {
+        cli.updateGamesManager(o,evt);
 
     }
 
@@ -30,7 +31,7 @@ public class ClientEndPoint extends UnicastRemoteObject implements ClientInterfa
     @Override
     public void update(PersonalGoalInfo o, PersonalGoal.Event evt) {
         cli.updatePersonalGoal(o);
-        System.out.println("PersonalGoalView:: "+o.isAchieved());
+        System.out.println("PersonalGoalView:: "+o.achieved());
 
     }
 
@@ -41,7 +42,7 @@ public class ClientEndPoint extends UnicastRemoteObject implements ClientInterfa
 
     @Override
     public void update(PlayerInfo o, Player.Event evt) {
-        System.out.println(o.getErrorMessage());
+        cli.updatePlayerInfo(o,evt);
     }
 
     @Override
@@ -52,18 +53,16 @@ public class ClientEndPoint extends UnicastRemoteObject implements ClientInterfa
     @Override
     public void update(GameInfo o, Game.Event evt) {
         cli.updateGameState(o);
-        //if(evt!=null && evt.equals(Game.GameEvent.NEXT_TURN))
-          //  cli.updateCLI();
     }
 
     @Override
     public void update(CommonGoalInfo o, CommonGoal.Event evt) {
         cli.updateCommonGoal(o);
-        System.out.println("CommonGoalView:: "+o.getDescription()+" "+o.getTokenState());
+        System.out.println("CommonGoalView:: "+o.description()+" "+o.tokenState());
     }
 
     @Override
     public void update(UserInfo o, User.Event evt) throws RemoteException {
-
+        cli.updateUserInfo(o,evt);
     }
 }
