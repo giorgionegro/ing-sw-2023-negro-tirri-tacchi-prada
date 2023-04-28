@@ -12,7 +12,6 @@ import util.Observer;
 
 import java.rmi.RemoteException;
 import java.util.*;
-import java.util.function.BiConsumer;
 
 public class StandardGameController implements GameController, LobbyController {
     private final Game game;
@@ -28,13 +27,130 @@ public class StandardGameController implements GameController, LobbyController {
 
 
     ///LOBBY CONTROLLER/////////////////////
+
+    /**
+     * Observer to update the PlayerInfo
+     * @param newClient client to be added
+     * @return Player's Observer to be added
+     */
+    private static Observer<Player, Player.Event> getPlayerObserver(ClientInterface newClient) {
+        return (o, arg) -> {
+            try {
+                newClient.update(new PlayerInfo(o.getReportedError(), new HashMap<>(o.getAchievedCommonGoals())), arg);
+            } catch (RemoteException e) {
+                throw new RuntimeException(e);
+            }
+        };
+    }
+
+
+    //should we rename newClient to client?
+
+    /**
+     * Observer to update the GameStatus
+     * @param newClient client to be added
+     * @return Observer of the GameStatus to be added
+     */
+
+    private static Observer<Game, Game.Event> getGameObserver(ClientInterface newClient) {
+        return (o, arg) -> {
+            try {
+                newClient.update(new GameInfo(o.getGameStatus(), o.isLastTurn(), o.getTurnPlayerId()), arg);
+            } catch (RemoteException e) {
+                throw new RuntimeException(e);
+            }
+        };
+    }
+
+    /**
+     * Observer to update the CommonGoal
+     * @param newClient client to be added
+     * @return Observer of the CommonGoal to be added
+     */
+
+    private static Observer<CommonGoal, CommonGoal.Event> getCommonGoalObserver(ClientInterface newClient) {
+        return (o, arg) -> {
+            try {
+                newClient.update(new CommonGoalInfo(o.getEvaluator().getDescription(), o.getTopToken()), arg);
+            } catch (RemoteException e) {
+                throw new RuntimeException(e);
+            }
+        };
+    }
+
+    /**
+     * Observer to update the LivingRoom
+     * @param newClient client to be added
+     * @return Observer of the LivingRoom to be added
+     */
+
+    private static Observer<LivingRoom, LivingRoom.Event> getLivingRoomObserver(ClientInterface newClient) {
+        return (o, arg) -> {
+            try {
+                newClient.update(new LivingRoomInfo(o.getBoard()), arg);
+            } catch (RemoteException e) {
+                throw new RuntimeException(e);
+            }
+        };
+    }
+
+    /**
+     * Observer to update the PlayerChat
+     * @param newClient client to be added
+     * @return Observer of the PlayerChat to be added
+     */
+
+    private static Observer<PlayerChat, PlayerChat.Event> getPlayerChatObserver(ClientInterface newClient) {
+        return (o, arg) -> {
+            try {
+                newClient.update(new PlayerChatInfo(o.getMessages()), arg);
+            } catch (RemoteException e) {
+                throw new RuntimeException(e);
+            }
+        };
+    }
+
+    /**
+     * Observer to update the PersonalGoal
+     * @param newClient client to be added
+     * @return Observer of the PersonalGoal to be added
+     */
+
+    private static Observer<PersonalGoal, PersonalGoal.Event> getPersonalGoalObserver(ClientInterface newClient) {
+        return (o, arg) -> {
+            try {
+                newClient.update(new PersonalGoalInfo(o.isAchieved(), o.getDescription()), arg);
+            } catch (RemoteException e) {
+                throw new RuntimeException(e);
+            }
+        };
+    }
+
+    /**
+     * Observer to update the Shelf
+     * @param newClient client to be added
+     * @return Observer of the Shelf to be added
+     */
+
+    private static Observer<Shelf, Shelf.Event> getShelfObserver(ClientInterface newClient, Player joinedPlayer) {
+        return (o, arg) -> {
+            try {
+                newClient.update(new ShelfInfo(joinedPlayer.getId(), o.getTiles()), arg);
+            } catch (RemoteException e) {
+                throw new RuntimeException(e);
+            }
+        };
+    }
+
     /**
      * Add player to the game with all necessary preparations
+     *
      * @param newClient client that wants to join the game
-     * @param playerId id of the player that wants to join the game
+     * @param playerId  id of the player that wants to join the game
      * @throws GameAccessDeniedException if the game is already ended or the player id already exists or the matchmaking is closed
      */
     public synchronized void joinPlayer(ClientInterface newClient, String playerId) throws GameAccessDeniedException {
+        //Should we just Throw the different exceptions instead of catching them?
         try {
             game.addPlayer(playerId);
 
@@ -54,173 +170,53 @@ public class StandardGameController implements GameController, LobbyController {
             }
 
         } catch (GameEndedException e) {
-            throw new GameAccessDeniedException("Game already ended");
+            throw new GameAccessDeniedException("Game already ended");//Should we throw a GameEndedException? it would be easier to handle in the client
         } catch (PlayerAlreadyExistsException | PlayerNotExistsException e) {
-            throw new GameAccessDeniedException("Player id already exists");
+            throw new GameAccessDeniedException("Player id already exists");//Same as above
         } catch (MatchmakingClosedException e) {
-            throw new GameAccessDeniedException("Game matchmaking closed");
+            throw new GameAccessDeniedException("Game matchmaking closed"); //Same as above
         }
     }
 
-
-    //should we rename newClient to client?
     /**
      * Add observers to all needed objects
+     *
      * @param newClient new player's ClientInterface
      * @param newPlayer new player's Player object
      */
     private void addObservers(ClientInterface newClient, Player newPlayer) {
         /* Add Player status observer */
-        addPlayerObserver(newClient, newPlayer);
+        newPlayer.addObserver(getPlayerObserver(newClient));
 
         /* Add Game status observer */
-        addGameObserver(newClient);
+        game.addObserver(getGameObserver(newClient));
 
         /* Add CommonGoal status observers */
-        addCommonGoalsObservers(newClient);
+        game.getCommonGoals().forEach(goal -> goal.addObserver(getCommonGoalObserver(newClient)));
 
         /* Add LivingRoom status observer */
-        addLivingRoomObserver(newClient);
+        game.getLivingRoom().addObserver(getLivingRoomObserver(newClient));
 
         /* Add PlayerChat status observer */
-        addPlayerChatObserver(newClient, newPlayer);
+        newPlayer.getPlayerChat().addObserver(getPlayerChatObserver(newClient));
 
         /* Add PersonalGoals status observer */
-        addPersonalGoalsObservers(newClient, newPlayer);
+        newPlayer.getPersonalGoals().forEach(personalGoal -> personalGoal.addObserver(getPersonalGoalObserver(newClient)));
 
         /* Add Shelf status observer */
-        addPlayerShelfObserver(newClient, newPlayer);
+        newPlayer.getShelf().addObserver(getShelfObserver(newClient, newPlayer));
         /* Add Shelf status observer of new player to all already joined players */
         /* Add Shelf status observer of all already joined players to new player */
         playerAssociation.forEach((joinedClient, joinedPlayer) -> {
-            addPlayerShelfObserver(joinedClient,newPlayer);
-            addPlayerShelfObserver(newClient, joinedPlayer);
+            newPlayer.getShelf().addObserver(getShelfObserver(joinedClient, newPlayer));
+            joinedPlayer.getShelf().addObserver(getShelfObserver(newClient, joinedPlayer));
         });
     }
 
     /**
-     * Add observer to the player Shelf
-     * @param newClient new player's ClientInterface
-     * @param newPlayer new player's Player object
-     */
-    private static void addPlayerShelfObserver(ClientInterface newClient, Player newPlayer) {
-        newPlayer.getShelf().addObserver(
-            (Observer<Shelf, Shelf.Event>) (o, arg) -> {
-                try {
-                    newClient.update(new ShelfInfo(newPlayer.getId(), o.getTiles()), arg);
-                } catch (RemoteException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        );
-    }
-
-    /**
-     * Add observer to the personal goals of the new player
-     * @param newClient new player's ClientInterface
-     * @param newPlayer new player's Player object
-     */
-    private static void addPersonalGoalsObservers(ClientInterface newClient, Player newPlayer) {
-        for (PersonalGoal personalGoal : newPlayer.getPersonalGoals()) {
-            personalGoal.addObserver(
-                (Observer<PersonalGoal, PersonalGoal.Event>) (o, arg) -> {
-                    try {
-                        newClient.update(new PersonalGoalInfo(o.isAchieved(), o.getDescription()), arg);
-                    } catch (RemoteException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            );
-        }
-    }
-
-    /**
-     * Add observer to the new player's PlayerChat
-     * @param newClient new player's ClientInterface
-     * @param newPlayer new player's Player object
-     */
-    private static void addPlayerChatObserver(ClientInterface newClient, Player newPlayer) {
-        newPlayer.getPlayerChat().addObserver(
-            (Observer<PlayerChat, PlayerChat.Event>) (o, arg) -> {
-                try {
-                    newClient.update(new PlayerChatInfo(o.getMessages()), arg);
-                } catch (RemoteException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        );
-    }
-
-    /**
-     * Add observer to the Player status
-     * @param newClient new player's ClientInterface
-     */
-    private void addLivingRoomObserver(ClientInterface newClient) {
-        game.getLivingRoom().addObserver(
-            (Observer<LivingRoom, LivingRoom.Event>) (o, arg) -> {
-                try {
-                    newClient.update(new LivingRoomInfo(o.getBoard()), arg);
-                } catch (RemoteException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        );
-    }
-
-    /**
-     * Add observer to the CommonGoals of the game
-     * @param newClient new player's ClientInterface
-     */
-    private void addCommonGoalsObservers(ClientInterface newClient) {
-        for (CommonGoal goal : game.getCommonGoals()) {
-            goal.addObserver(
-                (Observer<CommonGoal, CommonGoal.Event>) (o, arg) -> {
-                    try {
-                        newClient.update(new CommonGoalInfo(o.getEvaluator().getDescription(), o.getTopToken()), arg);
-                    } catch (RemoteException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            );
-        }
-    }
-
-    /**
-     * Add observer to the Game status
-     * @param newClient new player's ClientInterface
-     */
-    private void addGameObserver(ClientInterface newClient) {
-        game.addObserver(
-            (Observer<Game, Game.Event>) (o, arg) -> {
-                try {
-                    newClient.update(new GameInfo(o.getGameStatus(), o.isLastTurn(), o.getTurnPlayerId()), arg);
-                } catch (RemoteException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        );
-    }
-
-    /**
-     * Add observer to the Player Info
-     * @param newClient new player's ClientInterface
-     * @param newPlayer new player's Player object
-     */
-    private static void addPlayerObserver(ClientInterface newClient, Player newPlayer) {
-        newPlayer.addObserver(
-            (Observer<Player, Player.Event>) (o, arg) -> {
-                try {
-                    newClient.update(new PlayerInfo(o.getReportedError(), new HashMap<>(o.getAchievedCommonGoals())), arg);
-                } catch (RemoteException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        );
-    }
-
-    /**
      * Execute a player move
-     * @param client new player's ClientInterface
+     *
+     * @param client     new player's ClientInterface
      * @param playerMove player move to execute
      */
     public synchronized void doPlayerMove(ClientInterface client, PlayerMoveInfo playerMove) {
@@ -298,7 +294,8 @@ public class StandardGameController implements GameController, LobbyController {
     }
 
     /**
-     * @param client new player's ClientInterface
+     * Send a message to players included in the message subject
+     * @param client     new player's ClientInterface
      * @param newMessage message to send
      */
     public synchronized void sendMessage(ClientInterface client, Message newMessage) {
@@ -316,6 +313,8 @@ public class StandardGameController implements GameController, LobbyController {
         }
     }
 
+
+    //do we need javadoc for private methods?
     /**
      * @param pickedTiles list of picked tiles
      * @return true if tiles are different, false otherwise
@@ -331,9 +330,11 @@ public class StandardGameController implements GameController, LobbyController {
         return true;
     }
 
+
+    //Same as above
     /**
      * @param column column to check
-     * @param shelf player shelf
+     * @param shelf  player shelf
      * @return number of free spaces in the column
      */
     private int freeShelfColumnSpaces(int column, Tile[][] shelf) {
@@ -345,10 +346,11 @@ public class StandardGameController implements GameController, LobbyController {
         return spaces;
     }
 
+    //Same as above
     /**
      * @param column column to check
-     * @param shelf player shelf
-     * @param tile tile to insert
+     * @param shelf  player shelf
+     * @param tile   tile to insert
      */
     private void insertTileInShelf(int column, Tile[][] shelf, Tile tile) {
         int row = shelf.length - 1;
@@ -359,9 +361,9 @@ public class StandardGameController implements GameController, LobbyController {
     }
 
     /**
-     * @param row row of the tile
+     * @param row    row of the tile
      * @param column column of the tile
-     * @param board board to check
+     * @param board  board to check
      * @return true if tile is pickable, false otherwise
      */
     private boolean isTilePickable(int row, int column, Tile[][] board) {
