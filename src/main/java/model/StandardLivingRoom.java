@@ -5,8 +5,17 @@ import model.abstractModel.LivingRoom;
 import java.util.*;
 
 public class StandardLivingRoom extends LivingRoom {
+    /**
+     * Game board of this living room
+    */
     private Tile[][] board;
+    /**
+     * Bag of Tiles used to fill the board
+     */
     private final Stack<Tile> bag;
+    /**
+     * Number of players of the game that uses this Living Room
+     */
     private final int numberOfPlayers;
 
     /**
