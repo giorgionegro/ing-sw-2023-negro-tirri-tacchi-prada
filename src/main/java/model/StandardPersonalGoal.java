@@ -89,8 +89,8 @@ public  class StandardPersonalGoal extends PersonalGoal {
         if(playerShelf.length < this.row && playerShelf[0].length < this.column){
             throw new IndexOutOfBoundsException("Shelf not big enough, cannot achieved the goal");
         }
-        if(playerShelf[row][column] == null){
-            throw new NullPointerException("Cella vuota");
+        if(playerShelf[row][column] == Tile.EMPTY){
+            return false;
         }
         return (this.tile.getColor()).equals(playerShelf[row][column].getColor());
     }
