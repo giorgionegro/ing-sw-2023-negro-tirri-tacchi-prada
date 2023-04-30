@@ -53,7 +53,7 @@ public  class StandardPersonalGoal extends PersonalGoal {
         Tile[][] ShelfPersonalGoal = new Tile[6][5];
         //fill the shelf with empty tiles
         Arrays.stream(ShelfPersonalGoal).forEach(row -> Arrays.fill(row, Tile.EMPTY));
-        ShelfPersonalGoal[this.row][this.column] = Tile.valueOf(this.tile.getColor());
+        ShelfPersonalGoal[this.row][this.column] = this.tile;
         return ShelfPersonalGoal;
     }
 
