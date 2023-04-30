@@ -2,6 +2,8 @@ package model;
 
 import model.abstractModel.PersonalGoal;
 
+import java.util.Arrays;
+
 /**
  * This class is an implementation of {@link PersonalGoal}.
  * <p>
@@ -38,28 +40,21 @@ public  class StandardPersonalGoal extends PersonalGoal {
         this.achieved = false;
     }
 
+
+
     /**
      * {@inheritDoc}
      *
      * @return a Matrix with the description of the personal Goal
      */
-    public Tile[][] getDescription(Tile[][] playerShelf) {
-        int i, j;
-        Tile[][] ShelfPersonalGoal = new Tile[playerShelf.length][];
-        for(i=0; i < playerShelf.length; i ++){
-            for(j=0; j < playerShelf[0].length; j++){
-                if(this.row == i && this.column == j){
-                   ShelfPersonalGoal[i][j] = Tile.valueOf(this.tile.getColor());
-                }
-            }
-        }
-        return ShelfPersonalGoal;
- }
-
-
     @Override
     public Tile[][] getDescription() {
-        return new Tile[0][];
+        //shelf dimension 6x5
+        Tile[][] ShelfPersonalGoal = new Tile[6][5];
+        //fill the shelf with empty tiles
+        Arrays.stream(ShelfPersonalGoal).forEach(row -> Arrays.fill(row, Tile.EMPTY));
+        ShelfPersonalGoal[this.row][this.column] = Tile.valueOf(this.tile.getColor());
+        return ShelfPersonalGoal;
     }
 
     /**

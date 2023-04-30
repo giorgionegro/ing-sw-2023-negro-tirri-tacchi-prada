@@ -1,11 +1,12 @@
 package modelView;
 
+import model.Tile;
+
 import java.io.Serializable;
 
 /**
  * @param achieved - true if the goal is achieved
- * @param description - description of the goal //TODO cambiare rappresentazione personal GOAL
+ * @param description - matrix rappresentation of the goal
  */
-//TODO cambiare rappresentazione personal GOAL
-public record PersonalGoalInfo(boolean achieved, String description) implements Serializable {
+public record PersonalGoalInfo(boolean achieved, Tile[][] description) implements Serializable {
 }
