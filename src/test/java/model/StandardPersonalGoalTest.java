@@ -2,19 +2,24 @@ package model;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class StandardPersonalGoalTest {
 
     @Test
     void TestDescription() {
-        StandardPersonalGoal test = new StandardPersonalGoal(Tile.BOOKS_2, 3, 5);
-        assertEquals("Put Tile White in row: 3 and column 5", test.getDescription());
+        StandardPersonalGoal test = new StandardPersonalGoal(Tile.BOOKS_2, 3, 4);
+        Tile[][] TestMatrix = new  Tile[6][5];
+        Arrays.stream(TestMatrix).forEach(row -> Arrays.fill(row, Tile.EMPTY));
+        TestMatrix[3][4] = Tile.BOOKS_2;
+        assertArrayEquals(TestMatrix, test.getDescription());
     }
 
     @Test
     void testAchieving(){
-        StandardPersonalGoal test = new StandardPersonalGoal(Tile.BOOKS_2, 3, 5);
+        StandardPersonalGoal test = new StandardPersonalGoal(Tile.BOOKS_2, 3, 4);
         if(test.isAchieved())
             fail("Goal achieved at instance");
 
@@ -25,7 +30,7 @@ class StandardPersonalGoalTest {
 
     @Test //Test Tile out of bound.
     void TestEvaluate() {
-        StandardPersonalGoal test = new StandardPersonalGoal(Tile.BOOKS_2, 3, 5);
+        StandardPersonalGoal test = new StandardPersonalGoal(Tile.BOOKS_2, 3, 4);
         try {
             test.evaluate(new Tile[2][4]);
             fail();
@@ -35,7 +40,7 @@ class StandardPersonalGoalTest {
     }
     @Test //Test shelf cell empty.
     void TestEvaluate2() {
-        StandardPersonalGoal test = new StandardPersonalGoal(Tile.BOOKS_2, 3, 5);
+        StandardPersonalGoal test = new StandardPersonalGoal(Tile.BOOKS_2, 3, 4);
         try {
             assertFalse(test.evaluate(new Tile[9][9]));
             fail();
@@ -45,16 +50,18 @@ class StandardPersonalGoalTest {
     }
     @Test //Tile in the correct position.
     void TestEvaluate3() {
-        StandardPersonalGoal test = new StandardPersonalGoal(Tile.BOOKS_2, 3, 5);
+        StandardPersonalGoal test = new StandardPersonalGoal(Tile.BOOKS_2, 3, 4);
         Tile[][] matrice = new  Tile[9][9];
-        matrice[3][5] = Tile.BOOKS_2;
+        Arrays.stream(matrice).forEach(row -> Arrays.fill(row, Tile.EMPTY));
+        matrice[3][4] = Tile.BOOKS_3;
         assertTrue(test.evaluate(matrice));
     }
     @Test //Tile in the wrong position.
     void TestEvaluate4() {
-        StandardPersonalGoal test = new StandardPersonalGoal(Tile.BOOKS_2, 3, 5);
+        StandardPersonalGoal test = new StandardPersonalGoal(Tile.BOOKS_2, 3, 4);
         Tile[][] matrice = new  Tile[9][9];
-        matrice[3][5] = Tile.CATS_1;
+        Arrays.stream(matrice).forEach(row -> Arrays.fill(row, Tile.EMPTY));
+        matrice[3][4] = Tile.CATS_1;
         assertFalse(test.evaluate(matrice));
     }
 }
