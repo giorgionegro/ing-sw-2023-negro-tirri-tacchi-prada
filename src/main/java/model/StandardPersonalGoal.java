@@ -7,7 +7,7 @@ import model.abstractModel.PersonalGoal;
  * <p>
  * In order to achieve this personal goal there must be a particular {@link #tile} in a particular position in the shelf, defined as {@link #row} and {@link #column}
  */
-public class StandardPersonalGoal extends PersonalGoal {
+public  class StandardPersonalGoal extends PersonalGoal {
     /**
      * Tile type target of the goal
      */
@@ -40,11 +40,26 @@ public class StandardPersonalGoal extends PersonalGoal {
 
     /**
      * {@inheritDoc}
-     * @return a string with the description of the personal Goal
+     *
+     * @return a Matrix with the description of the personal Goal
      */
+    public Tile[][] getDescription(Tile[][] playerShelf) {
+        int i, j;
+        Tile[][] ShelfPersonalGoal = new Tile[playerShelf.length][];
+        for(i=0; i < playerShelf.length; i ++){
+            for(j=0; j < playerShelf[0].length; j++){
+                if(this.row == i && this.column == j){
+                   ShelfPersonalGoal[i][j] = Tile.valueOf(this.tile.getColor());
+                }
+            }
+        }
+        return ShelfPersonalGoal;
+ }
+
+
     @Override
-    public String getDescription() {
-        return "Put Tile " + this.tile.getColor() + " in row: " + this.row + " and column " + this.column;
+    public Tile[][] getDescription() {
+        return new Tile[0][];
     }
 
     /**
