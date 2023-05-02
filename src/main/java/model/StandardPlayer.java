@@ -37,6 +37,10 @@ public class StandardPlayer extends Player {
      */
     private final PlayerChat chat;
 
+    /**
+     * last error the player reported during gameplay
+     */
+
     private String errorReport;
 
     /**
@@ -106,12 +110,21 @@ public class StandardPlayer extends Player {
         notifyObservers(Event.COMMONGOAL_ACHIEVED);
     }
 
+    /**
+     * {@inheritDoc}
+     * @param error the error description
+     */
+    @Override
     public void reportError(String error){
         this.errorReport = error;
         setChanged();
         notifyObservers(Event.ERROR_REPORTED);
     }
 
+    /**
+     * {@inheritDoc}
+     * @return {@link #errorReport}
+     */
     @Override
     public String getReportedError() {
         return errorReport;

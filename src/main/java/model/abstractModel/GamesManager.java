@@ -10,8 +10,7 @@ public abstract class GamesManager extends Observable<GamesManager.Event>{
      * This enumeration contains all the games manager events that can be sent to observers
      */
     public enum Event {
-        GAME_CREATED
-        ,
+        GAME_CREATED,
         GAME_REMOVED
     }
 

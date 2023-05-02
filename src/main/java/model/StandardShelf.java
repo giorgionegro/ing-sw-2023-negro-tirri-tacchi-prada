@@ -19,7 +19,7 @@ public class StandardShelf extends Shelf {
     }
 
     /**
-     * This method returns a copy of the {@link #shelf}
+     * This method returns a copy of {@link #tiles}
      * @return a 2d array representing the shelf
      */
     @Override
