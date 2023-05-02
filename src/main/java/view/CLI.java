@@ -94,7 +94,7 @@ public class CLI {
         if(!playerId.equals(""))
             server.joinGame(client,new LoginInfo(playerId,gameId));
         synchronized (lock) {
-        while (user != null && user.status() != User.Status.JOINED) {
+        while (user == null || user.status() != User.Status.JOINED) {
             try {
 
                     lock.wait();
@@ -104,18 +104,14 @@ public class CLI {
             }
         }
         }
-        if(user != null)
-        {
-            this.thisPlayerId = playerId;
-            login = false;
-            gameRoutine(this, client, server, playerId);
-    }
+        this.thisPlayerId = playerId;
+        login = false;
+        gameRoutine(this, client, server, playerId);
     }
 
     private void gameRoutine(CLI cli, ClientInterface client, ServerInterface sInt, String playerId) throws RemoteException {
-        String readLine;
         while (true) {
-            readLine = readCommandLine("(h for commands)-> ");
+            String readLine = readCommandLine("(h for commands)-> ");
             render();
             switch (readLine) {
                 case "h" -> {
@@ -211,13 +207,15 @@ public class CLI {
 
                 }
                 case "3" -> {
+                    String subject;
+                    String content;
                     synchronized (this) {
-                        String subject = readCommandLine("Message Subject (empty for everyone): ");
+                         subject = readCommandLine("Message Subject (empty for everyone): ");
                         render();
-                        String content = readCommandLine("Message content: ");
+                        content = readCommandLine("Message content: ");
                         render();
-                        sInt.sendMessage(client, new StandardMessage(playerId, subject, content));
                     }
+                    sInt.sendMessage(client, new StandardMessage(playerId, subject, content));
                 }
                 default -> {printCommandLine("Wrong command",RED);
                     render();}
@@ -398,6 +396,7 @@ public class CLI {
     }
 
     private void drawShelfs() {
+
         final String tops = "    ";
         final String centerLeft ="├───";
         final String centerCenter ="┼───";
@@ -460,6 +459,8 @@ public class CLI {
             cliPixel[shelf.length*2+1][start+1]='└';
             cliPixel[shelf.length*2+1][start+shelf[0].length*4+1]='┘';
         }
+        for (int i = 0; i < (currentShelfs.values().stream().toList().get(0)).shelf()[0].length+4+5;i++)
+            cliPixel[1+currentShelfs.values().stream().toList().get(0).shelf().length*2 +1][margin+i]=' ';
         //draw under each shelf you if you are in that shelf or the number of player in the shelf
         for (int i = 0; i < currentShelfs.size(); i++) {
             ShelfInfo shelf = currentShelfs.values().stream().toList().get(i);
