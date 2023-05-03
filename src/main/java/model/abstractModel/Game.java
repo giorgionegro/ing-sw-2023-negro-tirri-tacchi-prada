@@ -4,6 +4,7 @@ import model.exceptions.GameEndedException;
 import model.exceptions.MatchmakingClosedException;
 import model.exceptions.PlayerAlreadyExistsException;
 import model.exceptions.PlayerNotExistsException;
+import modelView.GameInfo;
 import util.Observable;
 
 import java.util.List;
@@ -115,4 +116,10 @@ public abstract class Game extends Observable<Game.Event>{
      * @return the living room of the game
      */
     public abstract LivingRoom getLivingRoom();
+
+    /**
+     * TODO
+     * @return
+     */
+    public abstract GameInfo getInfo();
 }

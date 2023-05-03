@@ -1,6 +1,7 @@
 package model;
 
 import model.abstractModel.LivingRoom;
+import modelView.LivingRoomInfo;
 
 import java.util.*;
 
@@ -68,8 +69,17 @@ public class StandardLivingRoom extends LivingRoom {
     }
 
     /**
+     * //TODO
+     * @return
+     */
+    @Override
+    public LivingRoomInfo getInfo(){
+        return new LivingRoomInfo(getBoard());
+    }
+
+    /**
      * this method returns the game bag
-     * @return a stack of Tiles representing the game bag
+     * @return {@link #bag}
      */
     public Stack<Tile> getBag(){
         return bag;

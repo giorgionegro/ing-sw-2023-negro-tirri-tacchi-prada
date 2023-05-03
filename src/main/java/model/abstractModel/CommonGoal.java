@@ -1,6 +1,7 @@
 package model.abstractModel;
 
 import model.Token;
+import modelView.CommonGoalInfo;
 import util.Observable;
 
 import java.util.Stack;
@@ -69,5 +70,13 @@ public abstract class CommonGoal extends Observable<CommonGoal.Event> {
         setChanged();
         notifyObservers(Event.TOKEN_PICKED);
         return t;
+    }
+
+    /**
+     * TODO
+     * @return
+     */
+    public CommonGoalInfo getInfo(){
+        return new CommonGoalInfo(evaluator.getDescription(), getTopToken());
     }
 }

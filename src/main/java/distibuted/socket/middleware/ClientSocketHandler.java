@@ -16,7 +16,7 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.rmi.RemoteException;
 
-public class ServerStub implements ServerInterface, AppServer {
+public class ClientSocketHandler implements ServerInterface, AppServer {
 
     private final String ip;
     private final int port;

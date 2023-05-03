@@ -2,7 +2,7 @@ import controller.StandardServerController;
 import distibuted.interfaces.AppServer;
 import distibuted.interfaces.ClientInterface;
 import distibuted.interfaces.ServerInterface;
-import distibuted.socket.middleware.ClientSkeleton;
+import distibuted.socket.middleware.ServerSocketHandler;
 
 import java.io.File;
 import java.io.IOException;
@@ -90,10 +90,10 @@ public class Server extends UnicastRemoteObject implements AppServer
                 Socket socket = serverSocket.accept();
                 executorService.submit(() -> {
                     try {
-                        ClientSkeleton clientSkeleton = new ClientSkeleton(socket);
-                        ServerInterface server = getInstance().connect(clientSkeleton);
+                        ServerSocketHandler serverSocketHandler = new ServerSocketHandler(socket);
+                        ServerInterface server = getInstance().connect(serverSocketHandler);
                         while (true) {
-                            clientSkeleton.waitForReceive(server);
+                            serverSocketHandler.waitForReceive(server);
                         }
                     } catch (RemoteException e) {
                         System.err.println("Cannot receive from client. Closing this connection...");

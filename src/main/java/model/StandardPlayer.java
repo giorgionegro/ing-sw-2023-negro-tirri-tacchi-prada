@@ -4,6 +4,7 @@ import model.abstractModel.PersonalGoal;
 import model.abstractModel.Player;
 import model.abstractModel.PlayerChat;
 import model.abstractModel.Shelf;
+import modelView.PlayerInfo;
 
 import java.util.*;
 
@@ -128,5 +129,14 @@ public class StandardPlayer extends Player {
     @Override
     public String getReportedError() {
         return errorReport;
+    }
+
+    /**
+     * TODO
+     * @return
+     */
+    @Override
+    public PlayerInfo getInfo(){
+        return new PlayerInfo(errorReport, new HashMap<>(achievedCommonGoals));
     }
 }

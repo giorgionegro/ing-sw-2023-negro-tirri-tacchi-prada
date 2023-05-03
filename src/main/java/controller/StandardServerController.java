@@ -43,7 +43,7 @@ public class StandardServerController implements ServerController, GameManagerCo
         newUser.addObserver(
                 (Observer<User, User.Event>) (o, arg) -> {
                     try{
-                        client.update(new UserInfo(o.getStatus(),o.getReportedError()),arg);
+                        client.update(o.getInfo(),arg);
                     } catch (RemoteException e) {
                         throw new RuntimeException(e);
                     }

@@ -1,6 +1,7 @@
 package model.abstractModel;
 
 import model.Tile;
+import modelView.LivingRoomInfo;
 import util.Observable;
 
 /**
@@ -37,4 +38,10 @@ public abstract class LivingRoom extends Observable<LivingRoom.Event> {
      * This method modify the current representation of living room board on the base of subclass implementation defined pattern
      */
     public abstract void refillBoard();
+
+    /**
+     * TODO
+     * @return
+     */
+    public abstract LivingRoomInfo getInfo();
 }

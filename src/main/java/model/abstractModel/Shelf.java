@@ -1,6 +1,7 @@
 package model.abstractModel;
 
 import model.Tile;
+import modelView.ShelfInfo;
 import util.Observable;
 
 /**
@@ -32,4 +33,10 @@ public abstract class Shelf extends Observable<Shelf.Event> {
      * @param modifiedShelf the new representation of living room board
      */
     public abstract void setTiles(Tile[][] modifiedShelf);
+
+    /**
+     * TODO
+     * @return
+     */
+    public abstract ShelfInfo getInfo(String playerId);
 }

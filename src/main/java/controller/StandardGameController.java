@@ -36,7 +36,7 @@ public class StandardGameController implements GameController, LobbyController {
     private static Observer<Player, Player.Event> getPlayerObserver(ClientInterface newClient) {
         return (o, arg) -> {
             try {
-                newClient.update(new PlayerInfo(o.getReportedError(), new HashMap<>(o.getAchievedCommonGoals())), arg);
+                newClient.update(o.getInfo(), arg);
             } catch (RemoteException e) {
                 throw new RuntimeException(e);
             }
@@ -55,7 +55,7 @@ public class StandardGameController implements GameController, LobbyController {
     private static Observer<Game, Game.Event> getGameObserver(ClientInterface newClient) {
         return (o, arg) -> {
             try {
-                newClient.update(new GameInfo(o.getGameStatus(), o.isLastTurn(), o.getTurnPlayerId()), arg);
+                newClient.update(o.getInfo(), arg);
             } catch (RemoteException e) {
                 throw new RuntimeException(e);
             }
@@ -71,7 +71,7 @@ public class StandardGameController implements GameController, LobbyController {
     private static Observer<CommonGoal, CommonGoal.Event> getCommonGoalObserver(ClientInterface newClient) {
         return (o, arg) -> {
             try {
-                newClient.update(new CommonGoalInfo(o.getEvaluator().getDescription(), o.getTopToken()), arg);
+                newClient.update(o.getInfo(), arg);
             } catch (RemoteException e) {
                 throw new RuntimeException(e);
             }
@@ -87,7 +87,7 @@ public class StandardGameController implements GameController, LobbyController {
     private static Observer<LivingRoom, LivingRoom.Event> getLivingRoomObserver(ClientInterface newClient) {
         return (o, arg) -> {
             try {
-                newClient.update(new LivingRoomInfo(o.getBoard()), arg);
+                newClient.update(o.getInfo(), arg);
             } catch (RemoteException e) {
                 throw new RuntimeException(e);
             }
@@ -103,7 +103,7 @@ public class StandardGameController implements GameController, LobbyController {
     private static Observer<PlayerChat, PlayerChat.Event> getPlayerChatObserver(ClientInterface newClient) {
         return (o, arg) -> {
             try {
-                newClient.update(new PlayerChatInfo(o.getMessages()), arg);
+                newClient.update(o.getInfo(), arg);
             } catch (RemoteException e) {
                 throw new RuntimeException(e);
             }
@@ -119,7 +119,7 @@ public class StandardGameController implements GameController, LobbyController {
     private static Observer<PersonalGoal, PersonalGoal.Event> getPersonalGoalObserver(ClientInterface newClient) {
         return (o, arg) -> {
             try {
-                newClient.update(new PersonalGoalInfo(o.isAchieved(), o.getDescription()), arg);
+                newClient.update(o.getInfo(), arg);
             } catch (RemoteException e) {
                 throw new RuntimeException(e);
             }
@@ -135,7 +135,7 @@ public class StandardGameController implements GameController, LobbyController {
     private static Observer<Shelf, Shelf.Event> getShelfObserver(ClientInterface newClient, Player joinedPlayer) {
         return (o, arg) -> {
             try {
-                newClient.update(new ShelfInfo(joinedPlayer.getId(), o.getTiles()), arg);
+                newClient.update(o.getInfo(joinedPlayer.getId()), arg);
             } catch (RemoteException e) {
                 throw new RuntimeException(e);
             }
@@ -250,7 +250,8 @@ public class StandardGameController implements GameController, LobbyController {
             if (!areTilesDifferent(playerMove.pickedTiles()))
                 throw new IllegalArgumentException("Tiles are not different");
 
-            //TODO controllo che le tile scelte siano in linea
+            if(!areTilesAligned(playerMove.pickedTiles()))
+                throw new IllegalArgumentException("Tile are not aligned");
 
             for (PickedTile tile : playerMove.pickedTiles())
                 if (!isTilePickable(tile.row(), tile.col(), board))
@@ -279,17 +280,31 @@ public class StandardGameController implements GameController, LobbyController {
 
                 game.setLastTurn();
             }
+
             /* Check if player has achieved common goals */
             for (CommonGoal commonGoal : game.getCommonGoals())
                 if (!player.getAchievedCommonGoals().containsKey(commonGoal.getEvaluator().getDescription()))
                     if (commonGoal.getEvaluator().evaluate(shelf))
                         player.addAchievedCommonGoal(commonGoal.getEvaluator().getDescription(), commonGoal.popToken());
 
+
+            /* Check if player has achieved personal goals*/
+            for(PersonalGoal personalGoal : player.getPersonalGoals()){
+                if(!personalGoal.isAchieved())
+                    if(personalGoal.evaluate(shelf))
+                        personalGoal.setAchieved();
+            }
+
+
+            //TODO salvare il gioco
+
             /* Pass turn to next player */
             game.updatePlayersTurn();
 
-        } catch (IllegalArgumentException | GameNotStartedException | GameEndedException e) {
+        } catch (IllegalArgumentException | GameNotStartedException e) {
             playerAssociation.get(client).reportError(e.getMessage());
+        } catch (GameEndedException e){
+
         }
     }
 
@@ -390,5 +405,17 @@ public class StandardGameController implements GameController, LobbyController {
                     return false;
 
         return true;
+    }
+
+    private boolean areTilesAligned(List<PickedTile> pickedTiles){
+
+        boolean rowAligned = true;
+        boolean colAligned = true;
+        for(int i = 1; i<pickedTiles.size(); i++){
+            rowAligned = rowAligned && (pickedTiles.get(i-1).row() == pickedTiles.get(i).row());
+            colAligned = colAligned && (pickedTiles.get(i-1).col() == pickedTiles.get(i).col());
+        }
+
+        return rowAligned || colAligned;
     }
 }

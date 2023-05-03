@@ -1,6 +1,7 @@
 package model;
 
 import model.abstractModel.PersonalGoal;
+import modelView.PersonalGoalInfo;
 
 import java.util.Arrays;
 
@@ -91,5 +92,14 @@ public  class StandardPersonalGoal extends PersonalGoal {
             return false;
         }
         return (this.tile.getColor()).equals(playerShelf[row][column].getColor());
+    }
+
+    /**
+     * TODO
+     * @return
+     */
+    @Override
+    public PersonalGoalInfo getInfo() {
+        return new PersonalGoalInfo(achieved, getDescription());
     }
 }

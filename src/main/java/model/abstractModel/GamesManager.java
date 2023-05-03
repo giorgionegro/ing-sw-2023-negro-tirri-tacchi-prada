@@ -1,6 +1,7 @@
 package model.abstractModel;
 
 import model.exceptions.*;
+import modelView.GamesManagerInfo;
 import util.Observable;
 
 
@@ -30,4 +31,9 @@ public abstract class GamesManager extends Observable<GamesManager.Event>{
      */
     public abstract Game getGame(String gameId) throws GameNotExistsException;
 
+    /**
+     * TODO
+     * @return
+     */
+    public abstract GamesManagerInfo getInfo();
 }
