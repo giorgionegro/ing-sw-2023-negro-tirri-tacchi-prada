@@ -280,6 +280,7 @@ public class StandardGame extends Game {
         result.add(createPersonalGoal(new Tile[]{Tile.TROPHIES_1, Tile.GAMES_1, Tile.BOOKS_1, Tile.CATS_1, Tile.FRAMES_1, Tile.PLANTS_1}, new int[]{0,1,2,3,4,5}, new int[]{4,1,0,3,1,3}));
         result.add(createPersonalGoal(new Tile[]{Tile.PLANTS_1, Tile.BOOKS_1, Tile.GAMES_1, Tile.FRAMES_1, Tile.CATS_1, Tile.TROPHIES_1}, new int[]{0,1,2,3,4,5}, new int[]{2,1,0,2,4,3}));
         result.add(createPersonalGoal(new Tile[]{Tile.BOOKS_1, Tile.PLANTS_1, Tile.FRAMES_1, Tile.TROPHIES_1, Tile.GAMES_1, Tile.CATS_1}, new int[]{0,1,2,3,4,5}, new int[]{2,1,2,3,4,0}));
+        Collections.shuffle(result);
         return result;
     }
 
@@ -288,7 +289,7 @@ public class StandardGame extends Game {
      * @param tiles array of Tiles of the personal goal
      * @param rows array of row position of each Tile
      * @param cols array of column position of each Tile
-     * @return ArrayList representing a sandard personal goal
+     * @return ArrayList representing a standard personal goal
      */
     private ArrayList<PersonalGoal> createPersonalGoal(Tile[] tiles, int[] rows, int[] cols ){
         ArrayList<PersonalGoal> personalGoal = new ArrayList<>();
