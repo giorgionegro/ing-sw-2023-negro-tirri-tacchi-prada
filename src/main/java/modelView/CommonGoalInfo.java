@@ -8,5 +8,4 @@ import java.io.Serializable;
  * @param description - description of the goal
  * @param tokenState - token state of the goal
  */
-public record CommonGoalInfo(String description, Token tokenState) implements Serializable {
-}
+public record CommonGoalInfo(String description, Token tokenState) implements Serializable {}

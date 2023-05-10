@@ -8,5 +8,4 @@ import java.io.Serializable;
  * @param lastTurn - true if the game is in the last turn
  * @param playerOnTurn - player on turn's id
  */
-public record GameInfo(Game.GameStatus status, boolean lastTurn, String playerOnTurn) implements Serializable {
-}
+public record GameInfo(Game.GameStatus status, boolean lastTurn, String playerOnTurn) implements Serializable {}

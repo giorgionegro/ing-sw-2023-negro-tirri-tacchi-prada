@@ -30,6 +30,9 @@ public abstract class Game extends Observable<Game.Event>{
          * This event is sent whenever a player takes turn to the next player
          */
         NEXT_TURN,
+        /**
+         * This event is sent when a player complete his shelf, this event signal this would be the last round of turns
+         */
         LAST_TURN,
         /**
          * This event is sent when the game is ended

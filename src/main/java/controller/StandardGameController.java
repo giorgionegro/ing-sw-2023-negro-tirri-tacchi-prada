@@ -340,7 +340,7 @@ public class StandardGameController implements GameController, LobbyController {
     private int freeShelfColumnSpaces(int column, Tile[][] shelf) {
         int spaces = 0;
         for (Tile[] row : shelf) {
-            if (row[column] == null)// || row[column].equals(Tile.EMPTY))//TODO decidersi se null o EMPTY
+            if (row[column] != Tile.EMPTY)
                 spaces++;
         }
         return spaces;
@@ -354,7 +354,7 @@ public class StandardGameController implements GameController, LobbyController {
      */
     private void insertTileInShelf(int column, Tile[][] shelf, Tile tile) {
         int row = shelf.length - 1;
-        while (shelf[row][column] != null)// || !shelf[row][column].equals(Tile.EMPTY)) //TODO null or EMPTY
+        while (shelf[row][column] != Tile.EMPTY)
             row--;
 
         shelf[row][column] = tile;
@@ -376,11 +376,7 @@ public class StandardGameController implements GameController, LobbyController {
         return board[row - 1][column] == Tile.EMPTY
                 || board[row + 1][column] == Tile.EMPTY
                 || board[row][column - 1] == Tile.EMPTY
-                || board[row][column + 1] == Tile.EMPTY
-                || board[row - 1][column] == null //TODO decidere se lasciare null o EMPTY
-                || board[row + 1][column] == null
-                || board[row][column - 1] == null
-                || board[row][column + 1] == null;
+                || board[row][column + 1] == Tile.EMPTY;
     }
 
     /**
@@ -390,7 +386,7 @@ public class StandardGameController implements GameController, LobbyController {
     private boolean evaluateFullShelf(Tile[][] shelf) {
         for (Tile[] row : shelf)
             for (Tile tile : row)
-                if (tile == Tile.EMPTY)//tile.equals(Tile.EMPTY))//TODO decidere null or EMPTY
+                if (tile == Tile.EMPTY)
                     return false;
 
         return true;

@@ -44,6 +44,7 @@ public abstract class Player extends Observable<Player.Event> {
      * @return the current representation of the player chat
      */
     public abstract PlayerChat getPlayerChat();
+
     /**
      * This method returns a map containing all the descriptions of common goals achieved by the player, associated
      * to the token that player has won achieving that goal.
@@ -58,7 +59,15 @@ public abstract class Player extends Observable<Player.Event> {
      */
     public abstract void addAchievedCommonGoal(String description, Token token);
 
+    /**
+     * This method report a new error that player encountered during gameplay
+     * @param error the encountered error description
+     */
     public abstract void reportError(String error);
 
+    /**
+     * This method return the last error that player encountered during gameplay
+     * @return the last error that player encountered during gameplay
+     */
     public abstract String getReportedError();
 }

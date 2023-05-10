@@ -65,6 +65,8 @@ public class StandardServerController implements ServerController, GameManagerCo
     @Override
     public void joinGame(ClientInterface client, LoginInfo info) throws RemoteException{
         try{
+            if(!this.gameControllers.containsKey(info.gameId()))
+                throw new GameAccessDeniedException();
             this.gameControllers.get(info.gameId()).joinPlayer(client,info.playerId());
             User user = users.get(client);
             user.setStatus(User.Status.JOINED);

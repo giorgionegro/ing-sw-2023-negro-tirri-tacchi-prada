@@ -40,8 +40,6 @@ public  class StandardPersonalGoal extends PersonalGoal {
         this.achieved = false;
     }
 
-
-
     /**
      * {@inheritDoc}
      *
