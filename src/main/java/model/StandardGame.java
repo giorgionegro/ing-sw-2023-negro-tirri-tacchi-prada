@@ -2,6 +2,7 @@ package model;
 
 import model.abstractModel.*;
 import model.exceptions.*;
+import model.goalEvaluators.*;
 
 import java.util.*;
 
@@ -60,6 +61,8 @@ public class StandardGame extends Game {
      */
     private final int maxPlayerNumber;
 
+    private final Stack<List<PersonalGoal>> personalGoals;
+
     /**
      * Construct an StandardGame instance with given id and player number
      * <p>
@@ -76,12 +79,13 @@ public class StandardGame extends Game {
 
         this.maxPlayerNumber = playerNumber;
         this.gameId = gameId;
-        this.commonGoals = new ArrayList<>(); //TODO da scegliere i common goals
+        this.commonGoals = setCommonGoals(playerNumber);
         this.livingRoom = new StandardLivingRoom(playerNumber);
         this.players = new HashMap<>();
         this.playerTurnQueue = new ArrayList<>();
         this.lastTurn = false;
         this.status = GameStatus.MATCHMAKING;
+        this.personalGoals = setPersonalGoals();
     }
 
     /**
@@ -111,8 +115,8 @@ public class StandardGame extends Game {
             throw new PlayerAlreadyExistsException();
 
         /* Initialize Player model */
-        List<PersonalGoal> personalGoals = new ArrayList<>(); //TODO pick personalGoals
-        Player newPlayer = new StandardPlayer(playerId, personalGoals);
+        List<PersonalGoal> pGoals = personalGoals.pop();
+        Player newPlayer = new StandardPlayer(playerId, pGoals);
 
         /* Associate Player with playerId */
         players.put(playerId,newPlayer);
@@ -225,5 +229,73 @@ public class StandardGame extends Game {
 
             throw new GameEndedException();
         }
+    }
+
+    /**
+     * This method returns a stack containing one of each type of common goal for the number of players in the game.
+     * @param nPlayers number of players in the game
+     * @return stack containing one of each type of common goal
+     */
+    private ArrayList<CommonGoal> setCommonGoals(int nPlayers){
+        Stack<StandardCommonGoal> allGoals = new Stack<>();
+
+        allGoals.add(new StandardCommonGoal(nPlayers, new Standard2ColumnsRowOfDifferentTiles(false)));
+        allGoals.add(new StandardCommonGoal(nPlayers, new Standard2ColumnsRowOfDifferentTiles(true)));
+        allGoals.add(new StandardCommonGoal(nPlayers, new Standard3or4ColumnsRowMax3Types(false)));
+        allGoals.add(new StandardCommonGoal(nPlayers, new Standard3or4ColumnsRowMax3Types(true)));
+        allGoals.add(new StandardCommonGoal(nPlayers, new Standard4Groups4Tiles()));
+        allGoals.add(new StandardCommonGoal(nPlayers, new Standard5TileDiagonal()));
+        allGoals.add(new StandardCommonGoal(nPlayers, new Standard8TilesSameType()));
+        allGoals.add(new StandardCommonGoal(nPlayers, new StandardCorners()));
+        allGoals.add(new StandardCommonGoal(nPlayers, new StandardSixGroup2Tiles()));
+        allGoals.add(new StandardCommonGoal(nPlayers, new StandardStairs()));
+        allGoals.add(new StandardCommonGoal(nPlayers, new StandardTwoSquares()));
+        allGoals.add(new StandardCommonGoal(nPlayers, new StandardXOfDifferentTiles()));
+
+        Collections.shuffle(allGoals);
+
+        ArrayList<CommonGoal> result = new ArrayList<>();
+
+        result.add(allGoals.pop());
+        result.add(allGoals.pop());
+
+        return result;
+    }
+
+    /**
+     * this method return stack containing lists of all the standard personal goals
+     * @return stack containing lists of all the standard personal goals
+     */
+    private Stack<List<PersonalGoal>> setPersonalGoals(){
+        Stack<List<PersonalGoal>> result = new Stack<>();
+        result.add(createPersonalGoal(new Tile[]{Tile.PLANTS_1, Tile.FRAMES_1, Tile.CATS_1, Tile.BOOKS_1, Tile.GAMES_1, Tile.TROPHIES_1}, new int[]{0,0,1,2,3,5}, new int[]{0,2,4,3,1,2}));
+        result.add(createPersonalGoal(new Tile[]{Tile.PLANTS_1, Tile.CATS_1, Tile.GAMES_1, Tile.BOOKS_1, Tile.TROPHIES_1, Tile.FRAMES_1}, new int[]{1,2,2,3,4,5}, new int[]{1,0,2,4,3,4}));
+        result.add(createPersonalGoal(new Tile[]{Tile.FRAMES_1, Tile.GAMES_1, Tile.PLANTS_1, Tile.CATS_1, Tile.TROPHIES_1, Tile.BOOKS_1}, new int[]{1,1,2,3,3,4}, new int[]{0,3,2,1,4,0}));
+        result.add(createPersonalGoal(new Tile[]{Tile.GAMES_1, Tile.TROPHIES_1, Tile.FRAMES_1, Tile.PLANTS_1, Tile.BOOKS_1, Tile.CATS_1}, new int[]{0,2,2,3,4,4}, new int[]{4,0,2,3,1,2}));
+        result.add(createPersonalGoal(new Tile[]{Tile.TROPHIES_1, Tile.FRAMES_1, Tile.BOOKS_1, Tile.PLANTS_1, Tile.GAMES_1, Tile.CATS_1}, new int[]{1,3,3,4,5,5}, new int[]{1,1,2,4,0,3}));
+        result.add(createPersonalGoal(new Tile[]{Tile.TROPHIES_1, Tile.CATS_1, Tile.BOOKS_1, Tile.GAMES_1, Tile.FRAMES_1, Tile.PLANTS_1}, new int[]{0,0,2,4,4,5}, new int[]{2,4,3,1,3,0}));
+        result.add(createPersonalGoal(new Tile[]{Tile.CATS_1, Tile.FRAMES_1, Tile.PLANTS_1, Tile.TROPHIES_1, Tile.GAMES_1, Tile.BOOKS_1}, new int[]{0,1,2,3,4,5}, new int[]{0,3,1,0,4,2}));
+        result.add(createPersonalGoal(new Tile[]{Tile.FRAMES_1, Tile.CATS_1, Tile.TROPHIES_1, Tile.PLANTS_1, Tile.BOOKS_1, Tile.GAMES_1}, new int[]{0,1,2,3,4,5}, new int[]{4,1,2,0,3,3}));
+        result.add(createPersonalGoal(new Tile[]{Tile.GAMES_1, Tile.CATS_1, Tile.BOOKS_1, Tile.TROPHIES_1, Tile.PLANTS_1, Tile.FRAMES_1}, new int[]{0,2,3,4,4,5}, new int[]{2,2,4,1,4,0}));
+        result.add(createPersonalGoal(new Tile[]{Tile.TROPHIES_1, Tile.GAMES_1, Tile.BOOKS_1, Tile.CATS_1, Tile.FRAMES_1, Tile.PLANTS_1}, new int[]{0,1,2,3,4,5}, new int[]{4,1,0,3,1,3}));
+        result.add(createPersonalGoal(new Tile[]{Tile.PLANTS_1, Tile.BOOKS_1, Tile.GAMES_1, Tile.FRAMES_1, Tile.CATS_1, Tile.TROPHIES_1}, new int[]{0,1,2,3,4,5}, new int[]{2,1,0,2,4,3}));
+        result.add(createPersonalGoal(new Tile[]{Tile.BOOKS_1, Tile.PLANTS_1, Tile.FRAMES_1, Tile.TROPHIES_1, Tile.GAMES_1, Tile.CATS_1}, new int[]{0,1,2,3,4,5}, new int[]{2,1,2,3,4,0}));
+        Collections.shuffle(result);
+        return result;
+    }
+
+    /**
+     * this method returns a list of single Tile positions representing a personal goal
+     * @param tiles array of Tiles of the personal goal
+     * @param rows array of row position of each Tile
+     * @param cols array of column position of each Tile
+     * @return ArrayList representing a standard personal goal
+     */
+    private ArrayList<PersonalGoal> createPersonalGoal(Tile[] tiles, int[] rows, int[] cols ){
+        ArrayList<PersonalGoal> personalGoal = new ArrayList<>();
+        for(int i = 0; i < tiles.length; i++){
+            personalGoal.add(new StandardPersonalGoal(tiles[i], rows[i], cols[i]));
+        }
+        return personalGoal;
     }
 }
