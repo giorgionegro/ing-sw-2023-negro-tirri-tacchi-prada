@@ -44,6 +44,7 @@ public class ProvaCLI {
             //TODO: choose between gui or cli
 
 
+
             cli.runLoginView(client, server);
 
             app.disconnect(client);
