@@ -21,7 +21,7 @@ public class Standard8TilesSameType extends GoalEvaluator {
      */
     @Override
     public String getDescription() {
-        return "Eight tiles of the same type. There are restrictions on the location of these tiles.";
+        return "Eight tiles of the same type.";
     }
 
     /**

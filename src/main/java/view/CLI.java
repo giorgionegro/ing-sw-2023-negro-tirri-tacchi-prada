@@ -13,6 +13,8 @@ import modelView.*;
 import java.io.PrintStream;
 import java.rmi.RemoteException;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
+
 
 public class CLI {
     static final PrintStream out = System.out;
@@ -27,18 +29,23 @@ public class CLI {
     private final List<CommonGoalInfo> availableCommonGoals = new ArrayList<>();
     private final List<CommonGoalInfo> achievedCommonGoals = new ArrayList<>();
     private GameInfo currentGameState;
-    private Tile[][] personalGoal;
     private UserInfo user;
     private boolean GameRunning;
     private final Object lock = new Object();
     private final Scanner scanner = new Scanner(System.in);
     private final List<GamesManagerInfo> games = new ArrayList<>();
     private boolean error = false;
-    /**
-     * true if the user is logging in
-     */
+    //true if the user is logging in
     private boolean login = false;
     private final List<PersonalGoalInfo> currentPersonalGoals = new ArrayList<>();
+    public static final int WHITE = 37;
+    public static final int GREEN = 32;
+    public static final int YELLOW = 33;
+    public static final int BLUE = 34;
+    public static final int MAGENTA = 35;
+    public static final int CYAN = 36;
+    public static final int RED = 31;
+    public static final int DEFAULT = 39;
     public CLI() {
         currentShelfs = new HashMap<>();
         drawBox(0, 0, renderHeight, renderWidth, DEFAULT);
@@ -86,6 +93,7 @@ public class CLI {
     }
 
     private void joinGame(ClientInterface client, ServerInterface server) throws RemoteException {
+        error = false;
         String gameId;
         String playerId;
         gameId = readCommandLine("GameId: ");
@@ -95,7 +103,7 @@ public class CLI {
         if (!playerId.equals(""))
             server.joinGame(client, new LoginInfo(playerId, gameId));
         synchronized (lock) {
-            while ((user == null || user.status() != User.Status.JOINED) && error) {
+            while ((user == null || user.status() != User.Status.JOINED) && !error) {
                 try {
 
                     lock.wait();
@@ -258,20 +266,12 @@ public class CLI {
         render();
     }
 
-    public static final int WHITE = 37;
-    public static final int GREEN = 32;
-    public static final int YELLOW = 33;
-    public static final int BLUE = 34;
-    public static final int MAGENTA = 35;
-    public static final int CYAN = 36;
-    public static final int RED = 31;
-    public static final int DEFAULT = 39;
 
     private String renderPixel(int x, int y) {
         return "\u001B[" + cliPixelColor[x][y] + "m" + cliPixel[x][y] + "\u001B[0m";
     }
 
-    public void ClearScreen() {
+    private void ClearScreen() {
 
         try {
             String operatingSystem = System.getProperty("os.name"); //Check the current operating system
@@ -279,12 +279,11 @@ public class CLI {
             if (operatingSystem.contains("Windows")) {
                 ProcessBuilder pb = new ProcessBuilder("cmd", "/c", "cls");
                 Process startProcess = pb.inheritIO().start();
-                startProcess.waitFor();
+                startProcess.waitFor(10, TimeUnit.MILLISECONDS);
             } else {
                 ProcessBuilder pb = new ProcessBuilder("clear");
                 Process startProcess = pb.inheritIO().start();
-
-                startProcess.waitFor();
+                startProcess.waitFor(10, TimeUnit.MILLISECONDS);
             }
         } catch (Exception e) {
             printCommandLine("Error: " + e.getMessage(), RED);
@@ -467,7 +466,7 @@ public class CLI {
         if (toDraw.length() > size)
             toDraw = toDraw.substring(0, size);
 
-        for (int i = 0; i < toDraw.length(); i++) {
+        for (int i = 0; (i < toDraw.length()||(i+startCol)>(renderWidth-3)); i++) {
             cliPixel[Row][startCol + i] = toDraw.charAt(i);
             cliPixelColor[Row][startCol + i] = colour;
         }
@@ -587,21 +586,28 @@ public class CLI {
         render();
     }
 
+
+
+
     private void drawCommonGoals() {//TODO: hardCode presentation based on description
+
+        Tile[][] twoColumns = new Tile[2][];
+
+
         int i = 0;
         //draw: AVAILABLE COMMON GOALS
         //drawString("Available Common Goals", renderHeight-90-i, renderWidth-60, DEFAULT, 50 - 2);
         for (CommonGoalInfo c : availableCommonGoals) {
             // c.description()  points: c.Token().points()
 
-            drawString(c.description() + " points: " + c.tokenState().getPoints(), renderHeight - 30 - i, renderWidth - 60, DEFAULT, 50 - 2);
+            drawString(c.description() + " points: " + c.tokenState().getPoints(), renderHeight - 30 - i,  40, DEFAULT, 110 - 2);
             i++;
         }
         //draw: ACHIEVED COMMON GOALS
         //drawString("Achieved Common Goals", renderHeight-90-i, renderWidth-60, DEFAULT, 50 - 2);
         for (CommonGoalInfo c : achievedCommonGoals) {
             // c.description()  points: c.Token().points()
-            drawString(c.description() + " points: " + c.tokenState().getPoints(), renderHeight - 30 - i, renderWidth - 60, DEFAULT, 50 - 2);
+            drawString(c.description() + " points: " + c.tokenState().getPoints(), renderHeight - 30 - i,  40, DEFAULT, 110 - 2);
             i++;
         }
     }

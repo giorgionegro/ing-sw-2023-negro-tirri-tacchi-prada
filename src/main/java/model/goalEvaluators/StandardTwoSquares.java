@@ -18,7 +18,7 @@ public class StandardTwoSquares extends GoalEvaluator {
      */
     @Override
     public String getDescription() {
-        return "Two separate groups of 4 tiles same type that form a 2x2 square.\nThe tiles of the two groups must be of the same type.%n";
+        return "Two separate groups of 4 tiles same type that form a 2x2 square.";
     }
 
     /**

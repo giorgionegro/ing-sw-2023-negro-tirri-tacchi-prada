@@ -25,7 +25,7 @@ public class Standard3or4ColumnsRowMax3Types extends GoalEvaluator {
 
     @Override
     public String getDescription() {
-        return (column) ? "Three columns each formed by 6 tiles of one, two or three different types.Different columns may have different combinations of tile types.%n" : "Four lines formed each from 5 tiles of one, two or three types different. Different lines may have\ndifferent combinations of tile types%n";
+        return (column) ? "Three columns each formed by 6 tiles of at most three different types." : "Four lines formed each from 5 tiles of at most three different types.";
     }
 
     /**
