@@ -17,7 +17,7 @@ public class StandardCorners extends GoalEvaluator {
     @Override
     public String getDescription() {
 
-        return "4 tiles of the same type in the 4 corners of the library\n";
+        return "4 tiles of the same type in the 4 corners of the library";
     }
 
     /**

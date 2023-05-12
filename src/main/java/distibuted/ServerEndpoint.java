@@ -42,9 +42,11 @@ public class ServerEndpoint extends UnicastRemoteObject implements ServerInterfa
             serverController.joinGame(client, loginInfo);
             gameController = gameManagerController.getGame(loginInfo.gameId());
         } catch (RemoteException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
+         //   throw new RuntimeException(e);
         } catch (GameNotExistsException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
+          //  throw new RuntimeException(e);
         }
     }
 

@@ -284,8 +284,9 @@ public class StandardGameController implements GameController, LobbyController {
             /* Check if player has achieved common goals */
             for (CommonGoal commonGoal : game.getCommonGoals())
                 if (!player.getAchievedCommonGoals().containsKey(commonGoal.getEvaluator().getDescription()))
-                    if (commonGoal.getEvaluator().evaluate(shelf))
+                    if (commonGoal.getEvaluator().evaluate(shelf)) {
                         player.addAchievedCommonGoal(commonGoal.getEvaluator().getDescription(), commonGoal.popToken());
+                    }
 
 
             /* Check if player has achieved personal goals*/

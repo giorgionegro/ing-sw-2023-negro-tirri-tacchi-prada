@@ -17,7 +17,7 @@ Standard4Groups4Tiles extends GoalEvaluator {
      */
     @Override
     public String getDescription() {
-        return "Four separate groups formed each from four adjacent tiles of the same type. The tiles of a group can be different from those of another group.\n%n";
+        return "Four separate groups formed each from four adjacent tiles of the same type.";
     }
 
     /**

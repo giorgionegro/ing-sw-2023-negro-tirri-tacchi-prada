@@ -17,7 +17,7 @@ public class StandardXOfDifferentTiles extends GoalEvaluator {
     @Override
     public String getDescription() {
 
-        return "Five tiles of the same typem forming an X.";
+        return "Five tiles of the same type forming an X.";
     }
 
     /**

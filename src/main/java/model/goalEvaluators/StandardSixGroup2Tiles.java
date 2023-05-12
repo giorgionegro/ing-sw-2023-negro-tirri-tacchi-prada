@@ -18,7 +18,7 @@ public class StandardSixGroup2Tiles extends GoalEvaluator {
      */
     @Override
     public String getDescription() {
-        return "Six separate groups formed each\nfrom two adjacent tiles of the same type. The tiles of a group can\nbe different from those of another group.%n";
+        return "Six separate groups formed each from two adjacent tiles of the same type.";
     }
 
     /**
