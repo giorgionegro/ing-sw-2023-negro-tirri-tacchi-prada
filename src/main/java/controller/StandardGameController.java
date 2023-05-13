@@ -38,7 +38,8 @@ public class StandardGameController implements GameController, LobbyController {
             try {
                 newClient.update(o.getInfo(), arg);
             } catch (RemoteException e) {
-                throw new RuntimeException(e);
+                e.printStackTrace();
+                //throw new RuntimeException(e); //TODO send error to client
             }
         };
     }
@@ -51,13 +52,13 @@ public class StandardGameController implements GameController, LobbyController {
      * @param newClient client to be added
      * @return Observer of the GameStatus to be added
      */
-
     private static Observer<Game, Game.Event> getGameObserver(ClientInterface newClient) {
         return (o, arg) -> {
             try {
                 newClient.update(o.getInfo(), arg);
             } catch (RemoteException e) {
-                throw new RuntimeException(e);
+                e.printStackTrace();
+                //throw new RuntimeException(e);//TODO send error to client
             }
         };
     }
@@ -73,7 +74,8 @@ public class StandardGameController implements GameController, LobbyController {
             try {
                 newClient.update(o.getInfo(), arg);
             } catch (RemoteException e) {
-                throw new RuntimeException(e);
+                e.printStackTrace();
+                //throw new RuntimeException(e);//TODO send error to client
             }
         };
     }
@@ -89,7 +91,8 @@ public class StandardGameController implements GameController, LobbyController {
             try {
                 newClient.update(o.getInfo(), arg);
             } catch (RemoteException e) {
-                throw new RuntimeException(e);
+                e.printStackTrace();
+                //throw new RuntimeException(e);//TODO send error to client
             }
         };
     }
@@ -105,7 +108,8 @@ public class StandardGameController implements GameController, LobbyController {
             try {
                 newClient.update(o.getInfo(), arg);
             } catch (RemoteException e) {
-                throw new RuntimeException(e);
+                e.printStackTrace();
+                //throw new RuntimeException(e);//TODO send error to client
             }
         };
     }
@@ -121,7 +125,8 @@ public class StandardGameController implements GameController, LobbyController {
             try {
                 newClient.update(o.getInfo(), arg);
             } catch (RemoteException e) {
-                throw new RuntimeException(e);
+                e.printStackTrace();
+                //throw new RuntimeException(e);//TODO send error to client
             }
         };
     }
@@ -137,7 +142,8 @@ public class StandardGameController implements GameController, LobbyController {
             try {
                 newClient.update(o.getInfo(joinedPlayer.getId()), arg);
             } catch (RemoteException e) {
-                throw new RuntimeException(e);
+                e.printStackTrace();
+                //throw new RuntimeException(e);//TODO send error to client
             }
         };
     }
@@ -160,8 +166,6 @@ public class StandardGameController implements GameController, LobbyController {
 
             /* Put newClient into known client */
             playerAssociation.put(newClient, newPlayer);
-
-
 
             /* If game is ready to be started we force the first */
             if (game.getGameStatus().equals(Game.GameStatus.STARTED)) {
@@ -305,7 +309,7 @@ public class StandardGameController implements GameController, LobbyController {
         } catch (IllegalArgumentException | GameNotStartedException e) {
             playerAssociation.get(client).reportError(e.getMessage());
         } catch (GameEndedException e){
-
+            e.printStackTrace();
         }
     }
 
@@ -320,7 +324,7 @@ public class StandardGameController implements GameController, LobbyController {
                 throw new IllegalArgumentException("User not allowed");
 
             for (Player p : playerAssociation.values()) {
-                if (newMessage.getSubject().isEmpty() || newMessage.getSubject().equals(p.getId()))
+                if (newMessage.getSubject().isEmpty() || newMessage.getSubject().equals(p.getId()) || newMessage.getSender().equals(p.getId()))
                     p.getPlayerChat().addMessage(newMessage);
             }
 
@@ -356,7 +360,7 @@ public class StandardGameController implements GameController, LobbyController {
     private int freeShelfColumnSpaces(int column, Tile[][] shelf) {
         int spaces = 0;
         for (Tile[] row : shelf) {
-            if (row[column] != Tile.EMPTY)
+            if (row[column] == Tile.EMPTY)
                 spaces++;
         }
         return spaces;

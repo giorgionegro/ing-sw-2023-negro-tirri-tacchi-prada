@@ -3,6 +3,7 @@ package model;
 import model.abstractModel.*;
 import model.exceptions.*;
 import model.goalEvaluators.*;
+import modelView.GameInfo;
 
 import java.util.*;
 
@@ -297,5 +298,103 @@ public class StandardGame extends Game {
             personalGoal.add(new StandardPersonalGoal(tiles[i], rows[i], cols[i]));
         }
         return personalGoal;
+    }
+
+    /**
+     * TODO
+     * @return
+     */
+    @Override
+    public GameInfo getInfo(){
+        Map<String, Integer> points = new HashMap<>();
+        players.forEach((s, player) -> {
+            /*  Points earned by each player are the sum of points earned by
+                achieving common goals and by forming groups of tiles       */
+            int playerPoints = getCommonGoalPoints(player.getAchievedCommonGoals().values().stream().toList())
+                    + getShelfTilesGroupsPoints(player.getShelf().getTiles());
+
+
+            /* Show points earned from personal goals only at game end */
+            if(status == GameStatus.ENDED)
+                playerPoints += getPersonalGoalPoints(player.getPersonalGoals());
+
+            points.put(s,playerPoints);
+        });
+        return new GameInfo(status, lastTurn, getTurnPlayerId(), points);
+    }
+
+    private int getPersonalGoalPoints(List<PersonalGoal> personalGoals){
+        int achieved = 0;
+        for(PersonalGoal p : personalGoals)
+            if(p.isAchieved())
+                achieved++;
+
+        return switch (achieved) {
+            case 0 -> 0;
+            case 1 -> 1;
+            case 2 -> 2;
+            case 3 -> 4;
+            case 4 -> 6;
+            case 5 -> 9;
+            default -> 12;
+        };
+    }
+
+    private int getCommonGoalPoints(List<Token> tokens){
+        int ris = 0;
+
+        for(Token t : tokens)
+            ris += t.getPoints();
+
+        return ris;
+    }
+
+    private int getShelfTilesGroupsPoints(Tile[][] shelf){
+        int ris = 0;
+
+        boolean[][] checked = new boolean[shelf.length][shelf[0].length];
+
+        for(int i = 0; i< shelf.length; i++)
+            for(int j = 0; j < shelf[0].length; j++)
+                checked[i][j] = false;
+
+        for(int i = 0; i< shelf.length; i++)
+            for(int j = 0; j < shelf[0].length; j++)
+                if(shelf[i][j] != Tile.EMPTY) {
+                    int groupSize = depthSearch(i, j, shelf, checked, shelf[i][j].getColor());
+
+                    if(groupSize>=6)
+                        ris += 8;
+                    else if(groupSize==5)
+                        ris += 6;
+                    else if(groupSize==4)
+                        ris += 3;
+                    else if(groupSize==3)
+                        ris += 2;
+                }
+
+        return ris;
+    }
+
+    private int depthSearch(int i, int j, Tile[][] shelf, boolean[][] checked, String tileColor){
+        if(i<0 || i>=checked.length || j<0 || j>= checked[0].length)
+            return 0;
+
+        if(shelf[i][j] == Tile.EMPTY)
+            return 0;
+
+        if(checked[i][j])
+            return 0;
+
+        if(!shelf[i][j].getColor().equals(tileColor))
+            return 0;
+
+        checked[i][j]=true;
+
+        return  1
+                + depthSearch(i-1, j, shelf, checked, tileColor)
+                + depthSearch(i+1, j, shelf, checked, tileColor)
+                + depthSearch(i, j+1, shelf, checked, tileColor)
+                + depthSearch(i, j-1, shelf, checked, tileColor);
     }
 }

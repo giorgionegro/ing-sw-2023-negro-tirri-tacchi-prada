@@ -32,7 +32,8 @@ public class ServerEndpoint extends UnicastRemoteObject implements ServerInterfa
         try {
             serverController.createGame(client,newGameInfo);
         } catch (RemoteException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
+            //throw new RuntimeException(e); //TODO send error to client
         }
     }
 

@@ -16,6 +16,8 @@ public class StandardShelf extends Shelf {
      */
     public StandardShelf(){
         this.tiles = new Tile[6][5];
+        for(Tile[] a : tiles)
+            Arrays.fill(a,Tile.EMPTY);
     }
 
     /**

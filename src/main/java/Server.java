@@ -83,6 +83,7 @@ public class Server extends UnicastRemoteObject implements AppServer
                 executorService.submit(() -> {
                     try {
                         ServerSocketHandler serverSocketHandler = new ServerSocketHandler(socket);
+                        serverSocketHandler.open();
                         ServerInterface server = getInstance().connect(serverSocketHandler);
                         while (true) {
                             serverSocketHandler.waitForReceive(server);
