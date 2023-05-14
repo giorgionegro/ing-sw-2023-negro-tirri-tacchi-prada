@@ -4,6 +4,7 @@ import model.abstractModel.Game;
 import model.abstractModel.GamesManager;
 import model.exceptions.GameAlreadyExistsException;
 import model.exceptions.GameNotExistsException;
+import modelView.GamesManagerInfo;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -46,6 +47,11 @@ public class StandardGamesManager extends GamesManager{
         if(games.containsKey(gameId))
             return games.get(gameId);
         throw new GameNotExistsException();
+    }
+
+    @Override
+    public GamesManagerInfo getInfo() {
+        return null;
     }
 
 }

@@ -5,6 +5,7 @@ import distibuted.interfaces.ServerInterface;
 import model.StandardMessage;
 import model.Tile;
 import model.User;
+import model.abstractModel.Game;
 import model.abstractModel.GamesManager;
 import model.abstractModel.Message;
 import model.abstractModel.Player;
@@ -46,6 +47,7 @@ public class CLI {
     public static final int CYAN = 36;
     public static final int RED = 31;
     public static final int DEFAULT = 39;
+
     public CLI() {
         currentShelfs = new HashMap<>();
         drawBox(0, 0, renderHeight, renderWidth, DEFAULT);
@@ -102,12 +104,15 @@ public class CLI {
         render();
         if (!playerId.equals(""))
             server.joinGame(client, new LoginInfo(playerId, gameId));
+        //timeout 5 seconds
+
         synchronized (lock) {
             while ((user == null || user.status() != User.Status.JOINED) && !error) {
                 try {
 
-                    lock.wait();
-
+                    lock.wait(5000);
+                    error = true;
+                    //TODO server message to notify the abort
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
@@ -121,8 +126,8 @@ public class CLI {
     }
 
     private void gameRoutine(CLI cli, ClientInterface client, ServerInterface sInt, String playerId) throws RemoteException {
-        GameRunning = true;
-        while (GameRunning) {
+        this.GameRunning = true;
+        while (this.GameRunning) {
             String readLine = readCommandLine("(h for commands)-> ");
             render();
             switch (readLine) {
@@ -144,83 +149,7 @@ public class CLI {
                     drawPersonalGoal();
                     render();
                 }
-                case "2" -> {
-                    //TODO extract this in a method
-                    List<PickedTile> tiles = new ArrayList<>();
-                    int pickableNum = 3;
-                    boolean choising = true;
-                    synchronized (this) {
-                        do {
-                            cli.printCommandLine("Remaining pickable tiles: " + pickableNum);
-                            cli.printCommandLine("write x,y x2,y2 to pick up to three tiles");
-                            render();
-                            String choice = readCommandLine("-> ");
-                            render();
-                            String[] split = choice.split(" ");
-                            //if more than 3 tiles are picked ignores the rest
-                            List<PickedTile> tTiles = new ArrayList<>();
-                            for (int i = 0; i < split.length && i < 3; i++) {
-                                try {
-                                    String[] split1 = split[i].split(",");
-                                    int x = Integer.parseInt(split1[0]);
-                                    int y = Integer.parseInt(split1[1]);
-                                    tTiles.add(new PickedTile(x, y));
-                                    printCommandLine("Tile " + x + "," + y + " picked", GREEN);
-                                    render();
-                                } catch (NumberFormatException e) {
-                                    printCommandLine("Illegal character", RED);
-                                    render();
-                                    break;
-                                } catch (ArrayIndexOutOfBoundsException e) {
-                                    printCommandLine("Wrong format, Should bex1,y1 x2,y2 x3,y3", RED);
-                                    render();
-                                    break;
-                                }
-                            }
-                            //TODO better pickable check
-                            //check if the tiles are pickable, pickable if they are all in the same row or column and adiacent to each other
-                            boolean pickable = true;
-                            for (int i = 0; i < tTiles.size(); i++) {
-                                for (int j = i + 1; j < tTiles.size(); j++) {
-                                    if (tTiles.get(i).col() != tTiles.get(j).col() && tTiles.get(i).row() != tTiles.get(j).row()) {
-                                        pickable = false;
-                                        break;
-                                    }
-                                }
-                                if (!pickable)
-                                    break;
-                            }
-                            if (pickable) {
-                                tiles.addAll(tTiles);
-                                pickableNum -= tTiles.size();
-                                choising = false;
-                            } else {
-                                printCommandLine("Tiles not pickable", RED);
-                                render();
-                            }
-                        } while (choising);
-                    }
-                    choising = true;
-                    int sC = 0;
-                    synchronized (this) {
-
-                        do {
-                            try {
-                                String sCol = readCommandLine("Shelf col: ");
-                                render();
-                                sC = Integer.parseInt(sCol);
-                                printCommandLine("Shelf " + sC + " choosen", GREEN);
-                                choising = false;
-                                render();
-                            } catch (NumberFormatException e) {
-                                printCommandLine("Not a number", RED);
-                                render();
-                            }
-                        } while (choising);
-                    }
-                    sInt.doPlayerMove(client, new PlayerMoveInfo(tiles, sC));
-
-                }
+                case "2" -> pickTiles(cli, client, sInt);
                 case "3" -> {
                     String subject;
                     String content;
@@ -238,6 +167,126 @@ public class CLI {
                 }
             }
         }
+    }
+
+    private void pickTiles(CLI cli, ClientInterface client, ServerInterface sInt) throws RemoteException {
+        final int pickableNum = 3;
+        List<PickedTile> tiles = new ArrayList<>();
+        boolean choosing = true;
+        synchronized (this) {
+            do {
+                cli.printCommandLine("Remaining pickable tiles: " + pickableNum);
+                cli.printCommandLine("Write row,col r2,c2 to pick up to three tiles");
+                render();
+                String choice = readCommandLine("-> ");
+                render();
+                String[] split = choice.split(" ");
+                //if more than 3 tiles are picked ignores the rest
+                List<PickedTile> tTiles = new ArrayList<>();
+                for (int i = 0; i < split.length && i < pickableNum; i++) {
+                    try {
+                        String[] split1 = split[i].split(",");
+                        int x = Integer.parseInt(split1[0]);
+                        int y = Integer.parseInt(split1[1]);
+                        tTiles.add(new PickedTile(x, y));
+                        printCommandLine("Tile " + x + "," + y + " picked", GREEN);
+                        render();
+                    } catch (NumberFormatException e) {
+                        printCommandLine("Illegal character", RED);
+                        render();
+                        break;
+                    } catch (ArrayIndexOutOfBoundsException e) {
+                        printCommandLine("Wrong format, Should be r1,c1 r2,c2 r3,c3", RED);
+                        render();
+                        break;
+                    }
+                }
+                //check if the tiles are pickable, pickable if they are all in the same row or column and adiacent to each other
+                boolean pickable = isPickable(tTiles, currentLivingRoom.board());
+                if (pickable) {
+                    tiles.addAll(tTiles);
+                    choosing = false;
+                } else {
+                    printCommandLine("Tiles not pickable", RED);
+                    render();
+                }
+            } while (choosing);
+        }
+        choosing = true;
+        int sC = 0;
+        synchronized (this) {
+            do {
+                try {
+                    String sCol = readCommandLine("Shelf col: ");
+                    render();
+                    sC = Integer.parseInt(sCol);
+                    printCommandLine("Shelf " + sC + " chosen", GREEN);
+                    //check if column has enough space for the tiles
+                Tile[][] myShelf = currentShelfs.get(thisPlayerId).shelf();
+                    int finalSC = sC;
+                    // count empty tiles in the column sC
+                    int emptyTiles = Arrays.stream(myShelf).mapToInt(row -> row[finalSC] == Tile.EMPTY ? 1 : 0).sum();//TODO test this
+                    if (emptyTiles < tiles.size()) {
+                        printCommandLine("Not enough space in the shelf", RED);
+                        render();
+                        continue;
+                    }
+                    choosing = false;
+                    render();
+                } catch (NumberFormatException e) {
+                    printCommandLine("Not a number", RED);
+                    render();
+                }
+            } while (choosing);
+        }
+        sInt.doPlayerMove(client, new PlayerMoveInfo(tiles, sC));
+    }
+
+    private boolean isPickable(List<PickedTile> pickedTiles, Tile[][] board) {//TODO test this extensively
+        // Check if all picked tiles are adjacent to an empty tile
+        boolean adjacentToEmptyTile = false;
+        for (PickedTile pickedTile : pickedTiles) {
+            int row = pickedTile.row();
+            int col = pickedTile.col();
+            if (row > 0 && board[row-1][col] == Tile.EMPTY) {
+                adjacentToEmptyTile = true;
+                break;
+            }
+            if (row < board.length-1 && board[row+1][col] == Tile.EMPTY) {
+                adjacentToEmptyTile = true;
+                break;
+            }
+            if (col > 0 && board[row][col-1] == Tile.EMPTY) {
+                adjacentToEmptyTile = true;
+                break;
+            }
+            if (col < board[0].length-1 && board[row][col+1] == Tile.EMPTY) {
+                adjacentToEmptyTile = true;
+                break;
+            }
+        }
+        if (!adjacentToEmptyTile) {
+            return false;
+        }
+
+        // Check if picked tiles are all in the same row or column
+        int firstRow = pickedTiles.get(0).row();
+        int firstCol = pickedTiles.get(0).col();
+        boolean sameRow = true;
+        boolean sameCol = true;
+        for (PickedTile pickedTile : pickedTiles) {
+            if (pickedTile.row() != firstRow) {
+                sameRow = false;
+            }
+            if (pickedTile.col() != firstCol) {
+                sameCol = false;
+            }
+            if (!sameRow && !sameCol) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public void updateLivingRoom(LivingRoomInfo lR) {
@@ -300,27 +349,37 @@ public class CLI {
         List<Message> messagesToDraw = messages.subList(startMessage, messages.size());
         //reverse the list
         Collections.reverse(messagesToDraw);
-
-        for (int i = 0; i < messagesToDraw.size(); i++) {
-            String idSender = messagesToDraw.get(i).getSender();
-            String message = messagesToDraw.get(i).getText();
-            String idSubject = messagesToDraw.get(i).getSubject();
+        int currentLine = 0;
+        for (Message rawMessage : messagesToDraw) {
+            String idSender = rawMessage.getSender();
+            String message = rawMessage.getText();
+            String idSubject = rawMessage.getSubject();
             //crop
             if (idSender.length() > 10) {
                 idSender = idSender.substring(0, 10);
             }
-            if (message.length() > 20) {
-                message = message.substring(0, 20);
-            }
             //concatenate
-            String toDraw = idSender + "=> " + ((idSubject.isBlank()) ? "Everyone" : idSender) + ":" + message;
+            StringBuilder toDraw = new StringBuilder(idSender + " to " + ((idSubject.isBlank()) ? "Everyone" : idSubject) + ": " + message);
             //if subject and sender is not idPlayer color it in red
-            int color = DEFAULT;
-            if (!messagesToDraw.get(i).getSubject().equals(thisPlayerId) && !messagesToDraw.get(i).getSender().equals(thisPlayerId)) {
-                color = RED;
+            int chatsize = 70;
+            //extend the string to 30
+            while (toDraw.length() < chatsize) {
+                toDraw.append(" ");
             }
-            //draw the message
-            drawString(toDraw, renderHeight - 2 - i, renderWidth - 2 - 20, color, 30);
+            //if too long  subdivide it in multiple lines
+            List<String> lines = new ArrayList<>();
+            do {
+                lines.add(toDraw.substring(0, chatsize));
+                toDraw = new StringBuilder(toDraw.substring(chatsize));
+            } while (toDraw.length() > chatsize);
+            if (toDraw.length() > 0) {
+                lines.add(toDraw.toString());
+            }
+            Collections.reverse(lines);
+            for (String line : lines) {
+                drawString(line, renderHeight - 2 - currentLine, renderWidth - 2 - chatsize, DEFAULT, chatsize);
+                currentLine++;
+            }
         }
     }
 
@@ -329,17 +388,11 @@ public class CLI {
         final String topCenter = "┬───";
         final String topRight = "┬───┐";
         final String centerLeft = "├───";
-
         final String centerCenter = "┼───";
-
         final String centerRight = "┼───┤";
-
         Tile[][] board = currentLivingRoom.board();
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[0].length; j++) {
-
-                if (board[i][j] == null)
-                    board[i][j] = Tile.EMPTY;
                 String tile = board[i][j].getColor();
                 int colour = getColour(tile);
                 String first = "";//first part of the block
@@ -359,28 +412,54 @@ public class CLI {
                 String second = "│   ";
                 if (!tile.equals("Empty"))
                     second = "│███";
-
                 if (j == board[0].length - 1)//if last column add right border
+                {
                     second += "│";
-
+                }
                 for (int c = 0; c < first.length(); c++) {
-                    cliPixel[1 + i * 2][1 + j * 4 + c] = first.charAt(c);
-                    cliPixelColor[1 + i * 2][1 + j * 4 + c] = DEFAULT;
+                    cliPixel[1 + 1 + i * 2][2 + 1 + j * 4 + c] = first.charAt(c);
+                    cliPixelColor[1 + 1 + i * 2][2 + 1 + j * 4 + c] = DEFAULT;
                 }
                 for (int c = 0; c < second.length(); c++) {
-                    cliPixel[2 + i * 2][1 + j * 4 + c] = second.charAt(c);
-                    cliPixelColor[2 + i * 2][1 + j * 4 + c] = colour;
+                    cliPixel[1 + 2 + i * 2][2 + 1 + j * 4 + c] = second.charAt(c);
+                    cliPixelColor[1 + 2 + i * 2][2 + 1 + j * 4 + c] = colour;
                 }
-                cliPixelColor[2 + i * 2][1 + j * 4] = DEFAULT;
-                cliPixel[board.length * 2 + 1][j * 4 + 1] = '┴';
-                cliPixel[board.length * 2 + 1][j * 4 + 2] = '─';
-                cliPixel[board.length * 2 + 1][j * 4 + 3] = '─';
-                cliPixel[board.length * 2 + 1][j * 4 + 4] = '─';
+                cliPixelColor[1 + 2 + i * 2][2 + 1 + j * 4] = DEFAULT;
+                cliPixel[1 + board.length * 2 + 1][2 + j * 4 + 1] = '┴';
+                cliPixel[1 + board.length * 2 + 1][2 + j * 4 + 2] = '─';
+                cliPixel[1 + board.length * 2 + 1][2 + j * 4 + 3] = '─';
+                cliPixel[1 + board.length * 2 + 1][2 + j * 4 + 4] = '─';
             }
         }
-        cliPixel[board.length * 2 + 1][1] = '└';
-        cliPixel[board.length * 2 + 1][board[0].length * 4 + 1] = '┘';
+        //draw numbers on the top
+        for (int i = 0; i < board.length; i++) {
+            String number = String.valueOf(i);
+            if (i < 10) {
+                number = "  " + number + " ";
+            } else {
+                number = " " + number + " ";
+            }
+            for (int c = 0; c < number.length(); c++) {
+                cliPixel[1][3 + i * 4 + c] = number.charAt(c);
+                cliPixelColor[1][3 + i * 4 + c] = DEFAULT;
+            }
+        }
+        //draw numbers on the side
+        for (int i = 0; i < board.length; i++) {
+            String number = String.valueOf(i);
+            if (i < 10) {
+                number = "0" + number;
+            }
+            for (int c = 0; c < number.length(); c++) {
+                cliPixel[3 + i * 2][1] = number.charAt(c);
+                cliPixelColor[3 + i * 2][1] = DEFAULT;
+            }
+
+        }
+        cliPixel[1 + board.length * 2 + 1][3] = '└';
+        cliPixel[1 + board.length * 2 + 1][2 + board[0].length * 4 + 1] = '┘';
     }
+
 
     private void drawShelfs() {
 
@@ -389,16 +468,16 @@ public class CLI {
         final String centerCenter = "┼───";
         final String centerRight = "┼───┤";
 
-        int margin = 1 + 4 * currentLivingRoom.board()[0].length + 1 + 1;
+        int margin = 2 + 1 + 4 * currentLivingRoom.board()[0].length + 1 + 1;
 
         for (int s = 0; s < currentShelfs.size(); s++) {
             Tile[][] shelf = currentShelfs.values().stream().toList().get(s).shelf();
+            if (shelf == null)
+                continue;
             int start = margin + s * shelf[0].length * 4 + s;
             for (int i = 0; i < shelf.length; i++) {
                 for (int j = 0; j < shelf[0].length; j++) {
 
-                    if (shelf[i][j] == null) //TODO da sistemare quando risolto
-                        shelf[i][j] = Tile.EMPTY;
 
                     int colour = getColour(shelf[i][j].getColor());
                     String first = "";
@@ -455,6 +534,10 @@ public class CLI {
             } else {
                 toDraw = " " + toDraw + " ";
             }
+            if (currentGameState != null) {
+                int points = currentGameState.points().getOrDefault(shelf.playerId(), 0);
+                toDraw += ":" + points + " ";
+            }
             drawString(toDraw, 1 + shelfTile.length * 2 + 1, margin + i * (4 * shelfTile[0].length + 1) + 1, DEFAULT, shelfTile[0].length * 4 + 1 - 2);
 
 
@@ -466,7 +549,7 @@ public class CLI {
         if (toDraw.length() > size)
             toDraw = toDraw.substring(0, size);
 
-        for (int i = 0; (i < toDraw.length()||(i+startCol)>(renderWidth-3)); i++) {
+        for (int i = 0; (i < toDraw.length() && (i + startCol) < (renderWidth - 2)); i++) {
             cliPixel[Row][startCol + i] = toDraw.charAt(i);
             cliPixelColor[Row][startCol + i] = colour;
         }
@@ -478,7 +561,7 @@ public class CLI {
     }
 
     @SuppressWarnings("SameParameterValue")
-    private void drawBox(int x, int y, int height, int width, int colour) {//TODO implements colour
+    private void drawBox(int x, int y, int height, int width, int colour) {
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
                 if (i == 0 && j == 0) cliPixel[x + i][y + j] = '┌';
@@ -587,8 +670,6 @@ public class CLI {
     }
 
 
-
-
     private void drawCommonGoals() {//TODO: hardCode presentation based on description
 
         Tile[][] twoColumns = new Tile[2][];
@@ -600,21 +681,37 @@ public class CLI {
         for (CommonGoalInfo c : availableCommonGoals) {
             // c.description()  points: c.Token().points()
 
-            drawString(c.description() + " points: " + c.tokenState().getPoints(), renderHeight - 30 - i,  40, DEFAULT, 110 - 2);
+            drawString(c.description() + " points: " + c.tokenState().getPoints(), renderHeight - 30 - i, 40, DEFAULT, 110 - 2);
             i++;
         }
         //draw: ACHIEVED COMMON GOALS
         //drawString("Achieved Common Goals", renderHeight-90-i, renderWidth-60, DEFAULT, 50 - 2);
         for (CommonGoalInfo c : achievedCommonGoals) {
             // c.description()  points: c.Token().points()
-            drawString(c.description() + " points: " + c.tokenState().getPoints(), renderHeight - 30 - i,  40, DEFAULT, 110 - 2);
+            drawString(c.description() + " points: " + c.tokenState().getPoints(), renderHeight - 30 - i, 40, DEFAULT, 110 - 2);
             i++;
         }
     }
 
     public void updateGameState(GameInfo o) {
         currentGameState = o;
-        //TODO see if game is ended, if so print something wait a enter and return to login menu
+
+        if (o.status()== Game.GameStatus.ENDED){
+            printCommandLine("Game Ended, press enter to return to login menu");
+            //get max points
+            int maxPoints = o.points().values().stream().max(Integer::compareTo).get();
+            //for each player print points and the winner
+            for (var entry : o.points().entrySet()){
+                if (entry.getValue() == maxPoints)
+                    printCommandLine(entry.getKey() + " has " + entry.getValue() + " points and is a winner");
+                else
+                    printCommandLine(entry.getKey() + " has " + entry.getValue() + " points");
+            }
+            GameRunning = false;
+            readCommandLine("");
+            return;
+        }
+
         drawGameState();
         render();
     }
@@ -630,9 +727,10 @@ public class CLI {
 
     public void updatePersonalGoal(PersonalGoalInfo o) {
         //check if personal goal is already present in current personal goals
-        boolean present = currentPersonalGoals.stream().anyMatch(personalGoalInfo -> Arrays.deepEquals(personalGoalInfo.description(), o.description()));
-        if (present)
-            currentPersonalGoals.set(currentPersonalGoals.indexOf(o), o);
+        int index = currentPersonalGoals.stream().map(PersonalGoalInfo::description).toList().indexOf(o.description());
+
+        if (index != -1)
+            currentPersonalGoals.set(index, o);
         else
             currentPersonalGoals.add(o);
         drawPersonalGoal();
@@ -689,7 +787,7 @@ public class CLI {
                     cliPixel[topMargin + 2 + i * 2][leftMargin + 1 + j * 4 + c] = second.charAt(c);
                     cliPixelColor[topMargin + 2 + i * 2][leftMargin + 1 + j * 4 + c] = colour;
                 }
-                cliPixelColor[topMargin + 2 + i * 2][leftMargin + 1 + j * 4 ] = DEFAULT;
+                cliPixelColor[topMargin + 2 + i * 2][leftMargin + 1 + j * 4] = DEFAULT;
                 cliPixelColor[topMargin + 2 + i * 2][leftMargin + 1 + j * 4 + 4] = DEFAULT;
                 cliPixel[topMargin + shelf.length * 2 + 1][leftMargin + j * 4 + 1] = '┴';
                 cliPixel[topMargin + shelf.length * 2 + 1][leftMargin + j * 4 + 2] = '─';
@@ -697,8 +795,8 @@ public class CLI {
                 cliPixel[topMargin + shelf.length * 2 + 1][leftMargin + j * 4 + 4] = '─';
             }
         }
-        cliPixel[topMargin+shelf.length * 2 + 1][leftMargin + 1] = '└';
-        cliPixel[topMargin+shelf.length * 2 + 1][leftMargin + shelf[0].length * 4 + 1] = '┘';
+        cliPixel[topMargin + shelf.length * 2 + 1][leftMargin + 1] = '└';
+        cliPixel[topMargin + shelf.length * 2 + 1][leftMargin + shelf[0].length * 4 + 1] = '┘';
 
 
     }
