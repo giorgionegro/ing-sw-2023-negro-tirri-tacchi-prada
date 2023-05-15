@@ -11,7 +11,8 @@ import model.abstractModel.Message;
 import model.abstractModel.Player;
 import modelView.*;
 
-import java.io.PrintStream;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.rmi.RemoteException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -321,7 +322,6 @@ public class CLI {
     }
 
     private void ClearScreen() {
-
         try {
             String operatingSystem = System.getProperty("os.name"); //Check the current operating system
 
@@ -669,27 +669,55 @@ public class CLI {
         render();
     }
 
+    private Map<String,String[]> commonGoalRes = getCommonGoalRes();
+
+    private Map<String,String[]> getCommonGoalRes(){
+        Map<String,String[]> ris = new HashMap<>();//TODO
+        File dir = new File(this.getClass().getResource("/commonGoals/CLI").getPath());
+        if(dir.isDirectory()) {
+            File[] res;
+            if(dir.listFiles()!=null)
+                res = dir.listFiles();
+            else
+                res = new File[0];
+
+            for (File f : res) {
+                if (!f.isDirectory() && f.getName().contains(".txt")) {
+                    try(FileInputStream fr = new FileInputStream(f)){
+                        String img = new String(fr.readAllBytes(),StandardCharsets.UTF_8);
+                        ris.put(f.getName().replace(".txt",""),img.split("\r\n"));
+                    } catch (IOException e) {
+                        System.err.println("error while reading resources");
+                    }
+                }
+            }
+
+        }
+        return ris;
+    }
 
     private void drawCommonGoals() {//TODO: hardCode presentation based on description
 
         Tile[][] twoColumns = new Tile[2][];
 
-
         int i = 0;
         //draw: AVAILABLE COMMON GOALS
         //drawString("Available Common Goals", renderHeight-90-i, renderWidth-60, DEFAULT, 50 - 2);
         for (CommonGoalInfo c : availableCommonGoals) {
-            // c.description()  points: c.Token().points()
+            String[] res = commonGoalRes.get(c.id());
 
-            drawString(c.description() + " points: " + c.tokenState().getPoints(), renderHeight - 30 - i, 40, DEFAULT, 110 - 2);
+            int boxWidth = 23;
+            int boxHeight = 15;
+            int spaceBetween = 3;
+            int boxStartX = 22;
+            int boxStartY = 30 + i * (boxWidth + spaceBetween);
+            drawBox(boxStartX, boxStartY, boxHeight, boxWidth, DEFAULT);
+
+            for(int j=0; j<res.length;j++){
+                drawString(res[j], boxStartX+1+j,boxStartY+1, DEFAULT,60);
+            }
             i++;
-        }
-        //draw: ACHIEVED COMMON GOALS
-        //drawString("Achieved Common Goals", renderHeight-90-i, renderWidth-60, DEFAULT, 50 - 2);
-        for (CommonGoalInfo c : achievedCommonGoals) {
-            // c.description()  points: c.Token().points()
-            drawString(c.description() + " points: " + c.tokenState().getPoints(), renderHeight - 30 - i, 40, DEFAULT, 110 - 2);
-            i++;
+
         }
     }
 

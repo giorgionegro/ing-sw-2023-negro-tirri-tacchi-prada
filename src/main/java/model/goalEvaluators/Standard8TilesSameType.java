@@ -22,7 +22,7 @@ public class Standard8TilesSameType extends GoalEvaluator {
     /**
      * This string contains the id of the commonGoal 8TilesSameType
      */
-    private final String standard8TilesSameTypeId = "Standard8TilesSameTypeId";
+    private final String standard8TilesSameTypeId = "Standard8TilesSameType";
 
     /**
      * {@inheritDoc}
