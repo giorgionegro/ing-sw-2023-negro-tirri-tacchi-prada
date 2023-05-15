@@ -44,9 +44,6 @@ public class StandardGameController implements GameController, LobbyController {
         };
     }
 
-
-    //should we rename newClient to client?
-
     /**
      * Observer to update the GameStatus
      * @param newClient client to be added
@@ -251,10 +248,10 @@ public class StandardGameController implements GameController, LobbyController {
             if (playerMove.columnToInsert() < 0 || playerMove.columnToInsert() > shelf[0].length - 1)
                 throw new IllegalArgumentException("Column index out of bounds");
 
-            if (!areTilesDifferent(playerMove.pickedTiles()))
+            if (!areTilesDifferent(new ArrayList<>(playerMove.pickedTiles())))
                 throw new IllegalArgumentException("Tiles are not different");
 
-            if(!areTilesAligned(playerMove.pickedTiles()))
+            if(!areTilesAligned(new ArrayList<>(playerMove.pickedTiles())))
                 throw new IllegalArgumentException("Tile are not aligned");
 
             for (PickedTile tile : playerMove.pickedTiles())
@@ -287,9 +284,9 @@ public class StandardGameController implements GameController, LobbyController {
 
             /* Check if player has achieved common goals */
             for (CommonGoal commonGoal : game.getCommonGoals())
-                if (!player.getAchievedCommonGoals().containsKey(commonGoal.getEvaluator().getDescription()))
+                if (!player.getAchievedCommonGoals().containsKey(commonGoal.getEvaluator().getId()))
                     if (commonGoal.getEvaluator().evaluate(shelf)) {
-                        player.addAchievedCommonGoal(commonGoal.getEvaluator().getDescription(), commonGoal.popToken());
+                        player.addAchievedCommonGoal(commonGoal.getEvaluator().getId(), commonGoal.popToken());
                     }
 
 
@@ -322,6 +319,17 @@ public class StandardGameController implements GameController, LobbyController {
         try {
             if (!playerAssociation.containsKey(client))
                 throw new IllegalArgumentException("User not allowed");
+
+            boolean subjectfound = false;
+            for(Player p : playerAssociation.values()){
+                if(p.getId().equals(newMessage.getSubject())){
+                    subjectfound = true;
+                    break;
+                }
+            }
+
+            if(!(newMessage.getSubject().isEmpty() || subjectfound))
+                throw new IllegalArgumentException("Subject of the message does not exists");
 
             for (Player p : playerAssociation.values()) {
                 if (newMessage.getSubject().isEmpty() || newMessage.getSubject().equals(p.getId()) || newMessage.getSender().equals(p.getId()))
@@ -416,10 +424,26 @@ public class StandardGameController implements GameController, LobbyController {
 
         boolean rowAligned = true;
         boolean colAligned = true;
+
         for(int i = 1; i<pickedTiles.size(); i++){
             rowAligned = rowAligned && (pickedTiles.get(i-1).row() == pickedTiles.get(i).row());
             colAligned = colAligned && (pickedTiles.get(i-1).col() == pickedTiles.get(i).col());
         }
+
+        if(rowAligned){
+            pickedTiles.sort(Comparator.comparingInt(PickedTile::col));
+            for(int i=0; i< pickedTiles.size()-1; i++)
+                if(pickedTiles.get(i).col()+1!=pickedTiles.get(i+1).col())
+                    return false;
+        }
+
+        if(colAligned){
+            pickedTiles.sort(Comparator.comparingInt(PickedTile::row));
+            for(int i=0; i< pickedTiles.size()-1; i++)
+                if(pickedTiles.get(i).row()+1!=pickedTiles.get(i+1).row())
+                    return false;
+        }
+
 
         return rowAligned || colAligned;
     }

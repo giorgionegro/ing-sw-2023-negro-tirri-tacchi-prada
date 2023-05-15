@@ -4,6 +4,7 @@ import distibuted.interfaces.ClientInterface;
 import distibuted.interfaces.ServerInterface;
 import model.StandardMessage;
 import model.Tile;
+import model.Token;
 import model.User;
 import model.abstractModel.Game;
 import model.abstractModel.GamesManager;
@@ -24,11 +25,12 @@ public class CLI {
     private PlayerChatInfo currentPlayerChat;
     private String thisPlayerId;
     private final Map<String, ShelfInfo> currentShelfs;
-    static final int renderHeight = 52;
+    static final int renderHeight = 53;
     static final int renderWidth = 140;
     final char[][] cliPixel = new char[renderHeight][renderWidth];
     final int[][] cliPixelColor = new int[renderHeight][renderWidth];
     private final Map<String,CommonGoalInfo> commonGoals = new HashMap<>();
+    private Map<String, Token> achievedCommonGoals = new HashMap<>();
     private GameInfo currentGameState;
     private UserInfo user;
     private boolean GameRunning;
@@ -320,49 +322,67 @@ public class CLI {
         }
     }
 
+    /*---------------CHAT---------------------------*/
+    final int chatX = 80;
+    final int chatY = 23;
+
+    final int chatBoxWidth = 58;
+    final int chatBoxHeigth = 28;
+
     private void drawChat() {
         List<Message> messages = currentPlayerChat.messages();
-        int startMessage = messages.size() - 5;
-        if (startMessage < 0) {
-            startMessage = 0;
+        Collections.reverse(messages);
+
+        drawBox(chatY+1, chatX, chatBoxHeigth, chatBoxWidth, DEFAULT);
+
+        int chatContentsX = chatX + 1;
+        int chatContentsY = chatY + 2;
+        int chatContentsHeigth = chatBoxHeigth - 2;
+        int chatContentsWidth = chatBoxWidth - 4;
+
+        String[] chatBuffer = new String[chatContentsHeigth];
+        Arrays.fill(chatBuffer, "");
+
+        int pointer = chatContentsHeigth-1;
+        for(Message m : messages){
+            String text = m.getSender() + " to " + ((m.getSubject().isBlank()) ? "Everyone" : m.getSubject()) + ": " + m.getText();
+            List<String> temp = new ArrayList<>();
+
+            do {
+                int size = chatContentsWidth;
+                if (text.length() < chatContentsWidth)
+                    size = text.length();
+
+                String s = text.substring(0, size);
+                temp.add(s);
+
+
+                text = "    " + text.substring(size);
+            }while(!text.isBlank());
+
+            for(int i = temp.size()-1; i>=0; i--){
+                chatBuffer[pointer] = temp.get(i);
+                pointer--;
+                if(pointer<0)
+                    break;
+            }
+
+            if(pointer<0)
+                break;
         }
 
-        List<Message> messagesToDraw = messages.subList(startMessage, messages.size());
-        //reverse the list
-        Collections.reverse(messagesToDraw);
-        int currentLine = 0;
-        for (Message rawMessage : messagesToDraw) {
-            String idSender = rawMessage.getSender();
-            String message = rawMessage.getText();
-            String idSubject = rawMessage.getSubject();
-            //crop
-            if (idSender.length() > 10) {
-                idSender = idSender.substring(0, 10);
-            }
-            //concatenate
-            StringBuilder toDraw = new StringBuilder(idSender + " to " + ((idSubject.isBlank()) ? "Everyone" : idSubject) + ": " + message);
-            //if subject and sender is not idPlayer color it in red
-            int chatsize = 70;
-            //extend the string to 30
-            while (toDraw.length() < chatsize) {
-                toDraw.append(" ");
-            }
-            //if too long  subdivide it in multiple lines
-            List<String> lines = new ArrayList<>();
-            do {
-                lines.add(toDraw.substring(0, chatsize));
-                toDraw = new StringBuilder(toDraw.substring(chatsize));
-            } while (toDraw.length() > chatsize);
-            if (toDraw.length() > 0) {
-                lines.add(toDraw.toString());
-            }
-            Collections.reverse(lines);
-            for (String line : lines) {
-                drawString(line, renderHeight - 2 - currentLine, renderWidth - 2 - chatsize, DEFAULT, chatsize);
-                currentLine++;
-            }
+        for(int i=0; i<chatBuffer.length; i++){
+            drawString(chatBuffer[i],chatContentsY+i, chatContentsX+1, DEFAULT, chatBuffer[i].length());
         }
+
+        StringBuilder title = new StringBuilder();
+        String t = "CHAT";
+        int spaceBefore = (chatBoxWidth - t.length())/2;
+        title.append(" ".repeat(spaceBefore)).append(t);
+        drawString(title.toString(), chatY, chatX, DEFAULT, title.length());
     }
+
+    /*------------------------------------------------------*/
 
     /*----------LIVING ROOM--------------------------*/
     public void updateLivingRoom(LivingRoomInfo lR) {
@@ -610,10 +630,25 @@ public class CLI {
 
     /*-------------------------------------------------------------*/
 
+
+    /*-----------------COMMAND LINE--------------------------------*/
+
+    final int commandLineX = 1;
+    final int commandLineY = 41;
+
+    final int commandLineWidth = 75;
+    final int commandLineHeight = 10;
+
     private void drawCommandLine() {
-        drawBox(renderHeight - 11, 2, 10, 50, DEFAULT);
-        drawString("Command Line", renderHeight - 10, 3, DEFAULT, 50 - 2);
-        drawString(">", renderHeight - 3, 3, DEFAULT, 50 - 2);
+        drawBox(commandLineY+1, commandLineX, commandLineHeight, commandLineWidth, DEFAULT);
+
+        StringBuilder title = new StringBuilder();
+        String t = "COMMAND LINE";
+        int spaceBefore = (commandLineWidth - t.length())/2;
+        title.append(" ".repeat(spaceBefore)).append(t);
+        drawString(title.toString(),commandLineY, commandLineX, DEFAULT, title.length());
+
+        drawString(">", commandLineY+commandLineHeight-1, commandLineX+2, DEFAULT, commandLineWidth-3);
         drawOldCmds();
     }
 
@@ -621,13 +656,15 @@ public class CLI {
     final List<Pair> oldCmds = new ArrayList<>();
 
     private void drawOldCmds() {
-        while (oldCmds.size() > 5)
+        while (oldCmds.size() > (commandLineHeight-4))
             oldCmds.remove(0);
+
         for (int i = 0; i < oldCmds.size(); i++) {
-            drawString(oldCmds.get(i).string(), renderHeight - 9 + i, 3, oldCmds.get(i).colour(), 50 - 2);
+            drawString(oldCmds.get(i).string(), commandLineY+2+i, commandLineX+1, oldCmds.get(i).colour(), commandLineWidth-2);
         }
     }
 
+    /*-----------------------------------------------------------*/
     public String readCommandLine(String message) {
         moveCursor(renderHeight - 2, 4);
         System.out.print(message + " ");
@@ -725,7 +762,12 @@ public class CLI {
                 drawString(res[j], boxesStartY+1+j,boxStartX+1, DEFAULT,60);
             }
 
-            String temp = "Points: "+commonGoals.get(id).tokenState().getPoints();
+            String temp;
+            if(achievedCommonGoals.containsKey(id))
+                temp = "ACHIEVED: "+achievedCommonGoals.get(id).getPoints();
+            else
+                temp = "Points: "+commonGoals.get(id).tokenState().getPoints();
+
             int spaceBefore = (commonGoalBoxWidht - temp.length())/2;
             int spaceAfter = commonGoalBoxWidht - spaceBefore - temp.length();
             points.append(" ".repeat(spaceBefore));
@@ -878,19 +920,7 @@ public class CLI {
                 render();
                 return;
             }
-            case COMMONGOAL_ACHIEVED -> {
-                //TODO sistemare qua
-//                //find if a common goal in o.achievedCommonGoals() is in availableCommonGoals
-//                for (CommonGoalInfo commonGoalInfo : availableCommonGoals) {
-//                    if (o.achievedCommonGoals().getOrDefault(commonGoalInfo.description(), null) != null) {
-//                        //remove it from availableCommonGoals
-//                        availableCommonGoals.remove(commonGoalInfo);
-//                        //add it to the achieved list
-//                        achievedCommonGoals.add(commonGoalInfo);
-//                    }
-//                }
-
-            }
+            case COMMONGOAL_ACHIEVED -> achievedCommonGoals = o.achievedCommonGoals();
         }
         if (!login)
             drawCommonGoals();
