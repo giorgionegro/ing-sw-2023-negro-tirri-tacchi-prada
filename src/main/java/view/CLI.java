@@ -669,10 +669,10 @@ public class CLI {
         render();
     }
 
-    private Map<String,String[]> commonGoalRes = getCommonGoalRes();
+    private final Map<String,String[]> commonGoalRes = getCommonGoalRes();
 
     private Map<String,String[]> getCommonGoalRes(){
-        Map<String,String[]> ris = new HashMap<>();//TODO
+        Map<String,String[]> ris = new HashMap<>();
         File dir = new File(this.getClass().getResource("/commonGoals/CLI").getPath());
         if(dir.isDirectory()) {
             File[] res;
