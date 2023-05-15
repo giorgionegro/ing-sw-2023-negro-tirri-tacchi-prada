@@ -12,14 +12,33 @@ import java.util.Objects;
  * It is used by the CommonGoal class
  */
 public class StandardStairs extends GoalEvaluator {
+
     /**
-     * This method returns the description of the goal
-     *
-     * @return String
+     * This string contains the description of the commonGoal Stairs
+     */
+    private final String standardStairsDescription = "Five columns of increasing height or descending height.";
+
+    /**
+     * This string contains the id of the commonGoal Stairs
+     */
+    private final String standardStairsId = "StandardStairs";
+
+    /**
+     * {@inheritDoc}
+     * @return {@link #standardStairsDescription}
      */
     @Override
-    public @NotNull String getDescription() {
-        return "Five columns of increasing height or descending height";
+    public String getDescription() {
+        return standardStairsDescription;
+    }
+
+    /**
+     * {@inheritDoc}
+     * @return {@link #standardStairsId}
+     */
+    @Override
+    public String getId(){
+        return standardStairsId;
     }
 
     /**

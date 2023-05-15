@@ -17,15 +17,48 @@ public class Standard3or4ColumnsRowMax3Types extends GoalEvaluator {
     private final boolean column;
 
     /**
+     * This string contains the description of the commonGoal 3ColumnMax3Types
+     */
+    private final String standard3ColumnMax3TypesDescription = "Three columns each formed by 6 tiles of at most three different types.";
+
+    /**
+     * This string contains the description of the commonGoal 4RowsMax3Types
+     */
+    private final String standard4RowsMax3TypesDescription = "Four lines formed each from 5 tiles of at most three different types.";
+
+    /**
+     * This string contains the id of the commonGoal 3ColumnMax3Types
+     */
+    private final String standard3ColumnMax3TypesId = "Standard3ColumnMax3Types";
+
+    /**
+     * This string contains the id of the commonGoal 4RowsMax3Types
+     */
+    private final String standard4RowsMax3TypesId = "Standard4RowsMax3Types";
+
+    /**
      * @param column true if the goal is to have 3 columns of at most 3 different tiles, false if the goal is to have 4 rows of at most 3 different tiles
      */
     public Standard3or4ColumnsRowMax3Types(boolean column) {
         this.column = column;
     }
 
+    /**
+     * {@inheritDoc}
+     * @return {@link #standard3ColumnMax3TypesDescription} or {@link #standard4RowsMax3TypesDescription} based on {@link #column} value
+     */
     @Override
     public String getDescription() {
-        return (column) ? "Three columns each formed by 6 tiles of at most three different types." : "Four lines formed each from 5 tiles of at most three different types.";
+        return (column) ?  standard3ColumnMax3TypesDescription : standard4RowsMax3TypesDescription;
+    }
+
+    /**
+     * {@inheritDoc}
+     * @return {@link #standard3ColumnMax3TypesId} or {@link #standard4RowsMax3TypesId} based on {@link #column} value
+     */
+    @Override
+    public String getId(){
+        return (column) ? standard3ColumnMax3TypesId : standard4RowsMax3TypesId;
     }
 
     /**

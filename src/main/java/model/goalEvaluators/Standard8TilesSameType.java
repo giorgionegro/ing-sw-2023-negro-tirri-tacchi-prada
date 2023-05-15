@@ -15,13 +15,31 @@ public class Standard8TilesSameType extends GoalEvaluator {
     private final int numberOfTiles = 8;
 
     /**
-     * This method returns the description of the goal
-     *
-     * @return String description of the goal
+     * This string contains the description of the commonGoal 8TilesSameType
+     */
+    private final String standard8TilesSameTypeDescription = "Eight tiles of the same type.";
+
+    /**
+     * This string contains the id of the commonGoal 8TilesSameType
+     */
+    private final String standard8TilesSameTypeId = "Standard8TilesSameTypeId";
+
+    /**
+     * {@inheritDoc}
+     * @return {@link #standard8TilesSameTypeDescription}
      */
     @Override
     public String getDescription() {
-        return "Eight tiles of the same type.";
+        return standard8TilesSameTypeDescription;
+    }
+
+    /**
+     * {@inheritDoc}
+     * @return {@link #standard8TilesSameTypeId}
+     */
+    @Override
+    public String getId(){
+        return standard8TilesSameTypeId;
     }
 
     /**

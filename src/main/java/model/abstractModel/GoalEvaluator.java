@@ -24,4 +24,10 @@ public abstract class GoalEvaluator {
      * @return the description of the goal
      **/
     public abstract String getDescription();
+
+    /**
+     * This method returns the id of the evaluator
+     * @return The id of the evaluator
+     */
+    public abstract String getId();
 }

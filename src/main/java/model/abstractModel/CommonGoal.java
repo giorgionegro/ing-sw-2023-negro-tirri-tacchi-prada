@@ -77,6 +77,6 @@ public abstract class CommonGoal extends Observable<CommonGoal.Event> {
      * @return
      */
     public CommonGoalInfo getInfo(){
-        return new CommonGoalInfo(evaluator.getDescription(), getTopToken());
+        return new CommonGoalInfo(evaluator.getId(), evaluator.getDescription(), getTopToken());
     }
 }

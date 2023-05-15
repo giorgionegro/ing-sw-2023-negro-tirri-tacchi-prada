@@ -10,14 +10,34 @@ import java.util.Arrays;
  * It implements the GoalEvaluator abstract class
  * It is used by the CommonGoal class
  **/
-public class
-Standard4Groups4Tiles extends GoalEvaluator {
+public class Standard4Groups4Tiles extends GoalEvaluator {
+
     /**
-     * @return the description of the goal
+     * This string contains the description of the commonGoal 4Groups4Tiles
+     */
+    private final String standard4Groups4TilesDescription = "Four separate groups formed each from four adjacent tiles of the same type.";
+
+    /**
+     * This string contains the id of the commonGoal 4Groups4Tiles
+     */
+    private final String standard4Groups4TilesId = "Standard4Groups4Tiles";
+
+    /**
+     * {@inheritDoc}
+     * @return {@link #standard4Groups4TilesDescription}
      */
     @Override
     public String getDescription() {
-        return "Four separate groups formed each from four adjacent tiles of the same type.";
+        return standard4Groups4TilesDescription;
+    }
+
+    /**
+     * {@inheritDoc}
+     * @return {@link #standard4Groups4TilesId}
+     */
+    @Override
+    public String getId(){
+        return standard4Groups4TilesId;
     }
 
     /**
