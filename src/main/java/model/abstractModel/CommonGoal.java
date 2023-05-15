@@ -58,7 +58,10 @@ public abstract class CommonGoal extends Observable<CommonGoal.Event> {
      * @return the top token of {@link #tokenStack}
      **/
     public Token getTopToken(){
-        return tokenStack.lastElement();
+        if(tokenStack.size()>0)
+            return tokenStack.lastElement();
+
+        return Token.TOKEN_EMPTY;
     }
 
     /**
