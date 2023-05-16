@@ -56,7 +56,7 @@ public class StandardServerController implements ServerController, GameManagerCo
     }
 
     @Override
-    public void disconnect(ClientInterface client) throws RemoteException {
+    public void disconnect(ClientInterface client){
         User user = users.remove(client);
         user.deleteObservers();
     }

@@ -14,7 +14,7 @@ import java.rmi.RemoteException;
 
 public class ServerSocketHandler extends SocketHandler<ServerInterface> implements ClientInterface {
 
-    public ServerSocketHandler(Socket socket) throws RemoteException{
+    public ServerSocketHandler(Socket socket){
         super(socket);
     }
 

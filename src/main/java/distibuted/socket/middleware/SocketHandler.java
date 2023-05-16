@@ -50,16 +50,14 @@ public abstract class SocketHandler<Interface>{
         }
     }
 
-    public void waitForReceive(Interface receiver){
+    public void waitForReceive(Interface receiver) throws RemoteException {
         try {
             SocketObject no = (SocketObject) ois.readObject();
             no.update(this, receiver);
         } catch (IOException e) {
-            e.printStackTrace();
-            //throw new RuntimeException(e);//TODO send error to client
+            throw new RemoteException("Unable to communicate with socket");
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            //throw new RuntimeException(e);//TODO send error to client
+            System.err.println("Received not a SocketObject");
         }
     }
 

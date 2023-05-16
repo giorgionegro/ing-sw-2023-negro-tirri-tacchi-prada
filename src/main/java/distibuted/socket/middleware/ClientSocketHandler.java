@@ -28,14 +28,25 @@ public class ClientSocketHandler extends SocketHandler<ClientInterface> implemen
         super.open();
 
         receiverLoop = new Thread(()->{
-            while(true){
-                waitForReceive(client);
+            try{
+                while(true){
+                    waitForReceive(client);
+                }
+            }catch (RemoteException e) {
+                System.err.println("Cannot receive from client: "+e.getMessage()+".\n-> Closing this connection...");
+            } finally {
+                //TODO
+//                try {
+//                    socket.close();
+//                } catch (IOException e) {
+//                    System.err.println("Cannot close socket");
+//                }
             }
         });
 
         receiverLoop.start();
 
-        return this; //TODO controllare meglio la posizione di questo return
+        return this;
     }
 
     @Override
