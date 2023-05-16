@@ -47,7 +47,7 @@ public abstract class Game extends Observable<Game.Event>{
     public enum GameStatus{
         MATCHMAKING,
         STARTED,
-        ENDED
+        IN_PROGRESS, ENDED
     }
 
     /**
