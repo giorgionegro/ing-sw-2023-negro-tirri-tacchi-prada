@@ -3,8 +3,13 @@ package model;
 import model.abstractModel.*;
 import model.exceptions.*;
 import model.goalEvaluators.*;
+import model.instances.StandardCommonGoalInstance;
+import model.instances.StandardGameInstance;
+import model.instances.StandardLivingRoomInstance;
+import model.instances.StandardPlayerInstance;
 import modelView.GameInfo;
 
+import java.io.Serializable;
 import java.util.*;
 
 
@@ -17,6 +22,8 @@ public class StandardGame extends Game {
      * Players that are playing in this game (map of playerId -> Player)
      */
     private final Map<String, Player> players;
+
+    private int joinedPlayer;
 
     /**
      * Common goals associated to this game (list of CommonGoal)
@@ -78,6 +85,7 @@ public class StandardGame extends Game {
         if(playerNumber<2 || playerNumber>4)
             throw new IllegalArgumentException("Number of players must be between 2 and 4.");
 
+        this.joinedPlayer = 0;
         this.maxPlayerNumber = playerNumber;
         this.gameId = gameId;
         this.commonGoals = setCommonGoals(playerNumber);
@@ -87,6 +95,24 @@ public class StandardGame extends Game {
         this.lastTurn = false;
         this.status = GameStatus.MATCHMAKING;
         this.personalGoals = setPersonalGoals();
+    }
+
+    public StandardGame(StandardGameInstance instance){
+        this.joinedPlayer = 0;
+        this.players = new HashMap<>();
+        instance.players().forEach((s, standardPlayerInstance) -> players.put(s, new StandardPlayer((StandardPlayerInstance) standardPlayerInstance)));
+        this.maxPlayerNumber = instance.maxPlayerNumber();
+        this.gameId = instance.gameId();
+        this.commonGoals = new ArrayList<>();
+        instance.commonGoals().forEach(standardCommonGoalInstance -> commonGoals.add(new StandardCommonGoal((StandardCommonGoalInstance) standardCommonGoalInstance)));
+        this.livingRoom = new StandardLivingRoom((StandardLivingRoomInstance) instance.livingRoom());
+        this.playerTurnQueue = new ArrayList<>();
+        instance.playersTurnQueue().forEach(s -> playerTurnQueue.add(players.get(s)));
+        this.firstPlayer = players.get(instance.firstPlayer());
+        this.status = GameStatus.RESTARTING;
+        this.lastTurn = instance.lastTurn();
+        //re-initialize the personal goals is not needed
+        this.personalGoals = new Stack<>();
     }
 
     /**
@@ -108,34 +134,46 @@ public class StandardGame extends Game {
     public void addPlayer(String playerId) throws PlayerAlreadyExistsException, MatchmakingClosedException {
 
         /* If matchmaking is closed (reached max number of connected player) we discard the request */
-        if(!status.equals(GameStatus.MATCHMAKING))
+        if(!(status.equals(GameStatus.MATCHMAKING) || status.equals(GameStatus.RESTARTING)))
             throw new MatchmakingClosedException();
 
         /* If trying to add an already existing playerId we discard the request */
-        if(players.containsKey(playerId))
-            throw new PlayerAlreadyExistsException();
+        if(status.equals(GameStatus.MATCHMAKING)) {
+            if (players.containsKey(playerId))
+                throw new PlayerAlreadyExistsException();
 
-        /* Initialize Player model */
-        List<PersonalGoal> pGoals = personalGoals.pop();
-        Player newPlayer = new StandardPlayer(playerId, pGoals);
+            /* Initialize Player model */
+            List<PersonalGoal> pGoals = personalGoals.pop();
+            Player newPlayer = new StandardPlayer(playerId, pGoals);
 
-        /* Associate Player with playerId */
-        players.put(playerId,newPlayer);
+            /* Associate Player with playerId */
+            players.put(playerId, newPlayer);
 
-        /* Add Player to turnQueue */
-        playerTurnQueue.add(newPlayer);
+            /* Add Player to turnQueue */
+            playerTurnQueue.add(newPlayer);
 
-        setChanged();
-        notifyObservers(Event.PLAYER_JOINED);
+            joinedPlayer++;
 
+            setChanged();
+            notifyObservers(Event.PLAYER_JOINED);
+        }else{
+            if(!players.containsKey(playerId))
+                throw new MatchmakingClosedException();
+
+            joinedPlayer++;
+            setChanged();
+            notifyObservers(Event.PLAYER_REJOINED);
+        }
         /* If we have now reached the max playerNumber we set game ready to be started */
-        if(players.size()==maxPlayerNumber) {
+        if(joinedPlayer==maxPlayerNumber) {
+
+            if(status == GameStatus.MATCHMAKING){
+                /* Update turn sequence and firstPlayer */
+                Collections.shuffle(playerTurnQueue);
+                firstPlayer = playerTurnQueue.get(0);
+            }
+
             this.status = GameStatus.STARTED;
-
-            /* Update turn sequence and firstPlayer */
-            Collections.shuffle(playerTurnQueue);
-            firstPlayer = playerTurnQueue.get(0);
-
             setChanged();
             notifyObservers(Event.GAME_STARTED);
         }
@@ -230,6 +268,33 @@ public class StandardGame extends Game {
 
             throw new GameEndedException();
         }
+    }
+
+    @Override
+    public Serializable getInstance(){
+        Map<String, Serializable> playersInstance = new HashMap<>();
+        players.forEach((s, player) -> playersInstance.put(s,player.getInstance()));
+
+        List<Serializable> commonGoalsInstance = new ArrayList<>();
+        commonGoals.forEach(commonGoal -> commonGoalsInstance.add(commonGoal.getInstance()));
+
+        Serializable livingRoomInstance = livingRoom.getInstance();
+
+        List<String> playerTurnQueueInstance = new ArrayList<>();
+        playerTurnQueue.forEach(player -> playerTurnQueueInstance.add(player.getId()));
+
+        String firstPlayerInstance = firstPlayer.getId();
+
+        return new StandardGameInstance(
+                playersInstance,
+                commonGoalsInstance,
+                livingRoomInstance,
+                gameId,
+                playerTurnQueueInstance,
+                firstPlayerInstance,
+                maxPlayerNumber,
+                lastTurn
+                );
     }
 
     /**

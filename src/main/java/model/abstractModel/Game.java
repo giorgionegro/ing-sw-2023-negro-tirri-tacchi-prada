@@ -7,6 +7,7 @@ import model.exceptions.PlayerNotExistsException;
 import modelView.GameInfo;
 import util.Observable;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -23,6 +24,7 @@ public abstract class Game extends Observable<Game.Event>{
          * This event is sent whenever a player joins the game
          */
         PLAYER_JOINED,
+        PLAYER_REJOINED,
         /**
          * This event is sent when the game has just been started
          */
@@ -47,6 +49,7 @@ public abstract class Game extends Observable<Game.Event>{
      */
     public enum GameStatus{
         MATCHMAKING,
+        RESTARTING,
         STARTED,
         ENDED
     }
@@ -122,4 +125,6 @@ public abstract class Game extends Observable<Game.Event>{
      * @return
      */
     public abstract GameInfo getInfo();
+
+    public abstract Serializable getInstance();
 }

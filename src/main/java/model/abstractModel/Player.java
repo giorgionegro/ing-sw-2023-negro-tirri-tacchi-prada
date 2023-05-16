@@ -4,6 +4,7 @@ import model.Token;
 import modelView.PlayerInfo;
 import util.Observable;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
@@ -77,4 +78,6 @@ public abstract class Player extends Observable<Player.Event> {
      * @return
      */
     public abstract PlayerInfo getInfo();
+
+    public abstract Serializable getInstance();
 }

@@ -4,6 +4,7 @@ import model.Token;
 import modelView.CommonGoalInfo;
 import util.Observable;
 
+import java.io.Serializable;
 import java.util.Stack;
 
 /**
@@ -82,4 +83,6 @@ public abstract class CommonGoal extends Observable<CommonGoal.Event> {
     public CommonGoalInfo getInfo(){
         return new CommonGoalInfo(evaluator.getId(), evaluator.getDescription(), getTopToken());
     }
+
+    public abstract Serializable getInstance();
 }

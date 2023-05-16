@@ -1,8 +1,10 @@
 package model;
 
 import model.abstractModel.LivingRoom;
+import model.instances.StandardLivingRoomInstance;
 import modelView.LivingRoomInfo;
 
+import java.io.Serializable;
 import java.util.*;
 
 public class StandardLivingRoom extends LivingRoom {
@@ -32,6 +34,12 @@ public class StandardLivingRoom extends LivingRoom {
         this.bag = loadBag();
         this.board = new Tile[9][9];
         Arrays.stream(this.board).forEach(tiles -> Arrays.fill(tiles, Tile.EMPTY));
+    }
+
+    public StandardLivingRoom(StandardLivingRoomInstance instance){
+        this.board = instance.board();
+        this.bag = instance.bag();
+        this.numberOfPlayers = instance.numberOfPlayers();
     }
 
     /**
@@ -75,6 +83,11 @@ public class StandardLivingRoom extends LivingRoom {
     @Override
     public LivingRoomInfo getInfo(){
         return new LivingRoomInfo(getBoard());
+    }
+
+    @Override
+    public Serializable getInstance(){
+        return new StandardLivingRoomInstance(board,bag,numberOfPlayers);
     }
 
     /**

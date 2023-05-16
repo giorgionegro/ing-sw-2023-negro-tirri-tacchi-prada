@@ -1,8 +1,10 @@
 package model;
 
 import model.abstractModel.PersonalGoal;
+import model.instances.StandardPersonalGoalInstance;
 import modelView.PersonalGoalInfo;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
 /**
@@ -39,6 +41,13 @@ public  class StandardPersonalGoal extends PersonalGoal {
         this.row = row;
         this.column = column;
         this.achieved = false;
+    }
+
+    public StandardPersonalGoal(StandardPersonalGoalInstance instance){
+        this.tile = instance.tile();
+        this.row = instance.row();
+        this.column = instance.column();
+        this.achieved = instance.achieved();
     }
 
     /**
@@ -101,5 +110,10 @@ public  class StandardPersonalGoal extends PersonalGoal {
     @Override
     public PersonalGoalInfo getInfo() {
         return new PersonalGoalInfo(achieved, getDescription());
+    }
+
+    @Override
+    public Serializable getInstance() {
+        return new StandardPersonalGoalInstance(tile,row,column,achieved);
     }
 }

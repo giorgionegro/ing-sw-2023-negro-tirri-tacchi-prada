@@ -4,6 +4,8 @@ import model.Tile;
 import modelView.PersonalGoalInfo;
 import util.Observable;
 
+import java.io.Serializable;
+
 /**
  * This is the abstract class of a personal goal.
  * <p>
@@ -52,4 +54,6 @@ public abstract class PersonalGoal extends Observable<PersonalGoal.Event> {
      * @return
      */
     public abstract PersonalGoalInfo getInfo();
+
+    public abstract Serializable getInstance();
 }

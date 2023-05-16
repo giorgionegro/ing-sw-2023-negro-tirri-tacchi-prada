@@ -4,6 +4,8 @@ import model.Tile;
 import modelView.LivingRoomInfo;
 import util.Observable;
 
+import java.io.Serializable;
+
 /**
  * This is the abstract class of game living room.
  * <p>
@@ -44,4 +46,6 @@ public abstract class LivingRoom extends Observable<LivingRoom.Event> {
      * @return
      */
     public abstract LivingRoomInfo getInfo();
+
+    public abstract Serializable getInstance();
 }

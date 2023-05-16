@@ -4,6 +4,8 @@ import model.Tile;
 import modelView.ShelfInfo;
 import util.Observable;
 
+import java.io.Serializable;
+
 /**
  * This is the abstract class of game living room.
  * <p>
@@ -39,4 +41,7 @@ public abstract class Shelf extends Observable<Shelf.Event> {
      * @return
      */
     public abstract ShelfInfo getInfo(String playerId);
+
+
+    public abstract Serializable getInstance();
 }

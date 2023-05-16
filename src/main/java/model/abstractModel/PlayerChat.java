@@ -3,6 +3,7 @@ package model.abstractModel;
 import modelView.PlayerChatInfo;
 import util.Observable;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -39,4 +40,6 @@ public abstract class PlayerChat extends Observable<PlayerChat.Event> {
      * @return
      */
     public abstract PlayerChatInfo getInfo();
+
+    public abstract Serializable getInstance();
 }
