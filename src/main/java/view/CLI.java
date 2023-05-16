@@ -15,7 +15,6 @@ import java.rmi.RemoteException;
 import java.util.*;
 
 public class CLI {
-
     static final PrintStream out = System.out;
     private LivingRoomInfo currentLivingRoom;
     private PlayerChatInfo currentPlayerChat;
@@ -27,23 +26,21 @@ public class CLI {
     final int[][] cliPixelColor = new int[renderHeight][renderWidth];
     private final List<CommonGoalInfo> availableCommonGoals = new ArrayList<>();
     private final List<CommonGoalInfo> achievedCommonGoals = new ArrayList<>();
-
-
-
-
     private GameInfo currentGameState;
     private Tile[][] personalGoal;
     private UserInfo user;
+    private boolean GameRunning;
     private final Object lock = new Object();
     private final Scanner scanner = new Scanner(System.in);
     private final List<GamesManagerInfo> games= new ArrayList<>();
+    private boolean error = false;
     /**
      * true if the user is logging in
      */
     private boolean login = false;
     public CLI() {
         currentShelfs = new HashMap<>();
-        initBox();
+        drawBox(0,0, renderHeight, renderWidth, DEFAULT);
         drawCommandLine();
         render();
     }
@@ -69,8 +66,8 @@ public class CLI {
         }
     }
 
-
     private synchronized void createGame(ClientInterface client, ServerInterface server) throws RemoteException {
+
         String gameId = readCommandLine("GameId: ");
         render();
         String p = readCommandLine("PlayerNumber (between 2 and 4): ");
@@ -83,7 +80,6 @@ public class CLI {
             render();
         }
     }
-
     private void joinGame(ClientInterface client, ServerInterface server) throws RemoteException {
         String gameId;
         String playerId;
@@ -94,7 +90,7 @@ public class CLI {
         if(!playerId.equals(""))
             server.joinGame(client,new LoginInfo(playerId,gameId));
         synchronized (lock) {
-        while (user != null && user.status() != User.Status.JOINED) {
+        while ((user == null || user.status() != User.Status.JOINED) && error) {
             try {
 
                     lock.wait();
@@ -104,18 +100,16 @@ public class CLI {
             }
         }
         }
-        if(user != null)
-        {
-            this.thisPlayerId = playerId;
-            login = false;
-            gameRoutine(this, client, server, playerId);
+        if (error)
+            return;
+        this.thisPlayerId = playerId;
+        login = false;
+        gameRoutine(this, client, server, playerId);
     }
-    }
-
     private void gameRoutine(CLI cli, ClientInterface client, ServerInterface sInt, String playerId) throws RemoteException {
-        String readLine;
-        while (true) {
-            readLine = readCommandLine("(h for commands)-> ");
+        GameRunning = true;
+        while (GameRunning) {
+            String readLine = readCommandLine("(h for commands)-> ");
             render();
             switch (readLine) {
                 case "h" -> {
@@ -126,12 +120,13 @@ public class CLI {
                 }
                 case "1" -> {
                     ClearScreen();
-                    initBox();
+                    drawBox(0,0, renderHeight, renderWidth, DEFAULT);
                     drawCommandLine();
                     drawGameState();
                     drawBoard();
                     drawShelfs();
                     drawChat();
+                    drawCommonGoals();
                     render();
                 }
                 case "2" -> {
@@ -211,22 +206,20 @@ public class CLI {
 
                 }
                 case "3" -> {
+                    String subject;
+                    String content;
                     synchronized (this) {
-                        String subject = readCommandLine("Message Subject (empty for everyone): ");
+                         subject = readCommandLine("Message Subject (empty for everyone): ");
                         render();
-                        String content = readCommandLine("Message content: ");
+                        content = readCommandLine("Message content: ");
                         render();
-                        sInt.sendMessage(client, new StandardMessage(playerId, subject, content));
                     }
+                    sInt.sendMessage(client, new StandardMessage(playerId, subject, content));
                 }
                 default -> {printCommandLine("Wrong command",RED);
                     render();}
             }
         }
-    }
-
-    public void setThisPlayerId(String playerId) {
-        this.thisPlayerId = playerId;
     }
 
     public void updateLivingRoom(LivingRoomInfo lR) {
@@ -236,7 +229,6 @@ public class CLI {
 
         render();
     }
-
     public void updateShelf(ShelfInfo sV) {
         //set current shelf
 
@@ -246,8 +238,7 @@ public class CLI {
 
         render();
     }
-
-    public void updatePlayerChat(PlayerChatInfo pC) {//TODO: fix this
+    public void updatePlayerChat(PlayerChatInfo pC) {
         //set current player chat
         this.currentPlayerChat = pC;
         drawChat();
@@ -261,17 +252,8 @@ public class CLI {
     public static final int BLUE = 34;
     public static final int MAGENTA = 35;
     public static final int CYAN = 36;
-
     public static final int RED = 31;
-
     public static final int DEFAULT = 39;
-
-    private void initBox() {
-        drawBox(0,0, renderHeight, renderWidth, DEFAULT);
-    }
-
-
-
     private String renderPixel(int x, int y){
         return "\u001B["+cliPixelColor[x][y]+"m"+cliPixel[x][y]+"\u001B[0m";
     }
@@ -294,7 +276,6 @@ public class CLI {
             printCommandLine("Error: " + e.getMessage(), RED);
         }
     }
-
     private void drawChat() {
         List<Message> messages = currentPlayerChat.messages();
         int startMessage = messages.size() - 5;
@@ -309,6 +290,7 @@ public class CLI {
         for (int i = 0; i < messagesToDraw.size(); i++) {
             String idSender = messagesToDraw.get(i).getSender();
             String message = messagesToDraw.get(i).getText();
+            String idSubject = messagesToDraw.get(i).getSubject();
             //crop
             if (idSender.length() > 10) {
                 idSender = idSender.substring(0, 10);
@@ -317,18 +299,16 @@ public class CLI {
                 message = message.substring(0, 20);
             }
             //concatenate
-            String toDraw = idSender + ": " + message;
+            String toDraw = idSender + "=> "+((idSubject.isBlank())?"Everyone":idSender)+":" + message;
             //if subject and sender is not idPlayer color it in red
             int color = DEFAULT;
             if (!messagesToDraw.get(i).getSubject().equals(thisPlayerId) && !messagesToDraw.get(i).getSender().equals(thisPlayerId)) {
                 color = RED;
             }
             //draw the message
-            drawString(toDraw, renderHeight - 2 - i, renderWidth - 2 - 20, color,20);
+            drawString(toDraw, renderHeight - 2 - i, renderWidth - 2 - 20, color,30);
         }
     }
-
-
     private void drawBoard() {
         final String topLeft = "┌───";
         final String topCenter = "┬───";
@@ -396,8 +376,8 @@ public class CLI {
         cliPixel[board.length*2+1][1]='└';
         cliPixel[board.length*2+1][board[0].length*4+1]='┘';
     }
-
     private void drawShelfs() {
+
         final String tops = "    ";
         final String centerLeft ="├───";
         final String centerCenter ="┼───";
@@ -460,6 +440,8 @@ public class CLI {
             cliPixel[shelf.length*2+1][start+1]='└';
             cliPixel[shelf.length*2+1][start+shelf[0].length*4+1]='┘';
         }
+        for (int i = 0; i < (currentShelfs.values().stream().toList().get(0)).shelf()[0].length+4+5;i++)
+            cliPixel[1+currentShelfs.values().stream().toList().get(0).shelf().length*2 +1][margin+i]=' ';
         //draw under each shelf you if you are in that shelf or the number of player in the shelf
         for (int i = 0; i < currentShelfs.size(); i++) {
             ShelfInfo shelf = currentShelfs.values().stream().toList().get(i);
@@ -483,7 +465,6 @@ public class CLI {
 
     }
     }
-
     //draw String from start coordinate
     private void drawString(String toDraw, int Row, int startCol, int colour, int size) {
         if(toDraw.length()>size)
@@ -498,7 +479,6 @@ public class CLI {
     public static void moveCursor(int x, int y) {
         System.out.print("\033[" + x + ";" + y + "H");
     }
-
     @SuppressWarnings("SameParameterValue")
     private void drawBox(int x, int y, int height, int width, int colour) {//TODO implements colour
         for (int i = 0; i < height; i++) {
@@ -531,17 +511,12 @@ public class CLI {
             }
         }
     }
-
-
-    //draw command line box 10*50 in the bottom left corner
-
     private void drawCommandLine() {
         drawBox(renderHeight-11, 2, 10, 50, DEFAULT);
         drawString("Command Line", renderHeight -10, 3, DEFAULT, 50 - 2);
         drawString(">", renderHeight - 3, 3, DEFAULT, 50 - 2);
         drawOldCmds();
     }
-
     //old cmds to be shifted up
     final List<Pair> oldCmds = new ArrayList<>();
     private void drawOldCmds() {
@@ -565,7 +540,6 @@ public class CLI {
             return cmd;
 
     }
-
     public void printCommandLine(String toPrint) {
      oldCmds.add(new Pair(toPrint, DEFAULT));
         while (oldCmds.size()>8)
@@ -593,8 +567,6 @@ public class CLI {
             }
             moveCursor(renderHeight - 2, 5);
     }
-
-
     public void updateCommonGoal(CommonGoalInfo o) {
 
          boolean present = availableCommonGoals.stream().anyMatch(commonGoalInfo -> commonGoalInfo.description().equals(o.description())) || achievedCommonGoals.stream().anyMatch(commonGoalInfo -> commonGoalInfo.description().equals(o.description()));
@@ -608,32 +580,30 @@ public class CLI {
         drawCommonGoals();
         render();
     }
-
     private void drawCommonGoals() {
         int i = 0;
         //draw: AVAILABLE COMMON GOALS
-        drawString("Available Common Goals", renderHeight-90-i, renderWidth-60, DEFAULT, 50 - 2);
+        //drawString("Available Common Goals", renderHeight-90-i, renderWidth-60, DEFAULT, 50 - 2);
         for (CommonGoalInfo c: availableCommonGoals) {
             // c.description()  points: c.Token().points()
 
-            drawString(c.description() + " points: " + c.tokenState().getPoints(), renderHeight-90-i, renderWidth-60, DEFAULT, 50 - 2);
+            drawString(c.description() + " points: " + c.tokenState().getPoints(), renderHeight-30-i, renderWidth-60, DEFAULT, 50 - 2);
             i++;
         }
         //draw: ACHIEVED COMMON GOALS
-        drawString("Achieved Common Goals", renderHeight-90-i, renderWidth-60, DEFAULT, 50 - 2);
+        //drawString("Achieved Common Goals", renderHeight-90-i, renderWidth-60, DEFAULT, 50 - 2);
         for (CommonGoalInfo c: achievedCommonGoals) {
             // c.description()  points: c.Token().points()
-            drawString(c.description() + " points: " + c.tokenState().getPoints(), renderHeight-90-i, renderWidth-60, DEFAULT, 50 - 2);
+            drawString(c.description() + " points: " + c.tokenState().getPoints(), renderHeight-30-i, renderWidth-60, DEFAULT, 50 - 2);
             i++;
         }
     }
-
     public void updateGameState(GameInfo o) {
         currentGameState = o;
+        //TODO see if game is ended, if so print something wait a enter and return to login menu
         drawGameState();
         render();
     }
-
     private void drawGameState() {
         //redraw shelfs with new current player
         if (currentLivingRoom!= null && currentShelfs!=null &&currentLivingRoom.board()!=null && currentLivingRoom.board().length>0 && currentShelfs.size()>0&& currentLivingRoom.board()[0].length>0)
@@ -642,23 +612,22 @@ public class CLI {
         if(currentGameState.lastTurn())
             drawString("Last Turn", renderHeight-10, 30, DEFAULT, 50 - 2);
     }
-
     public void updatePersonalGoal(PersonalGoalInfo o) {
         //TODO change type inside PGI from String to Tile matrix
     }
-
     public void updateUserInfo(UserInfo o, User.Event event) {
         if (event == User.Event.STATUS_CHANGED) {
             user = o;
         } else if (event == User.Event.ERROR_REPORTED) {
             printCommandLine(o.errorMessage(), RED);
+            error = true;
+
         }
         synchronized (lock) {
             lock.notify();
         }
         render();
     }
-
     public void updateGamesManager(GamesManagerInfo o, GamesManager.Event evt) {
         switch (evt) {
             case GAME_CREATED -> games.add(o);
@@ -668,7 +637,6 @@ public class CLI {
             drawGameList();
 
     }
-
     private void drawGameList() {
         // a game will be | game name | max players | current players | joinable |
         // a game will be | 10 chars   | 5 chars      | 5 chars          | 10 chars |
@@ -689,7 +657,6 @@ public class CLI {
 
         }
     }
-
     public void updatePlayerInfo(PlayerInfo o, Player.Event evt) {
         if (evt==null)
         {
@@ -719,7 +686,6 @@ public class CLI {
         if (!login)
             drawCommonGoals();
     }
-
-
-    private record Pair(String string, int colour){}
+    private record Pair(String string, int colour) {
+    }
     }

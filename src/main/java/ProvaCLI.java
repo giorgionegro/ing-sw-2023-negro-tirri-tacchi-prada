@@ -37,13 +37,17 @@ public class ProvaCLI {
                             printError("Unable to use SOCKET", cli);
                         }
                     }
-                    default -> printError("Wrong choise", cli);
+                    default -> printError("Wrong choice", cli);
                 }
             } while (server == null);
+
+            //TODO: choose between gui or cli
+
 
             cli.runLoginView(client, server);
 
             app.disconnect(client);
+            System.exit(0);
         }catch (RemoteException e){
             printError("Critical error, shutting down",cli);
         }

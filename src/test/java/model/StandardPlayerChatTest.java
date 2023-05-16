@@ -30,11 +30,11 @@ class StandardPlayerChatTest {
 
         //Add random generated ids
         for(int i = 0; i<othersPlayerNumber; i++){
-            String tempId = "";
+            StringBuilder tempId = new StringBuilder();
             for(int j = 0; j<playerIdLength; j++)
-                tempId += (char) random.nextInt(97,123);
+                tempId.append((char) random.nextInt(97, 123));
 
-            testPlayerIdList.add(tempId);
+            testPlayerIdList.add(tempId.toString());
         }
 
         for(int i = 0; i<messageNumber; i++){
