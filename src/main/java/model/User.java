@@ -82,8 +82,8 @@ public class User extends Observable<User.Event> {
     }
 
     /**
-     *
-     * @return
+     * This method returns a {@link UserInfo} representing this object instance
+     * @return A {@link UserInfo} representing this object instance
      */
     public UserInfo getInfo(){
         return new UserInfo(status,errorReport,interactionTime);

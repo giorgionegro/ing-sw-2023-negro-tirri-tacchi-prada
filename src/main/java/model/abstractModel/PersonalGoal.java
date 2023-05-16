@@ -4,14 +4,12 @@ import model.Tile;
 import modelView.PersonalGoalInfo;
 import util.Observable;
 
-import java.io.Serializable;
-
 /**
  * This is the abstract class of a personal goal.
  * <p>
  * It defines all the required methods needed to access personal goal information and manage personal goal achieved status
  */
-public abstract class PersonalGoal extends Observable<PersonalGoal.Event> {
+public abstract class PersonalGoal extends Observable<PersonalGoal.Event> implements SerializableModel{
     /**
      * This enumeration contains all the personal goal events that can be sent to observers
      */
@@ -50,10 +48,8 @@ public abstract class PersonalGoal extends Observable<PersonalGoal.Event> {
 
 
     /**
-     * TODO
-     * @return
+     * This method returns a {@link PersonalGoalInfo} representing this object instance
+     * @return A {@link PersonalGoalInfo} representing this object instance
      */
     public abstract PersonalGoalInfo getInfo();
-
-    public abstract Serializable getInstance();
 }

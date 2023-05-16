@@ -36,6 +36,10 @@ public class StandardLivingRoom extends LivingRoom {
         Arrays.stream(this.board).forEach(tiles -> Arrays.fill(tiles, Tile.EMPTY));
     }
 
+    /**
+     * Construct a {@link StandardLivingRoom} using the given instance
+     * @param instance The {@link StandardLivingRoom} instance
+     */
     public StandardLivingRoom(StandardLivingRoomInstance instance){
         this.board = instance.board();
         this.bag = instance.bag();
@@ -77,14 +81,18 @@ public class StandardLivingRoom extends LivingRoom {
     }
 
     /**
-     * //TODO
-     * @return
+     * {@inheritDoc}
+     * @return An {@link LivingRoomInfo} representing this object instance
      */
     @Override
     public LivingRoomInfo getInfo(){
         return new LivingRoomInfo(getBoard());
     }
 
+    /**
+     * {@inheritDoc}
+     * @return A {@link StandardLivingRoomInstance} constructed using instance values
+     */
     @Override
     public Serializable getInstance(){
         return new StandardLivingRoomInstance(board,bag,numberOfPlayers);

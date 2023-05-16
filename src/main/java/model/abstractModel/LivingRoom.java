@@ -4,14 +4,12 @@ import model.Tile;
 import modelView.LivingRoomInfo;
 import util.Observable;
 
-import java.io.Serializable;
-
 /**
  * This is the abstract class of game living room.
  * <p>
  * It defines all the required methods needed to manage living room board.
  */
-public abstract class LivingRoom extends Observable<LivingRoom.Event> {
+public abstract class LivingRoom extends Observable<LivingRoom.Event> implements SerializableModel{
     /**
      * This enumeration contains all the living room events that can be sent to observers
      */
@@ -42,10 +40,8 @@ public abstract class LivingRoom extends Observable<LivingRoom.Event> {
     public abstract void refillBoard();
 
     /**
-     * TODO
-     * @return
+     * This method returns a {@link LivingRoomInfo} representing this object instance
+     * @return A {@link LivingRoomInfo} representing this object instance
      */
     public abstract LivingRoomInfo getInfo();
-
-    public abstract Serializable getInstance();
 }

@@ -4,7 +4,6 @@ import model.Token;
 import modelView.CommonGoalInfo;
 import util.Observable;
 
-import java.io.Serializable;
 import java.util.Stack;
 
 /**
@@ -12,7 +11,7 @@ import java.util.Stack;
  * <p>
  * It contains all the methods required to manage common goal information
  **/
-public abstract class CommonGoal extends Observable<CommonGoal.Event> {
+public abstract class CommonGoal extends Observable<CommonGoal.Event> implements SerializableModel{
 
     /**
      * This enumeration contains all the goal events that can be sent to observers
@@ -77,12 +76,10 @@ public abstract class CommonGoal extends Observable<CommonGoal.Event> {
     }
 
     /**
-     * TODO
-     * @return
+     * This method returns an {@link CommonGoalInfo} representing this object instance
+     * @return An {@link CommonGoalInfo} representing this object instance
      */
     public CommonGoalInfo getInfo(){
         return new CommonGoalInfo(evaluator.getId(), evaluator.getDescription(), getTopToken());
     }
-
-    public abstract Serializable getInstance();
 }

@@ -7,7 +7,6 @@ import model.exceptions.PlayerNotExistsException;
 import modelView.GameInfo;
 import util.Observable;
 
-import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -15,7 +14,7 @@ import java.util.List;
  * <p>
  * It defines all the required methods needed to access game components and status and to manage game's turn sequence.
  */
-public abstract class Game extends Observable<Game.Event>{
+public abstract class Game extends Observable<Game.Event> implements SerializableModel{
     /**
      * This enumeration contains all the game events that can be sent to observers
      */
@@ -121,10 +120,8 @@ public abstract class Game extends Observable<Game.Event>{
     public abstract LivingRoom getLivingRoom();
 
     /**
-     * TODO
-     * @return
+     * This method returns a {@link GameInfo} representing this object instance
+     * @return A {@link GameInfo} representing this object instance
      */
     public abstract GameInfo getInfo();
-
-    public abstract Serializable getInstance();
 }

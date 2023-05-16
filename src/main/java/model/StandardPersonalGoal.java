@@ -104,14 +104,18 @@ public  class StandardPersonalGoal extends PersonalGoal {
     }
 
     /**
-     * TODO
-     * @return
+     * {@inheritDoc}
+     * @return A {@link PersonalGoalInfo} representing this object instance
      */
     @Override
     public PersonalGoalInfo getInfo() {
         return new PersonalGoalInfo(achieved, getDescription());
     }
 
+    /**
+     * {@inheritDoc}
+     * @return A {@link StandardPersonalGoalInstance} constructed using instance values
+     */
     @Override
     public Serializable getInstance() {
         return new StandardPersonalGoalInstance(tile,row,column,achieved);

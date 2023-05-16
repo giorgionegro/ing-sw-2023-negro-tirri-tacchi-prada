@@ -391,9 +391,7 @@ public class CLI {
             List<String> temp = new ArrayList<>();
 
             do {
-                int size = chatContentsWidth;
-                if (text.length() < chatContentsWidth)
-                    size = text.length();
+                int size = Math.min(text.length(), chatContentsWidth);
 
                 String s = text.substring(0, size);
                 temp.add(s);

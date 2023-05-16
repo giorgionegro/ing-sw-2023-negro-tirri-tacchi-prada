@@ -146,14 +146,18 @@ public class StandardPlayer extends Player {
     }
 
     /**
-     * TODO
-     * @return
+     * {@inheritDoc}
+     * @return A {@link PlayerInfo} representing this object instance
      */
     @Override
     public PlayerInfo getInfo(){
         return new PlayerInfo(errorReport, new HashMap<>(achievedCommonGoals));
     }
 
+    /**
+     * {@inheritDoc}
+     * @return A {@link StandardPlayerInstance} constructed using instance values
+     */
     @Override
     public Serializable getInstance(){
         List<Serializable> personalGoalInstance = new ArrayList<>();

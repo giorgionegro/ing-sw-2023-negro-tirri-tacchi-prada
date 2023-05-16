@@ -72,7 +72,7 @@ public class StandardGame extends Game {
     private final Stack<List<PersonalGoal>> personalGoals;
 
     /**
-     * Construct an StandardGame instance with given id and player number
+     * Construct an {@link StandardGame} instance with given id and player number
      * <p>
      * The instance is initialized with empty player list, two randomly chosen common goals, an {@link StandardLivingRoom} instance
      * and on matchmaking status.
@@ -97,6 +97,10 @@ public class StandardGame extends Game {
         this.personalGoals = setPersonalGoals();
     }
 
+    /**
+     * Construct a {@link StandardGame} using the given instance
+     * @param instance the {@link StandardGame} instance
+     */
     public StandardGame(StandardGameInstance instance){
         this.joinedPlayer = 0;
         this.players = new HashMap<>();
@@ -270,6 +274,10 @@ public class StandardGame extends Game {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * @return A {@link StandardGameInstance} constructed using instance values
+     */
     @Override
     public Serializable getInstance(){
         Map<String, Serializable> playersInstance = new HashMap<>();
@@ -366,8 +374,8 @@ public class StandardGame extends Game {
     }
 
     /**
-     * TODO
-     * @return
+     * {@inheritDoc}
+     * @return An {@link GameInfo} representing this object instance
      */
     @Override
     public GameInfo getInfo(){

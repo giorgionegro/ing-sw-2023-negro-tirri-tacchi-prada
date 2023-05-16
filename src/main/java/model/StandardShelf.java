@@ -47,15 +47,19 @@ public class StandardShelf extends Shelf {
     }
 
     /**
-     * TODO
-     * @param playerId
-     * @return
+     * {@inheritDoc}
+     * @param playerId the player id associated with this {@link StandardShelf} instance
+     * @return A {@link ShelfInfo} representing this object instance
      */
     @Override
     public ShelfInfo getInfo(String playerId) {
         return new ShelfInfo(playerId, getTiles());
     }
 
+    /**
+     * {@inheritDoc}
+     * @return A {@link StandardShelfInstance} constructed using instance values
+     */
     @Override
     public Serializable getInstance(){
         return new StandardShelfInstance(tiles);

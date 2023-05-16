@@ -16,7 +16,7 @@ import java.util.List;
 public class StandardCommonGoal extends CommonGoal {
 
     /**
-     * Construct a StandardCommonGoal with the given evaluator
+     * Construct a {@link StandardCommonGoal} with the given evaluator
      * @param nPlayer the number of player of the game
      * @param evaluator the evaluator of the common goal
      */
@@ -25,6 +25,10 @@ public class StandardCommonGoal extends CommonGoal {
         fillStack(nPlayer);
     }
 
+    /**
+     * Construct a {@link StandardCommonGoal} using the given instance
+     * @param instance the {@link StandardCommonGoal} instance
+     */
     public StandardCommonGoal(StandardCommonGoalInstance instance){
         super(instance.evaluator());
         List<Token> tokenList = new java.util.ArrayList<>(instance.tokenStack().stream().toList());
@@ -54,6 +58,10 @@ public class StandardCommonGoal extends CommonGoal {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * @return A {@link StandardCommonGoalInstance} constructed using instance values
+     */
     @Override
     public Serializable getInstance() {
         return new StandardCommonGoalInstance(getEvaluator(),tokenStack);
