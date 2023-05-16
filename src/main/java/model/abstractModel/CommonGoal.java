@@ -35,7 +35,7 @@ public abstract class CommonGoal extends Observable<CommonGoal.Event> {
     /**
      * The token stack ({@link Stack} of {@link Token})
      */
-    protected Stack<Token> tokenStack;
+    protected final Stack<Token> tokenStack;
     /**
      * The goal evaluator associated to this common goal
      */

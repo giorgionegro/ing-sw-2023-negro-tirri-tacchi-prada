@@ -15,6 +15,7 @@ import modelView.*;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.rmi.RemoteException;
+import java.sql.Time;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -107,18 +108,23 @@ public class CLI {
         if (!playerId.equals(""))
             server.joinGame(client, new LoginInfo(playerId, gameId));
         //timeout 5 seconds
-
+        //start timer
+        long start = System.currentTimeMillis();
         synchronized (lock) {
-            while ((user == null || user.status() != User.Status.JOINED) && !error) {
+            while ((user == null || user.status() != User.Status.JOINED) && !error&&(start-System.currentTimeMillis()<6000)) {
                 try {
 
                     lock.wait(5000);
-                    error = true;
                     //TODO server message to notify the abort
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
             }
+        }
+        if (start-System.currentTimeMillis()>6000) {
+            printCommandLine("Timeout expired", RED);
+            render();
+            error = true;
         }
         if (!error) {
             this.thisPlayerId = playerId;
@@ -139,36 +145,43 @@ public class CLI {
                     cli.printCommandLine("3: Send message");
                     render();
                 }
-                case "1" -> {//extract this in a method
-                    ClearScreen();
-                    drawBox(0, 0, renderHeight, renderWidth, DEFAULT);
-                    drawCommandLine();
-                    drawGameState();
-                    drawLivingRoom();
-                    drawShelfs();
-                    drawChat();
-                    drawCommonGoals();
-                    drawPersonalGoal();
-                    render();
-                }
+                case "1" -> update();
                 case "2" -> pickTiles(cli, client, sInt);
-                case "3" -> {
-                    String subject;
-                    String content;
-                    synchronized (this) {
-                        subject = readCommandLine("Message Subject (empty for everyone): ");
-                        render();
-                        content = readCommandLine("Message content: ");
-                        render();
-                    }
-                    sInt.sendMessage(client, new StandardMessage(playerId, subject, content));
-                }
+                case "3" -> sendMessage(client, sInt, playerId);
                 default -> {
                     printCommandLine("Wrong command", RED);
                     render();
                 }
             }
         }
+    }
+
+    private void update() {
+        ClearScreen();
+        //clear the matrix
+        Arrays.stream(cliPixel).forEach(a -> Arrays.fill(a, ' '));
+        Arrays.stream(cliPixelColor).forEach(a -> Arrays.fill(a, DEFAULT));
+        drawBox(0, 0, renderHeight, renderWidth, DEFAULT);
+        drawCommandLine();
+        drawGameState();
+        drawBoard();
+        drawShelfs();
+        drawChat();
+        drawCommonGoals();
+        drawPersonalGoal();
+        render();
+    }
+
+    private void sendMessage(ClientInterface client, ServerInterface sInt, String playerId) throws RemoteException {
+        String subject;
+        String content;
+        synchronized (this) {
+            subject = readCommandLine("Message Subject (empty for everyone): ");
+            render();
+            content = readCommandLine("Message content: ");
+            render();
+        }
+        sInt.sendMessage(client, new StandardMessage(playerId, subject, content));
     }
 
     private void pickTiles(CLI cli, ClientInterface client, ServerInterface sInt) throws RemoteException {
@@ -204,7 +217,7 @@ public class CLI {
                     }
                 }
                 //check if the tiles are pickable, pickable if they are all in the same row or column and adiacent to each other
-                boolean pickable = isPickable(tTiles, currentLivingRoom.board());
+                boolean pickable = isPickable(tTiles, currentLivingRoom.board());//TODO dont seams to work
                 if (pickable) {
                     tiles.addAll(tTiles);
                     choosing = false;
@@ -214,6 +227,7 @@ public class CLI {
                 }
             } while (choosing);
         }
+        render();
         choosing = true;
         int sC = 0;
         synchronized (this) {
@@ -285,6 +299,25 @@ public class CLI {
             }
             if (!sameRow && !sameCol) {
                 return false;
+            }
+        }
+
+        if (sameRow) {
+            int[] cols = pickedTiles.stream().mapToInt(PickedTile::col).toArray();
+            Arrays.sort(cols);
+            for (int i = 0; i < cols.length-1; i++) {
+                if (cols[i+1] - cols[i] != 1) {
+                    return false;
+                }
+            }
+        }
+        if (sameCol) {
+            int[] rows = pickedTiles.stream().mapToInt(PickedTile::row).toArray();
+            Arrays.sort(rows);
+            for (int i = 0; i < rows.length-1; i++) {
+                if (rows[i+1] - rows[i] != 1) {
+                    return false;
+                }
             }
         }
 
