@@ -9,5 +9,6 @@ import java.rmi.RemoteException;
 
 public interface ServerController extends Remote {
     void joinGame(ClientInterface client, LoginInfo info) throws RemoteException;
+    void leaveGame(ClientInterface client) throws RemoteException;
     void createGame(ClientInterface client, NewGameInfo info) throws RemoteException;
 }

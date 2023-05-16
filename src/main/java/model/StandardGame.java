@@ -323,6 +323,8 @@ public class StandardGame extends Game {
         return new GameInfo(status, lastTurn, getTurnPlayerId(), points);
     }
 
+
+
     private int getPersonalGoalPoints(List<PersonalGoal> personalGoals){
         int achieved = 0;
         for(PersonalGoal p : personalGoals)

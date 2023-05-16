@@ -15,7 +15,6 @@ import modelView.*;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.rmi.RemoteException;
-import java.sql.Time;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -90,7 +89,7 @@ public class CLI {
         render();
         int k = Integer.parseInt(p);
         if (k > 1 && k < 5)
-            server.createGame(client, new NewGameInfo(gameId, "STANDARD", k));
+            server.createGame(client, new NewGameInfo(gameId, "STANDARD", k,System.currentTimeMillis()));
         else {
             printCommandLine("Wrong parameters (number between 2 and 4)", RED);
             render();
@@ -106,7 +105,7 @@ public class CLI {
         playerId = readCommandLine("Write playerId (empty to exit): ");
         render();
         if (!playerId.equals(""))
-            server.joinGame(client, new LoginInfo(playerId, gameId));
+            server.joinGame(client, new LoginInfo(playerId, gameId,System.currentTimeMillis()));
         //timeout 5 seconds
         //start timer
         long start = System.currentTimeMillis();
@@ -114,7 +113,7 @@ public class CLI {
             while ((user == null || user.status() != User.Status.JOINED) && !error&&(start-System.currentTimeMillis()<6000)) {
                 try {
 
-                    lock.wait(5000);
+                    lock.wait(6000);
                     //TODO server message to notify the abort
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
@@ -148,11 +147,21 @@ public class CLI {
                 case "1" -> update();
                 case "2" -> pickTiles(cli, client, sInt);
                 case "3" -> sendMessage(client, sInt, playerId);
+                case "4" -> leave(client, sInt);
                 default -> {
                     printCommandLine("Wrong command", RED);
                     render();
                 }
             }
+        }
+    }
+
+
+    private void leave(ClientInterface cli, ServerInterface sInt){
+        try {
+            sInt.leaveGame(cli);
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -164,7 +173,7 @@ public class CLI {
         drawBox(0, 0, renderHeight, renderWidth, DEFAULT);
         drawCommandLine();
         drawGameState();
-        drawBoard();
+        drawLivingRoom();
         drawShelfs();
         drawChat();
         drawCommonGoals();
