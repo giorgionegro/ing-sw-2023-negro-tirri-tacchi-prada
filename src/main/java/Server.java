@@ -1,7 +1,4 @@
 import controller.StandardServerController;
-import distibuted.interfaces.AppServer;
-import distibuted.interfaces.ClientInterface;
-import distibuted.interfaces.ServerInterface;
 import distibuted.socket.middleware.ServerSocketHandler;
 
 import java.io.IOException;
@@ -10,29 +7,18 @@ import java.net.Socket;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.rmi.server.UnicastRemoteObject;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-public class Server extends UnicastRemoteObject implements AppServer
-{
+
+public class Server{
     private static StandardServerController serverController;
-
-    private static Server instance;
-
-    private static final ExecutorService executorService = Executors.newCachedThreadPool();
 
     protected Server() throws RemoteException {
         serverController = new StandardServerController();
     }
-
-    public static AppServer getInstance() throws RemoteException {
-        if (instance == null)
-            instance = new Server();
-
-        return instance;
+    public static void main(String[] args) throws RemoteException {
+        new Server().run();
     }
 
-    public static void main(String[] args) {
+    public void run(){
         Thread rmiThread = new Thread(() -> {
             try {
                 startRMI();
@@ -69,59 +55,29 @@ public class Server extends UnicastRemoteObject implements AppServer
         }
     }
 
-    private static void startRMI() throws RemoteException {
+    private void startRMI() throws RemoteException {
         Registry registry = LocateRegistry.getRegistry();
-        registry.rebind("server", getInstance());
+        registry.rebind("server", serverController);
         System.out.println("RUNNING RMI");
     }
 
-    public static void startSocket() throws RemoteException {
+    public void startSocket() throws RemoteException {
         try (ServerSocket serverSocket = new ServerSocket(1234)) {
             System.out.println("RUNNING SOCKET");
             while (true) {
                 Socket socket = serverSocket.accept();
-                executorService.submit(() -> {
-                    ServerSocketHandler serverSocketHandler = new ServerSocketHandler(socket);
-                    ServerInterface server = null;
-                    try {
-                        serverSocketHandler.open();
-                        server = getInstance().connect(serverSocketHandler);
-                        while (true) {
-                            serverSocketHandler.waitForReceive(server);
-                        }
-                    } catch (RemoteException e) {
-                        System.err.println("Cannot receive from client: "+e.getMessage()+".\n-> Closing this connection...");
-                    } finally {
-                        if(server!=null) {
-                            try {
-                                server.leaveGame(serverSocketHandler);
-                                System.err.println("-> Game Leaved");
-                            } catch (RemoteException e) {
-                                throw new RuntimeException(e);//TODO?
-                            }
-                        }
-                        serverController.disconnect(serverSocketHandler);
-                        System.err.println("-> User Disconnected");
-                        try {
-                            socket.close();
-                        } catch (IOException e) {
-                            System.err.println("Cannot close socket");
-                        }
-                    }
-                });
+
+                ServerSocketHandler serverSocketHandler = new ServerSocketHandler(socket);
+                try {
+                    serverSocketHandler.open();
+                    serverController.connect(serverSocketHandler);
+                } catch (RemoteException e) {
+                    System.err.println("Cannot receive from client: "+e.getMessage()+".\n-> Closing this connection...");
+                }
+
             }
         } catch (IOException e) {
             throw new RemoteException("Cannot start socket server", e);
         }
-    }
-
-    @Override
-    public ServerInterface connect(ClientInterface client) throws RemoteException {
-        return serverController.connect(client);
-    }
-
-    @Override
-    public void disconnect(ClientInterface client) throws RemoteException {
-        serverController.disconnect(client);
     }
 }

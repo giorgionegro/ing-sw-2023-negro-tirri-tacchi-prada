@@ -17,13 +17,16 @@ import model.StandardGame;
 import model.abstractModel.Game;
 import util.Observer;
 
-
 import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-public class StandardServerController implements ServerController, GameManagerController, AppServer{
+public class StandardServerController extends UnicastRemoteObject implements ServerController, GameManagerController, AppServer{
 
+    private static final ExecutorService executorService = Executors.newCachedThreadPool();
     private final Map<ClientInterface, User> users;
     private final Map<User,StandardGameController> activeUsers;
     private final Map<String, StandardGameController> gameControllers;
@@ -39,37 +42,62 @@ public class StandardServerController implements ServerController, GameManagerCo
 
     @Override
     public ServerInterface connect(ClientInterface client) throws RemoteException {
-
-        User newUser = new User();
-        newUser.addObserver(
-                (Observer<User, User.Event>) (o, arg) -> {
-                    try{
-                        client.update(o.getInfo(),arg);
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
-                       //throw new RuntimeException(e);
-                    }
+        User user = new User();
+        user.addObserver(new Observer<User,User.Event>() {
+            @Override
+            public void update(User o, User.Event arg) {
+                try {
+                    client.update(o.getInfo(), arg);
+                } catch (RemoteException e) {
+                    System.err.println("...detaching user observer");
+                    o.deleteObserver(this);
                 }
-        );
-        users.put(client, newUser);
+            }
+        });
 
-        System.err.println("UTENTE CONNESSO");
-        return new ServerEndpoint(this,this);
+        users.put(client,user);
+
+        ServerInterface server = new ServerEndpoint(this,this);
+
+        executorService.submit(() -> {
+            try {
+                client.bind(server);
+            } catch (RemoteException e) {
+                try {
+                    disconnect(client);
+                } catch (RemoteException ex) {
+                    System.err.println("Error while client disconnection");
+                }
+            }
+        });
+
+        return server;
     }
 
     @Override
-    public void disconnect(ClientInterface client){
+    public void disconnect(ClientInterface client) throws RemoteException {
         User user = users.remove(client);
         user.deleteObservers();
+
+        StandardGameController gameController = activeUsers.get(user);
+        if(gameController!=null) {
+            try {
+                gameController.leavePlayer(client);
+            } catch (GameAccessDeniedException e) {
+                //TODO
+            }
+        }
+
+        System.err.println("CLIENT DISCONNECTED");
     }
 
     ///SERVER CONTROLLER//////////////////
 
     @Override
-    public void joinGame(ClientInterface client, LoginInfo info) throws RemoteException{
+    public void joinGame(ClientInterface client, LoginInfo info) throws RemoteException {
         try{
             if(!this.gameControllers.containsKey(info.gameId()))
-                throw new GameAccessDeniedException();
+                throw new GameAccessDeniedException("Game does not exists");
 
             if(users.get(client).getStatus() == User.Status.JOINED)
                 throw new GameAccessDeniedException("User already joined");
@@ -85,6 +113,7 @@ public class StandardServerController implements ServerController, GameManagerCo
             System.err.println("GIOCATORE JOIN");
         } catch (GameAccessDeniedException e) {
             users.get(client).setStatus(User.Status.NOT_JOINED,info.time(),e.getMessage());
+            throw new RemoteException();
         }
     }
 
@@ -92,7 +121,11 @@ public class StandardServerController implements ServerController, GameManagerCo
     public void leaveGame(ClientInterface client) throws RemoteException{
         User user = users.get(client);
         if(user!=null) {
-            activeUsers.remove(user).leavePlayer(client);
+            try {
+                activeUsers.remove(user).leavePlayer(client);
+            } catch (GameAccessDeniedException e) {
+                throw new RuntimeException(e);
+            }
             user.setStatus(User.Status.NOT_JOINED, System.currentTimeMillis());
         }
         else
@@ -103,7 +136,7 @@ public class StandardServerController implements ServerController, GameManagerCo
     public void createGame(ClientInterface client, NewGameInfo gameInfo) throws RemoteException{
         try {
             createGame(gameInfo.gameId(),gameInfo.playerNumber());
-            System.err.println("GIOCO CREATO");
+            users.get(client).setStatus(User.Status.NOT_JOINED, gameInfo.time(), "Game created");
         } catch (GameAlreadyExistsException e) {
             users.get(client).setStatus(User.Status.NOT_JOINED, gameInfo.time(), e.getMessage());
         }

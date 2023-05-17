@@ -50,7 +50,7 @@ public abstract class SocketHandler<Interface>{
         }
     }
 
-    public void waitForReceive(Interface receiver) throws RemoteException {
+    protected void waitForReceive(Interface receiver) throws RemoteException {
         try {
             SocketObject no = (SocketObject) ois.readObject();
             no.update(this, receiver);

@@ -70,7 +70,10 @@ public class User extends Observable<User.Event> {
 
     public void setStatus(Status status, long interactionTime, String errorReport) {
         this.errorReport = errorReport;
-        setStatus(status,interactionTime);
+        this.status = status;
+        this.interactionTime = interactionTime;
+        setChanged();
+        notifyObservers(Event.ERROR_REPORTED);
     }
 
     /**
