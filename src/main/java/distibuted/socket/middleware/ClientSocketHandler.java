@@ -111,6 +111,22 @@ public class ClientSocketHandler extends SocketHandler<ClientInterface> implemen
     }
 
     @Override
+    public void leaveGame(ClientInterface client) throws RemoteException {
+        try {
+            send((SocketObject) (sender,receiver) -> {
+                try {
+                    ((ServerInterface) receiver).leaveGame((ClientInterface) sender);
+                }catch (ClassCastException e){
+                    throw new RemoteException("Socket object not usable");
+                }
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+            //throw new RuntimeException(e);
+        }
+    }
+
+    @Override
     public void createGame(ClientInterface client, NewGameInfo info) {
         try {
             send((SocketObject) (sender,receiver) -> {

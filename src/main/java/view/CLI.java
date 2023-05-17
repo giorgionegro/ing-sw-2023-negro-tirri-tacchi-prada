@@ -89,7 +89,7 @@ public class CLI {
         render();
         int k = Integer.parseInt(p);
         if (k > 1 && k < 5)
-            server.createGame(client, new NewGameInfo(gameId, "STANDARD", k));
+            server.createGame(client, new NewGameInfo(gameId, "STANDARD", k,System.currentTimeMillis()));
         else {
             printCommandLine("Wrong parameters (number between 2 and 4)", RED);
             render();
@@ -105,20 +105,25 @@ public class CLI {
         playerId = readCommandLine("Write playerId (empty to exit): ");
         render();
         if (!playerId.equals(""))
-            server.joinGame(client, new LoginInfo(playerId, gameId));
+            server.joinGame(client, new LoginInfo(playerId, gameId,System.currentTimeMillis()));
         //timeout 5 seconds
-
+        //start timer
+        long start = System.currentTimeMillis();
         synchronized (lock) {
-            while ((user == null || user.status() != User.Status.JOINED) && !error) {
+            while ((user == null || user.status() != User.Status.JOINED) && !error&&(start-System.currentTimeMillis()<6000)) {
                 try {
 
-                    lock.wait(5000);
-                    error = true;
+                    lock.wait(6000);
                     //TODO server message to notify the abort
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
             }
+        }
+        if (start-System.currentTimeMillis()>6000) {
+            printCommandLine("Timeout expired", RED);
+            render();
+            error = true;
         }
         if (!error) {
             this.thisPlayerId = playerId;
@@ -139,36 +144,53 @@ public class CLI {
                     cli.printCommandLine("3: Send message");
                     render();
                 }
-                case "1" -> {//extract this in a method
-                    ClearScreen();
-                    drawBox(0, 0, renderHeight, renderWidth, DEFAULT);
-                    drawCommandLine();
-                    drawGameState();
-                    drawLivingRoom();
-                    drawShelfs();
-                    drawChat();
-                    drawCommonGoals();
-                    drawPersonalGoal();
-                    render();
-                }
+                case "1" -> update();
                 case "2" -> pickTiles(cli, client, sInt);
-                case "3" -> {
-                    String subject;
-                    String content;
-                    synchronized (this) {
-                        subject = readCommandLine("Message Subject (empty for everyone): ");
-                        render();
-                        content = readCommandLine("Message content: ");
-                        render();
-                    }
-                    sInt.sendMessage(client, new StandardMessage(playerId, subject, content));
-                }
+                case "3" -> sendMessage(client, sInt, playerId);
+                case "4" -> leave(client, sInt);
                 default -> {
                     printCommandLine("Wrong command", RED);
                     render();
                 }
             }
         }
+    }
+
+
+    private void leave(ClientInterface cli, ServerInterface sInt){
+        try {
+            sInt.leaveGame(cli);
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void update() {
+        ClearScreen();
+        //clear the matrix
+        Arrays.stream(cliPixel).forEach(a -> Arrays.fill(a, ' '));
+        Arrays.stream(cliPixelColor).forEach(a -> Arrays.fill(a, DEFAULT));
+        drawBox(0, 0, renderHeight, renderWidth, DEFAULT);
+        drawCommandLine();
+        drawGameState();
+        drawLivingRoom();
+        drawShelfs();
+        drawChat();
+        drawCommonGoals();
+        drawPersonalGoal();
+        render();
+    }
+
+    private void sendMessage(ClientInterface client, ServerInterface sInt, String playerId) throws RemoteException {
+        String subject;
+        String content;
+        synchronized (this) {
+            subject = readCommandLine("Message Subject (empty for everyone): ");
+            render();
+            content = readCommandLine("Message content: ");
+            render();
+        }
+        sInt.sendMessage(client, new StandardMessage(playerId, subject, content));
     }
 
     private void pickTiles(CLI cli, ClientInterface client, ServerInterface sInt) throws RemoteException {
@@ -204,7 +226,7 @@ public class CLI {
                     }
                 }
                 //check if the tiles are pickable, pickable if they are all in the same row or column and adiacent to each other
-                boolean pickable = isPickable(tTiles, currentLivingRoom.board());
+                boolean pickable = isPickable(tTiles, currentLivingRoom.board());//TODO dont seams to work
                 if (pickable) {
                     tiles.addAll(tTiles);
                     choosing = false;
@@ -214,6 +236,7 @@ public class CLI {
                 }
             } while (choosing);
         }
+        render();
         choosing = true;
         int sC = 0;
         synchronized (this) {
@@ -288,6 +311,25 @@ public class CLI {
             }
         }
 
+        if (sameRow) {
+            int[] cols = pickedTiles.stream().mapToInt(PickedTile::col).toArray();
+            Arrays.sort(cols);
+            for (int i = 0; i < cols.length-1; i++) {
+                if (cols[i+1] - cols[i] != 1) {
+                    return false;
+                }
+            }
+        }
+        if (sameCol) {
+            int[] rows = pickedTiles.stream().mapToInt(PickedTile::row).toArray();
+            Arrays.sort(rows);
+            for (int i = 0; i < rows.length-1; i++) {
+                if (rows[i+1] - rows[i] != 1) {
+                    return false;
+                }
+            }
+        }
+
         return true;
     }
 
@@ -349,9 +391,7 @@ public class CLI {
             List<String> temp = new ArrayList<>();
 
             do {
-                int size = chatContentsWidth;
-                if (text.length() < chatContentsWidth)
-                    size = text.length();
+                int size = Math.min(text.length(), chatContentsWidth);
 
                 String s = text.substring(0, size);
                 temp.add(s);

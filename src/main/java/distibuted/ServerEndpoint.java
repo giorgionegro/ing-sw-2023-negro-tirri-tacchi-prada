@@ -52,6 +52,16 @@ public class ServerEndpoint extends UnicastRemoteObject implements ServerInterfa
     }
 
     @Override
+    public void leaveGame(ClientInterface client){
+        try {
+            serverController.leaveGame(client);
+            this.gameController = null;
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
     public void doPlayerMove(ClientInterface client, PlayerMoveInfo move) throws RemoteException {
         if(gameController!=null)
             gameController.doPlayerMove(client, move);

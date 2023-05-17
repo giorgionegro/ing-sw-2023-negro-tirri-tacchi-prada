@@ -1,8 +1,10 @@
 package model;
 
 import model.abstractModel.Shelf;
+import model.instances.StandardShelfInstance;
 import modelView.ShelfInfo;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
 public class StandardShelf extends Shelf {
@@ -18,6 +20,10 @@ public class StandardShelf extends Shelf {
         this.tiles = new Tile[6][5];
         for(Tile[] a : tiles)
             Arrays.fill(a,Tile.EMPTY);
+    }
+
+    public StandardShelf(StandardShelfInstance instance){
+        this.tiles = instance.tiles();
     }
 
     /**
@@ -41,14 +47,21 @@ public class StandardShelf extends Shelf {
     }
 
     /**
-     * TODO
-     * @param playerId
-     * @return
+     * {@inheritDoc}
+     * @param playerId the player id associated with this {@link StandardShelf} instance
+     * @return A {@link ShelfInfo} representing this object instance
      */
     @Override
     public ShelfInfo getInfo(String playerId) {
         return new ShelfInfo(playerId, getTiles());
     }
 
-
+    /**
+     * {@inheritDoc}
+     * @return A {@link StandardShelfInstance} constructed using instance values
+     */
+    @Override
+    public Serializable getInstance(){
+        return new StandardShelfInstance(tiles);
+    }
 }

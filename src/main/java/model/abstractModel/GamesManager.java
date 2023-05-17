@@ -4,7 +4,11 @@ import model.exceptions.*;
 import modelView.GamesManagerInfo;
 import util.Observable;
 
-
+/**
+ * This is the abstract class for a manager of a set of {@link Game}
+ * <p>
+ * It defines all the methods required to access and manage a set of {@link Game}
+ */
 public abstract class GamesManager extends Observable<GamesManager.Event>{
 
     /**
@@ -32,8 +36,8 @@ public abstract class GamesManager extends Observable<GamesManager.Event>{
     public abstract Game getGame(String gameId) throws GameNotExistsException;
 
     /**
-     * TODO
-     * @return
+     * This method returns a {@link GamesManagerInfo} representing this object instance
+     * @return A {@link GamesManagerInfo} representing this object instance
      */
     public abstract GamesManagerInfo getInfo();
 }

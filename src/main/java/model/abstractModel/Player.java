@@ -12,7 +12,7 @@ import java.util.Map;
  * <p>
  * It defines all the methods required to access player components and manage player information
  */
-public abstract class Player extends Observable<Player.Event> {
+public abstract class Player extends Observable<Player.Event> implements SerializableModel{
 
     /**
      * This enumeration contains all the events that can be sent to observers
@@ -73,8 +73,8 @@ public abstract class Player extends Observable<Player.Event> {
     public abstract String getReportedError();
 
     /**
-     * TODO
-     * @return
+     * This method returns a {@link PlayerInfo} representing this object instance
+     * @return A {@link PlayerInfo} representing this object instance
      */
     public abstract PlayerInfo getInfo();
 }

@@ -25,7 +25,6 @@ public class StandardGameController implements GameController, LobbyController {
         this.playerAssociation = new HashMap<>();
     }
 
-
     ///LOBBY CONTROLLER/////////////////////
 
     /**
@@ -177,6 +176,14 @@ public class StandardGameController implements GameController, LobbyController {
         } catch (MatchmakingClosedException e) {
             throw new GameAccessDeniedException("Game matchmaking closed"); //Same as above
         }
+    }
+
+    @Override
+    public void leavePlayer(ClientInterface client) {
+        System.err.println("PLAYER USCITO");
+        //TODO rimuovere da playerAssociation
+        //TODO rimuovere tutti gli observers
+        //TODO chiudere il gioco
     }
 
     /**

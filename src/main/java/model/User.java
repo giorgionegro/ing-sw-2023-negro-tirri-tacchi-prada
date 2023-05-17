@@ -36,11 +36,17 @@ public class User extends Observable<User.Event> {
     private String errorReport;
 
     /**
+     * The last timeStamp of a user interaction with server
+     */
+    private long interactionTime;
+
+    /**
      * Construct a User instance with no error reported and {@link #status} = NOT_JOINED
      */
     public User(){
         this.status = Status.NOT_JOINED;
         this.errorReport = "";
+        this.interactionTime = -1;
     }
 
     /**
@@ -55,20 +61,16 @@ public class User extends Observable<User.Event> {
      * This method set the status of the user
      * @param status the new status of the user
      */
-    public void setStatus(Status status) {
+    public void setStatus(Status status, long interactionTime) {
         this.status = status;
+        this.interactionTime = interactionTime;
         setChanged();
         notifyObservers(Event.STATUS_CHANGED);
     }
 
-    /**
-     * This method report a new error that user encountered during server interaction
-     * @param errorMessage the encountered error description
-     */
-    public void reportError(String errorMessage){
-        this.errorReport = errorMessage;
-        setChanged();
-        notifyObservers(Event.ERROR_REPORTED);
+    public void setStatus(Status status, long interactionTime, String errorReport) {
+        this.errorReport = errorReport;
+        setStatus(status,interactionTime);
     }
 
     /**
@@ -80,10 +82,10 @@ public class User extends Observable<User.Event> {
     }
 
     /**
-     *
-     * @return
+     * This method returns a {@link UserInfo} representing this object instance
+     * @return A {@link UserInfo} representing this object instance
      */
     public UserInfo getInfo(){
-        return new UserInfo(status,errorReport);
+        return new UserInfo(status,errorReport,interactionTime);
     }
 }

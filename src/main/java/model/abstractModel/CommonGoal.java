@@ -11,7 +11,7 @@ import java.util.Stack;
  * <p>
  * It contains all the methods required to manage common goal information
  **/
-public abstract class CommonGoal extends Observable<CommonGoal.Event> {
+public abstract class CommonGoal extends Observable<CommonGoal.Event> implements SerializableModel{
 
     /**
      * This enumeration contains all the goal events that can be sent to observers
@@ -35,7 +35,7 @@ public abstract class CommonGoal extends Observable<CommonGoal.Event> {
     /**
      * The token stack ({@link Stack} of {@link Token})
      */
-    protected Stack<Token> tokenStack;
+    protected final Stack<Token> tokenStack;
     /**
      * The goal evaluator associated to this common goal
      */
@@ -76,8 +76,8 @@ public abstract class CommonGoal extends Observable<CommonGoal.Event> {
     }
 
     /**
-     * TODO
-     * @return
+     * This method returns an {@link CommonGoalInfo} representing this object instance
+     * @return An {@link CommonGoalInfo} representing this object instance
      */
     public CommonGoalInfo getInfo(){
         return new CommonGoalInfo(evaluator.getId(), evaluator.getDescription(), getTopToken());

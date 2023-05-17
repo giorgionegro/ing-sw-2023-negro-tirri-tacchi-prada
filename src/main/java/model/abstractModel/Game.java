@@ -14,7 +14,7 @@ import java.util.List;
  * <p>
  * It defines all the required methods needed to access game components and status and to manage game's turn sequence.
  */
-public abstract class Game extends Observable<Game.Event>{
+public abstract class Game extends Observable<Game.Event> implements SerializableModel{
     /**
      * This enumeration contains all the game events that can be sent to observers
      */
@@ -23,6 +23,7 @@ public abstract class Game extends Observable<Game.Event>{
          * This event is sent whenever a player joins the game
          */
         PLAYER_JOINED,
+        PLAYER_REJOINED,
         /**
          * This event is sent when the game has just been started
          */
@@ -47,6 +48,7 @@ public abstract class Game extends Observable<Game.Event>{
      */
     public enum GameStatus{
         MATCHMAKING,
+        RESTARTING,
         STARTED,
         ENDED
     }
@@ -118,8 +120,8 @@ public abstract class Game extends Observable<Game.Event>{
     public abstract LivingRoom getLivingRoom();
 
     /**
-     * TODO
-     * @return
+     * This method returns a {@link GameInfo} representing this object instance
+     * @return A {@link GameInfo} representing this object instance
      */
     public abstract GameInfo getInfo();
 }
