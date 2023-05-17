@@ -32,7 +32,8 @@ public class ServerEndpoint extends UnicastRemoteObject implements ServerInterfa
         try {
             serverController.createGame(client,newGameInfo);
         } catch (RemoteException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
+            //throw new RuntimeException(e); //TODO send error to client
         }
     }
 
@@ -47,6 +48,16 @@ public class ServerEndpoint extends UnicastRemoteObject implements ServerInterfa
         } catch (GameNotExistsException e) {
             e.printStackTrace();
           //  throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void leaveGame(ClientInterface client){
+        try {
+            serverController.leaveGame(client);
+            this.gameController = null;
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
         }
     }
 

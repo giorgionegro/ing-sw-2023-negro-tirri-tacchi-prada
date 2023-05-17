@@ -11,14 +11,33 @@ import java.util.Arrays;
  * It is used by the CommonGoal class
  **/
 public class StandardTwoSquares extends GoalEvaluator {
+
     /**
-     * This method returns the description of the goal
-     *
-     * @return String
+     * This string contains the description of the commonGoal TwoSquares
+     */
+    private final String standardTwoSquaresDescription = "Two separate groups of 4 tiles same type that form a 2x2 square.";
+
+    /**
+     * This string contains the id of the commonGoal TwoSquares
+     */
+    private final String standardTwoSquaresId = "StandardTwoSquares";
+
+    /**
+     * {@inheritDoc}
+     * @return {@link #standardTwoSquaresDescription}
      */
     @Override
     public String getDescription() {
-        return "Two separate groups of 4 tiles same type that form a 2x2 square.\nThe tiles of the two groups must be of the same type.%n";
+        return standardTwoSquaresDescription;
+    }
+
+    /**
+     * {@inheritDoc}
+     * @return {@link #standardTwoSquaresId}
+     */
+    @Override
+    public String getId(){
+        return standardTwoSquaresId;
     }
 
     /**

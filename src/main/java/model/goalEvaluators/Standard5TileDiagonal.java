@@ -11,12 +11,31 @@ import model.abstractModel.GoalEvaluator;
 public class Standard5TileDiagonal extends GoalEvaluator {
 
     /**
-     * @return the description of the goal
+     * This string contains the description of the commonGoal 5TileDiagonal
+     */
+    private final String standard5TileDiagonalDescription = "Five tiles of the same type that form a diagonal.";
+
+    /**
+     * This string contains the id of the commonGoal 5TileDiagonal
+     */
+    private final String standard5TileDiagonalId = "Standard5TileDiagonal";
+
+    /**
+     * {@inheritDoc}
+     * @return {@link #standard5TileDiagonalDescription}
      */
     @Override
     public String getDescription() {
+        return standard5TileDiagonalDescription;
+    }
 
-        return "Five tiles of the same type that form a diagonal.";
+    /**
+     * {@inheritDoc}
+     * @return {@link #standard5TileDiagonalId}
+     */
+    @Override
+    public String getId(){
+        return standard5TileDiagonalId;
     }
 
     /**

@@ -1,6 +1,7 @@
 package model.abstractModel;
 
 import model.Token;
+import modelView.PlayerInfo;
 import util.Observable;
 
 import java.util.List;
@@ -11,7 +12,7 @@ import java.util.Map;
  * <p>
  * It defines all the methods required to access player components and manage player information
  */
-public abstract class Player extends Observable<Player.Event> {
+public abstract class Player extends Observable<Player.Event> implements SerializableModel{
 
     /**
      * This enumeration contains all the events that can be sent to observers
@@ -70,4 +71,10 @@ public abstract class Player extends Observable<Player.Event> {
      * @return the last error that player encountered during gameplay
      */
     public abstract String getReportedError();
+
+    /**
+     * This method returns a {@link PlayerInfo} representing this object instance
+     * @return A {@link PlayerInfo} representing this object instance
+     */
+    public abstract PlayerInfo getInfo();
 }

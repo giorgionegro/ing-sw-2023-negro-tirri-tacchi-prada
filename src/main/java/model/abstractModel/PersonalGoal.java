@@ -1,6 +1,7 @@
 package model.abstractModel;
 
 import model.Tile;
+import modelView.PersonalGoalInfo;
 import util.Observable;
 
 /**
@@ -8,7 +9,7 @@ import util.Observable;
  * <p>
  * It defines all the required methods needed to access personal goal information and manage personal goal achieved status
  */
-public abstract class PersonalGoal extends Observable<PersonalGoal.Event> {
+public abstract class PersonalGoal extends Observable<PersonalGoal.Event> implements SerializableModel{
     /**
      * This enumeration contains all the personal goal events that can be sent to observers
      */
@@ -44,4 +45,11 @@ public abstract class PersonalGoal extends Observable<PersonalGoal.Event> {
      * @return {@code true} if the given shelf representation match the goal requirements, {@code false} otherwise
      */
     public abstract boolean evaluate(Tile[][] playerShelf);
+
+
+    /**
+     * This method returns a {@link PersonalGoalInfo} representing this object instance
+     * @return A {@link PersonalGoalInfo} representing this object instance
+     */
+    public abstract PersonalGoalInfo getInfo();
 }

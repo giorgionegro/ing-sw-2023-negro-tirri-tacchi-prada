@@ -2,7 +2,10 @@ package model;
 
 import model.abstractModel.PlayerChat;
 import model.abstractModel.Message;
+import model.instances.StandardPlayerChatInstance;
+import modelView.PlayerChatInfo;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +28,10 @@ public class StandardPlayerChat extends PlayerChat {
         this.messages = new ArrayList<>();
     }
 
+    public StandardPlayerChat(StandardPlayerChatInstance instance){
+        this.messages = instance.messages();
+    }
+
     /**
      * {@inheritDoc}
      * @param newMessage new message that has to be added to chat
@@ -42,6 +49,24 @@ public class StandardPlayerChat extends PlayerChat {
      */
     @Override
     public List<Message> getMessages() {
-        return this.messages;
+        return new ArrayList<>(this.messages);
+    }
+
+    /**
+     * {@inheritDoc}
+     * @return A {@link PlayerChatInfo} representing this object instance
+     */
+    @Override
+    public PlayerChatInfo getInfo() {
+        return new PlayerChatInfo(getMessages());
+    }
+
+    /**
+     * {@inheritDoc}
+     * @return A {@link model.instances.StandardPlayerInstance} constructed using instance values
+     */
+    @Override
+    public Serializable getInstance() {
+        return new StandardPlayerChatInstance(messages);
     }
 }

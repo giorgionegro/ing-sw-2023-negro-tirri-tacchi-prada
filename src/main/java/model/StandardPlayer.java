@@ -4,7 +4,13 @@ import model.abstractModel.PersonalGoal;
 import model.abstractModel.Player;
 import model.abstractModel.PlayerChat;
 import model.abstractModel.Shelf;
+import model.instances.StandardPersonalGoalInstance;
+import model.instances.StandardPlayerChatInstance;
+import model.instances.StandardPlayerInstance;
+import model.instances.StandardShelfInstance;
+import modelView.PlayerInfo;
 
+import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -55,6 +61,15 @@ public class StandardPlayer extends Player {
         this.personalGoal = new ArrayList<>(personalGoal);
         this.achievedCommonGoals = new HashMap<>();
         this.chat = new StandardPlayerChat();
+    }
+
+    public StandardPlayer(StandardPlayerInstance instance){
+        this.idPlayer = instance.idPlayer();
+        this.shelf = new StandardShelf((StandardShelfInstance) instance.shelf());
+        this.personalGoal = new ArrayList<>();
+        instance.personalGoal().forEach(standardPersonalGoalInstance -> personalGoal.add(new StandardPersonalGoal((StandardPersonalGoalInstance) standardPersonalGoalInstance)));
+        this.achievedCommonGoals = instance.achievedCommonGoals();
+        this.chat = new StandardPlayerChat((StandardPlayerChatInstance) instance.chat());
     }
 
     /**
@@ -128,5 +143,26 @@ public class StandardPlayer extends Player {
     @Override
     public String getReportedError() {
         return errorReport;
+    }
+
+    /**
+     * {@inheritDoc}
+     * @return A {@link PlayerInfo} representing this object instance
+     */
+    @Override
+    public PlayerInfo getInfo(){
+        return new PlayerInfo(errorReport, new HashMap<>(achievedCommonGoals));
+    }
+
+    /**
+     * {@inheritDoc}
+     * @return A {@link StandardPlayerInstance} constructed using instance values
+     */
+    @Override
+    public Serializable getInstance(){
+        List<Serializable> personalGoalInstance = new ArrayList<>();
+        personalGoal.forEach(goal -> personalGoalInstance.add(goal.getInstance()));
+
+        return new StandardPlayerInstance(idPlayer,shelf.getInstance(),personalGoalInstance,achievedCommonGoals,chat.getInstance());
     }
 }

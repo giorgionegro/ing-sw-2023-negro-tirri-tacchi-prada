@@ -22,6 +22,10 @@ public enum Token {
      */
     TOKEN_2_POINTS(2),
     /**
+     * This token represents 0 points, represents an empty stack of token
+     */
+    TOKEN_EMPTY(0),
+    /**
      * This token represents 1 points
      * <p>
      * Player that obtain this token is the first that has completed the shelf

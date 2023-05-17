@@ -1,6 +1,7 @@
 package model.abstractModel;
 
 import model.Tile;
+import modelView.ShelfInfo;
 import util.Observable;
 
 /**
@@ -8,7 +9,7 @@ import util.Observable;
  * <p>
  * It defines all the required methods needed to manage living room board.
  */
-public abstract class Shelf extends Observable<Shelf.Event> {
+public abstract class Shelf extends Observable<Shelf.Event> implements SerializableModel{
     /**
      * This enumeration contains all the living room events that can be sent to observers
      */
@@ -32,4 +33,10 @@ public abstract class Shelf extends Observable<Shelf.Event> {
      * @param modifiedShelf the new representation of living room board
      */
     public abstract void setTiles(Tile[][] modifiedShelf);
+
+    /**
+     * This method returns a {@link ShelfInfo} representing this object instance
+     * @return A {@link ShelfInfo} representing this object instance
+     */
+    public abstract ShelfInfo getInfo(String playerId);
 }

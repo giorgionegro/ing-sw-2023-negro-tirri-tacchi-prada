@@ -1,6 +1,7 @@
 package model.abstractModel;
 
 import model.Tile;
+import modelView.LivingRoomInfo;
 import util.Observable;
 
 /**
@@ -8,7 +9,7 @@ import util.Observable;
  * <p>
  * It defines all the required methods needed to manage living room board.
  */
-public abstract class LivingRoom extends Observable<LivingRoom.Event> {
+public abstract class LivingRoom extends Observable<LivingRoom.Event> implements SerializableModel{
     /**
      * This enumeration contains all the living room events that can be sent to observers
      */
@@ -37,4 +38,10 @@ public abstract class LivingRoom extends Observable<LivingRoom.Event> {
      * This method modify the current representation of living room board on the base of subclass implementation defined pattern
      */
     public abstract void refillBoard();
+
+    /**
+     * This method returns a {@link LivingRoomInfo} representing this object instance
+     * @return A {@link LivingRoomInfo} representing this object instance
+     */
+    public abstract LivingRoomInfo getInfo();
 }

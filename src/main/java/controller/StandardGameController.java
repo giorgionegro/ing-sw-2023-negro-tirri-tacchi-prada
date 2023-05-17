@@ -25,7 +25,6 @@ public class StandardGameController implements GameController, LobbyController {
         this.playerAssociation = new HashMap<>();
     }
 
-
     ///LOBBY CONTROLLER/////////////////////
 
     /**
@@ -36,28 +35,26 @@ public class StandardGameController implements GameController, LobbyController {
     private static Observer<Player, Player.Event> getPlayerObserver(ClientInterface newClient) {
         return (o, arg) -> {
             try {
-                newClient.update(new PlayerInfo(o.getReportedError(), new HashMap<>(o.getAchievedCommonGoals())), arg);
+                newClient.update(o.getInfo(), arg);
             } catch (RemoteException e) {
-                throw new RuntimeException(e);
+                e.printStackTrace();
+                //throw new RuntimeException(e); //TODO send error to client
             }
         };
     }
-
-
-    //should we rename newClient to client?
 
     /**
      * Observer to update the GameStatus
      * @param newClient client to be added
      * @return Observer of the GameStatus to be added
      */
-
     private static Observer<Game, Game.Event> getGameObserver(ClientInterface newClient) {
         return (o, arg) -> {
             try {
-                newClient.update(new GameInfo(o.getGameStatus(), o.isLastTurn(), o.getTurnPlayerId()), arg);
+                newClient.update(o.getInfo(), arg);
             } catch (RemoteException e) {
-                throw new RuntimeException(e);
+                e.printStackTrace();
+                //throw new RuntimeException(e);//TODO send error to client
             }
         };
     }
@@ -71,9 +68,10 @@ public class StandardGameController implements GameController, LobbyController {
     private static Observer<CommonGoal, CommonGoal.Event> getCommonGoalObserver(ClientInterface newClient) {
         return (o, arg) -> {
             try {
-                newClient.update(new CommonGoalInfo(o.getEvaluator().getDescription(), o.getTopToken()), arg);
+                newClient.update(o.getInfo(), arg);
             } catch (RemoteException e) {
-                throw new RuntimeException(e);
+                e.printStackTrace();
+                //throw new RuntimeException(e);//TODO send error to client
             }
         };
     }
@@ -87,9 +85,10 @@ public class StandardGameController implements GameController, LobbyController {
     private static Observer<LivingRoom, LivingRoom.Event> getLivingRoomObserver(ClientInterface newClient) {
         return (o, arg) -> {
             try {
-                newClient.update(new LivingRoomInfo(o.getBoard()), arg);
+                newClient.update(o.getInfo(), arg);
             } catch (RemoteException e) {
-                throw new RuntimeException(e);
+                e.printStackTrace();
+                //throw new RuntimeException(e);//TODO send error to client
             }
         };
     }
@@ -103,9 +102,10 @@ public class StandardGameController implements GameController, LobbyController {
     private static Observer<PlayerChat, PlayerChat.Event> getPlayerChatObserver(ClientInterface newClient) {
         return (o, arg) -> {
             try {
-                newClient.update(new PlayerChatInfo(o.getMessages()), arg);
+                newClient.update(o.getInfo(), arg);
             } catch (RemoteException e) {
-                throw new RuntimeException(e);
+                e.printStackTrace();
+                //throw new RuntimeException(e);//TODO send error to client
             }
         };
     }
@@ -119,9 +119,10 @@ public class StandardGameController implements GameController, LobbyController {
     private static Observer<PersonalGoal, PersonalGoal.Event> getPersonalGoalObserver(ClientInterface newClient) {
         return (o, arg) -> {
             try {
-                newClient.update(new PersonalGoalInfo(o.isAchieved(), o.getDescription()), arg);
+                newClient.update(o.getInfo(), arg);
             } catch (RemoteException e) {
-                throw new RuntimeException(e);
+                e.printStackTrace();
+                //throw new RuntimeException(e);//TODO send error to client
             }
         };
     }
@@ -135,9 +136,10 @@ public class StandardGameController implements GameController, LobbyController {
     private static Observer<Shelf, Shelf.Event> getShelfObserver(ClientInterface newClient, Player joinedPlayer) {
         return (o, arg) -> {
             try {
-                newClient.update(new ShelfInfo(joinedPlayer.getId(), o.getTiles()), arg);
+                newClient.update(o.getInfo(joinedPlayer.getId()), arg);
             } catch (RemoteException e) {
-                throw new RuntimeException(e);
+                e.printStackTrace();
+                //throw new RuntimeException(e);//TODO send error to client
             }
         };
     }
@@ -161,8 +163,6 @@ public class StandardGameController implements GameController, LobbyController {
             /* Put newClient into known client */
             playerAssociation.put(newClient, newPlayer);
 
-
-
             /* If game is ready to be started we force the first */
             if (game.getGameStatus().equals(Game.GameStatus.STARTED)) {
                 game.getLivingRoom().refillBoard();
@@ -176,6 +176,14 @@ public class StandardGameController implements GameController, LobbyController {
         } catch (MatchmakingClosedException e) {
             throw new GameAccessDeniedException("Game matchmaking closed"); //Same as above
         }
+    }
+
+    @Override
+    public void leavePlayer(ClientInterface client) {
+        System.err.println("PLAYER USCITO");
+        //TODO rimuovere da playerAssociation
+        //TODO rimuovere tutti gli observers
+        //TODO chiudere il gioco
     }
 
     /**
@@ -247,10 +255,11 @@ public class StandardGameController implements GameController, LobbyController {
             if (playerMove.columnToInsert() < 0 || playerMove.columnToInsert() > shelf[0].length - 1)
                 throw new IllegalArgumentException("Column index out of bounds");
 
-            if (!areTilesDifferent(playerMove.pickedTiles()))
+            if (!areTilesDifferent(new ArrayList<>(playerMove.pickedTiles())))
                 throw new IllegalArgumentException("Tiles are not different");
 
-            //TODO controllo che le tile scelte siano in linea
+            if(!areTilesAligned(new ArrayList<>(playerMove.pickedTiles())))
+                throw new IllegalArgumentException("Tile are not aligned");
 
             for (PickedTile tile : playerMove.pickedTiles())
                 if (!isTilePickable(tile.row(), tile.col(), board))
@@ -279,17 +288,32 @@ public class StandardGameController implements GameController, LobbyController {
 
                 game.setLastTurn();
             }
+
             /* Check if player has achieved common goals */
             for (CommonGoal commonGoal : game.getCommonGoals())
-                if (!player.getAchievedCommonGoals().containsKey(commonGoal.getEvaluator().getDescription()))
-                    if (commonGoal.getEvaluator().evaluate(shelf))
-                        player.addAchievedCommonGoal(commonGoal.getEvaluator().getDescription(), commonGoal.popToken());
+                if (!player.getAchievedCommonGoals().containsKey(commonGoal.getEvaluator().getId()))
+                    if (commonGoal.getEvaluator().evaluate(shelf)) {
+                        player.addAchievedCommonGoal(commonGoal.getEvaluator().getId(), commonGoal.popToken());
+                    }
+
+
+            /* Check if player has achieved personal goals*/
+            for(PersonalGoal personalGoal : player.getPersonalGoals()){
+                if(!personalGoal.isAchieved())
+                    if(personalGoal.evaluate(shelf))
+                        personalGoal.setAchieved();
+            }
+
+
+            //TODO salvare il gioco
 
             /* Pass turn to next player */
             game.updatePlayersTurn();
 
-        } catch (IllegalArgumentException | GameNotStartedException | GameEndedException e) {
+        } catch (IllegalArgumentException | GameNotStartedException e) {
             playerAssociation.get(client).reportError(e.getMessage());
+        } catch (GameEndedException e){
+            e.printStackTrace();
         }
     }
 
@@ -303,8 +327,19 @@ public class StandardGameController implements GameController, LobbyController {
             if (!playerAssociation.containsKey(client))
                 throw new IllegalArgumentException("User not allowed");
 
+            boolean subjectfound = false;
+            for(Player p : playerAssociation.values()){
+                if(p.getId().equals(newMessage.getSubject())){
+                    subjectfound = true;
+                    break;
+                }
+            }
+
+            if(!(newMessage.getSubject().isEmpty() || subjectfound))
+                throw new IllegalArgumentException("Subject of the message does not exists");
+
             for (Player p : playerAssociation.values()) {
-                if (newMessage.getSubject().isEmpty() || newMessage.getSubject().equals(p.getId()))
+                if (newMessage.getSubject().isEmpty() || newMessage.getSubject().equals(p.getId()) || newMessage.getSender().equals(p.getId()))
                     p.getPlayerChat().addMessage(newMessage);
             }
 
@@ -340,7 +375,7 @@ public class StandardGameController implements GameController, LobbyController {
     private int freeShelfColumnSpaces(int column, Tile[][] shelf) {
         int spaces = 0;
         for (Tile[] row : shelf) {
-            if (row[column] != Tile.EMPTY)
+            if (row[column] == Tile.EMPTY)
                 spaces++;
         }
         return spaces;
@@ -390,5 +425,33 @@ public class StandardGameController implements GameController, LobbyController {
                     return false;
 
         return true;
+    }
+
+    private boolean areTilesAligned(List<PickedTile> pickedTiles){
+
+        boolean rowAligned = true;
+        boolean colAligned = true;
+
+        for(int i = 1; i<pickedTiles.size(); i++){
+            rowAligned = rowAligned && (pickedTiles.get(i-1).row() == pickedTiles.get(i).row());
+            colAligned = colAligned && (pickedTiles.get(i-1).col() == pickedTiles.get(i).col());
+        }
+
+        if(rowAligned){
+            pickedTiles.sort(Comparator.comparingInt(PickedTile::col));
+            for(int i=0; i< pickedTiles.size()-1; i++)
+                if(pickedTiles.get(i).col()+1!=pickedTiles.get(i+1).col())
+                    return false;
+        }
+
+        if(colAligned){
+            pickedTiles.sort(Comparator.comparingInt(PickedTile::row));
+            for(int i=0; i< pickedTiles.size()-1; i++)
+                if(pickedTiles.get(i).row()+1!=pickedTiles.get(i+1).row())
+                    return false;
+        }
+
+
+        return rowAligned || colAligned;
     }
 }
