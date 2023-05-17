@@ -71,6 +71,8 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
             }
         });
 
+        System.err.println("CLIENT CONNECTED");
+
         return server;
     }
 
@@ -108,37 +110,35 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
             controller.joinPlayer(client,info.playerId());
             activeUsers.put(user,controller);
 
-            user.setStatus(User.Status.JOINED,info.time());
+            user.reportEvent(User.Status.JOINED,"",info.time(), User.Event.STATUS_CHANGED);
 
             System.err.println("GIOCATORE JOIN");
         } catch (GameAccessDeniedException e) {
-            users.get(client).setStatus(User.Status.NOT_JOINED,info.time(),e.getMessage());
+            users.get(client).reportEvent(User.Status.NOT_JOINED,e.getMessage(),info.time(), User.Event.ERROR_REPORTED);
             throw new RemoteException();
         }
     }
 
     @Override
     public void leaveGame(ClientInterface client) throws RemoteException{
-        User user = users.get(client);
-        if(user!=null) {
-            try {
-                activeUsers.remove(user).leavePlayer(client);
-            } catch (GameAccessDeniedException e) {
-                throw new RuntimeException(e);
-            }
-            user.setStatus(User.Status.NOT_JOINED, System.currentTimeMillis());
+        try {
+            User user = users.get(client);
+            activeUsers.remove(user).leavePlayer(client);
+            user.reportEvent(User.Status.NOT_JOINED, "",System.currentTimeMillis(), User.Event.STATUS_CHANGED);
+        } catch (GameAccessDeniedException e) {
+            throw new RuntimeException("Client is not connected to any match");
+        } catch (NullPointerException e) {
+            throw new RemoteException("Client is not connected correctly");
         }
-        else
-            throw new RemoteException("Client not connected to any match");
     }
 
     @Override
     public void createGame(ClientInterface client, NewGameInfo gameInfo) throws RemoteException{
         try {
             createGame(gameInfo.gameId(),gameInfo.playerNumber());
-            users.get(client).setStatus(User.Status.NOT_JOINED, gameInfo.time(), "Game created");
+            users.get(client).reportEvent(User.Status.NOT_JOINED, "Game created",gameInfo.time(),  User.Event.GAME_CREATED);
         } catch (GameAlreadyExistsException e) {
-            users.get(client).setStatus(User.Status.NOT_JOINED, gameInfo.time(), e.getMessage());
+            users.get(client).reportEvent(User.Status.NOT_JOINED, e.getMessage(), gameInfo.time(), User.Event.ERROR_REPORTED);
         }
     }
 
