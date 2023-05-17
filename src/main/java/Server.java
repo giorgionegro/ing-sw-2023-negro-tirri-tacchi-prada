@@ -82,16 +82,26 @@ public class Server extends UnicastRemoteObject implements AppServer
                 Socket socket = serverSocket.accept();
                 executorService.submit(() -> {
                     ServerSocketHandler serverSocketHandler = new ServerSocketHandler(socket);
+                    ServerInterface server = null;
                     try {
                         serverSocketHandler.open();
-                        ServerInterface server = getInstance().connect(serverSocketHandler);
+                        server = getInstance().connect(serverSocketHandler);
                         while (true) {
                             serverSocketHandler.waitForReceive(server);
                         }
                     } catch (RemoteException e) {
                         System.err.println("Cannot receive from client: "+e.getMessage()+".\n-> Closing this connection...");
                     } finally {
+                        if(server!=null) {
+                            try {
+                                server.leaveGame(serverSocketHandler);
+                                System.err.println("-> Game Leaved");
+                            } catch (RemoteException e) {
+                                throw new RuntimeException(e);//TODO?
+                            }
+                        }
                         serverController.disconnect(serverSocketHandler);
+                        System.err.println("-> User Disconnected");
                         try {
                             socket.close();
                         } catch (IOException e) {

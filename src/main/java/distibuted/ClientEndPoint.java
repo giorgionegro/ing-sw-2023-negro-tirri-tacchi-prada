@@ -20,7 +20,6 @@ public class ClientEndPoint extends UnicastRemoteObject implements ClientInterfa
     @Override
     public void update(GamesManagerInfo o, GamesManager.Event evt) {
         cli.updateGamesManager(o,evt);
-
     }
 
     @Override

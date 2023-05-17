@@ -8,6 +8,7 @@ import model.*;
 import model.abstractModel.*;
 import model.exceptions.*;
 import modelView.*;
+import util.Observable;
 import util.Observer;
 
 import java.rmi.RemoteException;
@@ -32,13 +33,12 @@ public class StandardGameController implements GameController, LobbyController {
      * @param newClient client to be added
      * @return Player's Observer to be added
      */
-    private static Observer<Player, Player.Event> getPlayerObserver(ClientInterface newClient) {
+    private Observer<Player, Player.Event> getPlayerObserver(ClientInterface newClient) {
         return (o, arg) -> {
             try {
                 newClient.update(o.getInfo(), arg);
             } catch (RemoteException e) {
-                e.printStackTrace();
-                //throw new RuntimeException(e); //TODO send error to client
+                leavePlayer(newClient);
             }
         };
     }
@@ -48,13 +48,12 @@ public class StandardGameController implements GameController, LobbyController {
      * @param newClient client to be added
      * @return Observer of the GameStatus to be added
      */
-    private static Observer<Game, Game.Event> getGameObserver(ClientInterface newClient) {
+    private Observer<Game, Game.Event> getGameObserver(ClientInterface newClient) {
         return (o, arg) -> {
             try {
                 newClient.update(o.getInfo(), arg);
             } catch (RemoteException e) {
-                e.printStackTrace();
-                //throw new RuntimeException(e);//TODO send error to client
+                leavePlayer(newClient);
             }
         };
     }
@@ -65,13 +64,12 @@ public class StandardGameController implements GameController, LobbyController {
      * @return Observer of the CommonGoal to be added
      */
 
-    private static Observer<CommonGoal, CommonGoal.Event> getCommonGoalObserver(ClientInterface newClient) {
+    private Observer<CommonGoal, CommonGoal.Event> getCommonGoalObserver(ClientInterface newClient) {
         return (o, arg) -> {
             try {
                 newClient.update(o.getInfo(), arg);
             } catch (RemoteException e) {
-                e.printStackTrace();
-                //throw new RuntimeException(e);//TODO send error to client
+                leavePlayer(newClient);
             }
         };
     }
@@ -82,13 +80,12 @@ public class StandardGameController implements GameController, LobbyController {
      * @return Observer of the LivingRoom to be added
      */
 
-    private static Observer<LivingRoom, LivingRoom.Event> getLivingRoomObserver(ClientInterface newClient) {
+    private Observer<LivingRoom, LivingRoom.Event> getLivingRoomObserver(ClientInterface newClient) {
         return (o, arg) -> {
             try {
                 newClient.update(o.getInfo(), arg);
             } catch (RemoteException e) {
-                e.printStackTrace();
-                //throw new RuntimeException(e);//TODO send error to client
+                leavePlayer(newClient);
             }
         };
     }
@@ -99,13 +96,12 @@ public class StandardGameController implements GameController, LobbyController {
      * @return Observer of the PlayerChat to be added
      */
 
-    private static Observer<PlayerChat, PlayerChat.Event> getPlayerChatObserver(ClientInterface newClient) {
+    private Observer<PlayerChat, PlayerChat.Event> getPlayerChatObserver(ClientInterface newClient) {
         return (o, arg) -> {
             try {
                 newClient.update(o.getInfo(), arg);
             } catch (RemoteException e) {
-                e.printStackTrace();
-                //throw new RuntimeException(e);//TODO send error to client
+                leavePlayer(newClient);
             }
         };
     }
@@ -116,13 +112,12 @@ public class StandardGameController implements GameController, LobbyController {
      * @return Observer of the PersonalGoal to be added
      */
 
-    private static Observer<PersonalGoal, PersonalGoal.Event> getPersonalGoalObserver(ClientInterface newClient) {
+    private Observer<PersonalGoal, PersonalGoal.Event> getPersonalGoalObserver(ClientInterface newClient) {
         return (o, arg) -> {
             try {
                 newClient.update(o.getInfo(), arg);
             } catch (RemoteException e) {
-                e.printStackTrace();
-                //throw new RuntimeException(e);//TODO send error to client
+                leavePlayer(newClient);
             }
         };
     }
@@ -133,13 +128,12 @@ public class StandardGameController implements GameController, LobbyController {
      * @return Observer of the Shelf to be added
      */
 
-    private static Observer<Shelf, Shelf.Event> getShelfObserver(ClientInterface newClient, Player joinedPlayer) {
+    private Observer<Shelf, Shelf.Event> getShelfObserver(ClientInterface newClient, Player joinedPlayer) {
         return (o, arg) -> {
             try {
                 newClient.update(o.getInfo(joinedPlayer.getId()), arg);
             } catch (RemoteException e) {
-                e.printStackTrace();
-                //throw new RuntimeException(e);//TODO send error to client
+                leavePlayer(newClient);
             }
         };
     }
@@ -179,11 +173,20 @@ public class StandardGameController implements GameController, LobbyController {
     }
 
     @Override
-    public void leavePlayer(ClientInterface client) {
+    public synchronized void leavePlayer(ClientInterface client) {
         System.err.println("PLAYER USCITO");
-        //TODO rimuovere da playerAssociation
-        //TODO rimuovere tutti gli observers
-        //TODO chiudere il gioco
+
+        game.notifyObservers(Game.Event.GAME_ENDED);
+        game.deleteObservers();
+        game.getCommonGoals().forEach(Observable::deleteObservers);
+        game.getLivingRoom().deleteObservers();
+        for(Player p : playerAssociation.values()){
+            p.deleteObservers();
+            p.getPlayerChat().deleteObservers();
+            p.getPersonalGoals().forEach(Observable::deleteObservers);
+            p.getShelf().deleteObservers();
+        }
+
     }
 
     /**
@@ -303,7 +306,6 @@ public class StandardGameController implements GameController, LobbyController {
                     if(personalGoal.evaluate(shelf))
                         personalGoal.setAchieved();
             }
-
 
             //TODO salvare il gioco
 

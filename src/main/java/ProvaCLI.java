@@ -43,8 +43,6 @@ public class ProvaCLI {
 
             //TODO: choose between gui or cli
 
-
-
             cli.runLoginView(client, server);
 
             app.disconnect(client);
@@ -53,9 +51,6 @@ public class ProvaCLI {
             printError("Critical error, shutting down",cli);
         }
     }
-
-
-
 
     public static String readLine(String message,CLI cli){
         String s = cli.readCommandLine(message);

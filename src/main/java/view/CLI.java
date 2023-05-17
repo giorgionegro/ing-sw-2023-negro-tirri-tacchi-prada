@@ -462,7 +462,6 @@ public class CLI {
                 cliPixel[livingRoomY + 3 + i * 2][livingRoomX] = number.charAt(c);
                 cliPixelColor[livingRoomY + 3 + i * 2][livingRoomX] = DEFAULT;
             }
-
         }
 
         StringBuilder title = new StringBuilder();
@@ -845,6 +844,11 @@ public class CLI {
                     printCommandLine(entry.getKey() + " has " + entry.getValue() + " points");
             }
             GameRunning = false;
+            readCommandLine("");
+            return;
+        } else if (o.status() == Game.GameStatus.CLOSED) {
+            printCommandLine("Game closing");
+            GameRunning=false;
             readCommandLine("");
             return;
         }
