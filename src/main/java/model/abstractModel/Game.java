@@ -50,7 +50,9 @@ public abstract class Game extends Observable<Game.Event> implements Serializabl
         MATCHMAKING,
         RESTARTING,
         STARTED,
-        IN_PROGRESS, ENDED
+        ENDED,
+        CLOSED,
+        IN_PROGRESS,
     }
 
     /**
