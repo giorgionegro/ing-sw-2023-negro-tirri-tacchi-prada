@@ -15,13 +15,15 @@ import java.nio.charset.StandardCharsets;
 import java.rmi.RemoteException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 
 public class CLI implements UI{
 
     private enum View{
         SERVER_INTERACTION,
-        GAME_INTERACTION
+        GAME_INTERACTION,
+        GAME_ENDED
     }
 
     /*-------------COLORS---------------------*/
@@ -74,11 +76,6 @@ public class CLI implements UI{
     final int[][] cliPixelColor = new int[renderHeight][renderWidth];
 
     /*-----------------------------------------*/
-
-
-
-
-
     String cursor = "";
 
     public CLI() {
@@ -128,7 +125,6 @@ public class CLI implements UI{
                 case "1" -> {
                     try {
                         createGame();
-                        printCommandLine("Game created", GREEN);
                     } catch (RemoteException e) {
                         printCommandLine(e.getMessage(), RED);
                     }
@@ -136,8 +132,6 @@ public class CLI implements UI{
                 case "2" -> {
                     try {
                         joinGame();
-                        printCommandLine("Player joined", GREEN);
-                        gameRoutine();
                     } catch (RemoteException e) {
                         printCommandLine("Error while joining a game", RED);
                     }
@@ -160,6 +154,8 @@ public class CLI implements UI{
         if (k > 1 && k < 5) {
 
             long requestTime = System.currentTimeMillis();
+
+            serverWaiter.reset();
             server.createGame(client, new NewGameInfo(gameId, "STANDARD", k, requestTime));
 
             if(!serverWaiter.hasBeenNotified()){
@@ -170,11 +166,6 @@ public class CLI implements UI{
                     throw new RemoteException("Connection timeout error");
                 }
             }
-
-            serverWaiter.reset();
-
-            if(serverWaiter.getValue())
-                throw new RemoteException(user.eventMessage());
         }
         else {
             throw new RemoteException("Wrong parameters (number between 2 and 4)");
@@ -184,9 +175,10 @@ public class CLI implements UI{
     private void joinGame() throws RemoteException {
         String gameId = readCommandLine("GameId: ");
         String playerId = readCommandLine("Write playerId (empty to exit): ");
-        if (!playerId.equals(""))
-            server.joinGame(client, new LoginInfo(playerId, gameId,System.currentTimeMillis()));
-        else
+        if (!playerId.equals("")) {
+            serverWaiter.reset();
+            server.joinGame(client, new LoginInfo(playerId, gameId, System.currentTimeMillis()));
+        }else
             return;
 
         if(!serverWaiter.hasBeenNotified()){
@@ -197,8 +189,6 @@ public class CLI implements UI{
                 throw new RemoteException("Login timeout error");
             }
         }
-        serverWaiter.reset();
-
 
         if (!serverWaiter.getValue()) {
             this.thisPlayerId = playerId;
@@ -212,19 +202,77 @@ public class CLI implements UI{
         GameRunning = true;
         while (this.GameRunning) {
             String readLine = readCommandLine("(h for commands)-> ");
-            switch (readLine) {
-                case "h" -> printCommandLine("1: Update view status\n2: Pick tiles\n3: Send message");
-                case "1" -> updateView(false);
-                case "2" -> pickTiles();
-                case "3" -> sendMessage();
-                case "4" -> leave();
-                default -> printCommandLine("Wrong command", RED);
-            }
+            if(this.GameRunning)
+                switch (readLine) {
+                    case "h" -> printCommandLine("1: Update view status\n2: Pick tiles\n3: Send message");
+                    case "1" -> updateView(false);
+                    case "2" -> pickTiles();
+                    case "3" -> sendMessage();
+                    case "4" -> leave();
+                    default -> printCommandLine("Wrong command", RED);
+                }
         }
+        resetInfo();
+        currentView = View.SERVER_INTERACTION;
+        updateView(true);
+    }
+
+    public void resetInfo(){
+        currentPersonalGoals.clear();
+        currentGameState=null;
+        commonGoals.clear();
+        achievedCommonGoals.clear();
+        currentShelves.clear();
+        currentLivingRoom=null;
+        currentPlayerChat=null;
+        thisPlayerId=null;
     }
 
     /*-----------------------------------------------*/
 
+    private final Map<String,Integer> points = new HashMap<>();
+
+    private final int gameEndY = 14;
+    private final int gameEndX = 50;
+
+    private final int gameEndWidth = 36;
+    private void drawGameEnd(){
+        Map<Integer,List<Map.Entry<String,Integer>>> grouped = points.entrySet().stream().collect(Collectors.groupingBy(Map.Entry::getValue));
+        List<Map.Entry<Integer,List<Map.Entry<String,Integer>>>> sorted = new ArrayList<>(grouped.entrySet().stream().sorted(Map.Entry.comparingByKey()).toList());
+        Collections.reverse(sorted);
+
+        drawCenteredString("LEADERBOARD",gameEndX,gameEndY,gameEndWidth,DEFAULT);
+
+        String positionTitle = " POSITION ";
+        String idTitle = "      ID      ";
+        String pointsTitle = "  POINTS  ";
+
+        drawCenteredString(positionTitle+"│"+idTitle+"│"+pointsTitle,gameEndX,gameEndY+1,gameEndWidth,DEFAULT);
+
+        int leaderBoardY = gameEndY+2;
+        int line = 0;
+        int position = 1;
+        for(Map.Entry<Integer,List<Map.Entry<String,Integer>>> group : sorted){
+            boolean firstOfTheGroup = true;
+            for(Map.Entry<String,Integer> player : group.getValue()){
+                String pos;
+                String points;
+                if(firstOfTheGroup){
+                    pos = String.valueOf(position);
+                    firstOfTheGroup = false;
+                }else{
+                    pos = "|";
+                }
+                points = String.valueOf(player.getValue());
+                drawCenteredString(pos,gameEndX,leaderBoardY+line,positionTitle.length(),DEFAULT);
+                drawCenteredString(player.getKey(),gameEndX+positionTitle.length()+1,leaderBoardY+line,idTitle.length(),DEFAULT);
+                drawCenteredString(points, gameEndX+positionTitle.length()+idTitle.length()+2,leaderBoardY+line,pointsTitle.length(),DEFAULT);
+                line++;
+            }
+            position++;
+        }
+
+    }
 
     /*---------------GAME ROUTINE FUNCTIONS---------------*/
 
@@ -241,14 +289,13 @@ public class CLI implements UI{
     }
 
     private void pickTiles() throws RemoteException {
-
-            viewLock = true;
-
         final int pickableNum = 3;
         List<PickedTile> tiles = new ArrayList<>();
         boolean choosing = true;
         do {
+            viewLock = true;
             printCommandLine("Remaining pickable tiles: " + pickableNum+"\nWrite row,col r2,c2 to pick up to three tiles");
+            viewLock = false;
             String choice = readCommandLine("-> ");
             String[] split = choice.split(" ");
             //if more than 3 tiles are picked ignores the rest
@@ -287,7 +334,9 @@ public class CLI implements UI{
         int sC = 0;
         do {
             try {
+                viewLock = true;
                 String sCol = readCommandLine("Shelf col: ");
+                viewLock = false;
                 sC = Integer.parseInt(sCol);
                 printCommandLine("Shelf " + sC + " chosen", GREEN);
                 //check if column has enough space for the tiles
@@ -306,75 +355,73 @@ public class CLI implements UI{
         } while (choosing);
 
         server.doPlayerMove(client, new PlayerMoveInfo(tiles, sC));
-
-            viewLock = false;
-
     }
 
     private boolean isPickable(List<PickedTile> pickedTiles, Tile[][] board) {//TODO test this extensively
-        // Check if all picked tiles are adjacent to an empty tile
-        boolean adjacentToEmptyTile = false;
-        for (PickedTile pickedTile : pickedTiles) {
-            int row = pickedTile.row();
-            int col = pickedTile.col();
-            if (row > 0 && board[row-1][col] == Tile.EMPTY) {
-                adjacentToEmptyTile = true;
-                break;
-            }
-            if (row < board.length-1 && board[row+1][col] == Tile.EMPTY) {
-                adjacentToEmptyTile = true;
-                break;
-            }
-            if (col > 0 && board[row][col-1] == Tile.EMPTY) {
-                adjacentToEmptyTile = true;
-                break;
-            }
-            if (col < board[0].length-1 && board[row][col+1] == Tile.EMPTY) {
-                adjacentToEmptyTile = true;
-                break;
-            }
-        }
-        if (!adjacentToEmptyTile) {
-            return false;
-        }
-
-        // Check if picked tiles are all in the same row or column
-        int firstRow = pickedTiles.get(0).row();
-        int firstCol = pickedTiles.get(0).col();
-        boolean sameRow = true;
-        boolean sameCol = true;
-        for (PickedTile pickedTile : pickedTiles) {
-            if (pickedTile.row() != firstRow) {
-                sameRow = false;
-            }
-            if (pickedTile.col() != firstCol) {
-                sameCol = false;
-            }
-            if (!sameRow && !sameCol) {
-                return false;
-            }
-        }
-
-        if (sameRow) {
-            int[] cols = pickedTiles.stream().mapToInt(PickedTile::col).toArray();
-            Arrays.sort(cols);
-            for (int i = 0; i < cols.length-1; i++) {
-                if (cols[i+1] - cols[i] != 1) {
-                    return false;
-                }
-            }
-        }
-        if (sameCol) {
-            int[] rows = pickedTiles.stream().mapToInt(PickedTile::row).toArray();
-            Arrays.sort(rows);
-            for (int i = 0; i < rows.length-1; i++) {
-                if (rows[i+1] - rows[i] != 1) {
-                    return false;
-                }
-            }
-        }
-
         return true;
+        // Check if all picked tiles are adjacent to an empty tile
+//        boolean adjacentToEmptyTile = false;
+//        for (PickedTile pickedTile : pickedTiles) {
+//            int row = pickedTile.row();
+//            int col = pickedTile.col();
+//            if (row > 0 && board[row-1][col] == Tile.EMPTY) {
+//                adjacentToEmptyTile = true;
+//                break;
+//            }
+//            if (row < board.length-1 && board[row+1][col] == Tile.EMPTY) {
+//                adjacentToEmptyTile = true;
+//                break;
+//            }
+//            if (col > 0 && board[row][col-1] == Tile.EMPTY) {
+//                adjacentToEmptyTile = true;
+//                break;
+//            }
+//            if (col < board[0].length-1 && board[row][col+1] == Tile.EMPTY) {
+//                adjacentToEmptyTile = true;
+//                break;
+//            }
+//        }
+//        if (!adjacentToEmptyTile) {
+//            return false;
+//        }
+//
+//        // Check if picked tiles are all in the same row or column
+//        int firstRow = pickedTiles.get(0).row();
+//        int firstCol = pickedTiles.get(0).col();
+//        boolean sameRow = true;
+//        boolean sameCol = true;
+//        for (PickedTile pickedTile : pickedTiles) {
+//            if (pickedTile.row() != firstRow) {
+//                sameRow = false;
+//            }
+//            if (pickedTile.col() != firstCol) {
+//                sameCol = false;
+//            }
+//            if (!sameRow && !sameCol) {
+//                return false;
+//            }
+//        }
+//
+//        if (sameRow) {
+//            int[] cols = pickedTiles.stream().mapToInt(PickedTile::col).toArray();
+//            Arrays.sort(cols);
+//            for (int i = 0; i < cols.length-1; i++) {
+//                if (cols[i+1] - cols[i] != 1) {
+//                    return false;
+//                }
+//            }
+//        }
+//        if (sameCol) {
+//            int[] rows = pickedTiles.stream().mapToInt(PickedTile::row).toArray();
+//            Arrays.sort(rows);
+//            for (int i = 0; i < rows.length-1; i++) {
+//                if (rows[i+1] - rows[i] != 1) {
+//                    return false;
+//                }
+//            }
+//        }
+//
+//        return true;
     }
 
     private void leave(){
@@ -396,13 +443,11 @@ public class CLI implements UI{
                 Arrays.stream(cliPixel).forEach(a -> Arrays.fill(a, ' '));
                 Arrays.stream(cliPixelColor).forEach(a -> Arrays.fill(a, DEFAULT));
 
+                drawBox(0, 0, renderHeight, renderWidth, DEFAULT);
+                drawCommandLine();
+
                 switch (currentView){
-                    case SERVER_INTERACTION -> {
-                        drawBox(0, 0, renderHeight, renderWidth, DEFAULT);
-                        drawCommandLine();
-                    }
                     case GAME_INTERACTION -> {
-                        drawBox(0, 0, renderHeight, renderWidth, DEFAULT);
                         drawCommandLine();
                         drawGameState();
                         drawLivingRoom();
@@ -411,10 +456,11 @@ public class CLI implements UI{
                         drawCommonGoals();
                         drawPersonalGoal();
                     }
+                    case GAME_ENDED -> drawGameEnd();
                 }
 
                 updated++;
-                drawString(String.valueOf(updated)+" ",0,0,GREEN, 20);
+                drawString(updated +" ",0,0,GREEN, 20);
                 render();
             }
 
@@ -508,6 +554,13 @@ public class CLI implements UI{
         }
     }
 
+    private void drawCenteredString(String text, int startX, int startY, int spaceWidth, int color){
+        StringBuilder title = new StringBuilder();
+        int spaceBefore = (spaceWidth - text.length()) / 2;
+        title.append(" ".repeat(spaceBefore)).append(text);
+        drawString(title.toString(), startY, startX, color, title.length());
+    }
+
     //move cursor to arbitrary position
     public static void moveCursor(int y, int x) {
         System.out.print("\033[" + y + ";" + x + "H");
@@ -561,7 +614,7 @@ public class CLI implements UI{
 
     public String readCommandLine(String message) {
         cursor = message;
-        System.out.print(message);
+        out.print(message);
         String cmd = scanner.nextLine();
         cursor = "";
         oldCmds.add(new Pair(message + " " + cmd, DEFAULT));
@@ -610,7 +663,6 @@ public class CLI implements UI{
         //set current player chat
         this.currentPlayerChat = pC;
         updateView(false);
-
     }
 
     final int chatX = 80;
@@ -664,11 +716,7 @@ public class CLI implements UI{
                 drawString(chatBuffer[i], chatContentsY + i, chatContentsX + 1, DEFAULT, chatBuffer[i].length());
             }
 
-            StringBuilder title = new StringBuilder();
-            String t = "CHAT";
-            int spaceBefore = (chatBoxWidth - t.length()) / 2;
-            title.append(" ".repeat(spaceBefore)).append(t);
-            drawString(title.toString(), chatY, chatX, DEFAULT, title.length());
+            drawCenteredString("CHAT",chatX,chatY,chatBoxWidth,DEFAULT);
         }
     }
 
@@ -714,11 +762,7 @@ public class CLI implements UI{
                 }
             }
 
-            StringBuilder title = new StringBuilder();
-            String t = "LIVING ROOM BOARD";
-            int spaceBefore = (board[0].length * 4 + 1 - t.length()) / 2;
-            title.append(" ".repeat(spaceBefore)).append(t);
-            drawString(title.toString(), livingRoomY, livingRoomX + 2, DEFAULT, title.length());
+            drawCenteredString("LIVING ROOM BOARD",livingRoomX+2,livingRoomY,board[0].length * 4 + 1,DEFAULT);
         }
     }
 
@@ -790,12 +834,8 @@ public class CLI implements UI{
             drawString(playersName.toString(), shelvesGridY + shelvesHeight * 2 + 1, shelvesX, DEFAULT, playersName.length());
             drawString(playersPoints.toString(), shelvesGridY + shelvesHeight * 2 + 2, shelvesX, DEFAULT, playersPoints.length());
 
-            StringBuilder title = new StringBuilder();
-            String t = "PLAYERS SHELVES";
             int maxSize = currentShelves.size() * shelvesWidth + shelvesPadding * (currentShelves.size() - 1);
-            int spaceBefore = (maxSize - t.length()) / 2;
-            title.append(" ".repeat(spaceBefore)).append(t);
-            drawString(title.toString(), shelvesY, shelvesX, DEFAULT, title.length());
+            drawCenteredString("PLAYERS SHELVES",shelvesX,shelvesY,maxSize,DEFAULT);
         }
     }
 
@@ -812,11 +852,8 @@ public class CLI implements UI{
 
     private void drawCommandLine() {
         drawBox(commandLineY+1, commandLineX, commandLineHeight, commandLineWidth, DEFAULT);
-        StringBuilder title = new StringBuilder();
-        String t = "COMMAND LINE";
-        int spaceBefore = (commandLineWidth - t.length())/2;
-        title.append(" ".repeat(spaceBefore)).append(t);
-        drawString(title.toString(),commandLineY, commandLineX, DEFAULT, title.length());
+
+        drawCenteredString("COMMAND LINE",commandLineX,commandLineY,commandLineWidth,DEFAULT);
 
        drawString(cursor, commandLineY+commandLineHeight-1, commandLineX, DEFAULT, commandLineWidth-3);
         drawOldCmds();
@@ -905,12 +942,8 @@ public class CLI implements UI{
             }
             drawString(points.toString(), boxesStartY + commonGoalBoxHeight, commonGoalsX, DEFAULT, points.length());
 
-            StringBuilder title = new StringBuilder();
-            String t = "COMMON GOALS";
             int maxSize = commonGoals.size() * commonGoalBoxWidth + commonGoalsPadding * (commonGoals.size() - 1);
-            int spaceBefore = (maxSize - t.length()) / 2;
-            title.append(" ".repeat(spaceBefore)).append(t);
-            drawString(title.toString(), commonGoalsY, commonGoalsX, DEFAULT, title.length());
+            drawCenteredString("COMMON GOALS",commonGoalsX,commonGoalsY,maxSize,DEFAULT);
         }
     }
 
@@ -920,35 +953,22 @@ public class CLI implements UI{
     public void update(GameInfo o, Game.Event evt) {
         currentGameState = o;
 
-        if (o.status()== Game.GameStatus.ENDED){
-            printCommandLine("Game Ended, press enter to return to login menu");
-            //get max points
-            int maxPoints = o.points().values().stream().max(Integer::compareTo).orElse(0);
-            //for each player print points and the winner
-            for (var entry : o.points().entrySet()){
-                if (entry.getValue() == maxPoints)
-                    printCommandLine(entry.getKey() + " has " + entry.getValue() + " points and is a winner");
-                else
-                    printCommandLine(entry.getKey() + " has " + entry.getValue() + " points");
-            }
+        if (o.status()==Game.GameStatus.ENDED){
             GameRunning = false;
-            readCommandLine("");
-            return;
-        } else if (o.status() == Game.GameStatus.CLOSED) {
-            printCommandLine("Game closing");
-            GameRunning=false;
-            readCommandLine("");
-            return;
+            this.currentView = View.GAME_ENDED;
+            points.clear();
+            points.putAll(o.points());
+            printCommandLine("Game Ended, press enter to return to login menu");
+        } else if (o.status() == Game.GameStatus.STARTED) {
+            updateView(true);
         }
-
-        updateView(false);
     }
 
     private void drawGameState() {
         if(currentGameState!=null) {
-            //redraw shelves with new current player
-            if (currentLivingRoom != null && currentShelves != null && currentLivingRoom.board() != null && currentLivingRoom.board().length > 0 && currentShelves.size() > 0 && currentLivingRoom.board()[0].length > 0)
-                drawShelves();
+//            //redraw shelves with new current player
+//            if (currentLivingRoom != null && currentShelves != null && currentLivingRoom.board() != null && currentLivingRoom.board().length > 0 && currentShelves.size() > 0 && currentLivingRoom.board()[0].length > 0)
+//                drawShelves();
             //draw is last turn if it is
             if (currentGameState.lastTurn())
                 drawString("Last Turn", renderHeight - 10, 30, DEFAULT, 50 - 2);
@@ -989,11 +1009,7 @@ public class CLI implements UI{
             drawGrid(personalGoalsX, personalGoalsY + 1, shelf[0].length, shelf.length);
             drawGridContents(personalGoalsX, personalGoalsY + 1, shelf);
 
-            StringBuilder title = new StringBuilder();
-            String t = "PERSONAL GOAL";
-            int spaceBefore = (shelf[0].length * 4 + 1 - t.length()) / 2;
-            title.append(" ".repeat(spaceBefore)).append(t);
-            drawString(title.toString(), personalGoalsY, personalGoalsX, DEFAULT, title.length());
+            drawCenteredString("PERSONAL GOAL",personalGoalsX,personalGoalsY,shelf[0].length * 4 + 1,DEFAULT);
         }
     }
 
@@ -1008,8 +1024,15 @@ public class CLI implements UI{
         }
 
         switch (evt){
-            case STATUS_CHANGED, GAME_CREATED -> serverWaiter.notify(false);
-            case ERROR_REPORTED -> serverWaiter.notify(true);
+            case GAME_JOINED, GAME_CREATED -> {
+                printCommandLine(o.eventMessage(),GREEN);
+                serverWaiter.notify(false);
+            }
+            case ERROR_REPORTED -> {
+                printCommandLine(o.eventMessage(),RED);
+                serverWaiter.notify(true);
+            }
+            case GAME_LEAVED -> printCommandLine(o.eventMessage(),RED);
         }
     }
 

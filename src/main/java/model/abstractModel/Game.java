@@ -50,9 +50,7 @@ public abstract class Game extends Observable<Game.Event> implements Serializabl
         MATCHMAKING,
         RESTARTING,
         STARTED,
-        ENDED,
-        CLOSED,
-        IN_PROGRESS,
+        ENDED
     }
 
     /**
@@ -66,6 +64,11 @@ public abstract class Game extends Observable<Game.Event> implements Serializabl
      * @return the current game status
      */
     public abstract GameStatus getGameStatus();
+
+    /**
+     * This method signal the game to end and close
+     */
+    public abstract void close();
 
     /**
      * This method marks the current turn sequence to be the last one.

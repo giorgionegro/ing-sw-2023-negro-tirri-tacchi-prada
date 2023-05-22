@@ -15,7 +15,7 @@ class UserTest {
     void setStatusTest(){
         User test = new User();
         assertEquals(test.getStatus(), User.Status.NOT_JOINED);
-        test.reportEvent(User.Status.JOINED,"message",2000, User.Event.STATUS_CHANGED);
+        test.reportEvent(User.Status.JOINED,"message",2000, User.Event.GAME_JOINED);
         assertEquals(test.getStatus(), User.Status.JOINED);
     }
     @Test
