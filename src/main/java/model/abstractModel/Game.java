@@ -51,7 +51,8 @@ public abstract class Game extends Observable<Game.Event> implements Serializabl
         RESTARTING,
         STARTED,
         ENDED,
-        CLOSED
+        CLOSED,
+        IN_PROGRESS,
     }
 
     /**
