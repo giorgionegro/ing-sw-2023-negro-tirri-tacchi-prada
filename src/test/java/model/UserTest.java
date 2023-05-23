@@ -9,20 +9,20 @@ class UserTest {
     void constructorWorksCorrectly(){
         User test = new User();
         assertEquals(test.getStatus(), User.Status.NOT_JOINED);
-        assertEquals(test.getReportedError(), "");
+        assertEquals(test.getEventMessage(), "");
     }
     @Test
     void setStatusTest(){
         User test = new User();
         assertEquals(test.getStatus(), User.Status.NOT_JOINED);
-        test.setStatus(User.Status.JOINED,2000);
+        test.reportEvent(User.Status.JOINED,"message",2000, User.Event.GAME_JOINED);
         assertEquals(test.getStatus(), User.Status.JOINED);
     }
     @Test
     void ReportErrorTest(){
         User test = new User();
-        assertEquals(test.getReportedError(), "");
-        test.setStatus(User.Status.NOT_JOINED,0,"New error");
-        assertEquals(test.getReportedError(), "New error");
+        assertEquals(test.getEventMessage(), "");
+        test.reportEvent(User.Status.NOT_JOINED,"New error",0, User.Event.ERROR_REPORTED);
+        assertEquals(test.getEventMessage(), "New error");
     }
 }

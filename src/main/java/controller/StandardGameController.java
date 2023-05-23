@@ -8,6 +8,7 @@ import model.*;
 import model.abstractModel.*;
 import model.exceptions.*;
 import modelView.*;
+import util.Observable;
 import util.Observer;
 
 import java.rmi.RemoteException;
@@ -15,13 +16,16 @@ import java.util.*;
 
 public class StandardGameController implements GameController, LobbyController {
     private final Game game;
-    private final Map<ClientInterface, Player> playerAssociation;
+    private final Map<ClientInterface, User> userAssociation;
+
+    private final Map<User,Player> playerAssociation;
 
     /**
      * @param game game to be managed
      */
     public StandardGameController(Game game) {
         this.game = game;
+        this.userAssociation = new HashMap<>();
         this.playerAssociation = new HashMap<>();
     }
 
@@ -32,13 +36,16 @@ public class StandardGameController implements GameController, LobbyController {
      * @param newClient client to be added
      * @return Player's Observer to be added
      */
-    private static Observer<Player, Player.Event> getPlayerObserver(ClientInterface newClient) {
-        return (o, arg) -> {
-            try {
-                newClient.update(o.getInfo(), arg);
-            } catch (RemoteException e) {
-                e.printStackTrace();
-                //throw new RuntimeException(e); //TODO send error to client
+    private Observer<Player, Player.Event> getPlayerObserver(ClientInterface newClient) {
+        return new Observer<>() {
+            @Override
+            public void update(Player o, Player.Event arg) {
+                try {
+                    newClient.update(o.getInfo(), arg);
+                } catch (RemoteException e) {
+                    System.err.println("...detaching player observer");
+                    o.deleteObserver(this);
+                }
             }
         };
     }
@@ -48,13 +55,16 @@ public class StandardGameController implements GameController, LobbyController {
      * @param newClient client to be added
      * @return Observer of the GameStatus to be added
      */
-    private static Observer<Game, Game.Event> getGameObserver(ClientInterface newClient) {
-        return (o, arg) -> {
-            try {
-                newClient.update(o.getInfo(), arg);
-            } catch (RemoteException e) {
-                e.printStackTrace();
-                //throw new RuntimeException(e);//TODO send error to client
+    private Observer<Game, Game.Event> getGameObserver(ClientInterface newClient) {
+        return new Observer<>() {
+            @Override
+            public void update(Game o, Game.Event arg) {
+                try {
+                    newClient.update(o.getInfo(), arg);
+                } catch (RemoteException e) {
+                    System.err.println("...detaching game observer");
+                    o.deleteObserver(this);
+                }
             }
         };
     }
@@ -65,13 +75,16 @@ public class StandardGameController implements GameController, LobbyController {
      * @return Observer of the CommonGoal to be added
      */
 
-    private static Observer<CommonGoal, CommonGoal.Event> getCommonGoalObserver(ClientInterface newClient) {
-        return (o, arg) -> {
-            try {
-                newClient.update(o.getInfo(), arg);
-            } catch (RemoteException e) {
-                e.printStackTrace();
-                //throw new RuntimeException(e);//TODO send error to client
+    private Observer<CommonGoal, CommonGoal.Event> getCommonGoalObserver(ClientInterface newClient) {
+        return new Observer<>() {
+            @Override
+            public void update(CommonGoal o, CommonGoal.Event arg) {
+                try {
+                    newClient.update(o.getInfo(), arg);
+                } catch (RemoteException e) {
+                    System.err.println("...detaching commonGoal observer");
+                    o.deleteObserver(this);
+                }
             }
         };
     }
@@ -82,13 +95,16 @@ public class StandardGameController implements GameController, LobbyController {
      * @return Observer of the LivingRoom to be added
      */
 
-    private static Observer<LivingRoom, LivingRoom.Event> getLivingRoomObserver(ClientInterface newClient) {
-        return (o, arg) -> {
-            try {
-                newClient.update(o.getInfo(), arg);
-            } catch (RemoteException e) {
-                e.printStackTrace();
-                //throw new RuntimeException(e);//TODO send error to client
+    private Observer<LivingRoom, LivingRoom.Event> getLivingRoomObserver(ClientInterface newClient) {
+        return new Observer<>() {
+            @Override
+            public void update(LivingRoom o, LivingRoom.Event arg) {
+                try {
+                    newClient.update(o.getInfo(), arg);
+                } catch (RemoteException e) {
+                    System.err.println("...detaching livingRoom observer");
+                    o.deleteObserver(this);
+                }
             }
         };
     }
@@ -99,13 +115,16 @@ public class StandardGameController implements GameController, LobbyController {
      * @return Observer of the PlayerChat to be added
      */
 
-    private static Observer<PlayerChat, PlayerChat.Event> getPlayerChatObserver(ClientInterface newClient) {
-        return (o, arg) -> {
-            try {
-                newClient.update(o.getInfo(), arg);
-            } catch (RemoteException e) {
-                e.printStackTrace();
-                //throw new RuntimeException(e);//TODO send error to client
+    private Observer<PlayerChat, PlayerChat.Event> getPlayerChatObserver(ClientInterface newClient) {
+        return new Observer<>() {
+            @Override
+            public void update(PlayerChat o, PlayerChat.Event arg) {
+                try {
+                    newClient.update(o.getInfo(), arg);
+                } catch (RemoteException e) {
+                    System.err.println("...detaching playerChat observer");
+                    o.deleteObserver(this);
+                }
             }
         };
     }
@@ -116,13 +135,16 @@ public class StandardGameController implements GameController, LobbyController {
      * @return Observer of the PersonalGoal to be added
      */
 
-    private static Observer<PersonalGoal, PersonalGoal.Event> getPersonalGoalObserver(ClientInterface newClient) {
-        return (o, arg) -> {
-            try {
-                newClient.update(o.getInfo(), arg);
-            } catch (RemoteException e) {
-                e.printStackTrace();
-                //throw new RuntimeException(e);//TODO send error to client
+    private Observer<PersonalGoal, PersonalGoal.Event> getPersonalGoalObserver(ClientInterface newClient) {
+        return new Observer<>() {
+            @Override
+            public void update(PersonalGoal o, PersonalGoal.Event arg) {
+                try {
+                    newClient.update(o.getInfo(), arg);
+                } catch (RemoteException e) {
+                    System.err.println("...detaching personalGoal observer");
+                    o.deleteObserver(this);
+                }
             }
         };
     }
@@ -133,13 +155,16 @@ public class StandardGameController implements GameController, LobbyController {
      * @return Observer of the Shelf to be added
      */
 
-    private static Observer<Shelf, Shelf.Event> getShelfObserver(ClientInterface newClient, Player joinedPlayer) {
-        return (o, arg) -> {
-            try {
-                newClient.update(o.getInfo(joinedPlayer.getId()), arg);
-            } catch (RemoteException e) {
-                e.printStackTrace();
-                //throw new RuntimeException(e);//TODO send error to client
+    private Observer<Shelf, Shelf.Event> getShelfObserver(ClientInterface newClient, Player joinedPlayer) {
+        return new Observer<>() {
+            @Override
+            public void update(Shelf o, Shelf.Event arg) {
+                try {
+                    newClient.update(o.getInfo(joinedPlayer.getId()), arg);
+                } catch (RemoteException e) {
+                    System.err.println("...detaching shelf observer");
+                    o.deleteObserver(this);
+                }
             }
         };
     }
@@ -151,7 +176,8 @@ public class StandardGameController implements GameController, LobbyController {
      * @param playerId  id of the player that wants to join the game
      * @throws GameAccessDeniedException if the game is already ended or the player id already exists or the matchmaking is closed
      */
-    public synchronized void joinPlayer(ClientInterface newClient, String playerId) throws GameAccessDeniedException {
+    @Override
+    public synchronized void joinPlayer(ClientInterface newClient, User newUser, String playerId) throws GameAccessDeniedException {
         //Should we just Throw the different exceptions instead of catching them?
         try {
             game.addPlayer(playerId);
@@ -160,8 +186,12 @@ public class StandardGameController implements GameController, LobbyController {
 
             addObservers(newClient, newPlayer);
 
+            userAssociation.put(newClient,newUser);
+
             /* Put newClient into known client */
-            playerAssociation.put(newClient, newPlayer);
+            playerAssociation.put(newUser, newPlayer);
+
+            newUser.reportEvent(User.Status.JOINED, "Joined game: "+game.getGameId()+", you are:"+playerId,System.currentTimeMillis(), User.Event.GAME_JOINED);
 
             /* If game is ready to be started we force the first */
             if (game.getGameStatus().equals(Game.GameStatus.STARTED)) {
@@ -170,7 +200,7 @@ public class StandardGameController implements GameController, LobbyController {
             }
 
         } catch (GameEndedException e) {
-            throw new GameAccessDeniedException("Game already ended");//Should we throw a GameEndedException? it would be easier to handle in the client
+            closeTheGame("Game has ended");
         } catch (PlayerAlreadyExistsException | PlayerNotExistsException e) {
             throw new GameAccessDeniedException("Player id already exists");//Same as above
         } catch (MatchmakingClosedException e) {
@@ -178,12 +208,34 @@ public class StandardGameController implements GameController, LobbyController {
         }
     }
 
+    private void closeTheGame(String message){
+        long eventTime = System.currentTimeMillis();
+        for(User u : userAssociation.values()){
+            u.reportEvent(User.Status.NOT_JOINED,message,eventTime, User.Event.GAME_LEAVED);
+        }
+
+        game.close();
+        game.deleteObservers();
+        game.getCommonGoals().forEach(Observable::deleteObservers);
+        game.getLivingRoom().deleteObservers();
+        for(Player p : playerAssociation.values()){
+            p.deleteObservers();
+            p.getPlayerChat().deleteObservers();
+            p.getPersonalGoals().forEach(Observable::deleteObservers);
+            p.getShelf().deleteObservers();
+        }
+    }
+
     @Override
-    public void leavePlayer(ClientInterface client) {
+    public synchronized void leavePlayer(ClientInterface client) throws GameAccessDeniedException{
+        if(!userAssociation.containsKey(client))
+            throw new GameAccessDeniedException("Client not connected to this game");
+
+        Player leavedPlayer = playerAssociation.get(userAssociation.get(client));
+        String eventMessage = leavedPlayer.getId()+" has leaved the game";
+        closeTheGame(eventMessage);
+
         System.err.println("PLAYER USCITO");
-        //TODO rimuovere da playerAssociation
-        //TODO rimuovere tutti gli observers
-        //TODO chiudere il gioco
     }
 
     /**
@@ -215,8 +267,9 @@ public class StandardGameController implements GameController, LobbyController {
         newPlayer.getShelf().addObserver(getShelfObserver(newClient, newPlayer));
         /* Add Shelf status observer of new player to all already joined players */
         /* Add Shelf status observer of all already joined players to new player */
-        playerAssociation.forEach((joinedClient, joinedPlayer) -> {
+        userAssociation.forEach((joinedClient, joinedUser) -> {
             newPlayer.getShelf().addObserver(getShelfObserver(joinedClient, newPlayer));
+            Player joinedPlayer = playerAssociation.get(joinedUser);
             joinedPlayer.getShelf().addObserver(getShelfObserver(newClient, joinedPlayer));
         });
     }
@@ -230,7 +283,7 @@ public class StandardGameController implements GameController, LobbyController {
     public synchronized void doPlayerMove(ClientInterface client, PlayerMoveInfo playerMove) {
         try {
             /* If we receive a request from an invalid client we discard it */
-            if (!playerAssociation.containsKey(client))
+            if (!userAssociation.containsKey(client))
                 throw new IllegalArgumentException("User not allowed");
 
             /* If game is not started we discard the request*/
@@ -238,7 +291,7 @@ public class StandardGameController implements GameController, LobbyController {
                 throw new GameNotStartedException();
 
             /* Get player information associated with his client */
-            Player player = playerAssociation.get(client);
+            Player player = playerAssociation.get(userAssociation.get(client));
 
             /* If it isn't player turn we discard the request*/
             if (!player.getId().equals(game.getTurnPlayerId()))
@@ -304,14 +357,13 @@ public class StandardGameController implements GameController, LobbyController {
                         personalGoal.setAchieved();
             }
 
-
             //TODO salvare il gioco
 
             /* Pass turn to next player */
             game.updatePlayersTurn();
 
         } catch (IllegalArgumentException | GameNotStartedException e) {
-            playerAssociation.get(client).reportError(e.getMessage());
+            playerAssociation.get(userAssociation.get(client)).reportError(e.getMessage());
         } catch (GameEndedException e){
             e.printStackTrace();
         }
@@ -324,7 +376,7 @@ public class StandardGameController implements GameController, LobbyController {
      */
     public synchronized void sendMessage(ClientInterface client, Message newMessage) {
         try {
-            if (!playerAssociation.containsKey(client))
+            if (!userAssociation.containsKey(client))
                 throw new IllegalArgumentException("User not allowed");
 
             boolean subjectfound = false;
@@ -344,7 +396,7 @@ public class StandardGameController implements GameController, LobbyController {
             }
 
         } catch (IllegalArgumentException e) {
-            playerAssociation.get(client).reportError(e.getMessage());
+            playerAssociation.get(userAssociation.get(client)).reportError(e.getMessage());
         }
     }
 

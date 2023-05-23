@@ -140,5 +140,13 @@ public class ServerSocketHandler extends SocketHandler<ServerInterface> implemen
 
     @Override
     public void update(PlayerInfo o, Player.Event evt) throws RemoteException {
+        //TODO
+    }
+
+    @Override
+    public void bind(ServerInterface server) throws RemoteException {
+        while(true){
+            waitForReceive(server);
+        }
     }
 }

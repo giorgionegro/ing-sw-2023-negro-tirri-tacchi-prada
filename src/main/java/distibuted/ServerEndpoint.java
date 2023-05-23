@@ -33,21 +33,16 @@ public class ServerEndpoint extends UnicastRemoteObject implements ServerInterfa
             serverController.createGame(client,newGameInfo);
         } catch (RemoteException e) {
             e.printStackTrace();
-            //throw new RuntimeException(e); //TODO send error to client
         }
     }
 
     @Override
-    public void joinGame(ClientInterface client, LoginInfo loginInfo) {
+    public void joinGame(ClientInterface client, LoginInfo loginInfo){
         try {
             serverController.joinGame(client, loginInfo);
             gameController = gameManagerController.getGame(loginInfo.gameId());
-        } catch (RemoteException e) {
+        } catch (RemoteException | GameNotExistsException e) {
             e.printStackTrace();
-         //   throw new RuntimeException(e);
-        } catch (GameNotExistsException e) {
-            e.printStackTrace();
-          //  throw new RuntimeException(e);
         }
     }
 
@@ -57,19 +52,29 @@ public class ServerEndpoint extends UnicastRemoteObject implements ServerInterfa
             serverController.leaveGame(client);
             this.gameController = null;
         } catch (RemoteException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
     }
 
     @Override
-    public void doPlayerMove(ClientInterface client, PlayerMoveInfo move) throws RemoteException {
-        if(gameController!=null)
-            gameController.doPlayerMove(client, move);
+    public void doPlayerMove(ClientInterface client, PlayerMoveInfo move){
+        if(gameController!=null) {
+            try {
+                gameController.doPlayerMove(client, move);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override
-    public void sendMessage(ClientInterface client, Message message) throws RemoteException {
-        if(gameController!=null)
-            gameController.sendMessage(client, message);
+    public void sendMessage(ClientInterface client, Message message){
+        if(gameController!=null) {
+            try {
+                gameController.sendMessage(client, message);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

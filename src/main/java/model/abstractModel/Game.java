@@ -66,6 +66,11 @@ public abstract class Game extends Observable<Game.Event> implements Serializabl
     public abstract GameStatus getGameStatus();
 
     /**
+     * This method signal the game to end and close
+     */
+    public abstract void close();
+
+    /**
      * This method marks the current turn sequence to be the last one.
      * <p>
      * If invoked then isLastTurn method will then return {@code true}

@@ -13,8 +13,10 @@ public class User extends Observable<User.Event> {
      * This enumeration contains all the events that can be sent to observers
      */
     public enum Event{
-        STATUS_CHANGED,
-        ERROR_REPORTED
+        ERROR_REPORTED,
+        GAME_CREATED,
+        GAME_JOINED,
+        GAME_LEAVED
     }
 
     /**
@@ -33,7 +35,7 @@ public class User extends Observable<User.Event> {
     /**
      * The last error user encountered during server interaction
      */
-    private String errorReport;
+    private String eventMessage;
 
     /**
      * The last timeStamp of a user interaction with server
@@ -45,7 +47,7 @@ public class User extends Observable<User.Event> {
      */
     public User(){
         this.status = Status.NOT_JOINED;
-        this.errorReport = "";
+        this.eventMessage = "";
         this.interactionTime = -1;
     }
 
@@ -58,27 +60,26 @@ public class User extends Observable<User.Event> {
     }
 
     /**
-     * This method set the status of the user
-     * @param status the new status of the user
+     * TODO
+     * @param status
+     * @param eventMessage
+     * @param interactionTime
+     * @param evt
      */
-    public void setStatus(Status status, long interactionTime) {
+    public void reportEvent(Status status, String eventMessage, long interactionTime, User.Event evt){
         this.status = status;
         this.interactionTime = interactionTime;
+        this.eventMessage = eventMessage;
         setChanged();
-        notifyObservers(Event.STATUS_CHANGED);
-    }
-
-    public void setStatus(Status status, long interactionTime, String errorReport) {
-        this.errorReport = errorReport;
-        setStatus(status,interactionTime);
+        notifyObservers(evt);
     }
 
     /**
      * This method returns the last error that user encountered during server interaction
-     * @return {@link #errorReport}
+     * @return {@link #eventMessage}
      * */
-    public String getReportedError(){
-        return errorReport;
+    public String getEventMessage(){
+        return eventMessage;
     }
 
     /**
@@ -86,6 +87,6 @@ public class User extends Observable<User.Event> {
      * @return A {@link UserInfo} representing this object instance
      */
     public UserInfo getInfo(){
-        return new UserInfo(status,errorReport,interactionTime);
+        return new UserInfo(status,eventMessage,interactionTime);
     }
 }

@@ -164,6 +164,7 @@ public class StandardGame extends Game {
             if(!players.containsKey(playerId))
                 throw new MatchmakingClosedException();
 
+            //TODO problema che due giocatori possono riconnettersi allo stesso giocatore
             joinedPlayer++;
             setChanged();
             notifyObservers(Event.PLAYER_REJOINED);
@@ -245,6 +246,14 @@ public class StandardGame extends Game {
         return playerTurnQueue.get(playerTurnQueue.size()-1).getId();
     }
 
+    @Override
+    public void close(){
+        this.status=GameStatus.ENDED;
+        //save state
+        setChanged();
+        notifyObservers(Event.GAME_ENDED);
+    }
+
     /**
      * {@inheritDoc}
      * @return {@link #status}
@@ -264,14 +273,8 @@ public class StandardGame extends Game {
         setChanged();
         notifyObservers(Event.NEXT_TURN);
 
-        if(p.equals(firstPlayer) && lastTurn){
-            this.status = GameStatus.ENDED;
-
-            setChanged();
-            notifyObservers(Event.GAME_ENDED);
-
+        if(p.equals(firstPlayer) && lastTurn)
             throw new GameEndedException();
-        }
     }
 
     /**
