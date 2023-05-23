@@ -8,35 +8,43 @@ import java.awt.event.ActionListener;
 public class HomePanel extends JPanel implements ActionListener {
     JButton CreateButton;
     JButton JoinButton;
-    public HomePanel(){//JFrame = a GUI window to add components to
-        ImageIcon desktop = new ImageIcon (this.getClass().getResource("/desktop01.jpg").getPath());
-        JPanel BackgroundHomePanel = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                g.drawImage(desktop.getImage(), 0, 0, getWidth(), getHeight(), null);
-            }
-        };
+    Image desktop;
+    ActionListener listener;
+    public HomePanel(ActionListener listener){//JFrame = a GUI window to add components to
+        this.listener = listener;
 
+        desktop = new ImageIcon (this.getClass().getResource("/desktop.png").getPath()).getImage();
         GridBagConstraints c = new GridBagConstraints();
         c.gridx=0;
         c.gridy=0;
-        c.insets =  new Insets(60,10,0,10);
+        c.insets =  new Insets(20,0,0,0);
 
-        JPanel ButtonsHomePanel = new JPanel ();
+        JPanel ButtonsHomePanel = new JPanel();
 
-        BackgroundHomePanel.setBounds(0,0,1000,700);
-        BackgroundHomePanel.setLayout(new BorderLayout());
+        this.setBounds(0,0,1000,700);
+        this.setLayout(new BorderLayout());
 
 
         ButtonsHomePanel.setOpaque(false);
         ButtonsHomePanel.setBackground(new Color(0,0,0));
-        //ButtonsHomePanel.setBounds(0,0,1000,700);
         ButtonsHomePanel.setLayout(new GridBagLayout());
-        BackgroundHomePanel.add(ButtonsHomePanel);
+        this.add(ButtonsHomePanel);
+        //Title
+
+
+        ImageIcon titleImage = new ImageIcon(this.getClass().getResource("/title.png").getPath());
+        JLabel title = new JLabel() {
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                g.drawImage(titleImage.getImage(), 0, 0, getWidth(), getHeight(), null);
+            }
+        };
+        title.setOpaque(false);
+        title.setPreferredSize(new Dimension(600,185));
+
 
         //Buttons
-        Font font = new Font("Century", Font.BOLD, 18);
+        Font font = new Font("Century", Font.BOLD, 20);
         JoinButton = new JButton();
         ImageIcon button = new ImageIcon(GUI.class.getResource("/img.png").getPath());
         JoinButton.setIcon(button);
@@ -51,21 +59,47 @@ public class HomePanel extends JPanel implements ActionListener {
         create.setFont(font);
         CreateButton.add(create);
 
+        //TODO
+        CreateButton.setName("CREATE");
+        //
+
+        ButtonsHomePanel.add(title);
+        c.gridy++;
         ButtonsHomePanel.add(JoinButton, c);
-        c.gridx++;
+        c.gridy++;
+        c.gridy++;
         ButtonsHomePanel.add(CreateButton, c);
 
         JoinButton.addActionListener(this);
         CreateButton.addActionListener(this);
+    }
 
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        if(desktop!=null){
+            double ratio = 1.765;
+            double windowRatio = (double)getWidth()/getHeight();
+            int width;
+            int height;
+            if(windowRatio>ratio) {
+                width = getWidth();
+                height = (int) (getWidth()/ratio);
+            }else{
+                height = getHeight();
+                width = (int) (getHeight()*ratio);
+            }
+            g.drawImage(desktop, 0, 0, width, height, null);
+
+        }
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == CreateButton) {
-           // TODO createGame();
+           listener.actionPerformed(new ActionEvent(this, e.getID(),"CREATE"));
         } else if (e.getSource() == JoinButton) {
-           // TODO joinGame();
+            listener.actionPerformed(new ActionEvent(this, e.getID(),"JOIN"));
         }
 
     }

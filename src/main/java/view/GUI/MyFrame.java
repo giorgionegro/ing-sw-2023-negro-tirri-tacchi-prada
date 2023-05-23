@@ -13,7 +13,8 @@ public class MyFrame extends JFrame {
 
         this.setTitle("My Shelfie Game");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setSize((int)Toolkit.getDefaultToolkit().getScreenSize().getWidth(), (int)Toolkit.getDefaultToolkit().getScreenSize().getHeight());
         this.setResizable(false);
-        this.setSize(962, 545);
+
     }
 }

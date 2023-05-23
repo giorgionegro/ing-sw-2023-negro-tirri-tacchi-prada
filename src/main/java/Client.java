@@ -3,7 +3,7 @@ import distibuted.interfaces.AppServer;
 import distibuted.interfaces.ClientInterface;
 import distibuted.interfaces.ServerInterface;
 import distibuted.socket.middleware.ClientSocketHandler;
-import view.CLI;
+import view.GUI.GUI;
 import view.interfaces.UI;
 
 import java.rmi.NotBoundException;
@@ -24,7 +24,8 @@ public class Client {
 
     private Client(){
         //TODO ask if use gui or cli
-        ui = new CLI();
+        //ui = new CLI();
+        ui = new GUI();
         server = null;
         serverEndpoint = null;
     }
@@ -43,7 +44,7 @@ public class Client {
 
                 //if choose exit then return and close application
                 if (choise.equals(""))
-                    return;
+                    System.exit(0);
 
                 //else try to connect with socket or rmi
                 try {
