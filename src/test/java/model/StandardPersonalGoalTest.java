@@ -32,7 +32,7 @@ class StandardPersonalGoalTest {
     void TestEvaluate() {
         StandardPersonalGoal test = new StandardPersonalGoal(Tile.BOOKS_2, 3, 4);
         try {
-            test.evaluate(new Tile[2][4]);
+            test.evaluate(new Tile[2][3]);
             fail();
         }catch(IndexOutOfBoundsException e){
             System.out.println("Index out of bound");
@@ -41,9 +41,10 @@ class StandardPersonalGoalTest {
     @Test //Test shelf cell empty.
     void TestEvaluate2() {
         StandardPersonalGoal test = new StandardPersonalGoal(Tile.BOOKS_2, 3, 4);
+        Tile[][] matrice = new  Tile[9][9];
+        Arrays.stream(matrice).forEach(row -> Arrays.fill(row, Tile.EMPTY));
         try {
-            assertFalse(test.evaluate(new Tile[9][9]));
-            fail();
+            assertFalse(test.evaluate(matrice));
         }catch(Exception e){
             System.out.println("Shelf cell empty");
         }
@@ -63,5 +64,11 @@ class StandardPersonalGoalTest {
         Arrays.stream(matrice).forEach(row -> Arrays.fill(row, Tile.EMPTY));
         matrice[3][4] = Tile.CATS_1;
         assertFalse(test.evaluate(matrice));
+    }
+
+    @Test
+    void getInfoTest(){
+        StandardPersonalGoal test = new StandardPersonalGoal(Tile.BOOKS_2, 3, 4);
+        assertTrue(Arrays.deepEquals(test.getDescription(), test.getInfo().description()));
     }
 }

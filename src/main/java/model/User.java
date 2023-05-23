@@ -13,9 +13,10 @@ public class User extends Observable<User.Event> {
      * This enumeration contains all the events that can be sent to observers
      */
     public enum Event{
-        STATUS_CHANGED,
         ERROR_REPORTED,
         GAME_CREATED,
+        GAME_JOINED,
+        GAME_LEAVED
     }
 
     /**

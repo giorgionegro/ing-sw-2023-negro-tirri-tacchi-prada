@@ -119,4 +119,18 @@ class StandardPlayerTest {
         r.add(new StandardPersonalGoal(Tile.PLANTS_1,5,5));
         return r;
     }
+    @Test
+    void reportErrorTest(){
+        StandardPlayer test = new StandardPlayer("p1", getPersonalGoals());
+        test.reportError("Error test");
+        assertEquals(test.getReportedError(), "Error test");
+    }
+    @Test
+    void getInfoTest(){
+        StandardPlayer test = new StandardPlayer("p1", getPersonalGoals());
+        test.reportError("Error test");
+        test.addAchievedCommonGoal("Test", Token.TOKEN_6_POINTS);
+        assertEquals(test.getReportedError(), test.getInfo().errorMessage());
+        assertEquals(test.getInfo().achievedCommonGoals(), test.getAchievedCommonGoals());
+    }
 }
