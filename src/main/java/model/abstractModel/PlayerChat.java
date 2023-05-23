@@ -1,5 +1,6 @@
 package model.abstractModel;
 
+import modelView.PlayerChatInfo;
 import util.Observable;
 
 import java.util.List;
@@ -32,4 +33,10 @@ public abstract class PlayerChat extends Observable<PlayerChat.Event> {
      * @return a copy of the list of messages that are contained in the chat
      */
     public abstract List<Message> getMessages();
+
+    /**
+     * TODO
+     * @return
+     */
+    public abstract PlayerChatInfo getInfo();
 }

@@ -7,7 +7,7 @@ import java.util.List;
 
 /**
  * @param error TODO Change definition of error
- */ //TODO DA ELIMINARE ??
+ */
 public record ServerInfo(String error, List<GamesManagerInfo> lobbies) implements Serializable {
 
     public ServerInfo(String error, List<GamesManagerInfo> lobbies) {

@@ -2,9 +2,8 @@ import controller.StandardServerController;
 import distibuted.interfaces.AppServer;
 import distibuted.interfaces.ClientInterface;
 import distibuted.interfaces.ServerInterface;
-import distibuted.socket.middleware.ClientSkeleton;
+import distibuted.socket.middleware.ServerSocketHandler;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -39,15 +38,8 @@ public class Server extends UnicastRemoteObject implements AppServer
                 startRMI();
             } catch (RemoteException e) {
                 System.err.println("Cannot start RMI. Trying to start RMI on port 1099...");
-                //try to start RMI "manually" by executing the rmiregistry command on classpath
                 try {
-                    //find the classpath
-                    String classpath = System.getProperty("java.class.path").split(System.getProperty("path.separator"))[0];
-                    System.err.println("Classpath: " + classpath);
-                    //execute the command in classpath directory
-                    Process process = Runtime.getRuntime().exec("rmiregistry", null, new File(classpath));
-                    //wait for the process to end or kill it after 5 seconds
-                    process.waitFor(5, java.util.concurrent.TimeUnit.SECONDS);
+                    LocateRegistry.createRegistry(1099);
                     //start RMI
                     startRMI();
                 } catch (Exception e1) {
@@ -89,15 +81,17 @@ public class Server extends UnicastRemoteObject implements AppServer
             while (true) {
                 Socket socket = serverSocket.accept();
                 executorService.submit(() -> {
+                    ServerSocketHandler serverSocketHandler = new ServerSocketHandler(socket);
                     try {
-                        ClientSkeleton clientSkeleton = new ClientSkeleton(socket);
-                        ServerInterface server = getInstance().connect(clientSkeleton);
+                        serverSocketHandler.open();
+                        ServerInterface server = getInstance().connect(serverSocketHandler);
                         while (true) {
-                            clientSkeleton.waitForReceive(server);
+                            serverSocketHandler.waitForReceive(server);
                         }
                     } catch (RemoteException e) {
-                        System.err.println("Cannot receive from client. Closing this connection...");
+                        System.err.println("Cannot receive from client: "+e.getMessage()+".\n-> Closing this connection...");
                     } finally {
+                        serverController.disconnect(serverSocketHandler);
                         try {
                             socket.close();
                         } catch (IOException e) {

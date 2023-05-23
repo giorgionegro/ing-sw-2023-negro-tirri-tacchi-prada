@@ -2,6 +2,7 @@ package model;
 
 import model.abstractModel.PlayerChat;
 import model.abstractModel.Message;
+import modelView.PlayerChatInfo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +43,17 @@ public class StandardPlayerChat extends PlayerChat {
      */
     @Override
     public List<Message> getMessages() {
-        return this.messages;
+        return new ArrayList<>(this.messages);
     }
+
+    /**
+     * TODO
+     * @return
+     */
+    @Override
+    public PlayerChatInfo getInfo() {
+        return new PlayerChatInfo(getMessages());
+    }
+
+
 }

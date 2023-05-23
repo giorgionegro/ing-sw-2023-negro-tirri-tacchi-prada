@@ -20,6 +20,26 @@ public class Standard2ColumnsRowOfDifferentTiles extends GoalEvaluator {
     private final boolean column;
 
     /**
+     * This string contains the description of the commonGoal 2ColumnsOfDifferentTiles
+     */
+    private final String standard2ColumnsOfDifferentTilesDescription = "Two columns formed each from 6 different types of tiles";
+
+    /**
+     * This string contains the description of the commonGoal 2RowsOfDifferentTiles
+     */
+    private final String standard2RowsOfDifferentTilesDescription = "Two lines formed each from 5 different types of tiles";
+
+    /**
+     * This string contains the id of the commonGoal 2ColumnsOfDifferentTiles
+     */
+    private final String standard2ColumnsOfDifferentTilesId = "Standard2ColumnsOfDifferentTiles";
+
+    /**
+     * This string contains the id of the commonGoal 2RowsOfDifferentTiles
+     */
+    private final String standard2RowsOfDifferentTilesId = "Standard2RowsOfDifferentTiles";
+
+    /**
      * Constructor for Standard2ColumnsRowOfDifferentTiles
      * @param column true if the goal is to have 2 columns of 6 different tiles, false if the goal is to have 2 rows of 6 different tiles
      */
@@ -28,11 +48,21 @@ public class Standard2ColumnsRowOfDifferentTiles extends GoalEvaluator {
     }
 
     /**
-     * @return the description of the goal
+     * {@inheritDoc}
+     * @return {@link #standard2ColumnsOfDifferentTilesDescription} or {@link #standard2RowsOfDifferentTilesDescription} based on {@link #column} value
      */
     @Override
     public String getDescription() {
-        return (column) ? "Two columns formed each from 6 different types of tiles" : "Two lines formed each from 5 different types of tiles";
+        return (column) ? standard2ColumnsOfDifferentTilesDescription : standard2RowsOfDifferentTilesDescription;
+    }
+
+    /**
+     * {@inheritDoc}
+     * @return {@link #standard2ColumnsOfDifferentTilesId} or {@link #standard2RowsOfDifferentTilesId} based on {@link #column} value
+     */
+    @Override
+    public String getId(){
+        return (column) ? standard2ColumnsOfDifferentTilesId : standard2RowsOfDifferentTilesId;
     }
 
     /**

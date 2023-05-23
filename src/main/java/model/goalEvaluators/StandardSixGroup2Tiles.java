@@ -11,14 +11,33 @@ import java.util.Arrays;
  * It is used by the CommonGoal class
  **/
 public class StandardSixGroup2Tiles extends GoalEvaluator {
+
     /**
-     * This method returns the description of the goal
-     *
-     * @return String
+     * This string contains the description of the commonGoal SixGroup2Tiles
+     */
+    private final String standardSixGroup2TilesDescription = "Six separate groups formed each from two adjacent tiles of the same type.";
+
+    /**
+     * This string contains the id of the commonGoal SixGroup2Tiles
+     */
+    private final String standardSixGroup2TilesId = "StandardSixGroup2Tiles";
+
+    /**
+     * {@inheritDoc}
+     * @return {@link #standardSixGroup2TilesDescription}
      */
     @Override
     public String getDescription() {
-        return "Six separate groups formed each\nfrom two adjacent tiles of the same type. The tiles of a group can\nbe different from those of another group.%n";
+        return standardSixGroup2TilesDescription;
+    }
+
+    /**
+     * {@inheritDoc}
+     * @return {@link #standardSixGroup2TilesId}
+     */
+    @Override
+    public String getId(){
+        return standardSixGroup2TilesId;
     }
 
     /**

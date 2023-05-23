@@ -2,7 +2,7 @@ import distibuted.interfaces.AppServer;
 import distibuted.ClientEndPoint;
 import distibuted.interfaces.ClientInterface;
 import distibuted.interfaces.ServerInterface;
-import distibuted.socket.middleware.ServerStub;
+import distibuted.socket.middleware.ClientSocketHandler;
 import view.CLI;
 
 import java.rmi.NotBoundException;
@@ -30,20 +30,25 @@ public class ProvaCLI {
                     }
                     case "s" -> {
                         try {
-                            app = new ServerStub("localhost", 1234);
+                            app = new ClientSocketHandler("localhost", 1234);
                             server = app.connect(client);
                             cli.printCommandLine("Connected with SOCKET", CLI.GREEN);
                         } catch (RemoteException e) {
                             printError("Unable to use SOCKET", cli);
                         }
                     }
-                    default -> printError("Wrong choise", cli);
+                    default -> printError("Wrong choice", cli);
                 }
             } while (server == null);
+
+            //TODO: choose between gui or cli
+
+
 
             cli.runLoginView(client, server);
 
             app.disconnect(client);
+            System.exit(0);
         }catch (RemoteException e){
             printError("Critical error, shutting down",cli);
         }

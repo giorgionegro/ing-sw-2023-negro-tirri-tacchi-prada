@@ -1,6 +1,7 @@
 package model.abstractModel;
 
 import model.Token;
+import modelView.PlayerInfo;
 import util.Observable;
 
 import java.util.List;
@@ -70,4 +71,10 @@ public abstract class Player extends Observable<Player.Event> {
      * @return the last error that player encountered during gameplay
      */
     public abstract String getReportedError();
+
+    /**
+     * TODO
+     * @return
+     */
+    public abstract PlayerInfo getInfo();
 }

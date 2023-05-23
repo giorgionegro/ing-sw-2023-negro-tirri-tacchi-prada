@@ -1,5 +1,6 @@
 package model;
 
+import modelView.UserInfo;
 import util.Observable;
 
 /**
@@ -76,5 +77,13 @@ public class User extends Observable<User.Event> {
      * */
     public String getReportedError(){
         return errorReport;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public UserInfo getInfo(){
+        return new UserInfo(status,errorReport);
     }
 }

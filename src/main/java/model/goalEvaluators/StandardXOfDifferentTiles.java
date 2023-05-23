@@ -9,15 +9,33 @@ import model.abstractModel.GoalEvaluator;
  * It is used by the CommonGoal class
  **/
 public class StandardXOfDifferentTiles extends GoalEvaluator {
+
     /**
-     * This method returns the description of the goal
-     *
-     * @return String
+     * This string contains the description of the commonGoal XOfDifferentTiles
+     */
+    private final String standardXOfDifferentTilesDescription = "Five tiles of the same type forming an X.";
+
+    /**
+     * This string contains the id of the commonGoal XOfDifferentTiles
+     */
+    private final String standardXOfDifferentTilesId = "StandardXOfDifferentTiles";
+
+    /**
+     * {@inheritDoc}
+     * @return {@link #standardXOfDifferentTilesDescription}
      */
     @Override
     public String getDescription() {
+        return standardXOfDifferentTilesDescription;
+    }
 
-        return "Five tiles of the same typem forming an X.";
+    /**
+     * {@inheritDoc}
+     * @return {@link #standardXOfDifferentTilesId}
+     */
+    @Override
+    public String getId(){
+        return standardXOfDifferentTilesId;
     }
 
     /**

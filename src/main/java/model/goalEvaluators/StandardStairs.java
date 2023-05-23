@@ -2,6 +2,7 @@ package model.goalEvaluators;
 
 import model.Tile;
 import model.abstractModel.GoalEvaluator;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
@@ -11,14 +12,33 @@ import java.util.Objects;
  * It is used by the CommonGoal class
  */
 public class StandardStairs extends GoalEvaluator {
+
     /**
-     * This method returns the description of the goal
-     *
-     * @return String
+     * This string contains the description of the commonGoal Stairs
+     */
+    private final String standardStairsDescription = "Five columns of increasing height or descending height.";
+
+    /**
+     * This string contains the id of the commonGoal Stairs
+     */
+    private final String standardStairsId = "StandardStairs";
+
+    /**
+     * {@inheritDoc}
+     * @return {@link #standardStairsDescription}
      */
     @Override
     public String getDescription() {
-        return "Five columns of increasing height or descending: starting from the first column\nleft or right, each successive column it must be formed by an extra tile.\nTiles can be of any type.%n";
+        return standardStairsDescription;
+    }
+
+    /**
+     * {@inheritDoc}
+     * @return {@link #standardStairsId}
+     */
+    @Override
+    public String getId(){
+        return standardStairsId;
     }
 
     /**
@@ -28,7 +48,7 @@ public class StandardStairs extends GoalEvaluator {
      * @return true if the player has at least 5 columns of increasing height or descending, false otherwise
      */
     @Override
-    public boolean evaluate(Tile[][] playerShelf) {
+    public boolean evaluate(Tile[] @NotNull [] playerShelf) {
         int numColumns = playerShelf[0].length;
         int numRows = playerShelf.length;
         for (int dir = 0; dir < 2; dir++) {
@@ -55,7 +75,7 @@ public class StandardStairs extends GoalEvaluator {
         return false;
     }
 
-    private int countTilesInColumn(Tile[][] playerShelf, int colIndex) {
+    private int countTilesInColumn(Tile[] @NotNull [] playerShelf, int colIndex) {
         int numRows = playerShelf.length;
         int counter = 0;
         for (int i = numRows - 1; i >= 0; i--) {

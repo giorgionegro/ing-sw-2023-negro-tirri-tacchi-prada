@@ -9,15 +9,33 @@ import model.abstractModel.GoalEvaluator;
  * It is used by the CommonGoal class
  **/
 public class StandardCorners extends GoalEvaluator {
+
     /**
-     * This method returns the description of the goal
-     *
-     * @return String
+     * This string contains the description of the commonGoal Corners
+     */
+    private final String standardCornersDescription = "4 tiles of the same type in the 4 corners of the library.";
+
+    /**
+     * This string contains the id of the commonGoal Corners
+     */
+    private final String standardCornersId = "StandardCorners";
+
+    /**
+     * {@inheritDoc}
+     * @return {@link #standardCornersDescription}
      */
     @Override
     public String getDescription() {
+        return standardCornersDescription;
+    }
 
-        return "4 tiles of the same type in the 4 corners of the library\n";
+    /**
+     * {@inheritDoc}
+     * @return {@link #standardCornersId}
+     */
+    @Override
+    public String getId(){
+        return standardCornersId;
     }
 
     /**

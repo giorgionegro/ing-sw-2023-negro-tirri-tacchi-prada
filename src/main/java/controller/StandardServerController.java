@@ -15,7 +15,6 @@ import modelView.LoginInfo;
 import modelView.NewGameInfo;
 import model.StandardGame;
 import model.abstractModel.Game;
-import modelView.UserInfo;
 import util.Observer;
 
 
@@ -43,19 +42,21 @@ public class StandardServerController implements ServerController, GameManagerCo
         newUser.addObserver(
                 (Observer<User, User.Event>) (o, arg) -> {
                     try{
-                        client.update(new UserInfo(o.getStatus(),o.getReportedError()),arg);
+                        client.update(o.getInfo(),arg);
                     } catch (RemoteException e) {
-                        throw new RuntimeException(e);
+                        e.printStackTrace();
+                       //throw new RuntimeException(e);
                     }
                 }
         );
         users.put(client, newUser);
 
+        System.err.println("UTENTE CONNESSO");
         return new ServerEndpoint(this,this);
     }
 
     @Override
-    public void disconnect(ClientInterface client) throws RemoteException {
+    public void disconnect(ClientInterface client){
         User user = users.remove(client);
         user.deleteObservers();
     }
@@ -70,6 +71,7 @@ public class StandardServerController implements ServerController, GameManagerCo
             this.gameControllers.get(info.gameId()).joinPlayer(client,info.playerId());
             User user = users.get(client);
             user.setStatus(User.Status.JOINED);
+            System.err.println("GIOCATORE JOIN");
         } catch (GameAccessDeniedException e) {
             users.get(client).reportError(e.getMessage());
         }
@@ -79,6 +81,7 @@ public class StandardServerController implements ServerController, GameManagerCo
     public void createGame(ClientInterface client, NewGameInfo gameInfo) throws RemoteException{
         try {
             createGame(gameInfo.gameId(),gameInfo.playerNumber());
+            System.err.println("GIOCO CREATO");
         } catch (GameAlreadyExistsException e) {
             users.get(client).reportError(e.getMessage());
         }

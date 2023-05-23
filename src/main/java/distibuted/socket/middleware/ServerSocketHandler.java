@@ -9,44 +9,13 @@ import modelView.*;
 import view.interfaces.*;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.rmi.RemoteException;
 
-public class ClientSkeleton implements ClientInterface {
+public class ServerSocketHandler extends SocketHandler<ServerInterface> implements ClientInterface {
 
-    private final ObjectOutputStream oos;
-    private final ObjectInputStream ois;
-
-    public ClientSkeleton(Socket socket) throws RemoteException {
-        try {
-            this.oos = new ObjectOutputStream(socket.getOutputStream());
-        } catch (IOException e) {
-            throw new RemoteException("Cannot create output stream", e);
-        }
-        try {
-            this.ois = new ObjectInputStream(socket.getInputStream());
-        } catch (IOException e) {
-            throw new RemoteException("Cannot create input stream", e);
-        }
-    }
-
-    public void waitForReceive(ServerInterface server) throws RemoteException {
-        try {
-            SocketObject no = (SocketObject) ois.readObject();
-            no.update(this, server);
-        } catch (IOException e) {
-            throw new RuntimeException(e);//TODO
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);//TODO
-        }
-    }
-
-    public synchronized void send(SocketObject o) throws IOException {
-        oos.writeObject(o);
-        oos.flush();
-        oos.reset();
+    public ServerSocketHandler(Socket socket){
+        super(socket);
     }
 
     @Override

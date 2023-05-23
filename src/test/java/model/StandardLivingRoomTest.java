@@ -532,4 +532,9 @@ class StandardLivingRoomTest {
         test.refillBoard();
         assertTrue(test.getBoard()[1][5] == Tile.EMPTY && test.getBoard()[0][4] != Tile.EMPTY);
     }
+    @Test
+    void getInfoTest(){
+        StandardLivingRoom test = new StandardLivingRoom(2);
+        assertTrue(Arrays.deepEquals(test.getBoard(), test.getInfo().board()));
+    }
 }

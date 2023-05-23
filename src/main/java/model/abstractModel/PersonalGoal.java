@@ -1,6 +1,7 @@
 package model.abstractModel;
 
 import model.Tile;
+import modelView.PersonalGoalInfo;
 import util.Observable;
 
 /**
@@ -44,4 +45,11 @@ public abstract class PersonalGoal extends Observable<PersonalGoal.Event> {
      * @return {@code true} if the given shelf representation match the goal requirements, {@code false} otherwise
      */
     public abstract boolean evaluate(Tile[][] playerShelf);
+
+
+    /**
+     * TODO
+     * @return
+     */
+    public abstract PersonalGoalInfo getInfo();
 }
