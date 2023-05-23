@@ -3,6 +3,7 @@ package model;
 import model.abstractModel.Shelf;
 import model.instances.StandardShelfInstance;
 import modelView.ShelfInfo;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -22,7 +23,7 @@ public class StandardShelf extends Shelf {
             Arrays.fill(a,Tile.EMPTY);
     }
 
-    public StandardShelf(StandardShelfInstance instance){
+    public StandardShelf(@NotNull StandardShelfInstance instance){
         this.tiles = instance.tiles();
     }
 
@@ -31,7 +32,7 @@ public class StandardShelf extends Shelf {
      * @return a 2d array representing the shelf
      */
     @Override
-    public Tile[][] getTiles() {
+    public Tile[] @NotNull [] getTiles() {
         return Arrays.stream(tiles).map(Tile[]::clone).toArray(Tile[][]::new);
     }
 
@@ -40,7 +41,7 @@ public class StandardShelf extends Shelf {
      * @param modifiedShelf the new representation of the shelf
      */
     @Override
-    public void setTiles(Tile[][] modifiedShelf) {
+    public void setTiles(Tile[] @NotNull [] modifiedShelf) {
         this.tiles = Arrays.stream(modifiedShelf).map(Tile[]::clone).toArray(Tile[][]::new);
         setChanged();
         notifyObservers(Event.SHELF_MODIFIED);
@@ -52,7 +53,7 @@ public class StandardShelf extends Shelf {
      * @return A {@link ShelfInfo} representing this object instance
      */
     @Override
-    public ShelfInfo getInfo(String playerId) {
+    public @NotNull ShelfInfo getInfo(String playerId) {
         return new ShelfInfo(playerId, getTiles());
     }
 
@@ -61,7 +62,7 @@ public class StandardShelf extends Shelf {
      * @return A {@link StandardShelfInstance} constructed using instance values
      */
     @Override
-    public Serializable getInstance(){
+    public @NotNull Serializable getInstance(){
         return new StandardShelfInstance(tiles);
     }
 }

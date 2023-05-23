@@ -2,6 +2,7 @@ package model.abstractModel;
 
 import model.Token;
 import modelView.CommonGoalInfo;
+import org.jetbrains.annotations.NotNull;
 import util.Observable;
 
 import java.util.Stack;
@@ -35,7 +36,7 @@ public abstract class CommonGoal extends Observable<CommonGoal.Event> implements
     /**
      * The token stack ({@link Stack} of {@link Token})
      */
-    protected final Stack<Token> tokenStack;
+    protected final @NotNull Stack<Token> tokenStack;
     /**
      * The goal evaluator associated to this common goal
      */
@@ -79,7 +80,7 @@ public abstract class CommonGoal extends Observable<CommonGoal.Event> implements
      * This method returns an {@link CommonGoalInfo} representing this object instance
      * @return An {@link CommonGoalInfo} representing this object instance
      */
-    public CommonGoalInfo getInfo(){
+    public @NotNull CommonGoalInfo getInfo(){
         return new CommonGoalInfo(evaluator.getId(), evaluator.getDescription(), getTopToken());
     }
 }

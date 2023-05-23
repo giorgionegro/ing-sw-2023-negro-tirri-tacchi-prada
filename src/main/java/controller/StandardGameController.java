@@ -8,6 +8,8 @@ import model.*;
 import model.abstractModel.*;
 import model.exceptions.*;
 import modelView.*;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import util.Observable;
 import util.Observer;
 
@@ -16,9 +18,9 @@ import java.util.*;
 
 public class StandardGameController implements GameController, LobbyController {
     private final Game game;
-    private final Map<ClientInterface, User> userAssociation;
+    private final @NotNull Map<ClientInterface, User> userAssociation;
 
-    private final Map<User,Player> playerAssociation;
+    private final @NotNull Map<User,Player> playerAssociation;
 
     /**
      * @param game game to be managed
@@ -36,10 +38,10 @@ public class StandardGameController implements GameController, LobbyController {
      * @param newClient client to be added
      * @return Player's Observer to be added
      */
-    private Observer<Player, Player.Event> getPlayerObserver(ClientInterface newClient) {
+    private @NotNull Observer<Player, Player.Event> getPlayerObserver(@NotNull ClientInterface newClient) {
         return new Observer<>() {
             @Override
-            public void update(Player o, Player.Event arg) {
+            public void update(@NotNull Player o, Player.Event arg) {
                 try {
                     newClient.update(o.getInfo(), arg);
                 } catch (RemoteException e) {
@@ -55,10 +57,10 @@ public class StandardGameController implements GameController, LobbyController {
      * @param newClient client to be added
      * @return Observer of the GameStatus to be added
      */
-    private Observer<Game, Game.Event> getGameObserver(ClientInterface newClient) {
+    private @NotNull Observer<Game, Game.Event> getGameObserver(@NotNull ClientInterface newClient) {
         return new Observer<>() {
             @Override
-            public void update(Game o, Game.Event arg) {
+            public void update(@NotNull Game o, Game.Event arg) {
                 try {
                     newClient.update(o.getInfo(), arg);
                 } catch (RemoteException e) {
@@ -75,10 +77,10 @@ public class StandardGameController implements GameController, LobbyController {
      * @return Observer of the CommonGoal to be added
      */
 
-    private Observer<CommonGoal, CommonGoal.Event> getCommonGoalObserver(ClientInterface newClient) {
+    private @NotNull Observer<CommonGoal, CommonGoal.Event> getCommonGoalObserver(@NotNull ClientInterface newClient) {
         return new Observer<>() {
             @Override
-            public void update(CommonGoal o, CommonGoal.Event arg) {
+            public void update(@NotNull CommonGoal o, CommonGoal.Event arg) {
                 try {
                     newClient.update(o.getInfo(), arg);
                 } catch (RemoteException e) {
@@ -95,10 +97,10 @@ public class StandardGameController implements GameController, LobbyController {
      * @return Observer of the LivingRoom to be added
      */
 
-    private Observer<LivingRoom, LivingRoom.Event> getLivingRoomObserver(ClientInterface newClient) {
+    private @NotNull Observer<LivingRoom, LivingRoom.Event> getLivingRoomObserver(@NotNull ClientInterface newClient) {
         return new Observer<>() {
             @Override
-            public void update(LivingRoom o, LivingRoom.Event arg) {
+            public void update(@NotNull LivingRoom o, LivingRoom.Event arg) {
                 try {
                     newClient.update(o.getInfo(), arg);
                 } catch (RemoteException e) {
@@ -115,10 +117,10 @@ public class StandardGameController implements GameController, LobbyController {
      * @return Observer of the PlayerChat to be added
      */
 
-    private Observer<PlayerChat, PlayerChat.Event> getPlayerChatObserver(ClientInterface newClient) {
+    private @NotNull Observer<PlayerChat, PlayerChat.Event> getPlayerChatObserver(@NotNull ClientInterface newClient) {
         return new Observer<>() {
             @Override
-            public void update(PlayerChat o, PlayerChat.Event arg) {
+            public void update(@NotNull PlayerChat o, PlayerChat.Event arg) {
                 try {
                     newClient.update(o.getInfo(), arg);
                 } catch (RemoteException e) {
@@ -135,10 +137,10 @@ public class StandardGameController implements GameController, LobbyController {
      * @return Observer of the PersonalGoal to be added
      */
 
-    private Observer<PersonalGoal, PersonalGoal.Event> getPersonalGoalObserver(ClientInterface newClient) {
+    private @NotNull Observer<PersonalGoal, PersonalGoal.Event> getPersonalGoalObserver(@NotNull ClientInterface newClient) {
         return new Observer<>() {
             @Override
-            public void update(PersonalGoal o, PersonalGoal.Event arg) {
+            public void update(@NotNull PersonalGoal o, PersonalGoal.Event arg) {
                 try {
                     newClient.update(o.getInfo(), arg);
                 } catch (RemoteException e) {
@@ -155,10 +157,10 @@ public class StandardGameController implements GameController, LobbyController {
      * @return Observer of the Shelf to be added
      */
 
-    private Observer<Shelf, Shelf.Event> getShelfObserver(ClientInterface newClient, Player joinedPlayer) {
+    private @NotNull Observer<Shelf, Shelf.Event> getShelfObserver(@NotNull ClientInterface newClient, @NotNull Player joinedPlayer) {
         return new Observer<>() {
             @Override
-            public void update(Shelf o, Shelf.Event arg) {
+            public void update(@NotNull Shelf o, Shelf.Event arg) {
                 try {
                     newClient.update(o.getInfo(joinedPlayer.getId()), arg);
                 } catch (RemoteException e) {
@@ -173,16 +175,16 @@ public class StandardGameController implements GameController, LobbyController {
      * Add player to the game with all necessary preparations
      *
      * @param newClient client that wants to join the game
-     * @param playerId  id of the player that wants to join the game
+     * @param info  login info of the player
      * @throws GameAccessDeniedException if the game is already ended or the player id already exists or the matchmaking is closed
      */
     @Override
-    public synchronized void joinPlayer(ClientInterface newClient, User newUser, String playerId) throws GameAccessDeniedException {
+    public synchronized void joinPlayer(@NotNull ClientInterface newClient, @NotNull User newUser, @NotNull LoginInfo info) throws GameAccessDeniedException {
         //Should we just Throw the different exceptions instead of catching them?
         try {
-            game.addPlayer(playerId);
+            game.addPlayer(info.playerId());
 
-            Player newPlayer = game.getPlayer(playerId);
+            Player newPlayer = game.getPlayer(info.playerId());
 
             addObservers(newClient, newPlayer);
 
@@ -191,7 +193,7 @@ public class StandardGameController implements GameController, LobbyController {
             /* Put newClient into known client */
             playerAssociation.put(newUser, newPlayer);
 
-            newUser.reportEvent(User.Status.JOINED, "Joined game: "+game.getGameId()+", you are:"+playerId,System.currentTimeMillis(), User.Event.GAME_JOINED);
+            newUser.reportEvent(User.Status.JOINED, "Joined game: "+game.getGameId()+", you are:"+info.playerId(), info.time(), User.Event.GAME_JOINED);
 
             /* If game is ready to be started we force the first */
             if (game.getGameStatus().equals(Game.GameStatus.STARTED)) {
@@ -244,7 +246,7 @@ public class StandardGameController implements GameController, LobbyController {
      * @param newClient new player's ClientInterface
      * @param newPlayer new player's Player object
      */
-    private void addObservers(ClientInterface newClient, Player newPlayer) {
+    private void addObservers(@NotNull ClientInterface newClient, @NotNull Player newPlayer) {
         /* Add Player status observer */
         newPlayer.addObserver(getPlayerObserver(newClient));
 
@@ -280,7 +282,7 @@ public class StandardGameController implements GameController, LobbyController {
      * @param client     new player's ClientInterface
      * @param playerMove player move to execute
      */
-    public synchronized void doPlayerMove(ClientInterface client, PlayerMoveInfo playerMove) {
+    public synchronized void doPlayerMove(ClientInterface client, @Nullable PlayerMoveInfo playerMove) {
         try {
             /* If we receive a request from an invalid client we discard it */
             if (!userAssociation.containsKey(client))
@@ -374,7 +376,7 @@ public class StandardGameController implements GameController, LobbyController {
      * @param client     new player's ClientInterface
      * @param newMessage message to send
      */
-    public synchronized void sendMessage(ClientInterface client, Message newMessage) {
+    public synchronized void sendMessage(ClientInterface client, @NotNull Message newMessage) {
         try {
             if (!userAssociation.containsKey(client))
                 throw new IllegalArgumentException("User not allowed");
@@ -406,7 +408,7 @@ public class StandardGameController implements GameController, LobbyController {
      * @param pickedTiles list of picked tiles
      * @return true if tiles are different, false otherwise
      */
-    private boolean areTilesDifferent(List<PickedTile> pickedTiles) {
+    private boolean areTilesDifferent(@NotNull List<PickedTile> pickedTiles) {
         for (int i = 0; i < pickedTiles.size() - 2; i++) {
             for (int j = i + 1; j < pickedTiles.size() - 1; j++) {
                 if (pickedTiles.get(i).row() == pickedTiles.get(j).row())
@@ -424,7 +426,7 @@ public class StandardGameController implements GameController, LobbyController {
      * @param shelf  player shelf
      * @return number of free spaces in the column
      */
-    private int freeShelfColumnSpaces(int column, Tile[][] shelf) {
+    private int freeShelfColumnSpaces(int column, Tile[] @NotNull [] shelf) {
         int spaces = 0;
         for (Tile[] row : shelf) {
             if (row[column] == Tile.EMPTY)
@@ -439,7 +441,7 @@ public class StandardGameController implements GameController, LobbyController {
      * @param shelf  player shelf
      * @param tile   tile to insert
      */
-    private void insertTileInShelf(int column, Tile[][] shelf, Tile tile) {
+    private void insertTileInShelf(int column, Tile[] @NotNull [] shelf, Tile tile) {
         int row = shelf.length - 1;
         while (shelf[row][column] != Tile.EMPTY)
             row--;
@@ -453,7 +455,7 @@ public class StandardGameController implements GameController, LobbyController {
      * @param board  board to check
      * @return true if tile is pickable, false otherwise
      */
-    private boolean isTilePickable(int row, int column, Tile[][] board) {
+    private boolean isTilePickable(int row, int column, Tile[] @NotNull [] board) {
         if (row < 0 || column < 0 || row > board.length - 1 || column > board[row].length - 1 || board[row][column].equals(Tile.EMPTY) || board[row][column] == null)
             return false;
 
@@ -470,7 +472,7 @@ public class StandardGameController implements GameController, LobbyController {
      * @param shelf shelf to check
      * @return true if shelf is full, false otherwise
      */
-    private boolean evaluateFullShelf(Tile[][] shelf) {
+    private boolean evaluateFullShelf(Tile[] @NotNull [] shelf) {
         for (Tile[] row : shelf)
             for (Tile tile : row)
                 if (tile == Tile.EMPTY)
@@ -479,7 +481,7 @@ public class StandardGameController implements GameController, LobbyController {
         return true;
     }
 
-    private boolean areTilesAligned(List<PickedTile> pickedTiles){
+    private boolean areTilesAligned(@NotNull List<PickedTile> pickedTiles){
 
         boolean rowAligned = true;
         boolean colAligned = true;

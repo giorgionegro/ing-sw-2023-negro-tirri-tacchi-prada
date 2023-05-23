@@ -1,6 +1,8 @@
 package distibuted.socket.middleware;
 
 import distibuted.socket.middleware.interfaces.SocketObject;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -13,16 +15,16 @@ public abstract class SocketHandler<Interface>{
     private ObjectOutputStream oos;
     private ObjectInputStream ois;
 
-    private String ip = null;
+    private @Nullable String ip = null;
     private int port = 0;
-    private Socket socket = null;
+    private @Nullable Socket socket = null;
 
-    public SocketHandler(String ip, int port){
+    public SocketHandler(@NotNull String   ip, int port){
         this.ip = ip;
         this.port = port;
     }
 
-    public SocketHandler(Socket socket){
+    public SocketHandler( @NotNull Socket socket){
         this.socket = socket;
     }
 

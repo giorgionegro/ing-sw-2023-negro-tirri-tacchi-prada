@@ -4,6 +4,7 @@ import model.abstractModel.PlayerChat;
 import model.abstractModel.Message;
 import model.instances.StandardPlayerChatInstance;
 import modelView.PlayerChatInfo;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ public class StandardPlayerChat extends PlayerChat {
         this.messages = new ArrayList<>();
     }
 
-    public StandardPlayerChat(StandardPlayerChatInstance instance){
+    public StandardPlayerChat(@NotNull StandardPlayerChatInstance instance){
         this.messages = instance.messages();
     }
 
@@ -48,7 +49,7 @@ public class StandardPlayerChat extends PlayerChat {
      * @return a copy of {@link #messages}
      */
     @Override
-    public List<Message> getMessages() {
+    public @NotNull List<Message> getMessages() {
         return new ArrayList<>(this.messages);
     }
 
@@ -57,7 +58,7 @@ public class StandardPlayerChat extends PlayerChat {
      * @return A {@link PlayerChatInfo} representing this object instance
      */
     @Override
-    public PlayerChatInfo getInfo() {
+    public @NotNull PlayerChatInfo getInfo() {
         return new PlayerChatInfo(getMessages());
     }
 
@@ -66,7 +67,7 @@ public class StandardPlayerChat extends PlayerChat {
      * @return A {@link model.instances.StandardPlayerInstance} constructed using instance values
      */
     @Override
-    public Serializable getInstance() {
+    public @NotNull Serializable getInstance() {
         return new StandardPlayerChatInstance(messages);
     }
 }

@@ -1,6 +1,7 @@
 package model;
 
 import modelView.UserInfo;
+import org.jetbrains.annotations.NotNull;
 import util.Observable;
 
 /**
@@ -74,6 +75,9 @@ public class User extends Observable<User.Event> {
         notifyObservers(evt);
     }
 
+
+
+
     /**
      * This method returns the last error that user encountered during server interaction
      * @return {@link #eventMessage}
@@ -86,7 +90,7 @@ public class User extends Observable<User.Event> {
      * This method returns a {@link UserInfo} representing this object instance
      * @return A {@link UserInfo} representing this object instance
      */
-    public UserInfo getInfo(){
+    public @NotNull UserInfo getInfo(){
         return new UserInfo(status,eventMessage,interactionTime);
     }
 }

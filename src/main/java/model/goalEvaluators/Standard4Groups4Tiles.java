@@ -2,6 +2,7 @@ package model.goalEvaluators;
 
 import model.Tile;
 import model.abstractModel.GoalEvaluator;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 
@@ -27,7 +28,7 @@ public class Standard4Groups4Tiles extends GoalEvaluator {
      * @return {@link #standard4Groups4TilesDescription}
      */
     @Override
-    public String getDescription() {
+    public @NotNull String getDescription() {
         return standard4Groups4TilesDescription;
     }
 
@@ -36,7 +37,7 @@ public class Standard4Groups4Tiles extends GoalEvaluator {
      * @return {@link #standard4Groups4TilesId}
      */
     @Override
-    public String getId(){
+    public @NotNull String getId(){
         return standard4Groups4TilesId;
     }
 
@@ -45,7 +46,7 @@ public class Standard4Groups4Tiles extends GoalEvaluator {
      * @return true if the player has at least 4 groups of 4 tiles of the same type
      */
     @Override
-    public boolean evaluate(Tile[][] playerShelf) {
+    public boolean evaluate(Tile[] @NotNull [] playerShelf) {
         //clone the array
         Tile[][] clone = Arrays.stream(playerShelf).map(Tile[]::clone).toArray(Tile[][]::new);
         int counter = 0; // counts the number of groups of 4 tiles of the same type

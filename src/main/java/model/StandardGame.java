@@ -8,6 +8,8 @@ import model.instances.StandardGameInstance;
 import model.instances.StandardLivingRoomInstance;
 import model.instances.StandardPlayerInstance;
 import modelView.GameInfo;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.Serializable;
 import java.util.*;
@@ -21,18 +23,18 @@ public class StandardGame extends Game {
     /**
      * Players that are playing in this game (map of playerId -> Player)
      */
-    private final Map<String, Player> players;
+    private final @NotNull Map<String, Player> players;
 
     private int joinedPlayer;
 
     /**
      * Common goals associated to this game (list of CommonGoal)
      */
-    private final List<CommonGoal> commonGoals;
+    private final @NotNull List<CommonGoal> commonGoals;
     /**
      * Living room associated to this game
      */
-    private final LivingRoom livingRoom;
+    private final @NotNull LivingRoom livingRoom;
 
     /**
      * Id of this game
@@ -47,12 +49,12 @@ public class StandardGame extends Game {
      * <p>
      * Top Player of the list (last element) is assumed to be the player that currently has the turn
      */
-    private final List<Player> playerTurnQueue;
+    private final @NotNull List<Player> playerTurnQueue;
 
     /**
      * First player that ever had the turn, it is assumed to be also the first player of every round
      */
-    private Player firstPlayer = null;
+    private @Nullable Player firstPlayer = null;
 
     /**
      * Signal of last round of turns
@@ -69,7 +71,7 @@ public class StandardGame extends Game {
      */
     private final int maxPlayerNumber;
 
-    private final Stack<List<PersonalGoal>> personalGoals;
+    private final @NotNull Stack<List<PersonalGoal>> personalGoals;
 
     /**
      * Construct an {@link StandardGame} instance with given id and player number
@@ -101,7 +103,7 @@ public class StandardGame extends Game {
      * Construct a {@link StandardGame} using the given instance
      * @param instance the {@link StandardGame} instance
      */
-    public StandardGame(StandardGameInstance instance){
+    public StandardGame(@NotNull StandardGameInstance instance){
         this.joinedPlayer = 0;
         this.players = new HashMap<>();
         instance.players().forEach((s, standardPlayerInstance) -> players.put(s, new StandardPlayer((StandardPlayerInstance) standardPlayerInstance)));
@@ -203,7 +205,7 @@ public class StandardGame extends Game {
      * @return a copy of {@link #commonGoals}
      */
     @Override
-    public List<CommonGoal> getCommonGoals() {
+    public @NotNull List<CommonGoal> getCommonGoals() {
         return new ArrayList<>(commonGoals);
     }
 
@@ -212,7 +214,7 @@ public class StandardGame extends Game {
      * @return {@link #livingRoom}
      */
     @Override
-    public LivingRoom getLivingRoom() {
+    public @NotNull LivingRoom getLivingRoom() {
         return livingRoom;
     }
 
@@ -282,7 +284,7 @@ public class StandardGame extends Game {
      * @return A {@link StandardGameInstance} constructed using instance values
      */
     @Override
-    public Serializable getInstance(){
+    public @NotNull Serializable getInstance(){
         Map<String, Serializable> playersInstance = new HashMap<>();
         players.forEach((s, player) -> playersInstance.put(s,player.getInstance()));
 
@@ -313,7 +315,7 @@ public class StandardGame extends Game {
      * @param nPlayers number of players in the game
      * @return stack containing one of each type of common goal
      */
-    private ArrayList<CommonGoal> setCommonGoals(int nPlayers){
+    private @NotNull ArrayList<CommonGoal> setCommonGoals(int nPlayers){
         Stack<StandardCommonGoal> allGoals = new Stack<>();
 
         allGoals.add(new StandardCommonGoal(nPlayers, new Standard2ColumnsRowOfDifferentTiles(false)));
@@ -343,7 +345,7 @@ public class StandardGame extends Game {
      * this method return stack containing lists of all the standard personal goals
      * @return stack containing lists of all the standard personal goals
      */
-    private Stack<List<PersonalGoal>> setPersonalGoals(){
+    private @NotNull Stack<List<PersonalGoal>> setPersonalGoals(){
         Stack<List<PersonalGoal>> result = new Stack<>();
         result.add(createPersonalGoal(new Tile[]{Tile.PLANTS_1, Tile.FRAMES_1, Tile.CATS_1, Tile.BOOKS_1, Tile.GAMES_1, Tile.TROPHIES_1}, new int[]{0,0,1,2,3,5}, new int[]{0,2,4,3,1,2}));
         result.add(createPersonalGoal(new Tile[]{Tile.PLANTS_1, Tile.CATS_1, Tile.GAMES_1, Tile.BOOKS_1, Tile.TROPHIES_1, Tile.FRAMES_1}, new int[]{1,2,2,3,4,5}, new int[]{1,0,2,4,3,4}));
@@ -368,7 +370,7 @@ public class StandardGame extends Game {
      * @param cols array of column position of each Tile
      * @return ArrayList representing a standard personal goal
      */
-    private ArrayList<PersonalGoal> createPersonalGoal(Tile[] tiles, int[] rows, int[] cols ){
+    private @NotNull ArrayList<PersonalGoal> createPersonalGoal(Tile @NotNull [] tiles, int[] rows, int[] cols ){
         ArrayList<PersonalGoal> personalGoal = new ArrayList<>();
         for(int i = 0; i < tiles.length; i++){
             personalGoal.add(new StandardPersonalGoal(tiles[i], rows[i], cols[i]));
@@ -381,7 +383,7 @@ public class StandardGame extends Game {
      * @return An {@link GameInfo} representing this object instance
      */
     @Override
-    public GameInfo getInfo(){
+    public @NotNull GameInfo getInfo(){
         Map<String, Integer> points = new HashMap<>();
         players.forEach((s, player) -> {
             /*  Points earned by each player are the sum of points earned by
@@ -401,7 +403,7 @@ public class StandardGame extends Game {
 
 
 
-    private int getPersonalGoalPoints(List<PersonalGoal> personalGoals){
+    private int getPersonalGoalPoints(@NotNull List<PersonalGoal> personalGoals){
         int achieved = 0;
         for(PersonalGoal p : personalGoals)
             if(p.isAchieved())
@@ -418,7 +420,7 @@ public class StandardGame extends Game {
         };
     }
 
-    private int getCommonGoalPoints(List<Token> tokens){
+    private int getCommonGoalPoints(@NotNull List<Token> tokens){
         int ris = 0;
 
         for(Token t : tokens)
@@ -427,7 +429,7 @@ public class StandardGame extends Game {
         return ris;
     }
 
-    private int getShelfTilesGroupsPoints(Tile[][] shelf){
+    private int getShelfTilesGroupsPoints(Tile[] @NotNull [] shelf){
         int ris = 0;
 
         boolean[][] checked = new boolean[shelf.length][shelf[0].length];
@@ -454,7 +456,7 @@ public class StandardGame extends Game {
         return ris;
     }
 
-    private int depthSearch(int i, int j, Tile[][] shelf, boolean[][] checked, String tileColor){
+    private int depthSearch(int i, int j, Tile[][] shelf, boolean[] @NotNull [] checked, String tileColor){
         if(i<0 || i>=checked.length || j<0 || j>= checked[0].length)
             return 0;
 

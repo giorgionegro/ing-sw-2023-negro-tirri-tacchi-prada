@@ -9,6 +9,7 @@ import model.abstractModel.Message;
 import modelView.LoginInfo;
 import modelView.NewGameInfo;
 import modelView.PlayerMoveInfo;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
@@ -24,7 +25,7 @@ public class ClientSocketHandler extends SocketHandler<ClientInterface> implemen
     ////APP SERVER//////////////////
 
     @Override
-    public synchronized ServerInterface connect(ClientInterface client) throws RemoteException {
+    public synchronized @NotNull ServerInterface connect(ClientInterface client) throws RemoteException {
         super.open();
 
         receiverLoop = new Thread(()->{

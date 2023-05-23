@@ -3,6 +3,7 @@ package model;
 import model.abstractModel.PersonalGoal;
 import model.instances.StandardPersonalGoalInstance;
 import modelView.PersonalGoalInfo;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -43,7 +44,7 @@ public  class StandardPersonalGoal extends PersonalGoal {
         this.achieved = false;
     }
 
-    public StandardPersonalGoal(StandardPersonalGoalInstance instance){
+    public StandardPersonalGoal(@NotNull StandardPersonalGoalInstance instance){
         this.tile = instance.tile();
         this.row = instance.row();
         this.column = instance.column();
@@ -56,7 +57,7 @@ public  class StandardPersonalGoal extends PersonalGoal {
      * @return a Matrix with the description of the personal Goal
      */
     @Override
-    public Tile[][] getDescription() {
+    public Tile[] @NotNull [] getDescription() {
         //shelf dimension 6x5
         Tile[][] ShelfPersonalGoal = new Tile[6][5];
         //fill the shelf with empty tiles
@@ -93,7 +94,7 @@ public  class StandardPersonalGoal extends PersonalGoal {
      * @return true if the player achieved the goal, false otherwise.
      */
     @Override
-    public boolean evaluate(model.Tile[][] playerShelf) {
+    public boolean evaluate(model.Tile[] @NotNull [] playerShelf) {
         if(playerShelf.length < this.row && playerShelf[0].length < this.column){
             throw new IndexOutOfBoundsException("Shelf not big enough, cannot achieved the goal");
         }
@@ -108,7 +109,7 @@ public  class StandardPersonalGoal extends PersonalGoal {
      * @return A {@link PersonalGoalInfo} representing this object instance
      */
     @Override
-    public PersonalGoalInfo getInfo() {
+    public @NotNull PersonalGoalInfo getInfo() {
         return new PersonalGoalInfo(achieved, getDescription());
     }
 
@@ -117,7 +118,7 @@ public  class StandardPersonalGoal extends PersonalGoal {
      * @return A {@link StandardPersonalGoalInstance} constructed using instance values
      */
     @Override
-    public Serializable getInstance() {
+    public @NotNull Serializable getInstance() {
         return new StandardPersonalGoalInstance(tile,row,column,achieved);
     }
 }

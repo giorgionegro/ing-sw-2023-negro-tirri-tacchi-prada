@@ -3,6 +3,7 @@ package model;
 import model.abstractModel.LivingRoom;
 import model.instances.StandardLivingRoomInstance;
 import modelView.LivingRoomInfo;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
 import java.util.*;
@@ -40,7 +41,7 @@ public class StandardLivingRoom extends LivingRoom {
      * Construct a {@link StandardLivingRoom} using the given instance
      * @param instance The {@link StandardLivingRoom} instance
      */
-    public StandardLivingRoom(StandardLivingRoomInstance instance){
+    public StandardLivingRoom(@NotNull StandardLivingRoomInstance instance){
         this.board = instance.board();
         this.bag = instance.bag();
         this.numberOfPlayers = instance.numberOfPlayers();
@@ -51,7 +52,7 @@ public class StandardLivingRoom extends LivingRoom {
      * @return a 2D array of Tiles representing the game board
      */
     @Override
-    public Tile[][] getBoard() {
+    public Tile[] @NotNull [] getBoard() {
         return Arrays.stream(board).map(Tile[]::clone).toArray(Tile[][]::new);
     }
 
@@ -60,7 +61,7 @@ public class StandardLivingRoom extends LivingRoom {
      * @param modifiedBoard a 2D array of Tiles
      */
     @Override
-    public void setBoard(Tile[][] modifiedBoard) {
+    public void setBoard(Tile[] @NotNull [] modifiedBoard) {
         //TODO: check modifiedBoard is valid (correct empty spaces in relation to number of Players)
         board = Arrays.stream(modifiedBoard).map(Tile[]::clone).toArray(Tile[][]::new);
         setChanged();
@@ -85,7 +86,7 @@ public class StandardLivingRoom extends LivingRoom {
      * @return An {@link LivingRoomInfo} representing this object instance
      */
     @Override
-    public LivingRoomInfo getInfo(){
+    public @NotNull LivingRoomInfo getInfo(){
         return new LivingRoomInfo(getBoard());
     }
 
@@ -94,7 +95,7 @@ public class StandardLivingRoom extends LivingRoom {
      * @return A {@link StandardLivingRoomInstance} constructed using instance values
      */
     @Override
-    public Serializable getInstance(){
+    public @NotNull Serializable getInstance(){
         return new StandardLivingRoomInstance(board,bag,numberOfPlayers);
     }
 
@@ -110,7 +111,7 @@ public class StandardLivingRoom extends LivingRoom {
      * load the game bag using {@link #initializeBag(Stack)}
      * @return full stack of Tiles representing the game bag
      */
-    private Stack<Tile> loadBag(){
+    private @NotNull Stack<Tile> loadBag(){
         Stack<Tile> bag = new Stack<>();
         initializeBag(bag);
         return bag;
@@ -267,7 +268,7 @@ public class StandardLivingRoom extends LivingRoom {
      * and then shuffles the Tiles so that they're in random order
      * @param initialBag the stack of Tiles representing the bag
      */
-    private void initializeBag(Stack<Tile> initialBag){
+    private void initializeBag(@NotNull Stack<Tile> initialBag){
         fillBag7(initialBag);
         fillBag8(initialBag);
         Collections.shuffle(initialBag);
@@ -277,7 +278,7 @@ public class StandardLivingRoom extends LivingRoom {
      * fills the bag with 8 of one type of one color Tile foreach color of Tile
      * @param bag stack of Tiles representing the game bag
      */
-    private void fillBag8(Stack<Tile> bag){
+    private void fillBag8(@NotNull Stack<Tile> bag){
         for(int i=0; i<8; i++){
             bag.push(Tile.BOOKS_1);
             bag.push(Tile.CATS_1);
@@ -292,7 +293,7 @@ public class StandardLivingRoom extends LivingRoom {
      * fills the bag with 7 of two types of one color Tile foreach color of Tile
      * @param bag stack of Tiles representing the game bag
      */
-    private void fillBag7(Stack<Tile> bag){
+    private void fillBag7(@NotNull Stack<Tile> bag){
         for(int i=0; i<7; i++){
             bag.push(Tile.BOOKS_2);
             bag.push(Tile.BOOKS_3);

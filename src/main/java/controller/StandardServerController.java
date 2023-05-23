@@ -15,6 +15,7 @@ import modelView.LoginInfo;
 import modelView.NewGameInfo;
 import model.StandardGame;
 import model.abstractModel.Game;
+import org.jetbrains.annotations.NotNull;
 import util.Observer;
 
 import java.rmi.RemoteException;
@@ -29,9 +30,9 @@ import java.util.concurrent.Executors;
 public class StandardServerController extends UnicastRemoteObject implements ServerController, GameManagerController, AppServer{
 
     private static final ExecutorService executorService = Executors.newCachedThreadPool();
-    private final Map<ClientInterface, User> users;
-    private final Map<User,StandardGameController> activeUsers;
-    private final Map<String, StandardGameController> gameControllers;
+    private final @NotNull Map<ClientInterface, User> users;
+    private final @NotNull Map<User,StandardGameController> activeUsers;
+    private final @NotNull Map<String, StandardGameController> gameControllers;
 
     public StandardServerController() throws RemoteException {
         super();
@@ -43,11 +44,11 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
     ///APP SERVER//////////////////////////////
 
     @Override
-    public ServerInterface connect(ClientInterface client) throws RemoteException {
+    public @NotNull ServerInterface connect(@NotNull ClientInterface client) throws RemoteException {
         User user = new User();
         user.addObserver(new Observer<User,User.Event>() {
             @Override
-            public void update(User o, User.Event arg) {
+            public void update(@NotNull User o, User.Event arg) {
                 try {
                     client.update(o.getInfo(), arg);
                 } catch (RemoteException e) {
@@ -90,7 +91,7 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
     ///SERVER CONTROLLER//////////////////
 
     @Override
-    public void joinGame(ClientInterface client, LoginInfo info) throws RemoteException {
+    public void joinGame(@NotNull ClientInterface client, @NotNull LoginInfo info) throws RemoteException {
         try{
             if(!this.gameControllers.containsKey(info.gameId()))
                 throw new GameAccessDeniedException("Game does not exists");
@@ -99,10 +100,8 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
 
             if(user.getStatus()== User.Status.JOINED)
                 throw new GameAccessDeniedException("User already joined");
-
             StandardGameController gameController = this.gameControllers.get(info.gameId());
-
-            gameController.joinPlayer(client, user, info.playerId());
+            gameController.joinPlayer(client, user, info);
 
             activeUsers.put(user,gameController);
 
@@ -129,7 +128,7 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
     }
 
     @Override
-    public void createGame(ClientInterface client, NewGameInfo gameInfo) throws RemoteException{
+    public void createGame(ClientInterface client, @NotNull NewGameInfo gameInfo) throws RemoteException{
         try {
             createGame(gameInfo.gameId(),gameInfo.playerNumber());
             users.get(client).reportEvent(User.Status.NOT_JOINED,"Game created",gameInfo.time(),  User.Event.GAME_CREATED);

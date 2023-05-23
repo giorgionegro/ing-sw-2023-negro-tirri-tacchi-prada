@@ -3,6 +3,7 @@ import distibuted.interfaces.AppServer;
 import distibuted.interfaces.ClientInterface;
 import distibuted.interfaces.ServerInterface;
 import distibuted.socket.middleware.ClientSocketHandler;
+import org.jetbrains.annotations.Nullable;
 import view.CLI;
 import view.interfaces.UI;
 
@@ -12,9 +13,9 @@ import java.rmi.registry.LocateRegistry;
 
 public class Client {
 
-    UI ui;
-    AppServer server;
-    ServerInterface serverEndpoint;
+    final UI ui;
+    @Nullable AppServer server;
+    @Nullable ServerInterface serverEndpoint;
 
     public static void main(String[] args){
         //TODO check on args

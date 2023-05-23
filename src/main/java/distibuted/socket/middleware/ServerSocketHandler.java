@@ -6,6 +6,7 @@ import distibuted.socket.middleware.interfaces.SocketObject;
 import model.User;
 import model.abstractModel.*;
 import modelView.*;
+import org.jetbrains.annotations.Nullable;
 import view.interfaces.*;
 
 import java.io.IOException;
@@ -19,7 +20,7 @@ public class ServerSocketHandler extends SocketHandler<ServerInterface> implemen
     }
 
     @Override
-    public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
+    public void update(CommonGoalInfo o, @Nullable CommonGoal.Event evt) throws RemoteException {
         try{
             send((SocketObject) (sender, receiver) -> {
                 try {
