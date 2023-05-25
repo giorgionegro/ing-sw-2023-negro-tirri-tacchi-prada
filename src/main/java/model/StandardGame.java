@@ -477,4 +477,6 @@ public class StandardGame extends Game {
                 + depthSearch(i, j+1, shelf, checked, tileColor)
                 + depthSearch(i, j-1, shelf, checked, tileColor);
     }
+
+
 }

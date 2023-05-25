@@ -2,6 +2,7 @@ package model;
 
 import model.abstractModel.CommonGoal;
 import model.abstractModel.PersonalGoal;
+import model.exceptions.GameEndedException;
 import model.exceptions.MatchmakingClosedException;
 import model.exceptions.PlayerAlreadyExistsException;
 import model.exceptions.PlayerNotExistsException;
@@ -78,11 +79,35 @@ class StandardGameTest {
     }
 
     @Test
-    void getTurnPlayerId() {
+    void getTurnPlayerIdTest() throws GameEndedException {
+        ArrayList<StandardPlayer> players = new ArrayList<>();
+        List<PersonalGoal> obb = new ArrayList<>();
+        players.add(new StandardPlayer("Rebecca", obb));
+        players.add(new StandardPlayer("Enrico", obb));
+        players.add(new StandardPlayer("JJ", obb));
+
+        // Creo una coda di turni di gioco e aggiungo giocatori
+        List<StandardPlayer> playerTurnQueue = new ArrayList<>();
+        playerTurnQueue.addAll(players);
+
+        // Creo un gioco e setto la coda dei turni di gioco
+        StandardGame gameTest = new StandardGame("123", 3);
+        //gameTest.setTurnQueue(playerTurnQueue); //TODO COME FACCIO A SETTARE IL TURNO DI UN GIOCATORE PER TESTARE?
+
+        // Verifico che il giocatore corretto sia restituito
+        assertEquals("Rebecca", gameTest.getTurnPlayerId());
     }
+
+
 
     @Test
     void getGameStatus() {
+        StandardGame game = new StandardGame("123", 2);
+        //TODO StandardGame.GameStatus expectedStatus = StandardGame.GameStatus.IN_PROGRESS;
+        //game.setStatus(expectedStatus);
+
+        // Verifichiamo che lo stato restituito dal metodo corrisponde allo stato atteso
+       // assertEquals(expectedStatus, game.getGameStatus());
     }
 
     @Test
