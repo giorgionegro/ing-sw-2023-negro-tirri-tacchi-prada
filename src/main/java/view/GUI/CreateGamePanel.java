@@ -1,21 +1,37 @@
 package view.GUI;
 
+import distibuted.interfaces.ClientInterface;
+import distibuted.interfaces.ServerInterface;
+import model.User;
+import modelView.NewGameInfo;
+import modelView.UserInfo;
+import view.ResourceProvider;
+import view.TimedLock;
+import view.interfaces.UserView;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.rmi.RemoteException;
 
-public class CreateGamePanel extends JPanel implements ActionListener {
-    Image CreateGame;
-    JButton PlayButton;
+public class CreateGamePanel extends JPanel implements ActionListener, UserView {
+    ImageIcon CreateGame;
+    JButton createButton;
+    JTextField GameId;
+    JComboBox<Integer> comboBox;
     private final ActionListener listener;
-    public CreateGamePanel(ActionListener listener){
+    private final ServerInterface serverInterface;
+    private final ClientInterface clientInterface;
+
+    public CreateGamePanel(ActionListener listener, ServerInterface serverInterface, ClientInterface clientInterface){
         this.listener = listener;
-        CreateGame = new ImageIcon (this.getClass().getResource("/desktop.png").getPath()).getImage();
-        ImageIcon button = new ImageIcon(GUI.class.getResource("/img.png").getPath());
-        ImageIcon buttonIdG = new ImageIcon(GUI.class.getResource("/GameID.png").getPath());
-        ImageIcon buttonIdP = new ImageIcon(GUI.class.getResource("/PlayerID.png").getPath());
-        ImageIcon buttonIdN = new ImageIcon(GUI.class.getResource("/nplayers.png").getPath());
+        this.serverInterface = serverInterface;
+        this.clientInterface = clientInterface;
+        CreateGame = new ImageIcon (ResourceProvider.getResourcePath()+"/desktop.png");
+        ImageIcon button = new ImageIcon(ResourceProvider.getResourcePath()+"/img.png");
+        ImageIcon buttonIdG = new ImageIcon(ResourceProvider.getResourcePath()+"/GameID.png");
+        ImageIcon buttonIdN = new ImageIcon(ResourceProvider.getResourcePath()+"/nplayers.png");
         Font font1 = new Font("Century", Font.BOLD, 24);
 
 
@@ -32,20 +48,7 @@ public class CreateGamePanel extends JPanel implements ActionListener {
         ButtonsCreatePanel.setBackground(new Color(0,0,0));
         ButtonsCreatePanel.setLayout(new GridBagLayout());
 
-
-
-        JTextField PlayerId = new JTextField();
-        PlayerId.setPreferredSize(new Dimension(150,40));
-        JLabel PlayerIdField = new JLabel() {
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                g.drawImage(buttonIdP.getImage(), 0, 0, getWidth(), getHeight(), null);
-            }
-        };
-
-        PlayerIdField.setPreferredSize(new Dimension(165,41));
-
-        JTextField GameId = new JTextField();
+        GameId = new JTextField();
         GameId.setPreferredSize(new Dimension(150,40));
         JLabel GameIdField = new JLabel() {
             protected void paintComponent(Graphics g) {
@@ -57,8 +60,8 @@ public class CreateGamePanel extends JPanel implements ActionListener {
         GameIdField.setPreferredSize(new Dimension(165,41));
 
 
-        String[] nPlayers = {"2", "3", "4"};
-        JComboBox<String> comboBox = new JComboBox<>(nPlayers);
+        Integer[] nPlayers = {2,3,4};
+        comboBox = new JComboBox<>(nPlayers);
         comboBox.setPreferredSize(new Dimension(150,40));
 
 
@@ -72,17 +75,13 @@ public class CreateGamePanel extends JPanel implements ActionListener {
         NumberIdField.setPreferredSize(new Dimension(190,41));
 
 
-        PlayButton= new JButton();
-        PlayButton.setIcon(button);
+        createButton = new JButton();
+        createButton.setIcon(button);
         JLabel PlayButtonLabel = new JLabel("CREATE");
         PlayButtonLabel.setFont(font1);
-        PlayButton.add(PlayButtonLabel);
+        createButton.add(PlayButtonLabel);
 
-        ButtonsCreatePanel.add(PlayerIdField,c);
-        c.gridx++;
-        ButtonsCreatePanel.add(PlayerId,c);
-        c.gridx--;
-        c.gridy++;
+
         ButtonsCreatePanel.add(GameIdField,c);
         c.gridx++;
         ButtonsCreatePanel.add(GameId,c);
@@ -92,9 +91,9 @@ public class CreateGamePanel extends JPanel implements ActionListener {
         c.gridx++;
         ButtonsCreatePanel.add(comboBox, c);
         c.gridy++;
-        ButtonsCreatePanel.add(PlayButton,c);
+        ButtonsCreatePanel.add(createButton,c);
 
-        PlayButton.addActionListener(this);
+        createButton.addActionListener(this);
 
         this.add(ButtonsCreatePanel);
 
@@ -114,14 +113,60 @@ public class CreateGamePanel extends JPanel implements ActionListener {
                 height = getHeight();
                 width = (int) (getHeight()*ratio);
             }
-            g.drawImage(CreateGame, 0, 0, width, height, null);
+            g.drawImage(CreateGame.getImage(), 0, 0, width, height, null);
 
         }
     }
+
+    TimedLock<Boolean> serverWaiter = new TimedLock<>(false);
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == PlayButton) {
-                listener.actionPerformed(new ActionEvent(this, e.getID(), "PLAY"));
+        if (e.getSource() == createButton) {
+            try {
+                String gameId = GameId.getText();
+                int k = (Integer) comboBox.getSelectedItem();
+
+                long requestTime = System.currentTimeMillis();
+
+                serverWaiter.reset();
+                serverInterface.createGame(clientInterface, new NewGameInfo(gameId, "STANDARD", k, requestTime));
+
+                if (!serverWaiter.hasBeenNotified()) {
+                    serverWaiter.setValue(true);
+                    try {
+                        serverWaiter.lock(6000);
+                    } catch (InterruptedException exception) {
+                        throw new RemoteException("Connection timeout error");
+                    }
+                }
+
+                if (!serverWaiter.getValue())
+                    listener.actionPerformed(new ActionEvent(this,e.getID(),"CREATED"));
+                else {
+                    //TODO show errore
+                    if(user!=null){
+                        System.err.println(user.eventMessage());
+                    }
+                }
+            }catch(RemoteException re){
+                //TODO show errore generico di connessione
+            }
+        }
+    }
+
+    private UserInfo user;
+    @Override
+    public void update(UserInfo o, User.Event evt) throws RemoteException {
+        user = o;
+
+        if (evt == null) {
+            serverWaiter.notify(false);
+            return;
+        }
+
+        switch (evt){
+            case GAME_CREATED -> serverWaiter.notify(false);
+            case ERROR_REPORTED -> serverWaiter.notify(true);
         }
     }
 }

@@ -133,6 +133,7 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
         try {
             createGame(gameInfo.gameId(),gameInfo.playerNumber());
             users.get(client).reportEvent(User.Status.NOT_JOINED,"Game created",gameInfo.time(),  User.Event.GAME_CREATED);
+            System.err.println("GAME CREATED: "+gameInfo.gameId());
         } catch (GameAlreadyExistsException e) {
             users.get(client).reportEvent(User.Status.NOT_JOINED,e.getMessage(), gameInfo.time(), User.Event.ERROR_REPORTED);
         }

@@ -1,22 +1,36 @@
 package view.GUI;
 
+import distibuted.interfaces.ClientInterface;
+import distibuted.interfaces.ServerInterface;
+import model.User;
+import modelView.LoginInfo;
+import modelView.UserInfo;
+import view.ResourceProvider;
+import view.TimedLock;
+import view.interfaces.UserView;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.rmi.RemoteException;
 
-public class JoinGamePanel extends JPanel implements ActionListener {
+public class JoinGamePanel extends JPanel implements ActionListener, UserView {
     Image CreateGame;
     private final ActionListener listener;
     JButton PlayButton;
     JTextField PlayerId;
     JTextField GameId;
-    public JoinGamePanel(ActionListener listener){
+    private final ServerInterface serverInterface;
+    private final ClientInterface clientInterface;
+    public JoinGamePanel(ActionListener listener, ServerInterface serverInterface, ClientInterface clientInterface){
         this.listener = listener;
-        CreateGame = new ImageIcon(GUI.class.getResource("/desktop.png").getPath()).getImage();
-        ImageIcon button = new ImageIcon(GUI.class.getResource("/img.png").getPath());
-        ImageIcon buttonIdG = new ImageIcon(GUI.class.getResource("/GameID.png").getPath());
-        ImageIcon buttonIdP = new ImageIcon(GUI.class.getResource("/PlayerID.png").getPath());
+        this.serverInterface = serverInterface;
+        this.clientInterface = clientInterface;
+        CreateGame = new ImageIcon(ResourceProvider.getResourcePath()+"/desktop.png").getImage();
+        ImageIcon button = new ImageIcon(ResourceProvider.getResourcePath()+"/img.png");
+        ImageIcon buttonIdG = new ImageIcon(ResourceProvider.getResourcePath()+"/GameID.png");
+        ImageIcon buttonIdP = new ImageIcon(ResourceProvider.getResourcePath()+"/PlayerID.png");
         Font font1 = new Font("Century", Font.BOLD, 24);
 
         GridBagConstraints c = new GridBagConstraints();
@@ -34,7 +48,7 @@ public class JoinGamePanel extends JPanel implements ActionListener {
         ButtonsJoinPanel.setLayout(new GridBagLayout());
 
 
-        JTextField PlayerId = new JTextField();
+        PlayerId = new JTextField();
         PlayerId.setPreferredSize(new Dimension(150,40));
         JLabel PlayerIdField = new JLabel() {
             protected void paintComponent(Graphics g) {
@@ -45,7 +59,7 @@ public class JoinGamePanel extends JPanel implements ActionListener {
 
         PlayerIdField.setPreferredSize(new Dimension(165,41));
 
-        JTextField GameId = new JTextField();
+        GameId = new JTextField();
         GameId.setPreferredSize(new Dimension(150,40));
         JLabel GameIdField = new JLabel() {
             protected void paintComponent(Graphics g) {
@@ -101,14 +115,51 @@ public class JoinGamePanel extends JPanel implements ActionListener {
             }
         }
 
-
+        TimedLock<Boolean> serverWaiter = new TimedLock<>(false);
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == PlayButton) {
-            listener.actionPerformed(new ActionEvent(this,e.getID(),"PLAY"));
-            String IdPlayer = PlayerId.getText();
-            String IdGame = GameId.getText();
+            try {
+                String IdPlayer = PlayerId.getText();
+                String IdGame = GameId.getText();
 
+                serverWaiter.reset();
+                listener.actionPerformed(new ActionEvent(this,e.getID(),"ID\n"+IdPlayer));
+                serverInterface.joinGame(clientInterface, new LoginInfo(IdPlayer,IdGame, System.currentTimeMillis()));
+
+                if (!serverWaiter.hasBeenNotified()) {
+                    try {
+                        serverWaiter.setValue(true);
+                        serverWaiter.lock(6000);
+                    } catch (InterruptedException err) {
+                        throw new RemoteException("Login timeout error");
+                    }
+                }
+
+                if (!serverWaiter.getValue()) {
+                    listener.actionPerformed(new ActionEvent(this, e.getID(), "JOINED"));
+                }else{
+                    //TODO show error
+                }
+            }catch(RemoteException re){
+                //TODO errore generico di connessione
+            }
+        }
+    }
+
+    private UserInfo user;
+    @Override
+    public void update(UserInfo o, User.Event evt) throws RemoteException {
+        user = o;
+
+        if (evt == null) {
+            serverWaiter.notify(false);
+            return;
+        }
+
+        switch (evt){
+            case GAME_JOINED -> serverWaiter.notify(false);
+            case ERROR_REPORTED -> serverWaiter.notify(true);
         }
     }
 }

@@ -3,6 +3,7 @@ import distibuted.interfaces.AppServer;
 import distibuted.interfaces.ClientInterface;
 import distibuted.interfaces.ServerInterface;
 import distibuted.socket.middleware.ClientSocketHandler;
+import view.CLI;
 import view.GUI.GUI;
 import view.interfaces.UI;
 
@@ -18,14 +19,16 @@ public class Client {
 
     public static void main(String[] args){
         //TODO check on args
-        new Client().run();
+        switch(args[0]){
+            case "-GUI" -> new Client(new GUI()).run();
+            case "-CLI" -> new Client(new CLI()).run();
+        }
         System.exit(0);
     }
 
-    private Client(){
+    private Client(UI  ui){
         //TODO ask if use gui or cli
-        //ui = new CLI();
-        ui = new GUI();
+        this.ui = ui;
         server = null;
         serverEndpoint = null;
     }
