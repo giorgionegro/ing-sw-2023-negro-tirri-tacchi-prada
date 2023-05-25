@@ -1,6 +1,5 @@
 package model;
 
-import model.abstractModel.CommonGoal;
 import model.abstractModel.PersonalGoal;
 import model.exceptions.MatchmakingClosedException;
 import model.exceptions.PlayerAlreadyExistsException;
