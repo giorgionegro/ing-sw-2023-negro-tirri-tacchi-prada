@@ -200,12 +200,9 @@ public class StandardGameController implements GameController, LobbyController {
                 game.getLivingRoom().refillBoard();
                 game.updatePlayersTurn();
             }
-
-        } catch (GameEndedException e) {
-            closeTheGame("Game has ended");
         } catch (PlayerAlreadyExistsException | PlayerNotExistsException e) {
             throw new GameAccessDeniedException("Player id already exists");//Same as above
-        } catch (MatchmakingClosedException e) {
+        } catch (MatchmakingClosedException | GameEndedException e) {
             throw new GameAccessDeniedException("Game matchmaking closed"); //Same as above
         }
     }
@@ -232,7 +229,6 @@ public class StandardGameController implements GameController, LobbyController {
     public synchronized void leavePlayer(ClientInterface client) throws GameAccessDeniedException{
         if(!userAssociation.containsKey(client))
             throw new GameAccessDeniedException("Client not connected to this game");
-
         Player leavedPlayer = playerAssociation.get(userAssociation.get(client));
         String eventMessage = leavedPlayer.getId()+" has leaved the game";
         closeTheGame(eventMessage);
@@ -287,18 +283,14 @@ public class StandardGameController implements GameController, LobbyController {
             /* If we receive a request from an invalid client we discard it */
             if (!userAssociation.containsKey(client))
                 throw new IllegalArgumentException("User not allowed");
-
             /* If game is not started we discard the request*/
             if (!game.getGameStatus().equals(Game.GameStatus.STARTED))
                 throw new GameNotStartedException();
-
-            /* Get player information associated with his client */
+                /* Get player information associated with his client */
             Player player = playerAssociation.get(userAssociation.get(client));
-
             /* If it isn't player turn we discard the request*/
             if (!player.getId().equals(game.getTurnPlayerId()))
                 throw new IllegalArgumentException("Not player's turn");
-
             /* Get board and player shelf status */
             Tile[][] shelf = player.getShelf().getTiles();
             Tile[][] board = game.getLivingRoom().getBoard();
@@ -365,7 +357,12 @@ public class StandardGameController implements GameController, LobbyController {
             game.updatePlayersTurn();
 
         } catch (IllegalArgumentException | GameNotStartedException e) {
-            playerAssociation.get(userAssociation.get(client)).reportError(e.getMessage());
+            if (userAssociation.containsKey(client) && playerAssociation.containsKey(userAssociation.get(client))) {
+                playerAssociation.get(userAssociation.get(client)).reportError(e.getMessage());
+            }
+            else {
+                e.printStackTrace();
+            }
         } catch (GameEndedException e){
             e.printStackTrace();
         }
@@ -409,8 +406,8 @@ public class StandardGameController implements GameController, LobbyController {
      * @return true if tiles are different, false otherwise
      */
     private boolean areTilesDifferent(@NotNull List<PickedTile> pickedTiles) {
-        for (int i = 0; i < pickedTiles.size() - 2; i++) {
-            for (int j = i + 1; j < pickedTiles.size() - 1; j++) {
+        for (int i = 0; i < pickedTiles.size() ; i++) {
+            for (int j = i + 1; j < pickedTiles.size() ; j++) {
                 if (pickedTiles.get(i).row() == pickedTiles.get(j).row())
                     if (pickedTiles.get(i).col() == pickedTiles.get(j).col())
                         return false;
