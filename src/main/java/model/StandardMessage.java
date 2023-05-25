@@ -1,6 +1,7 @@
 package model;
 
 import model.abstractModel.Message;
+import org.jetbrains.annotations.NotNull;
 
 import java.time.Instant;
 import java.time.ZoneId;
@@ -27,7 +28,7 @@ public class StandardMessage implements Message {
     /**
      * The {@link String} representation of the timestamp of instance creation
      */
-    private final String timestamp;
+    private final @NotNull String timestamp;
 
     /**
      * Construct an instance with given sender id, subject and text, timestamp is set on localtime at instance creation
@@ -73,12 +74,12 @@ public class StandardMessage implements Message {
      * @return {@link #timestamp}
      */
     @Override
-    public String getTimestamp() {
+    public @NotNull String getTimestamp() {
         return timestamp;
     }
 
     @Override
-    public String toString(){
+    public @NotNull String toString(){
         return "Sender: "+idSender+"\n"
                 +"Receiver: "+subject+"\n"
                 +"Text: "+text+"\n"

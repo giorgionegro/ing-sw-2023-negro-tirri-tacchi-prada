@@ -8,6 +8,8 @@ import model.Token;
 import model.User;
 import model.abstractModel.*;
 import modelView.*;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import view.interfaces.UI;
 
 import java.io.*;
@@ -39,31 +41,33 @@ public class TUI implements UI {
     /*----------------------------------------*/
 
     /*---------------INFO--------------------*/
-    private final List<PersonalGoalInfo> currentPersonalGoals = new ArrayList<>();
-    private final List<GamesManagerInfo> games = new ArrayList<>();
-    private GameInfo currentGameState;
-    private UserInfo user;
-    private final Map<String,CommonGoalInfo> commonGoals = new HashMap<>();
-    private Map<String, Token> achievedCommonGoals = new HashMap<>();
-    private final Map<String, ShelfInfo> currentShelves;
-    private LivingRoomInfo currentLivingRoom;
-    private PlayerChatInfo currentPlayerChat;
-    private String thisPlayerId;
+    private final @NotNull  List<PersonalGoalInfo> currentPersonalGoals = new ArrayList<>();
+
+    private long currentSessionTime = -1;
+    private final @NotNull List<GamesManagerInfo> games = new ArrayList<>();
+    private @Nullable GameInfo currentGameState;
+
+    private final @NotNull Map<String,CommonGoalInfo> commonGoals = new HashMap<>();
+    private @NotNull Map<String, Token> achievedCommonGoals = new HashMap<>();
+    private final @NotNull Map<String, ShelfInfo> currentShelves;
+    private @Nullable LivingRoomInfo currentLivingRoom;
+    private @Nullable PlayerChatInfo currentPlayerChat;
+    private @Nullable String thisPlayerId;
 
     /*-----------------------------------------*/
 
     /*--------DISTRIBUTION OBJECTS-------------*/
-    private ServerInterface server;
-    private ClientInterface client;
+    private @Nullable ServerInterface server;
+    private @Nullable ClientInterface client;
 
     /*-----------------------------------------*/
 
     /*------------VIEW UTILITIES---------------*/
-    final private TimedLock<Boolean> serverWaiter = new TimedLock<>(false);
+    private final @NotNull TimedLock<Boolean> serverWaiter = new TimedLock<>(false);
     private boolean viewLock = false;
-    private final Scanner scanner = new Scanner(System.in);
+    private final @NotNull Scanner scanner = new Scanner(System.in);
     private boolean GameRunning;
-    private View currentView;
+    private @NotNull View currentView;
     static final PrintStream out = System.out;
 
     /*----------------------------------------*/
@@ -93,7 +97,7 @@ public class TUI implements UI {
         return readCommandLine("Connect with RMI (r) or SOCKET (s)?, empty to exit: ");
     }
 
-    public void showError(String error) {
+    public void showError(@NotNull String error) {
         printCommandLine(error, RED);
     }
 
@@ -122,6 +126,7 @@ public class TUI implements UI {
 
         while (!exit) {
             String readLine = readCommandLine("(h for commands)-> ");
+            currentSessionTime = -1;
             switch (readLine) {
                 case "h" -> printCommandLine("1: Create a game\n2: Join a game\nexit: Close this window");
                 case "1" -> {
@@ -155,10 +160,11 @@ public class TUI implements UI {
         int k = Integer.parseInt(p);
         if (k > 1 && k < 5) {
 
-            long requestTime = System.currentTimeMillis();
+             currentSessionTime = System.currentTimeMillis();
 
             serverWaiter.reset();
-            server.createGame(client, new NewGameInfo(gameId, "STANDARD", k, requestTime));
+
+            server.createGame(client, new NewGameInfo(gameId, "STANDARD", k, currentSessionTime));
 
             if(!serverWaiter.hasBeenNotified()){
                 serverWaiter.setValue(true);
@@ -181,7 +187,8 @@ public class TUI implements UI {
         String playerId = readCommandLine("Write playerId (empty to exit): ");
         if (!playerId.equals("")) {
             serverWaiter.reset();
-            server.joinGame(client, new LoginInfo(playerId, gameId, System.currentTimeMillis()));
+            currentSessionTime =  System.currentTimeMillis();
+            server.joinGame(client, new LoginInfo(playerId, gameId, currentSessionTime));
         }else
             return;
 
@@ -361,71 +368,82 @@ public class TUI implements UI {
         server.doPlayerMove(client, new PlayerMoveInfo(tiles, sC));
     }
 
-    private boolean isPickable(List<PickedTile> pickedTiles, Tile[][] board) {//TODO test this extensively
+    private boolean isPickable(@NotNull List<PickedTile> pickedTiles, Tile[] @NotNull [] board) {
+        if (!areTilesDifferent(new ArrayList<>(pickedTiles))){
+            printCommandLine("Tiles are not different", RED);
+            return false;
+        }
+        if(!areTilesAligned(new ArrayList<>(pickedTiles))) {
+            printCommandLine("Tiles are not aligned", RED);
+            return false;
+        }
+        for (PickedTile tile : pickedTiles)
+            if (!isTilePickable(tile.row(), tile.col(), board)){
+                printCommandLine("Tile not pickable", RED);
+                return false;
+            }
         return true;
-        // Check if all picked tiles are adjacent to an empty tile
-//        boolean adjacentToEmptyTile = false;
-//        for (PickedTile pickedTile : pickedTiles) {
-//            int row = pickedTile.row();
-//            int col = pickedTile.col();
-//            if (row > 0 && board[row-1][col] == Tile.EMPTY) {
-//                adjacentToEmptyTile = true;
-//                break;
-//            }
-//            if (row < board.length-1 && board[row+1][col] == Tile.EMPTY) {
-//                adjacentToEmptyTile = true;
-//                break;
-//            }
-//            if (col > 0 && board[row][col-1] == Tile.EMPTY) {
-//                adjacentToEmptyTile = true;
-//                break;
-//            }
-//            if (col < board[0].length-1 && board[row][col+1] == Tile.EMPTY) {
-//                adjacentToEmptyTile = true;
-//                break;
-//            }
-//        }
-//        if (!adjacentToEmptyTile) {
-//            return false;
-//        }
-//
-//        // Check if picked tiles are all in the same row or column
-//        int firstRow = pickedTiles.get(0).row();
-//        int firstCol = pickedTiles.get(0).col();
-//        boolean sameRow = true;
-//        boolean sameCol = true;
-//        for (PickedTile pickedTile : pickedTiles) {
-//            if (pickedTile.row() != firstRow) {
-//                sameRow = false;
-//            }
-//            if (pickedTile.col() != firstCol) {
-//                sameCol = false;
-//            }
-//            if (!sameRow && !sameCol) {
-//                return false;
-//            }
-//        }
-//
-//        if (sameRow) {
-//            int[] cols = pickedTiles.stream().mapToInt(PickedTile::col).toArray();
-//            Arrays.sort(cols);
-//            for (int i = 0; i < cols.length-1; i++) {
-//                if (cols[i+1] - cols[i] != 1) {
-//                    return false;
-//                }
-//            }
-//        }
-//        if (sameCol) {
-//            int[] rows = pickedTiles.stream().mapToInt(PickedTile::row).toArray();
-//            Arrays.sort(rows);
-//            for (int i = 0; i < rows.length-1; i++) {
-//                if (rows[i+1] - rows[i] != 1) {
-//                    return false;
-//                }
-//            }
-//        }
-//
-//        return true;
+    }
+    private boolean areTilesAligned(@NotNull List<PickedTile> pickedTiles){
+
+        boolean rowAligned = true;
+        boolean colAligned = true;
+
+        for(int i = 1; i<pickedTiles.size(); i++){
+            rowAligned = rowAligned && (pickedTiles.get(i-1).row() == pickedTiles.get(i).row());
+            colAligned = colAligned && (pickedTiles.get(i-1).col() == pickedTiles.get(i).col());
+        }
+
+        if(rowAligned){
+            pickedTiles.sort(Comparator.comparingInt(PickedTile::col));
+            for(int i=0; i< pickedTiles.size()-1; i++)
+                if(pickedTiles.get(i).col()+1!=pickedTiles.get(i+1).col())
+                    return false;
+        }
+
+        if(colAligned){
+            pickedTiles.sort(Comparator.comparingInt(PickedTile::row));
+            for(int i=0; i< pickedTiles.size()-1; i++)
+                if(pickedTiles.get(i).row()+1!=pickedTiles.get(i+1).row())
+                    return false;
+        }
+
+
+        return rowAligned || colAligned;
+    }
+
+
+    /**
+     * @param pickedTiles list of picked tiles
+     * @return true if tiles are different, false otherwise
+     */
+    private boolean areTilesDifferent(@NotNull List<PickedTile> pickedTiles) {
+        for (int i = 0; i < pickedTiles.size() - 2; i++) {
+            for (int j = i + 1; j < pickedTiles.size() - 1; j++) {
+                if (pickedTiles.get(i).row() == pickedTiles.get(j).row())
+                    if (pickedTiles.get(i).col() == pickedTiles.get(j).col())
+                        return false;
+            }
+        }
+        return true;
+    }
+    /**
+     * @param row    row of the tile
+     * @param column column of the tile
+     * @param board  board to check
+     * @return true if tile is pickable, false otherwise
+     */
+    private boolean isTilePickable(int row, int column, Tile[] @NotNull [] board) {
+        if (row < 0 || column < 0 || row > board.length - 1 || column > board[row].length - 1 || board[row][column].equals(Tile.EMPTY) || board[row][column] == null)
+            return false;
+
+        if (row == 0 || column == 0 || row == board.length - 1 || column == board[0].length - 1)
+            return true;
+
+        return board[row - 1][column] == Tile.EMPTY
+                || board[row + 1][column] == Tile.EMPTY
+                || board[row][column - 1] == Tile.EMPTY
+                || board[row][column + 1] == Tile.EMPTY;
     }
 
     private void leave(){
@@ -471,7 +489,7 @@ public class TUI implements UI {
 
     }
 
-    private String renderPixel(int x, int y) {
+    private @NotNull String renderPixel(int x, int y) {
         return "\u001B[" + cliPixelColor[x][y] + "m" + cliPixel[x][y] + "\u001B[0m";
     }
 
@@ -529,7 +547,7 @@ public class TUI implements UI {
         }
     }
 
-    private void drawGridContents(int startX, int startY, Tile[][] contents){
+    private void drawGridContents(int startX, int startY, Tile[] @NotNull [] contents){
         startX = startX+1;
         startY = startY+1;
 
@@ -549,7 +567,7 @@ public class TUI implements UI {
     }
 
     //draw String from start coordinate
-    private void drawString(String toDraw, int Row, int startCol, int colour, int size) {
+    private void drawString(@NotNull String toDraw, int Row, int startCol, int colour, int size) {
         if (toDraw.length() > size)
             toDraw = toDraw.substring(0, size);
 
@@ -559,7 +577,8 @@ public class TUI implements UI {
         }
     }
 
-    private void drawCenteredString(String text, int startX, int startY, int spaceWidth, int color){
+    @SuppressWarnings("SameParameterValue")
+    private void drawCenteredString(@NotNull String text, int startX, int startY, int spaceWidth, int color){
         StringBuilder title = new StringBuilder();
         int spaceBefore = (spaceWidth - text.length()) / 2;
         title.append(" ".repeat(spaceBefore)).append(text);
@@ -603,7 +622,7 @@ public class TUI implements UI {
         }
     }
 
-    private static int getColour(String color) {
+    private static int getColour(@NotNull String color) {
         int colour;
         switch (color) {
             case "Green" -> colour = GREEN;
@@ -631,11 +650,11 @@ public class TUI implements UI {
         return cmd;
     }
 
-    public void printCommandLine(String toPrint) {
+    public void printCommandLine(@NotNull String toPrint) {
         printCommandLine(toPrint, DEFAULT);
     }
 
-    public void printCommandLine(String toPrint, int colour) {
+    public void printCommandLine(@NotNull String toPrint, int colour) {
         String[] lines = toPrint.split("\n");
         for (String s : lines)
             oldCmds.add(new Pair(s, colour));
@@ -646,7 +665,7 @@ public class TUI implements UI {
         updateView(true);
     }
 
-    public void render() {
+    public synchronized void render() {
         ClearScreen();
         if (currentGameState != null) {
             drawGameState();
@@ -776,7 +795,7 @@ public class TUI implements UI {
     /*--------------------------------------------------*/
 
     /*-------------SHELVES-------------------------------*/
-    public void update(ShelfInfo sV, Shelf.Event evt) {
+    public void update(@NotNull ShelfInfo sV, Shelf.Event evt) {
         //set current shelf
 
         currentShelves.put(sV.playerId(), sV);
@@ -883,14 +902,14 @@ public class TUI implements UI {
     /*-----------------------------------------------------------*/
 
     /*---------COMMON GOALS-------------------------------*/
-    public void update(CommonGoalInfo o, CommonGoal.Event evt) {
+    public void update(@NotNull CommonGoalInfo o, CommonGoal.Event evt) {
         commonGoals.put(o.id(), o);
         updateView(false);
     }
 
     private final Map<String, String[]> commonGoalRes = getCommonGoalRes();
 
-    private Map<String, String[]> getCommonGoalRes() {
+    private @NotNull Map<String, String[]> getCommonGoalRes() {
         Map<String, String[]> ris = new HashMap<>();
         File dir = new File(this.getClass().getResource("/commonGoals/CLI").getPath());
         if (dir.isDirectory()) {
@@ -960,7 +979,7 @@ public class TUI implements UI {
     /*-------------------------------------------------------*/
 
     /*---------------GAME STATE------------------------------*/
-    public void update(GameInfo o, Game.Event evt) {
+    public void update(@NotNull GameInfo o, Game.Event evt) {
         currentGameState = o;
 
         if (o.status()==Game.GameStatus.ENDED){
@@ -987,7 +1006,7 @@ public class TUI implements UI {
     /*------------------------------------------------------*/
 
     /*----------------PERSONAL GOALS------------------------*/
-    public void update(PersonalGoalInfo o, PersonalGoal.Event evt) {
+    public void update(@NotNull PersonalGoalInfo o, PersonalGoal.Event evt) {
         //check if personal goal is already present in current personal goals
         int index = currentPersonalGoals.stream().map(PersonalGoalInfo::description).toList().indexOf(o.description());
 
@@ -1025,10 +1044,10 @@ public class TUI implements UI {
 
     /*-----------------------------------------------------*/
 
-    public void update(UserInfo o, User.Event evt) {
-        user = o;
-
-        if (evt == null) {
+    public void update(@NotNull UserInfo o, User.@Nullable Event evt) {
+        if (o.joinTime()!= currentSessionTime)
+            return;
+        if(evt==null) {
             serverWaiter.notify(false);
             return;
         }
@@ -1046,7 +1065,7 @@ public class TUI implements UI {
         }
     }
 
-    public void update(GamesManagerInfo o, GamesManager.Event evt) {
+    public void update(GamesManagerInfo o, GamesManager.@NotNull Event evt) {
         switch (evt) {
             case GAME_CREATED -> games.add(o);
             case GAME_REMOVED -> games.remove(o);
@@ -1073,7 +1092,7 @@ public class TUI implements UI {
         }
     }
 
-    public void update(PlayerInfo o, Player.Event evt) {
+    public void update(@NotNull PlayerInfo o, Player.@Nullable Event evt) {
         if (evt == null) {
             return;
         }

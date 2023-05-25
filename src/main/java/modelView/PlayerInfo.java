@@ -3,7 +3,6 @@ package modelView;
 import model.Token;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.Map;
 
 /**

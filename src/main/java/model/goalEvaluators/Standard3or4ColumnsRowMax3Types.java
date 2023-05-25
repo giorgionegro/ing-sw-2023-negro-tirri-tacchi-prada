@@ -2,6 +2,7 @@ package model.goalEvaluators;
 
 import model.Tile;
 import model.abstractModel.GoalEvaluator;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 
@@ -48,7 +49,7 @@ public class Standard3or4ColumnsRowMax3Types extends GoalEvaluator {
      * @return {@link #standard3ColumnMax3TypesDescription} or {@link #standard4RowsMax3TypesDescription} based on {@link #column} value
      */
     @Override
-    public String getDescription() {
+    public @NotNull String getDescription() {
         return (column) ?  standard3ColumnMax3TypesDescription : standard4RowsMax3TypesDescription;
     }
 
@@ -57,7 +58,7 @@ public class Standard3or4ColumnsRowMax3Types extends GoalEvaluator {
      * @return {@link #standard3ColumnMax3TypesId} or {@link #standard4RowsMax3TypesId} based on {@link #column} value
      */
     @Override
-    public String getId(){
+    public @NotNull String getId(){
         return (column) ? standard3ColumnMax3TypesId : standard4RowsMax3TypesId;
     }
 
@@ -66,7 +67,7 @@ public class Standard3or4ColumnsRowMax3Types extends GoalEvaluator {
      * @return true if the player has at least 3 columns , or 4 rows, of at most 3 different tiles
      */
     @Override
-    public boolean evaluate(Tile[][] playerShelf) {
+    public boolean evaluate(Tile[] @NotNull [] playerShelf) {
         int counter = 0; // counts the number of columns with at most 3 different tiles colors
         int columnLength = playerShelf[0].length;
         int rowLength = playerShelf.length;

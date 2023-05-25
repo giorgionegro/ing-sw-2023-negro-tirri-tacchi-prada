@@ -1,5 +1,7 @@
 package util;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Vector;
 
 /**
@@ -42,7 +44,7 @@ import java.util.Vector;
 @SuppressWarnings("deprecation")
 public class Observable<Event extends Enum<Event>> {
     private boolean changed = false;
-    private final Vector<Observer<? extends Observable<Event>, Event>> obs;
+    private final @NotNull Vector<Observer<? extends Observable<Event>, Event>> obs;
 
     /** Construct an Observable with zero Observers. */
 

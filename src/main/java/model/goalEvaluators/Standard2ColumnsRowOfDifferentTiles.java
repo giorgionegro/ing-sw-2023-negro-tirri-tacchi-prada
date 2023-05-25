@@ -2,6 +2,7 @@ package model.goalEvaluators;
 
 import model.Tile;
 import model.abstractModel.GoalEvaluator;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -52,7 +53,7 @@ public class Standard2ColumnsRowOfDifferentTiles extends GoalEvaluator {
      * @return {@link #standard2ColumnsOfDifferentTilesDescription} or {@link #standard2RowsOfDifferentTilesDescription} based on {@link #column} value
      */
     @Override
-    public String getDescription() {
+    public @NotNull String getDescription() {
         return (column) ? standard2ColumnsOfDifferentTilesDescription : standard2RowsOfDifferentTilesDescription;
     }
 
@@ -61,7 +62,7 @@ public class Standard2ColumnsRowOfDifferentTiles extends GoalEvaluator {
      * @return {@link #standard2ColumnsOfDifferentTilesId} or {@link #standard2RowsOfDifferentTilesId} based on {@link #column} value
      */
     @Override
-    public String getId(){
+    public @NotNull String getId(){
         return (column) ? standard2ColumnsOfDifferentTilesId : standard2RowsOfDifferentTilesId;
     }
 
@@ -71,7 +72,7 @@ public class Standard2ColumnsRowOfDifferentTiles extends GoalEvaluator {
      */
     // returns true if the player has at least 2 columns of 6 different tiles
     @Override
-    public boolean evaluate(Tile[][] playerShelf) {
+    public boolean evaluate(Tile[] @NotNull [] playerShelf) {
         int counter = 0;
         int columnLength = playerShelf[0].length;
         int rowLength = playerShelf.length;

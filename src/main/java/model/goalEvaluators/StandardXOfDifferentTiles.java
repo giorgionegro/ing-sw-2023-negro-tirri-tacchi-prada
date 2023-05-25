@@ -2,6 +2,7 @@ package model.goalEvaluators;
 
 import model.Tile;
 import model.abstractModel.GoalEvaluator;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * This class is the goal evaluator for the StandardXOfDifferentTiles goal
@@ -25,7 +26,7 @@ public class StandardXOfDifferentTiles extends GoalEvaluator {
      * @return {@link #standardXOfDifferentTilesDescription}
      */
     @Override
-    public String getDescription() {
+    public @NotNull String getDescription() {
         return standardXOfDifferentTilesDescription;
     }
 
@@ -34,7 +35,7 @@ public class StandardXOfDifferentTiles extends GoalEvaluator {
      * @return {@link #standardXOfDifferentTilesId}
      */
     @Override
-    public String getId(){
+    public @NotNull String getId(){
         return standardXOfDifferentTilesId;
     }
 
@@ -45,7 +46,7 @@ public class StandardXOfDifferentTiles extends GoalEvaluator {
      * @return true if the player has at least 5 tiles of the same type forming an X
      */
     @Override
-    public boolean evaluate(Tile[][] playerShelf) {
+    public boolean evaluate(Tile[] @NotNull [] playerShelf) {
         /* EXAMPLE:
          X 0 X
          0 X 0

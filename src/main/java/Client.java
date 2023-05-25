@@ -5,6 +5,7 @@ import distibuted.interfaces.ServerInterface;
 import distibuted.socket.middleware.ClientSocketHandler;
 import view.TUI;
 import view.GUI.GUI;
+import org.jetbrains.annotations.Nullable;
 import view.interfaces.UI;
 
 import java.rmi.NotBoundException;

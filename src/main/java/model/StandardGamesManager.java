@@ -5,6 +5,8 @@ import model.abstractModel.GamesManager;
 import model.exceptions.GameAlreadyExistsException;
 import model.exceptions.GameNotExistsException;
 import modelView.GamesManagerInfo;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,7 +15,7 @@ public class StandardGamesManager extends GamesManager{
     /**
      * Map that contains each Game and its gameId
      */
-    private final Map<String, Game> games;
+    private final @NotNull Map<String, Game> games;
 
     /**
      * Construct a StandardGamesManager instance, initialized with an empty map of games
@@ -50,7 +52,7 @@ public class StandardGamesManager extends GamesManager{
     }
 
     @Override
-    public GamesManagerInfo getInfo() {
+    public @Nullable GamesManagerInfo getInfo() {
         return null;
     }
 

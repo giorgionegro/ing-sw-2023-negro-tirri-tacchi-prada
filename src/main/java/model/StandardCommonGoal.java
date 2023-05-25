@@ -3,6 +3,7 @@ package model;
 import model.abstractModel.CommonGoal;
 import model.abstractModel.GoalEvaluator;
 import model.instances.StandardCommonGoalInstance;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -29,7 +30,7 @@ public class StandardCommonGoal extends CommonGoal {
      * Construct a {@link StandardCommonGoal} using the given instance
      * @param instance the {@link StandardCommonGoal} instance
      */
-    public StandardCommonGoal(StandardCommonGoalInstance instance){
+    public StandardCommonGoal(@NotNull StandardCommonGoalInstance instance){
         super(instance.evaluator());
         List<Token> tokenList = new java.util.ArrayList<>(instance.tokenStack().stream().toList());
         Collections.reverse(tokenList);
@@ -63,7 +64,7 @@ public class StandardCommonGoal extends CommonGoal {
      * @return A {@link StandardCommonGoalInstance} constructed using instance values
      */
     @Override
-    public Serializable getInstance() {
+    public @NotNull Serializable getInstance() {
         return new StandardCommonGoalInstance(getEvaluator(),tokenStack);
     }
 }

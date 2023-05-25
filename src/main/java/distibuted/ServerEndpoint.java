@@ -10,6 +10,8 @@ import model.exceptions.GameNotExistsException;
 import modelView.LoginInfo;
 import modelView.NewGameInfo;
 import modelView.PlayerMoveInfo;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -18,7 +20,7 @@ public class ServerEndpoint extends UnicastRemoteObject implements ServerInterfa
 
     private final ServerController serverController;
     private final GameManagerController gameManagerController;
-    private GameController gameController;
+    private @Nullable GameController gameController;
 
     public ServerEndpoint(ServerController serverController, GameManagerController gameManagerController) throws RemoteException {
         super();
@@ -37,7 +39,7 @@ public class ServerEndpoint extends UnicastRemoteObject implements ServerInterfa
     }
 
     @Override
-    public void joinGame(ClientInterface client, LoginInfo loginInfo){
+    public void joinGame(@NotNull ClientInterface client, @NotNull LoginInfo loginInfo){
         try {
             serverController.joinGame(client, loginInfo);
             gameController = gameManagerController.getGame(loginInfo.gameId());

@@ -2,6 +2,7 @@ package model.goalEvaluators;
 
 import model.Tile;
 import model.abstractModel.GoalEvaluator;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -29,7 +30,7 @@ public class Standard8TilesSameType extends GoalEvaluator {
      * @return {@link #standard8TilesSameTypeDescription}
      */
     @Override
-    public String getDescription() {
+    public @NotNull String getDescription() {
         return standard8TilesSameTypeDescription;
     }
 
@@ -38,7 +39,7 @@ public class Standard8TilesSameType extends GoalEvaluator {
      * @return {@link #standard8TilesSameTypeId}
      */
     @Override
-    public String getId(){
+    public @NotNull String getId(){
         return standard8TilesSameTypeId;
     }
 
@@ -49,7 +50,7 @@ public class Standard8TilesSameType extends GoalEvaluator {
      * @return boolean true if 8 tiles of the same type are in the player's shelf
      */
     @Override
-    public boolean evaluate(Tile[][] playerShelf) {
+    public boolean evaluate(Tile[] @NotNull [] playerShelf) {
         AtomicBoolean flag = new AtomicBoolean(false);
         //get every color and check if there are 8 tiles of that color
         Arrays.stream(Tile.values()).map(Tile::getColor).filter(colour -> !colour.equals(Tile.EMPTY.getColor())).distinct().toList().forEach(color -> {

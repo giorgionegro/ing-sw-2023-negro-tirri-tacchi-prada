@@ -9,6 +9,7 @@ import model.instances.StandardPlayerChatInstance;
 import model.instances.StandardPlayerInstance;
 import model.instances.StandardShelfInstance;
 import modelView.PlayerInfo;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
 import java.util.*;
@@ -27,11 +28,11 @@ public class StandardPlayer extends Player {
     /**
      * shelf of the player (2D array of tiles)
      */
-    private final Shelf shelf;
+    private final @NotNull Shelf shelf;
     /**
      * personal goals of the player (list of personal goals)
      */
-    private final List<PersonalGoal> personalGoal;
+    private final @NotNull List<PersonalGoal> personalGoal;
 
     /**
      * common goals of the player (map of common goals descriptions and tokens)
@@ -41,7 +42,7 @@ public class StandardPlayer extends Player {
     /**
      * chat of the player
      */
-    private final PlayerChat chat;
+    private final @NotNull PlayerChat chat;
 
     /**
      * last error the player reported during gameplay
@@ -55,7 +56,7 @@ public class StandardPlayer extends Player {
      * @param idPlayer id of the player
      * @param personalGoal personal goals of the player
      */
-    public StandardPlayer(String idPlayer, List<PersonalGoal> personalGoal){
+    public StandardPlayer(String idPlayer, @NotNull List<PersonalGoal> personalGoal){
         this.idPlayer = idPlayer;
         this.shelf = new StandardShelf();
         this.personalGoal = new ArrayList<>(personalGoal);
@@ -63,7 +64,7 @@ public class StandardPlayer extends Player {
         this.chat = new StandardPlayerChat();
     }
 
-    public StandardPlayer(StandardPlayerInstance instance){
+    public StandardPlayer(@NotNull StandardPlayerInstance instance){
         this.idPlayer = instance.idPlayer();
         this.shelf = new StandardShelf((StandardShelfInstance) instance.shelf());
         this.personalGoal = new ArrayList<>();
@@ -77,7 +78,7 @@ public class StandardPlayer extends Player {
      * @return {@link #idPlayer}
      */
     @Override
-    public String getId(){
+    public @NotNull String getId(){
         return idPlayer;
     }
 
@@ -86,7 +87,7 @@ public class StandardPlayer extends Player {
      * @return a copy of {@link #shelf}
      */
     @Override
-    public Shelf getShelf() {
+    public @NotNull Shelf getShelf() {
         return shelf;
     }
 
@@ -95,7 +96,7 @@ public class StandardPlayer extends Player {
      * @return a copy of {@link #personalGoal}
      */
     @Override
-    public List<PersonalGoal> getPersonalGoals() {
+    public @NotNull List<PersonalGoal> getPersonalGoals() {
         return new ArrayList<>(personalGoal);
     }
 
@@ -104,7 +105,7 @@ public class StandardPlayer extends Player {
      * @return {@link #chat}
      */
     @Override
-    public PlayerChat getPlayerChat() {
+    public @NotNull PlayerChat getPlayerChat() {
         return chat;
     }
 
@@ -112,7 +113,7 @@ public class StandardPlayer extends Player {
      * {@inheritDoc}
      * @return a copy of {@link #achievedCommonGoals}
      */
-    public Map<String,Token> getAchievedCommonGoals(){ return new HashMap<>(achievedCommonGoals);}
+    public @NotNull Map<String,Token> getAchievedCommonGoals(){ return new HashMap<>(achievedCommonGoals);}
 
     /**
      * {@inheritDoc}
@@ -150,7 +151,7 @@ public class StandardPlayer extends Player {
      * @return A {@link PlayerInfo} representing this object instance
      */
     @Override
-    public PlayerInfo getInfo(){
+    public @NotNull PlayerInfo getInfo(){
         return new PlayerInfo(errorReport, new HashMap<>(achievedCommonGoals));
     }
 
@@ -159,7 +160,7 @@ public class StandardPlayer extends Player {
      * @return A {@link StandardPlayerInstance} constructed using instance values
      */
     @Override
-    public Serializable getInstance(){
+    public @NotNull Serializable getInstance(){
         List<Serializable> personalGoalInstance = new ArrayList<>();
         personalGoal.forEach(goal -> personalGoalInstance.add(goal.getInstance()));
 

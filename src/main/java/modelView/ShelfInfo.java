@@ -1,6 +1,7 @@
 package modelView;
 
 import model.Tile;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -10,7 +11,7 @@ import java.util.Arrays;
  * @param shelf   shelf of the player
  */
 public record ShelfInfo(String playerId, Tile[][] shelf) implements Serializable {
-    public ShelfInfo(String playerId, Tile[][] shelf) {
+    public ShelfInfo(String playerId, Tile[] @NotNull [] shelf) {
         this.playerId = playerId;
         this.shelf = Arrays.stream(shelf).map(Tile[]::clone).toArray(Tile[][]::new);
     }

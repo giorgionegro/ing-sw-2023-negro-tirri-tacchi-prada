@@ -28,7 +28,7 @@ public class StandardStairs extends GoalEvaluator {
      * @return {@link #standardStairsDescription}
      */
     @Override
-    public String getDescription() {
+    public @NotNull String getDescription() {
         return standardStairsDescription;
     }
 
@@ -37,7 +37,7 @@ public class StandardStairs extends GoalEvaluator {
      * @return {@link #standardStairsId}
      */
     @Override
-    public String getId(){
+    public @NotNull String getId(){
         return standardStairsId;
     }
 
@@ -48,7 +48,7 @@ public class StandardStairs extends GoalEvaluator {
      * @return true if the player has at least 5 columns of increasing height or descending, false otherwise
      */
     @Override
-    public boolean evaluate(Tile[] @NotNull [] playerShelf) {
+    public boolean evaluate(@NotNull Tile[][] playerShelf) {
         int numColumns = playerShelf[0].length;
         int numRows = playerShelf.length;
         for (int dir = 0; dir < 2; dir++) {
@@ -75,7 +75,7 @@ public class StandardStairs extends GoalEvaluator {
         return false;
     }
 
-    private int countTilesInColumn(Tile[] @NotNull [] playerShelf, int colIndex) {
+    private int countTilesInColumn(@NotNull Tile[][] playerShelf, int colIndex) {
         int numRows = playerShelf.length;
         int counter = 0;
         for (int i = numRows - 1; i >= 0; i--) {

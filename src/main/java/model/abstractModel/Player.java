@@ -2,6 +2,7 @@ package model.abstractModel;
 
 import model.Token;
 import modelView.PlayerInfo;
+import org.jetbrains.annotations.NotNull;
 import util.Observable;
 
 import java.util.List;
@@ -26,32 +27,32 @@ public abstract class Player extends Observable<Player.Event> implements Seriali
      * This method returns the player id
      * @return id of the player
      */
-    public abstract String getId();
+    public abstract @NotNull String getId();
 
     /**
      * This method returns a copy of the current representation of the player shelf
      * @return a copy of the current representation of the player shelf
      */
-    public abstract Shelf getShelf();
+    public abstract @NotNull Shelf getShelf();
 
     /**
      * This method returns a copy of the list of the personal goals of the player
      * @return a copy of the list of personal goals of the player
      */
-    public abstract List<PersonalGoal> getPersonalGoals();
+    public abstract @NotNull List<PersonalGoal> getPersonalGoals();
 
     /**
      * This method returns the current representation of the player chat
      * @return the current representation of the player chat
      */
-    public abstract PlayerChat getPlayerChat();
+    public abstract @NotNull PlayerChat getPlayerChat();
 
     /**
      * This method returns a map containing all the descriptions of common goals achieved by the player, associated
      * to the token that player has won achieving that goal.
      * @return a map containing {@code achievedCommonGoalDescription -> token}
      */
-    public abstract Map<String,Token> getAchievedCommonGoals();
+    public abstract @NotNull Map<String,Token> getAchievedCommonGoals();
 
     /**
      * This method add a new achieved common goal
