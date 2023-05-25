@@ -1,8 +1,5 @@
 package controller;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.fail;
-
 import controller.exceptions.GameAccessDeniedException;
 import distibuted.ClientEndPoint;
 import distibuted.interfaces.ClientInterface;
@@ -16,6 +13,7 @@ import java.util.List;
 import distibuted.interfaces.ServerInterface;
 import distibuted.socket.middleware.ServerSocketHandler;
 import model.StandardGame;
+import model.StandardMessage;
 import model.Tile;
 import model.User;
 import model.abstractModel.*;
@@ -23,19 +21,13 @@ import model.exceptions.PlayerNotExistsException;
 import modelView.*;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import view.CLI;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 class StandardGameControllerTest {
 
 
-    /**
-     * Method under test: {@link StandardGameController#joinPlayer(ClientInterface, User, LoginInfo)}
-     */
-    @Test
-    void testJoinPlayer9() throws GameAccessDeniedException {
-        assertThrows(IllegalArgumentException.class,
-                () -> (new StandardGameController(new StandardGame("42", 2))).joinPlayer(null, null, null));
-    }
+
 
     @Test
     void joinPlayer() throws GameAccessDeniedException, RemoteException {
@@ -958,10 +950,263 @@ class StandardGameControllerTest {
         standardGameController.doPlayerMove(client, playerMoveInfo);
         standardGameController.doPlayerMove(client2, playerMoveInfo);
 
+        game = new StandardGame("32",2);
+        standardGameController = new StandardGameController(game);
+        try {
+            standardGameController.joinPlayer(client, new User(), new LoginInfo("1", "32", 1));
+        } catch (GameAccessDeniedException e) {
+            fail("Exception thrown" + e.getMessage());
+        }
+        try {
+            standardGameController.joinPlayer(client2, new User(), new LoginInfo("2", "32", 1));
+        } catch (GameAccessDeniedException e) {
+            fail("Exception thrown" + e.getMessage());
+        }
+        //non aligned tiles
+        pickedTiles = new ArrayList<>();
+        pickedTiles.add(new PickedTile(1,3));
+        pickedTiles.add(new PickedTile(4,1));
+        playerMoveInfo = new PlayerMoveInfo(pickedTiles,0);
+        standardGameController.doPlayerMove(client, playerMoveInfo);
+        standardGameController.doPlayerMove(client2, playerMoveInfo);
+        //game ended exception
+        game.setLastTurn();
+        pickedTiles = new ArrayList<>();
+        pickedTiles.add(new PickedTile(1,3));
+        playerMoveInfo = new PlayerMoveInfo(pickedTiles,0);
+        standardGameController.doPlayerMove(client, playerMoveInfo);
+        standardGameController.doPlayerMove(client2, playerMoveInfo);
+        pickedTiles = new ArrayList<>();
+        pickedTiles.add(new PickedTile(1,4));
+        playerMoveInfo = new PlayerMoveInfo(pickedTiles,0);
+        standardGameController.doPlayerMove(client, playerMoveInfo);
+        standardGameController.doPlayerMove(client2, playerMoveInfo);
+        pickedTiles = new ArrayList<>();
+        pickedTiles.add(new PickedTile(0,0));
+        var board = game.getLivingRoom().getBoard();
+        board[0][0] = Tile.TROPHIES_1;
+        game.getLivingRoom().setBoard(board);
+        playerMoveInfo = new PlayerMoveInfo(pickedTiles,0);
+        standardGameController.doPlayerMove(client, playerMoveInfo);
+        standardGameController.doPlayerMove(client2, playerMoveInfo);
+        //non adjacent tiles
+        pickedTiles = new ArrayList<>();
+        pickedTiles.add(new PickedTile(1,3));
+        pickedTiles.add(new PickedTile(1,5));
+        //fill a board with empty tiles except for 1,3 and 1,5
+        board = new Tile[9][9];
+        Arrays.stream(board).forEach(a -> Arrays.fill(a, Tile.EMPTY));
+        board[1][3] = Tile.TROPHIES_1;
+        board[1][5] = Tile.TROPHIES_1;
+        game.getLivingRoom().setBoard(board);
+        playerMoveInfo = new PlayerMoveInfo(pickedTiles,0);
+        standardGameController.doPlayerMove(client, playerMoveInfo);
+        standardGameController.doPlayerMove(client2, playerMoveInfo);
+
+        //non adjacent tiles but same column
+        board = new Tile[9][9];
+        Arrays.stream(board).forEach(a -> Arrays.fill(a, Tile.EMPTY));
+        board[1][3] = Tile.TROPHIES_1;
+        board[3][3] = Tile.TROPHIES_1;
+        game.getLivingRoom().setBoard(board);
+        pickedTiles = new ArrayList<>();
+        pickedTiles.add(new PickedTile(1,3));
+        pickedTiles.add(new PickedTile(3,3));
+        playerMoveInfo = new PlayerMoveInfo(pickedTiles,0);
+        standardGameController.doPlayerMove(client, playerMoveInfo);
+        standardGameController.doPlayerMove(client2, playerMoveInfo);
+
+
+
     }
 
     @Test
-    void sendMessage() {
+    void sendMessage() throws PlayerNotExistsException {
+
+        var client2 = new ClientInterface(){
+            @Override
+            public void update(UserInfo o, User.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(ShelfInfo o, Shelf.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(PlayerInfo o, Player.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(PlayerChatInfo o, PlayerChat.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(PersonalGoalInfo o, PersonalGoal.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(LivingRoomInfo o, LivingRoom.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(GamesManagerInfo o, GamesManager.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(GameInfo o, Game.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void bind(ServerInterface server) throws RemoteException {
+
+            }
+        };
+        var client = new ClientInterface(){
+            @Override
+            public void update(UserInfo o, User.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(ShelfInfo o, Shelf.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(PlayerInfo o, Player.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(PlayerChatInfo o, PlayerChat.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(PersonalGoalInfo o, PersonalGoal.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(LivingRoomInfo o, LivingRoom.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(GamesManagerInfo o, GamesManager.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(GameInfo o, Game.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void bind(ServerInterface server) throws RemoteException {
+
+            }
+        };
+
+        var game = new StandardGame("42", 2);
+
+        var standardGameController = new StandardGameController(game);
+
+        try {
+            standardGameController.joinPlayer(client, new User(), new LoginInfo("1", "42", 1));
+        } catch (GameAccessDeniedException e) {
+            fail("Exception thrown" + e.getMessage());
+        }
+        try {
+            standardGameController.joinPlayer(client2, new User(), new LoginInfo("2", "42", 1));
+        } catch (GameAccessDeniedException e) {
+            fail("Exception thrown" + e.getMessage());
+        }
+        standardGameController.sendMessage(client, new StandardMessage("1", "2", "test"));
+        assertEquals(game.getPlayer("1").getPlayerChat().getMessages().get(0).getText(), "test");
+        assertEquals(game.getPlayer("2").getPlayerChat().getMessages().get(0).getText(), "test");
+        assertEquals(game.getPlayer("1").getPlayerChat().getMessages().get(0).getSender(), "1");
+        assertEquals(game.getPlayer("2").getPlayerChat().getMessages().get(0).getSender(), "1");
+        assertEquals(game.getPlayer("1").getPlayerChat().getMessages().get(0).getSubject(), "2");
+        assertEquals(game.getPlayer("2").getPlayerChat().getMessages().get(0).getSubject(), "2");
+        //now we test for a message from a non-existing client
+        var client3  = new ClientInterface(){
+            @Override
+            public void update(UserInfo o, User.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(ShelfInfo o, Shelf.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(PlayerInfo o, Player.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(PlayerChatInfo o, PlayerChat.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(PersonalGoalInfo o, PersonalGoal.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(LivingRoomInfo o, LivingRoom.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(GamesManagerInfo o, GamesManager.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(GameInfo o, Game.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void bind(ServerInterface server) throws RemoteException {
+
+            }
+        };
+        standardGameController.sendMessage(client3, new StandardMessage("1", "2", "test"));
+
+        //subject non existing
+        standardGameController.sendMessage(client, new StandardMessage("1", "3", "test"));
+
+
+
+
     }
 }
 

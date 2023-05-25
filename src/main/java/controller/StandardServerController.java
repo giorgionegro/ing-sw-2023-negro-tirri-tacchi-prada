@@ -62,7 +62,7 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
 
         ServerInterface server = new ServerEndpoint(this,this);
 
-        executorService.submit(() -> {
+        executorService.submit(() -> { //can we test this?
             try {
                 client.bind(server);
             } catch (RemoteException e) {
@@ -107,7 +107,8 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
 
             System.err.println("GIOCATORE JOIN");
         } catch (GameAccessDeniedException e) {
-            users.get(client).reportEvent(User.Status.NOT_JOINED,e.getMessage(),info.time(), User.Event.ERROR_REPORTED);
+            if (users.containsKey(client)&&users.get(client)!=null)
+                users.get(client).reportEvent(User.Status.NOT_JOINED,e.getMessage(),info.time(), User.Event.ERROR_REPORTED);
         }
     }
 
@@ -119,10 +120,7 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
             for(User u : users)
                 if(u.getStatus()== User.Status.NOT_JOINED)
                     activeUsers.remove(u);
-
-        } catch (GameAccessDeniedException e) {
-            throw new RuntimeException("Client is not connected to any match");
-        } catch (NullPointerException e) {
+        } catch (NullPointerException | GameAccessDeniedException  e) {
             throw new RemoteException("Client is not connected correctly");
         }
     }
@@ -130,10 +128,13 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
     @Override
     public void createGame(ClientInterface client, @NotNull NewGameInfo gameInfo) throws RemoteException{
         try {
+            if (!users.containsKey(client))
+                throw new GameAccessDeniedException("Client is not connected correctly");
             createGame(gameInfo.gameId(),gameInfo.playerNumber());
             users.get(client).reportEvent(User.Status.NOT_JOINED,"Game created",gameInfo.time(),  User.Event.GAME_CREATED);
-        } catch (GameAlreadyExistsException e) {
-            users.get(client).reportEvent(User.Status.NOT_JOINED,e.getMessage(), gameInfo.time(), User.Event.ERROR_REPORTED);
+        } catch (GameAlreadyExistsException | GameAccessDeniedException e) {
+            if (users.containsKey(client)&&users.get(client)!=null)
+                users.get(client).reportEvent(User.Status.NOT_JOINED,e.getMessage(), gameInfo.time(), User.Event.ERROR_REPORTED);
         }
     }
 

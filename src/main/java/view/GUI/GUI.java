@@ -5,7 +5,7 @@ import distibuted.interfaces.ServerInterface;
 import model.User;
 import model.abstractModel.*;
 import modelView.*;
-import view.TimedLock;
+import util.TimedLock;
 import view.interfaces.UI;
 
 import javax.swing.*;

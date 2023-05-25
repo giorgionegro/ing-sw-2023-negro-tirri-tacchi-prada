@@ -389,13 +389,20 @@ public class StandardGameController implements GameController, LobbyController {
             if(!(newMessage.getSubject().isEmpty() || subjectfound))
                 throw new IllegalArgumentException("Subject of the message does not exists");
 
+            //TODO sender is not a player?
+
             for (Player p : playerAssociation.values()) {
                 if (newMessage.getSubject().isEmpty() || newMessage.getSubject().equals(p.getId()) || newMessage.getSender().equals(p.getId()))
                     p.getPlayerChat().addMessage(newMessage);
             }
 
         } catch (IllegalArgumentException e) {
-            playerAssociation.get(userAssociation.get(client)).reportError(e.getMessage());
+            if (userAssociation.containsKey(client) && playerAssociation.containsKey(userAssociation.get(client))) {
+                playerAssociation.get(userAssociation.get(client)).reportError(e.getMessage());
+            }
+            else {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -479,7 +486,6 @@ public class StandardGameController implements GameController, LobbyController {
     }
 
     private boolean areTilesAligned(@NotNull List<PickedTile> pickedTiles){
-
         boolean rowAligned = true;
         boolean colAligned = true;
 
@@ -487,14 +493,12 @@ public class StandardGameController implements GameController, LobbyController {
             rowAligned = rowAligned && (pickedTiles.get(i-1).row() == pickedTiles.get(i).row());
             colAligned = colAligned && (pickedTiles.get(i-1).col() == pickedTiles.get(i).col());
         }
-
         if(rowAligned){
             pickedTiles.sort(Comparator.comparingInt(PickedTile::col));
             for(int i=0; i< pickedTiles.size()-1; i++)
                 if(pickedTiles.get(i).col()+1!=pickedTiles.get(i+1).col())
                     return false;
         }
-
         if(colAligned){
             pickedTiles.sort(Comparator.comparingInt(PickedTile::row));
             for(int i=0; i< pickedTiles.size()-1; i++)

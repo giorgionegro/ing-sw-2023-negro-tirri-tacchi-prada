@@ -5,6 +5,7 @@ import model.exceptions.GameEndedException;
 import model.exceptions.MatchmakingClosedException;
 import model.exceptions.PlayerAlreadyExistsException;
 import model.exceptions.PlayerNotExistsException;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -86,11 +87,17 @@ class StandardGameTest {
         players.add(new StandardPlayer("JJ", obb));
 
         // Creo una coda di turni di gioco e aggiungo giocatori
-        List<StandardPlayer> playerTurnQueue = new ArrayList<>();
-        playerTurnQueue.addAll(players);
+        List<StandardPlayer> playerTurnQueue = new ArrayList<>(players);
 
         // Creo un gioco e setto la coda dei turni di gioco
         StandardGame gameTest = new StandardGame("123", 3);
+        try {
+            gameTest.addPlayer("Rebecca");
+        } catch (PlayerAlreadyExistsException e) {
+            throw new RuntimeException(e);
+        } catch (MatchmakingClosedException e) {
+            throw new RuntimeException(e);
+        }
         //gameTest.setTurnQueue(playerTurnQueue); //TODO COME FACCIO A SETTARE IL TURNO DI UN GIOCATORE PER TESTARE?
 
         // Verifico che il giocatore corretto sia restituito

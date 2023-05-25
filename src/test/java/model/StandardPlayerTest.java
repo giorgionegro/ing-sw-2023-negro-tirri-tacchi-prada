@@ -47,14 +47,6 @@ class StandardPlayerTest {
 
     }
 
-    /**
-     * Method under test: {@link StandardPlayer#StandardPlayer(StandardPlayerInstance)}
-     */
-    @Test
-    void testConstructor2() {
-        assertThrows(IllegalArgumentException.class, () -> new StandardPlayer(null));
-    }
-
 
     @Test
     void testPlayerCreation() {

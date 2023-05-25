@@ -8,6 +8,8 @@ import model.Token;
 import model.User;
 import model.abstractModel.*;
 import modelView.*;
+import org.jetbrains.annotations.NotNull;
+import util.TimedLock;
 import view.interfaces.UI;
 
 import java.io.*;
@@ -361,72 +363,85 @@ public class TUI implements UI {
         server.doPlayerMove(client, new PlayerMoveInfo(tiles, sC));
     }
 
-    private boolean isPickable(List<PickedTile> pickedTiles, Tile[][] board) {//TODO test this extensively
+    private boolean isPickable(List<PickedTile> pickedTiles, Tile[][] board) {
+        if (!areTilesDifferent(new ArrayList<>(pickedTiles))){
+            printCommandLine("Tiles are not different", RED);
+            return false;
+        }
+        if(!areTilesAligned(new ArrayList<>(pickedTiles))) {
+            printCommandLine("Tiles are not aligned", RED);
+            return false;
+        }
+        for (PickedTile tile : pickedTiles)
+            if (!isTilePickable(tile.row(), tile.col(), board)){
+                printCommandLine("Tile not pickable", RED);
+                return false;
+            }
         return true;
-        // Check if all picked tiles are adjacent to an empty tile
-//        boolean adjacentToEmptyTile = false;
-//        for (PickedTile pickedTile : pickedTiles) {
-//            int row = pickedTile.row();
-//            int col = pickedTile.col();
-//            if (row > 0 && board[row-1][col] == Tile.EMPTY) {
-//                adjacentToEmptyTile = true;
-//                break;
-//            }
-//            if (row < board.length-1 && board[row+1][col] == Tile.EMPTY) {
-//                adjacentToEmptyTile = true;
-//                break;
-//            }
-//            if (col > 0 && board[row][col-1] == Tile.EMPTY) {
-//                adjacentToEmptyTile = true;
-//                break;
-//            }
-//            if (col < board[0].length-1 && board[row][col+1] == Tile.EMPTY) {
-//                adjacentToEmptyTile = true;
-//                break;
-//            }
-//        }
-//        if (!adjacentToEmptyTile) {
-//            return false;
-//        }
-//
-//        // Check if picked tiles are all in the same row or column
-//        int firstRow = pickedTiles.get(0).row();
-//        int firstCol = pickedTiles.get(0).col();
-//        boolean sameRow = true;
-//        boolean sameCol = true;
-//        for (PickedTile pickedTile : pickedTiles) {
-//            if (pickedTile.row() != firstRow) {
-//                sameRow = false;
-//            }
-//            if (pickedTile.col() != firstCol) {
-//                sameCol = false;
-//            }
-//            if (!sameRow && !sameCol) {
-//                return false;
-//            }
-//        }
-//
-//        if (sameRow) {
-//            int[] cols = pickedTiles.stream().mapToInt(PickedTile::col).toArray();
-//            Arrays.sort(cols);
-//            for (int i = 0; i < cols.length-1; i++) {
-//                if (cols[i+1] - cols[i] != 1) {
-//                    return false;
-//                }
-//            }
-//        }
-//        if (sameCol) {
-//            int[] rows = pickedTiles.stream().mapToInt(PickedTile::row).toArray();
-//            Arrays.sort(rows);
-//            for (int i = 0; i < rows.length-1; i++) {
-//                if (rows[i+1] - rows[i] != 1) {
-//                    return false;
-//                }
-//            }
-//        }
-//
-//        return true;
     }
+
+    private boolean areTilesAligned(@NotNull List<PickedTile> pickedTiles){
+
+        boolean rowAligned = true;
+        boolean colAligned = true;
+
+        for(int i = 1; i<pickedTiles.size(); i++){
+            rowAligned = rowAligned && (pickedTiles.get(i-1).row() == pickedTiles.get(i).row());
+            colAligned = colAligned && (pickedTiles.get(i-1).col() == pickedTiles.get(i).col());
+        }
+
+        if(rowAligned){
+            pickedTiles.sort(Comparator.comparingInt(PickedTile::col));
+            for(int i=0; i< pickedTiles.size()-1; i++)
+                if(pickedTiles.get(i).col()+1!=pickedTiles.get(i+1).col())
+                    return false;
+        }
+
+        if(colAligned){
+            pickedTiles.sort(Comparator.comparingInt(PickedTile::row));
+            for(int i=0; i< pickedTiles.size()-1; i++)
+                if(pickedTiles.get(i).row()+1!=pickedTiles.get(i+1).row())
+                    return false;
+        }
+
+
+        return rowAligned || colAligned;
+    }
+
+
+    /**
+     * @param pickedTiles list of picked tiles
+     * @return true if tiles are different, false otherwise
+     */
+    private boolean areTilesDifferent(@NotNull List<PickedTile> pickedTiles) {
+        for (int i = 0; i < pickedTiles.size() - 1; i++) {
+            for (int j = i + 1; j < pickedTiles.size(); j++) {
+                if (pickedTiles.get(i).row() == pickedTiles.get(j).row())
+                    if (pickedTiles.get(i).col() == pickedTiles.get(j).col())
+                        return false;
+            }
+        }
+        return true;
+    }
+    /**
+     * @param row    row of the tile
+     * @param column column of the tile
+     * @param board  board to check
+     * @return true if tile is pickable, false otherwise
+     */
+    private boolean isTilePickable(int row, int column, Tile[] @NotNull [] board) {
+        if (row < 0 || column < 0 || row > board.length - 1 || column > board[row].length - 1 || board[row][column].equals(Tile.EMPTY) || board[row][column] == null)
+            return false;
+
+        if (row == 0 || column == 0 || row == board.length - 1 || column == board[0].length - 1)
+            return true;
+
+        return board[row - 1][column] == Tile.EMPTY
+                || board[row + 1][column] == Tile.EMPTY
+                || board[row][column - 1] == Tile.EMPTY
+                || board[row][column + 1] == Tile.EMPTY;
+    }
+
 
     private void leave(){
         try {
@@ -549,13 +564,15 @@ public class TUI implements UI {
     }
 
     //draw String from start coordinate
-    private void drawString(String toDraw, int Row, int startCol, int colour, int size) {
+    private void drawString(String toDraw, int row, int startCol, int colour, int size) {
+        if (row < 0 || row >= renderHeight || startCol < 0 || startCol >= renderWidth)
+            return;
         if (toDraw.length() > size)
             toDraw = toDraw.substring(0, size);
 
         for (int i = 0; (i < toDraw.length() && (i + startCol) < (renderWidth - 2)); i++) {
-            cliPixel[Row][startCol + i] = toDraw.charAt(i);
-            cliPixelColor[Row][startCol + i] = colour;
+            cliPixel[row][startCol + i] = toDraw.charAt(i);
+            cliPixelColor[row][startCol + i] = colour;
         }
     }
 
@@ -572,32 +589,32 @@ public class TUI implements UI {
     }
 
     @SuppressWarnings("SameParameterValue")
-    private void drawBox(int y, int x, int height, int width, int colour) {
+    private void drawBox(int row, int col, int height, int width, int colour) {
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
-                if (i == 0 && j == 0) cliPixel[y + i][x + j] = '┌';
-                else if (i == 0 && j == width - 1) cliPixel[y + i][x + j] = '┐';
+                if (i == 0 && j == 0) cliPixel[row + i][col + j] = '┌';
+                else if (i == 0 && j == width - 1) cliPixel[row + i][col + j] = '┐';
                 else if (i == height - 1 && j == 0) {
-                    cliPixel[y + i][x + j] = '└';
-                    cliPixelColor[y + i][x + j] = colour;
+                    cliPixel[row + i][col + j] = '└';
+                    cliPixelColor[row + i][col + j] = colour;
                 } else if (i == height - 1 && j == width - 1) {
-                    cliPixel[y + i][x + j] = '┘';
-                    cliPixelColor[y + i][x + j] = colour;
+                    cliPixel[row + i][col + j] = '┘';
+                    cliPixelColor[row + i][col + j] = colour;
                 } else if (i == 0) {
-                    cliPixel[y + i][x + j] = '─';
-                    cliPixelColor[y + i][x + j] = colour;
+                    cliPixel[row + i][col + j] = '─';
+                    cliPixelColor[row + i][col + j] = colour;
                 } else if (i == height - 1) {
-                    cliPixel[y + i][x + j] = '─';
-                    cliPixelColor[y + i][x + j] = colour;
+                    cliPixel[row + i][col + j] = '─';
+                    cliPixelColor[row + i][col + j] = colour;
                 } else if (j == 0) {
-                    cliPixel[y + i][x + j] = '│';
-                    cliPixelColor[y + i][x + j] = colour;
+                    cliPixel[row + i][col + j] = '│';
+                    cliPixelColor[row + i][col + j] = colour;
                 } else if (j == width - 1) {
-                    cliPixel[y + i][x + j] = '│';
-                    cliPixelColor[y + i][x + j] = colour;
+                    cliPixel[row + i][col + j] = '│';
+                    cliPixelColor[row + i][col + j] = colour;
                 } else {
-                    cliPixel[y + i][x + j] = ' ';
-                    cliPixelColor[y + i][x + j] = DEFAULT;
+                    cliPixel[row + i][col + j] = ' ';
+                    cliPixelColor[row + i][col + j] = DEFAULT;
                 }
             }
         }

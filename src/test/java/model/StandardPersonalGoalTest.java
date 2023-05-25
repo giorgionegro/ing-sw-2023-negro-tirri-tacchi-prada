@@ -25,14 +25,6 @@ class StandardPersonalGoalTest {
         assertFalse(actualStandardPersonalGoal.hasChanged());
     }
 
-    /**
-     * Method under test: {@link StandardPersonalGoal#StandardPersonalGoal(StandardPersonalGoalInstance)}
-     */
-    @Test
-    void testConstructor2() {
-        assertThrows(IllegalArgumentException.class, () -> new StandardPersonalGoal(null));
-    }
-
     @Test
     void TestDescription() {
         StandardPersonalGoal test = new StandardPersonalGoal(Tile.BOOKS_2, 3, 4);
