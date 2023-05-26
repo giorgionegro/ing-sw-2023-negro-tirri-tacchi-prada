@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 
-public class CLI implements UI {
+public class TUI implements UI {
 
     private enum View {
         SERVER_INTERACTION,
@@ -80,7 +80,7 @@ public class CLI implements UI {
 
     String cursor = "";
 
-    public CLI() {
+    public TUI() {
         currentView = View.SERVER_INTERACTION;
         currentShelves = new HashMap<>();
         drawBox(0, 0, renderHeight, renderWidth, DEFAULT);
