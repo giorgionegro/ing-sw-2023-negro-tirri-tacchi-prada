@@ -4,6 +4,7 @@ import distibuted.interfaces.ClientInterface;
 import distibuted.interfaces.ServerInterface;
 import distibuted.socket.middleware.ClientSocketHandler;
 import view.CLI;
+import view.GUI.GUI;
 import view.interfaces.UI;
 
 import java.rmi.NotBoundException;
@@ -18,13 +19,16 @@ public class Client {
 
     public static void main(String[] args){
         //TODO check on args
-        new Client().run();
+        switch(args[0]){
+            case "-GUI" -> new Client(new GUI()).run();
+            case "-CLI" -> new Client(new CLI()).run();
+        }
         System.exit(0);
     }
 
-    private Client(){
+    private Client(UI  ui){
         //TODO ask if use gui or cli
-        ui = new CLI();
+        this.ui = ui;
         server = null;
         serverEndpoint = null;
     }
@@ -43,7 +47,7 @@ public class Client {
 
                 //if choose exit then return and close application
                 if (choise.equals(""))
-                    return;
+                    System.exit(0);
 
                 //else try to connect with socket or rmi
                 try {

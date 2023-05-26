@@ -18,9 +18,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 
-public class CLI implements UI{
+public class CLI implements UI {
 
-    private enum View{
+    private enum View {
         SERVER_INTERACTION,
         GAME_INTERACTION,
         GAME_ENDED
@@ -59,7 +59,7 @@ public class CLI implements UI{
     /*-----------------------------------------*/
 
     /*------------VIEW UTILITIES---------------*/
-    final private TimedLock serverWaiter = new TimedLock();
+    final private TimedLock<Boolean> serverWaiter = new TimedLock<>(false);
     private boolean viewLock = false;
     private final Scanner scanner = new Scanner(System.in);
     private boolean GameRunning;
@@ -76,6 +76,8 @@ public class CLI implements UI{
     final int[][] cliPixelColor = new int[renderHeight][renderWidth];
 
     /*-----------------------------------------*/
+
+
     String cursor = "";
 
     public CLI() {
@@ -91,11 +93,11 @@ public class CLI implements UI{
         return readCommandLine("Connect with RMI (r) or SOCKET (s)?, empty to exit: ");
     }
 
-    public void showError(String error){
+    public void showError(String error) {
         printCommandLine(error, RED);
     }
 
-    public void run(ServerInterface server, ClientInterface client){
+    public void run(ServerInterface server, ClientInterface client) {
         this.server = server;
         this.client = client;
 
@@ -110,7 +112,7 @@ public class CLI implements UI{
             }
         }
 
-        boolean exit = serverWaiter.getValue();
+        Boolean exit = serverWaiter.getValue();
 
         serverWaiter.reset();
 
@@ -166,8 +168,10 @@ public class CLI implements UI{
                     throw new RemoteException("Connection timeout error");
                 }
             }
-        }
-        else {
+
+            if (serverWaiter.getValue())
+                throw new RemoteException(user.eventMessage());
+        } else {
             throw new RemoteException("Wrong parameters (number between 2 and 4)");
         }
     }
@@ -437,6 +441,7 @@ public class CLI implements UI{
     /*--------------RENDERING FUNCTIONS------------------*/
 
     int updated = 0;
+
     private void updateView(boolean force) {
         if(!viewLock || force) {
                 //clear the matrix
@@ -632,7 +637,7 @@ public class CLI implements UI{
 
     public void printCommandLine(String toPrint, int colour) {
         String[] lines = toPrint.split("\n");
-        for(String s : lines)
+        for (String s : lines)
             oldCmds.add(new Pair(s, colour));
 
         while (oldCmds.size() > 8)
@@ -652,7 +657,7 @@ public class CLI implements UI{
             }
             out.println();
         }
-        moveCursor(commandLineY+commandLineHeight, commandLineX+2+cursor.length()+1);
+        moveCursor(commandLineY + commandLineHeight, commandLineX + 2 + cursor.length() + 1);
     }
 
     /*--------------------------------------------------*/
@@ -672,7 +677,7 @@ public class CLI implements UI{
     final int chatBoxHeight = 28;
 
     private void drawChat() {
-        if(currentPlayerChat!=null){
+        if (currentPlayerChat != null) {
             List<Message> messages = currentPlayerChat.messages();
             Collections.reverse(messages);
 
@@ -729,10 +734,12 @@ public class CLI implements UI{
         this.currentLivingRoom = lR;
         updateView(false);
     }
+
     final int livingRoomX = 1;
     final int livingRoomY = 1;
+
     private void drawLivingRoom() {
-        if(currentLivingRoom!=null){
+        if (currentLivingRoom != null) {
             Tile[][] board = currentLivingRoom.board();
             drawGrid(livingRoomX + 2, livingRoomY + 2, board[0].length, board.length);
             drawGridContents(livingRoomX + 2, livingRoomY + 2, board);
@@ -776,11 +783,13 @@ public class CLI implements UI{
 
         updateView(false);
     }
+
     final int shelvesX = 43;
     final int shelvesY = 4;
     final int shelvesPadding = 3;
+
     private void drawShelves() {
-        if(!currentShelves.isEmpty()) {
+        if (!currentShelves.isEmpty()) {
             int shelvesGridY = shelvesY + 1;
 
             int shelvesHeight = 0;
@@ -855,7 +864,7 @@ public class CLI implements UI{
 
         drawCenteredString("COMMAND LINE",commandLineX,commandLineY,commandLineWidth,DEFAULT);
 
-       drawString(cursor, commandLineY+commandLineHeight-1, commandLineX, DEFAULT, commandLineWidth-3);
+        drawString(cursor, commandLineY + commandLineHeight - 1, commandLineX, DEFAULT, commandLineWidth - 3);
         drawOldCmds();
     }
 
@@ -863,11 +872,11 @@ public class CLI implements UI{
     final List<Pair> oldCmds = new ArrayList<>();
 
     private void drawOldCmds() {
-        while (oldCmds.size() > (commandLineHeight-4))
+        while (oldCmds.size() > (commandLineHeight - 4))
             oldCmds.remove(0);
 
         for (int i = 0; i < oldCmds.size(); i++) {
-            drawString(oldCmds.get(i).string(), commandLineY+2+i, commandLineX+1, oldCmds.get(i).colour(), commandLineWidth-2);
+            drawString(oldCmds.get(i).string(), commandLineY + 2 + i, commandLineX + 1, oldCmds.get(i).colour(), commandLineWidth - 2);
         }
     }
 
@@ -879,23 +888,23 @@ public class CLI implements UI{
         updateView(false);
     }
 
-    private final Map<String,String[]> commonGoalRes = getCommonGoalRes();
+    private final Map<String, String[]> commonGoalRes = getCommonGoalRes();
 
-    private Map<String,String[]> getCommonGoalRes(){
-        Map<String,String[]> ris = new HashMap<>();
+    private Map<String, String[]> getCommonGoalRes() {
+        Map<String, String[]> ris = new HashMap<>();
         File dir = new File(this.getClass().getResource("/commonGoals/CLI").getPath());
-        if(dir.isDirectory()) {
+        if (dir.isDirectory()) {
             File[] res;
-            if(dir.listFiles()!=null)
+            if (dir.listFiles() != null)
                 res = dir.listFiles();
             else
                 res = new File[0];
 
             for (File f : res) {
                 if (!f.isDirectory() && f.getName().contains(".txt")) {
-                    try(FileInputStream fr = new FileInputStream(f)){
-                        String img = new String(fr.readAllBytes(),StandardCharsets.UTF_8);
-                        ris.put(f.getName().replace(".txt",""),img.split("\r\n"));
+                    try (FileInputStream fr = new FileInputStream(f)) {
+                        String img = new String(fr.readAllBytes(), StandardCharsets.UTF_8);
+                        ris.put(f.getName().replace(".txt", ""), img.split("\r\n"));
                     } catch (IOException e) {
                         System.err.println("error while reading resources");
                     }
@@ -911,8 +920,9 @@ public class CLI implements UI{
     final int commonGoalsPadding = 3;
     final int commonGoalBoxWidth = 23;
     final int commonGoalBoxHeight = 15;
+
     private void drawCommonGoals() {
-        if(!commonGoals.isEmpty()){
+        if (!commonGoals.isEmpty()) {
             int boxesStartY = commonGoalsY + 1;
             StringBuilder points = new StringBuilder();
             int drewedCommonGoals = 0;
@@ -993,7 +1003,7 @@ public class CLI implements UI{
     final int personalGoalsY = 24;
 
     private void drawPersonalGoal() {
-        if(currentPersonalGoals.size()==6) {
+        if (currentPersonalGoals.size() == 6) {
             Tile[][] shelf = new Tile[6][5];
             Arrays.stream(shelf).forEach(tiles -> Arrays.fill(tiles, Tile.EMPTY));
 
@@ -1018,7 +1028,7 @@ public class CLI implements UI{
     public void update(UserInfo o, User.Event evt) {
         user = o;
 
-        if(evt==null) {
+        if (evt == null) {
             serverWaiter.notify(false);
             return;
         }
@@ -1076,43 +1086,6 @@ public class CLI implements UI{
         }
     }
 
-    private record Pair(String string, int colour) {}
-}
-
-class TimedLock{
-
-    private boolean notified;
-    private boolean value;
-    public TimedLock(){
-        notified = false;
-        value = false;
-    }
-
-    public synchronized void reset(){
-        notified = false;
-    }
-
-    @SuppressWarnings( "BooleanMethodIsAlwaysInverted")
-    public synchronized boolean hasBeenNotified(){
-        return notified;
-    }
-
-    public synchronized void setValue(boolean value){
-        this.value = value;
-    }
-
-    public synchronized boolean getValue(){
-        return value;
-    }
-
-    public synchronized void lock(long timeoutMillis) throws InterruptedException {
-        this.notified = false;
-        this.wait(timeoutMillis);
-    }
-
-    public synchronized void notify(boolean value){
-        this.notified = true;
-        this.value = value;
-        this.notifyAll();
+    private record Pair(String string, int colour) {
     }
 }
