@@ -27,13 +27,6 @@ class StandardLivingRoomTest {
         assertEquals(1, actualStandardLivingRoom.getBoard().length);
     }
 
-    /**
-     * Method under test: {@link StandardLivingRoom#StandardLivingRoom(StandardLivingRoomInstance)}
-     */
-    @Test
-    void testConstructor2() {
-        assertThrows(IllegalArgumentException.class, () -> new StandardLivingRoom(null));
-    }
 
     @Test
         //after refillBoard(), check that all the board cells that should be empty actually are

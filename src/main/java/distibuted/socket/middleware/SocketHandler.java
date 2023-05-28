@@ -11,7 +11,7 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.rmi.RemoteException;
 
-public abstract class SocketHandler<Interface>{
+public abstract class SocketHandler<Interface> {
     private ObjectOutputStream oos;
     private ObjectInputStream ois;
 
@@ -19,23 +19,25 @@ public abstract class SocketHandler<Interface>{
     private int port = 0;
     private @Nullable Socket socket = null;
 
-    public SocketHandler(@NotNull String   ip, int port){
+    public SocketHandler(@NotNull String ip, int port) {
         this.ip = ip;
         this.port = port;
     }
 
-    public SocketHandler( @NotNull Socket socket){
+    public SocketHandler(@NotNull Socket socket) {
         this.socket = socket;
     }
 
-    public void open() throws RemoteException{
+    public void open() throws RemoteException {
         try {
             if (socket == null) {
                 socket = new Socket(ip, port);
             }
 
-            if(!socket.isConnected())
-                socket.connect(new InetSocketAddress(ip,port),1000);
+            if (!socket.isConnected()) {
+                //Could ip be null?
+                socket.connect(new InetSocketAddress(ip, port), 1000);
+            }
 
             this.oos = new ObjectOutputStream(socket.getOutputStream());
             this.ois = new ObjectInputStream(socket.getInputStream());
@@ -44,9 +46,13 @@ public abstract class SocketHandler<Interface>{
         }
     }
 
-    public void close() throws RemoteException{
+    public void close() throws RemoteException {
         try {
-            socket.close();
+            if (socket != null) {
+                socket.close();
+            } else {
+                throw new IOException("Socket is non been initialized");
+            }
         } catch (IOException e) {
             throw new RemoteException("Unable to close the socket connection");
         }

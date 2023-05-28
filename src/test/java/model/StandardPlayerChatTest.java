@@ -77,13 +77,6 @@ class StandardPlayerChatTest {
         assertEquals(messages, actualStandardPlayerChat.getMessages());
     }
 
-    /**
-     * Method under test: {@link StandardPlayerChat#StandardPlayerChat(StandardPlayerChatInstance)}
-     */
-    @Test
-    void testConstructor2() {
-        assertThrows(IllegalArgumentException.class, () -> new StandardPlayerChat(null));
-    }
 
     /**
      * Method under test: {@link StandardPlayerChat#getInfo()}

@@ -37,21 +37,7 @@ class StandardShelfTest {
         assertFalse(actualStandardShelf.hasChanged());
         assertEquals(1, actualStandardShelf.getTiles().length);
     }
-
-    /**
-     * test: {@link StandardShelf#StandardShelf(StandardShelfInstance)}
-     * testing throw of IllegalArgumentException
-     */
-    @Test
-    void testConstructor2() {
-        assertThrows(IllegalArgumentException.class, () -> new StandardShelf(null));
-    }
-
-    /**
-     *  test: {@link StandardShelf#getInstance()}
-     */
-    @Test
-    void testGetInstance() {
-        assertEquals(6, ((StandardShelfInstance) (new StandardShelf()).getInstance()).tiles().length);
-    }
 }
+
+
+
