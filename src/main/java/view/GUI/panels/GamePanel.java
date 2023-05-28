@@ -10,16 +10,12 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import javax.swing.JComponent;
 
 import util.ResourceProvider;
 import view.GUI.*;
-import view.GUI.components.SwapButton;
-import view.GUI.components.TileButton;
 import view.interfaces.*;
 
 public class GamePanel extends JComponent implements ActionListener, ShelfView, PlayerChatView, CommonGoalView, PlayerView, GameView, LivingRoomView, PersonalGoalView {

@@ -1,5 +1,6 @@
 package view.GUI.panels;
 
+import util.ResourceProvider;
 import view.GUI.GUI;
 
 import javax.swing.*;
@@ -15,7 +16,7 @@ public class HomePanel extends JPanel implements ActionListener {
     public HomePanel(ActionListener listener){//JFrame = a GUI window to add components to
         this.listener = listener;
 
-        desktop = new ImageIcon (this.getClass().getResource("/desktop.png").getPath()).getImage();
+        desktop = new ImageIcon (ResourceProvider.getResourcePath("/desktop.png")).getImage();
         GridBagConstraints c = new GridBagConstraints();
         c.gridx=0;
         c.gridy=0;
@@ -34,7 +35,7 @@ public class HomePanel extends JPanel implements ActionListener {
         //Title
 
 
-        ImageIcon titleImage = new ImageIcon(this.getClass().getResource("/title.png").getPath());
+        ImageIcon titleImage = new ImageIcon(ResourceProvider.getResourcePath("/title.png"));
         JLabel title = new JLabel() {
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
@@ -48,7 +49,7 @@ public class HomePanel extends JPanel implements ActionListener {
         //Buttons
         Font font = new Font("Century", Font.BOLD, 20);
         JoinButton = new JButton();
-        ImageIcon button = new ImageIcon(GUI.class.getResource("/img.png").getPath());
+        ImageIcon button = new ImageIcon(ResourceProvider.getResourcePath("/img.png"));
         JoinButton.setIcon(button);
         JLabel join = new JLabel("Join Game");
         join.setFont(font);

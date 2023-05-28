@@ -116,8 +116,6 @@ public class TilesOrderingPanel extends JPanel implements ActionListener{
                 pickedTiles.add(0,pickedTiles.remove(1));
             }
         } else if (e.getSource()==columnChoser) {
-
-
             //TODO Prepara per mandare la mossa a moveSender
 
 
