@@ -12,7 +12,10 @@ import org.jetbrains.annotations.NotNull;
 import util.TimedLock;
 import view.interfaces.UI;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.rmi.RemoteException;
 import java.util.*;
@@ -22,13 +25,6 @@ import java.util.stream.Collectors;
 
 public class TUI implements UI {
 
-    private enum View {
-        SERVER_INTERACTION,
-        GAME_INTERACTION,
-        GAME_ENDED
-    }
-
-    /*-------------COLORS---------------------*/
     public static final int WHITE = 37;
     public static final int GREEN = 32;
     public static final int YELLOW = 33;
@@ -37,35 +33,6 @@ public class TUI implements UI {
     public static final int CYAN = 36;
     public static final int RED = 31;
     public static final int DEFAULT = 39;
-
-    /*----------------------------------------*/
-
-    /*---------------INFO--------------------*/
-    private final List<PersonalGoalInfo> currentPersonalGoals = new ArrayList<>();
-    private final List<GamesManagerInfo> games = new ArrayList<>();
-    private GameInfo currentGameState;
-    private UserInfo user;
-    private final Map<String,CommonGoalInfo> commonGoals = new HashMap<>();
-    private Map<String, Token> achievedCommonGoals = new HashMap<>();
-    private final Map<String, ShelfInfo> currentShelves;
-    private LivingRoomInfo currentLivingRoom;
-    private PlayerChatInfo currentPlayerChat;
-    private String thisPlayerId;
-
-    /*-----------------------------------------*/
-
-    /*--------DISTRIBUTION OBJECTS-------------*/
-    private ServerInterface server;
-    private ClientInterface client;
-
-    /*-----------------------------------------*/
-
-    /*------------VIEW UTILITIES---------------*/
-    final private TimedLock<Boolean> serverWaiter = new TimedLock<>(false);
-    private boolean viewLock = false;
-    private final Scanner scanner = new Scanner(System.in);
-    private boolean GameRunning;
-    private View currentView;
     static final PrintStream out = System.out;
 
     /*----------------------------------------*/
@@ -73,14 +40,74 @@ public class TUI implements UI {
     /*-----------VIEW COMPONENTS--------------*/
     static final int renderHeight = 53;
     static final int renderWidth = 140;
-
     final char[][] cliPixel = new char[renderHeight][renderWidth];
     final int[][] cliPixelColor = new int[renderHeight][renderWidth];
+    final int chatX = 80;
+    final int chatY = 23;
+    final int chatBoxWidth = 58;
+    final int chatBoxHeight = 28;
+    final int livingRoomX = 1;
+    final int livingRoomY = 1;
+    final int shelvesX = 43;
 
     /*-----------------------------------------*/
+    final int shelvesY = 4;
+    final int shelvesPadding = 3;
 
+    /*-----------------------------------------*/
+    final int commandLineX = 1;
+    final int commandLineY = 41;
+    final int commandLineWidth = 75;
+    final int commandLineHeight = 10;
+    //old cmds to be shifted up
+    final List<Pair> oldCmds = new ArrayList<>();
+    final int commonGoalsX = 3;
 
+    /*----------------------------------------*/
+    final int commonGoalsY = 23;
+    final int commonGoalsPadding = 3;
+    final int commonGoalBoxWidth = 23;
+    final int commonGoalBoxHeight = 15;
+
+    /*-----------------------------------------*/
+    final int personalGoalsX = 55;
+    final int personalGoalsY = 24;
+    private final List<PersonalGoalInfo> currentPersonalGoals = new ArrayList<>();
+    private final List<GamesManagerInfo> games = new ArrayList<>();
+    private final Map<String, CommonGoalInfo> commonGoals = new HashMap<>();
+
+    /*------------------------------------------*/
+
+    /*--------SERVER INTERACTION FUNCTIONS--------*/
+    private final Map<String, ShelfInfo> currentShelves;
+    /*------------VIEW UTILITIES---------------*/
+    final private TimedLock<Boolean> serverWaiter = new TimedLock<>(false);
+    private final Scanner scanner = new Scanner(System.in);
+    private final Map<String, Integer> points = new HashMap<>();
+
+    /*-----------------------------------------------*/
+    private final int gameEndY = 14;
+    private final int gameEndX = 50;
+    private final int gameEndWidth = 36;
+    private final Map<String, String[]> commonGoalRes = getCommonGoalRes();
     String cursor = "";
+
+    int updated = 0;
+    private long currentSessionTime = -1;
+    private GameInfo currentGameState;
+    private UserInfo user;
+    private Map<String, Token> achievedCommonGoals = new HashMap<>();
+    private LivingRoomInfo currentLivingRoom;
+    private PlayerChatInfo currentPlayerChat;
+
+
+    private String thisPlayerId;
+    /*--------DISTRIBUTION OBJECTS-------------*/
+    private ServerInterface server;
+    private ClientInterface client;
+    private boolean viewLock = false;
+    private boolean GameRunning;
+    private View currentView;
 
     public TUI() {
         currentView = View.SERVER_INTERACTION;
@@ -88,6 +115,25 @@ public class TUI implements UI {
         drawBox(0, 0, renderHeight, renderWidth, DEFAULT);
         drawCommandLine();
         updateView(false);
+    }
+
+    //move cursor to arbitrary position
+    public static void moveCursor(int y, int x) {
+        System.out.print("\033[" + y + ";" + x + "H");
+    }
+
+    private static int getColour(String color) {
+        int colour;
+        switch (color) {
+            case "Green" -> colour = GREEN;
+            case "White" -> colour = WHITE;
+            case "Yellow" -> colour = YELLOW;
+            case "Blue" -> colour = BLUE;
+            case "LightBlue" -> colour = CYAN;
+            case "Magenta" -> colour = MAGENTA;
+            default -> colour = DEFAULT;
+        }
+        return colour;
     }
 
     /*-------------UI--------------------------*/
@@ -105,7 +151,7 @@ public class TUI implements UI {
 
         this.currentView = View.SERVER_INTERACTION;
 
-        if(!serverWaiter.hasBeenNotified()) {
+        if (!serverWaiter.hasBeenNotified()) {
             try {
                 serverWaiter.setValue(true);
                 serverWaiter.lock(6000);
@@ -118,8 +164,8 @@ public class TUI implements UI {
 
         serverWaiter.reset();
 
-        if(!exit){
-            printCommandLine("CONNECTED",GREEN);
+        if (!exit) {
+            printCommandLine("CONNECTED", GREEN);
         }
 
         while (!exit) {
@@ -147,22 +193,17 @@ public class TUI implements UI {
         }
     }
 
-    /*------------------------------------------*/
-
-    /*--------SERVER INTERACTION FUNCTIONS--------*/
-
     private void createGame() throws RemoteException {
         String gameId = readCommandLine("GameId: ");
         String p = readCommandLine("PlayerNumber (between 2 and 4): ");
         int k = Integer.parseInt(p);
         if (k > 1 && k < 5) {
 
-            long requestTime = System.currentTimeMillis();
-
+            currentSessionTime = System.currentTimeMillis();
             serverWaiter.reset();
-            server.createGame(client, new NewGameInfo(gameId, "STANDARD", k, requestTime));
+            server.createGame(client, new NewGameInfo(gameId, "STANDARD", k, currentSessionTime));
 
-            if(!serverWaiter.hasBeenNotified()){
+            if (!serverWaiter.hasBeenNotified()) {
                 serverWaiter.setValue(true);
                 try {
                     serverWaiter.lock(6000);
@@ -183,12 +224,13 @@ public class TUI implements UI {
         String playerId = readCommandLine("Write playerId (empty to exit): ");
         if (!playerId.equals("")) {
             serverWaiter.reset();
-            server.joinGame(client, new LoginInfo(playerId, gameId, System.currentTimeMillis()));
-        }else
+            currentSessionTime = System.currentTimeMillis();
+            server.joinGame(client, new LoginInfo(playerId, gameId, currentSessionTime));
+        } else
             return;
 
-        if(!serverWaiter.hasBeenNotified()){
-            try{
+        if (!serverWaiter.hasBeenNotified()) {
+            try {
                 serverWaiter.setValue(true);
                 serverWaiter.lock(6000);
             } catch (InterruptedException e) {
@@ -208,7 +250,7 @@ public class TUI implements UI {
         GameRunning = true;
         while (this.GameRunning) {
             String readLine = readCommandLine("(h for commands)-> ");
-            if(this.GameRunning)
+            if (this.GameRunning)
                 switch (readLine) {
                     case "h" -> printCommandLine("1: Update view status\n2: Pick tiles\n3: Send message");
                     case "1" -> updateView(false);
@@ -223,64 +265,56 @@ public class TUI implements UI {
         updateView(true);
     }
 
-    public void resetInfo(){
+    /*--------------------------------------------------*/
+
+    public void resetInfo() {
         currentPersonalGoals.clear();
-        currentGameState=null;
+        currentGameState = null;
         commonGoals.clear();
         achievedCommonGoals.clear();
         currentShelves.clear();
-        currentLivingRoom=null;
-        currentPlayerChat=null;
-        thisPlayerId=null;
+        currentLivingRoom = null;
+        currentPlayerChat = null;
+        thisPlayerId = null;
     }
 
-    /*-----------------------------------------------*/
-
-    private final Map<String,Integer> points = new HashMap<>();
-
-    private final int gameEndY = 14;
-    private final int gameEndX = 50;
-
-    private final int gameEndWidth = 36;
-    private void drawGameEnd(){
-        Map<Integer,List<Map.Entry<String,Integer>>> grouped = points.entrySet().stream().collect(Collectors.groupingBy(Map.Entry::getValue));
-        List<Map.Entry<Integer,List<Map.Entry<String,Integer>>>> sorted = new ArrayList<>(grouped.entrySet().stream().sorted(Map.Entry.comparingByKey()).toList());
+    private void drawGameEnd() {
+        Map<Integer, List<Map.Entry<String, Integer>>> grouped = points.entrySet().stream().collect(Collectors.groupingBy(Map.Entry::getValue));
+        List<Map.Entry<Integer, List<Map.Entry<String, Integer>>>> sorted = new ArrayList<>(grouped.entrySet().stream().sorted(Map.Entry.comparingByKey()).toList());
         Collections.reverse(sorted);
 
-        drawCenteredString("LEADERBOARD",gameEndX,gameEndY,gameEndWidth,DEFAULT);
+        drawCenteredString("LEADERBOARD", gameEndX, gameEndY, gameEndWidth, DEFAULT);
 
         String positionTitle = " POSITION ";
         String idTitle = "      ID      ";
         String pointsTitle = "  POINTS  ";
 
-        drawCenteredString(positionTitle+"│"+idTitle+"│"+pointsTitle,gameEndX,gameEndY+1,gameEndWidth,DEFAULT);
+        drawCenteredString(positionTitle + "│" + idTitle + "│" + pointsTitle, gameEndX, gameEndY + 1, gameEndWidth, DEFAULT);
 
-        int leaderBoardY = gameEndY+2;
+        int leaderBoardY = gameEndY + 2;
         int line = 0;
         int position = 1;
-        for(Map.Entry<Integer,List<Map.Entry<String,Integer>>> group : sorted){
+        for (Map.Entry<Integer, List<Map.Entry<String, Integer>>> group : sorted) {
             boolean firstOfTheGroup = true;
-            for(Map.Entry<String,Integer> player : group.getValue()){
+            for (Map.Entry<String, Integer> player : group.getValue()) {
                 String pos;
                 String points;
-                if(firstOfTheGroup){
+                if (firstOfTheGroup) {
                     pos = String.valueOf(position);
                     firstOfTheGroup = false;
-                }else{
+                } else {
                     pos = "|";
                 }
                 points = String.valueOf(player.getValue());
-                drawCenteredString(pos,gameEndX,leaderBoardY+line,positionTitle.length(),DEFAULT);
-                drawCenteredString(player.getKey(),gameEndX+positionTitle.length()+1,leaderBoardY+line,idTitle.length(),DEFAULT);
-                drawCenteredString(points, gameEndX+positionTitle.length()+idTitle.length()+2,leaderBoardY+line,pointsTitle.length(),DEFAULT);
+                drawCenteredString(pos, gameEndX, leaderBoardY + line, positionTitle.length(), DEFAULT);
+                drawCenteredString(player.getKey(), gameEndX + positionTitle.length() + 1, leaderBoardY + line, idTitle.length(), DEFAULT);
+                drawCenteredString(points, gameEndX + positionTitle.length() + idTitle.length() + 2, leaderBoardY + line, pointsTitle.length(), DEFAULT);
                 line++;
             }
             position++;
         }
 
     }
-
-    /*---------------GAME ROUTINE FUNCTIONS---------------*/
 
     private void sendMessage() throws RemoteException {
 
@@ -300,7 +334,7 @@ public class TUI implements UI {
         boolean choosing = true;
         do {
             viewLock = true;
-            printCommandLine("Remaining pickable tiles: " + pickableNum+"\nWrite row,col r2,c2 to pick up to three tiles");
+            printCommandLine("Remaining pickable tiles: " + pickableNum + "\nWrite row,col r2,c2 to pick up to three tiles");
             viewLock = false;
             String choice = readCommandLine("-> ");
             String[] split = choice.split(" ");
@@ -316,15 +350,15 @@ public class TUI implements UI {
                     printCommandLine("Tile " + x + "," + y + " picked", GREEN);
                 } catch (NumberFormatException e) {
                     printCommandLine("Illegal character", RED);
-                    formatError=true;
+                    formatError = true;
                     break;
                 } catch (ArrayIndexOutOfBoundsException e) {
                     printCommandLine("Wrong format, Should be r1,c1 r2,c2 r3,c3", RED);
-                    formatError=true;
+                    formatError = true;
                     break;
                 }
             }
-            if(formatError)
+            if (formatError)
                 continue;
             //check if the tiles are pick-able, pick-able if they are all in the same row or column and adjacent to each other
             boolean pickable = isPickable(tTiles, currentLivingRoom.board());//TODO don't seams to work
@@ -364,43 +398,43 @@ public class TUI implements UI {
     }
 
     private boolean isPickable(List<PickedTile> pickedTiles, Tile[][] board) {
-        if (!areTilesDifferent(new ArrayList<>(pickedTiles))){
+        if (!areTilesDifferent(new ArrayList<>(pickedTiles))) {
             printCommandLine("Tiles are not different", RED);
             return false;
         }
-        if(!areTilesAligned(new ArrayList<>(pickedTiles))) {
+        if (!areTilesAligned(new ArrayList<>(pickedTiles))) {
             printCommandLine("Tiles are not aligned", RED);
             return false;
         }
         for (PickedTile tile : pickedTiles)
-            if (!isTilePickable(tile.row(), tile.col(), board)){
+            if (!isTilePickable(tile.row(), tile.col(), board)) {
                 printCommandLine("Tile not pickable", RED);
                 return false;
             }
         return true;
     }
 
-    private boolean areTilesAligned(@NotNull List<PickedTile> pickedTiles){
+    private boolean areTilesAligned(@NotNull List<PickedTile> pickedTiles) {
 
         boolean rowAligned = true;
         boolean colAligned = true;
 
-        for(int i = 1; i<pickedTiles.size(); i++){
-            rowAligned = rowAligned && (pickedTiles.get(i-1).row() == pickedTiles.get(i).row());
-            colAligned = colAligned && (pickedTiles.get(i-1).col() == pickedTiles.get(i).col());
+        for (int i = 1; i < pickedTiles.size(); i++) {
+            rowAligned = rowAligned && (pickedTiles.get(i - 1).row() == pickedTiles.get(i).row());
+            colAligned = colAligned && (pickedTiles.get(i - 1).col() == pickedTiles.get(i).col());
         }
 
-        if(rowAligned){
+        if (rowAligned) {
             pickedTiles.sort(Comparator.comparingInt(PickedTile::col));
-            for(int i=0; i< pickedTiles.size()-1; i++)
-                if(pickedTiles.get(i).col()+1!=pickedTiles.get(i+1).col())
+            for (int i = 0; i < pickedTiles.size() - 1; i++)
+                if (pickedTiles.get(i).col() + 1 != pickedTiles.get(i + 1).col())
                     return false;
         }
 
-        if(colAligned){
+        if (colAligned) {
             pickedTiles.sort(Comparator.comparingInt(PickedTile::row));
-            for(int i=0; i< pickedTiles.size()-1; i++)
-                if(pickedTiles.get(i).row()+1!=pickedTiles.get(i+1).row())
+            for (int i = 0; i < pickedTiles.size() - 1; i++)
+                if (pickedTiles.get(i).row() + 1 != pickedTiles.get(i + 1).row())
                     return false;
         }
 
@@ -408,6 +442,8 @@ public class TUI implements UI {
         return rowAligned || colAligned;
     }
 
+
+    /*------------------------------------------------------*/
 
     /**
      * @param pickedTiles list of picked tiles
@@ -423,6 +459,7 @@ public class TUI implements UI {
         }
         return true;
     }
+
     /**
      * @param row    row of the tile
      * @param column column of the tile
@@ -442,8 +479,7 @@ public class TUI implements UI {
                 || board[row][column + 1] == Tile.EMPTY;
     }
 
-
-    private void leave(){
+    private void leave() {
         try {
             server.leaveGame(client);
         } catch (RemoteException e) {
@@ -451,40 +487,36 @@ public class TUI implements UI {
         }
     }
 
-    /*---------------------------------------------------*/
-
-    /*--------------RENDERING FUNCTIONS------------------*/
-
-    int updated = 0;
-
     private void updateView(boolean force) {
-        if(!viewLock || force) {
-                //clear the matrix
-                Arrays.stream(cliPixel).forEach(a -> Arrays.fill(a, ' '));
-                Arrays.stream(cliPixelColor).forEach(a -> Arrays.fill(a, DEFAULT));
+        if (!viewLock || force) {
+            //clear the matrix
+            Arrays.stream(cliPixel).forEach(a -> Arrays.fill(a, ' '));
+            Arrays.stream(cliPixelColor).forEach(a -> Arrays.fill(a, DEFAULT));
 
-                drawBox(0, 0, renderHeight, renderWidth, DEFAULT);
-                drawCommandLine();
+            drawBox(0, 0, renderHeight, renderWidth, DEFAULT);
+            drawCommandLine();
 
-                switch (currentView){
-                    case GAME_INTERACTION -> {
-                        drawCommandLine();
-                        drawGameState();
-                        drawLivingRoom();
-                        drawShelves();
-                        drawChat();
-                        drawCommonGoals();
-                        drawPersonalGoal();
-                    }
-                    case GAME_ENDED -> drawGameEnd();
+            switch (currentView) {
+                case GAME_INTERACTION -> {
+                    drawCommandLine();
+                    drawGameState();
+                    drawLivingRoom();
+                    drawShelves();
+                    drawChat();
+                    drawCommonGoals();
+                    drawPersonalGoal();
                 }
-
-                updated++;
-                drawString(updated +" ",0,0,GREEN, 20);
-                render();
+                case GAME_ENDED -> drawGameEnd();
             }
 
+            updated++;
+            drawString(updated + " ", 0, 0, GREEN, 20);
+            render();
+        }
+
     }
+
+    /*--------------------------------------------------*/
 
     private String renderPixel(int x, int y) {
         return "\u001B[" + cliPixelColor[x][y] + "m" + cliPixel[x][y] + "\u001B[0m";
@@ -508,56 +540,56 @@ public class TUI implements UI {
         }
     }
 
-    private void drawGrid(int startX, int startY, int gridRowDim, int gridColDim){
+    private void drawGrid(int startX, int startY, int gridRowDim, int gridColDim) {
         String middle = "│   ".repeat(gridRowDim) + "│";
 
-        for(int i=0; i<gridColDim; i++) {
+        for (int i = 0; i < gridColDim; i++) {
             String pattern;
-            if(i==0)
+            if (i == 0)
                 pattern = "┬───";
             else
                 pattern = "┼───";
 
-            drawString(pattern.repeat(gridRowDim), startY + i*2, startX, DEFAULT,60);
-            drawString(middle, startY + i*2 + 1, startX, DEFAULT,60);
+            drawString(pattern.repeat(gridRowDim), startY + i * 2, startX, DEFAULT, 60);
+            drawString(middle, startY + i * 2 + 1, startX, DEFAULT, 60);
         }
 
-        drawString("┴───".repeat(gridRowDim), startY + gridColDim*2, startX, DEFAULT,60);
+        drawString("┴───".repeat(gridRowDim), startY + gridColDim * 2, startX, DEFAULT, 60);
 
         char s;
         char t;
-        for(int i=0; i<gridColDim+1; i++){
-            if(i==0){
+        for (int i = 0; i < gridColDim + 1; i++) {
+            if (i == 0) {
                 s = '┌';
                 t = '┐';
-            } else if (i==gridColDim) {
+            } else if (i == gridColDim) {
                 s = '└';
                 t = '┘';
-            }else{
+            } else {
                 s = '├';
                 t = '┤';
             }
-            cliPixel[startY + i*2][startX] = s;
-            cliPixelColor[startY + i*2][startX] = DEFAULT;
-            cliPixel[startY + i*2][startX + gridRowDim * 4] = t;
-            cliPixelColor[startY + i*2][startX + gridRowDim *4] = DEFAULT;
+            cliPixel[startY + i * 2][startX] = s;
+            cliPixelColor[startY + i * 2][startX] = DEFAULT;
+            cliPixel[startY + i * 2][startX + gridRowDim * 4] = t;
+            cliPixelColor[startY + i * 2][startX + gridRowDim * 4] = DEFAULT;
         }
     }
 
-    private void drawGridContents(int startX, int startY, Tile[][] contents){
-        startX = startX+1;
-        startY = startY+1;
+    private void drawGridContents(int startX, int startY, Tile[][] contents) {
+        startX = startX + 1;
+        startY = startY + 1;
 
-        for(int i=0; i<contents.length; i++){
-            for(int j=0; j<contents[i].length; j++){
+        for (int i = 0; i < contents.length; i++) {
+            for (int j = 0; j < contents[i].length; j++) {
                 int color = getColour(contents[i][j].getColor());
                 char c = '█';
-                if(color == DEFAULT)
+                if (color == DEFAULT)
                     c = ' ';
 
-                for(int k=0; k<3; k++){
-                    cliPixel[startY+i*2][k + startX + j*4] = c;
-                    cliPixelColor[startY+i*2][k + startX + j*4] = color;
+                for (int k = 0; k < 3; k++) {
+                    cliPixel[startY + i * 2][k + startX + j * 4] = c;
+                    cliPixelColor[startY + i * 2][k + startX + j * 4] = color;
                 }
             }
         }
@@ -576,16 +608,17 @@ public class TUI implements UI {
         }
     }
 
-    private void drawCenteredString(String text, int startX, int startY, int spaceWidth, int color){
+    /*-------------------------------------------------------------*/
+
+
+    /*-----------------COMMAND LINE--------------------------------*/
+
+    @SuppressWarnings("SameParameterValue")
+    private void drawCenteredString(String text, int startX, int startY, int spaceWidth, int colour) {
         StringBuilder title = new StringBuilder();
         int spaceBefore = (spaceWidth - text.length()) / 2;
         title.append(" ".repeat(spaceBefore)).append(text);
-        drawString(title.toString(), startY, startX, color, title.length());
-    }
-
-    //move cursor to arbitrary position
-    public static void moveCursor(int y, int x) {
-        System.out.print("\033[" + y + ";" + x + "H");
+        drawString(title.toString(), startY, startX, colour, title.length());
     }
 
     @SuppressWarnings("SameParameterValue")
@@ -618,20 +651,6 @@ public class TUI implements UI {
                 }
             }
         }
-    }
-
-    private static int getColour(String color) {
-        int colour;
-        switch (color) {
-            case "Green" -> colour = GREEN;
-            case "White" -> colour = WHITE;
-            case "Yellow" -> colour = YELLOW;
-            case "Blue" -> colour = BLUE;
-            case "LightBlue" -> colour = CYAN;
-            case "Magenta" -> colour = MAGENTA;
-            default -> colour = DEFAULT;
-        }
-        return colour;
     }
 
     public String readCommandLine(String message) {
@@ -677,9 +696,6 @@ public class TUI implements UI {
         moveCursor(commandLineY + commandLineHeight, commandLineX + 2 + cursor.length() + 1);
     }
 
-    /*--------------------------------------------------*/
-
-
     /*---------------CHAT---------------------------*/
     public void update(PlayerChatInfo pC, PlayerChat.Event evt) {
         //set current player chat
@@ -687,11 +703,7 @@ public class TUI implements UI {
         updateView(false);
     }
 
-    final int chatX = 80;
-    final int chatY = 23;
-
-    final int chatBoxWidth = 58;
-    final int chatBoxHeight = 28;
+    /*-----------------------------------------------------------*/
 
     private void drawChat() {
         if (currentPlayerChat != null) {
@@ -738,12 +750,9 @@ public class TUI implements UI {
                 drawString(chatBuffer[i], chatContentsY + i, chatContentsX + 1, DEFAULT, chatBuffer[i].length());
             }
 
-            drawCenteredString("CHAT",chatX,chatY,chatBoxWidth,DEFAULT);
+            drawCenteredString("CHAT", chatX, chatY, chatBoxWidth, DEFAULT);
         }
     }
-
-
-    /*------------------------------------------------------*/
 
     /*----------LIVING ROOM--------------------------*/
     public void update(LivingRoomInfo lR, LivingRoom.Event evt) {
@@ -751,9 +760,6 @@ public class TUI implements UI {
         this.currentLivingRoom = lR;
         updateView(false);
     }
-
-    final int livingRoomX = 1;
-    final int livingRoomY = 1;
 
     private void drawLivingRoom() {
         if (currentLivingRoom != null) {
@@ -786,11 +792,9 @@ public class TUI implements UI {
                 }
             }
 
-            drawCenteredString("LIVING ROOM BOARD",livingRoomX+2,livingRoomY,board[0].length * 4 + 1,DEFAULT);
+            drawCenteredString("LIVING ROOM BOARD", livingRoomX + 2, livingRoomY, board[0].length * 4 + 1, DEFAULT);
         }
     }
-
-    /*--------------------------------------------------*/
 
     /*-------------SHELVES-------------------------------*/
     public void update(ShelfInfo sV, Shelf.Event evt) {
@@ -800,10 +804,6 @@ public class TUI implements UI {
 
         updateView(false);
     }
-
-    final int shelvesX = 43;
-    final int shelvesY = 4;
-    final int shelvesPadding = 3;
 
     private void drawShelves() {
         if (!currentShelves.isEmpty()) {
@@ -861,32 +861,18 @@ public class TUI implements UI {
             drawString(playersPoints.toString(), shelvesGridY + shelvesHeight * 2 + 2, shelvesX, DEFAULT, playersPoints.length());
 
             int maxSize = currentShelves.size() * shelvesWidth + shelvesPadding * (currentShelves.size() - 1);
-            drawCenteredString("PLAYERS SHELVES",shelvesX,shelvesY,maxSize,DEFAULT);
+            drawCenteredString("PLAYERS SHELVES", shelvesX, shelvesY, maxSize, DEFAULT);
         }
     }
 
-    /*-------------------------------------------------------------*/
-
-
-    /*-----------------COMMAND LINE--------------------------------*/
-
-    final int commandLineX = 1;
-    final int commandLineY = 41;
-
-    final int commandLineWidth = 75;
-    final int commandLineHeight = 10;
-
     private void drawCommandLine() {
-        drawBox(commandLineY+1, commandLineX, commandLineHeight, commandLineWidth, DEFAULT);
+        drawBox(commandLineY + 1, commandLineX, commandLineHeight, commandLineWidth, DEFAULT);
 
-        drawCenteredString("COMMAND LINE",commandLineX,commandLineY,commandLineWidth,DEFAULT);
+        drawCenteredString("COMMAND LINE", commandLineX, commandLineY, commandLineWidth, DEFAULT);
 
         drawString(cursor, commandLineY + commandLineHeight - 1, commandLineX, DEFAULT, commandLineWidth - 3);
         drawOldCmds();
     }
-
-    //old cmds to be shifted up
-    final List<Pair> oldCmds = new ArrayList<>();
 
     private void drawOldCmds() {
         while (oldCmds.size() > (commandLineHeight - 4))
@@ -897,15 +883,11 @@ public class TUI implements UI {
         }
     }
 
-    /*-----------------------------------------------------------*/
-
     /*---------COMMON GOALS-------------------------------*/
     public void update(CommonGoalInfo o, CommonGoal.Event evt) {
         commonGoals.put(o.id(), o);
         updateView(false);
     }
-
-    private final Map<String, String[]> commonGoalRes = getCommonGoalRes();
 
     private Map<String, String[]> getCommonGoalRes() {
         Map<String, String[]> ris = new HashMap<>();
@@ -932,11 +914,7 @@ public class TUI implements UI {
         return ris;
     }
 
-    final int commonGoalsX = 3;
-    final int commonGoalsY = 23;
-    final int commonGoalsPadding = 3;
-    final int commonGoalBoxWidth = 23;
-    final int commonGoalBoxHeight = 15;
+    /*-------------------------------------------------------*/
 
     private void drawCommonGoals() {
         if (!commonGoals.isEmpty()) {
@@ -970,17 +948,15 @@ public class TUI implements UI {
             drawString(points.toString(), boxesStartY + commonGoalBoxHeight, commonGoalsX, DEFAULT, points.length());
 
             int maxSize = commonGoals.size() * commonGoalBoxWidth + commonGoalsPadding * (commonGoals.size() - 1);
-            drawCenteredString("COMMON GOALS",commonGoalsX,commonGoalsY,maxSize,DEFAULT);
+            drawCenteredString("COMMON GOALS", commonGoalsX, commonGoalsY, maxSize, DEFAULT);
         }
     }
-
-    /*-------------------------------------------------------*/
 
     /*---------------GAME STATE------------------------------*/
     public void update(GameInfo o, Game.Event evt) {
         currentGameState = o;
 
-        if (o.status()==Game.GameStatus.ENDED){
+        if (o.status() == Game.GameStatus.ENDED) {
             GameRunning = false;
             this.currentView = View.GAME_ENDED;
             points.clear();
@@ -990,9 +966,10 @@ public class TUI implements UI {
             updateView(true);
         }
     }
+    /*------------------------------------------------------*/
 
     private void drawGameState() {
-        if(currentGameState!=null) {
+        if (currentGameState != null) {
 //            //redraw shelves with new current player
 //            if (currentLivingRoom != null && currentShelves != null && currentLivingRoom.board() != null && currentLivingRoom.board().length > 0 && currentShelves.size() > 0 && currentLivingRoom.board()[0].length > 0)
 //                drawShelves();
@@ -1001,7 +978,6 @@ public class TUI implements UI {
                 drawString("Last Turn", renderHeight - 10, 30, DEFAULT, 50 - 2);
         }
     }
-    /*------------------------------------------------------*/
 
     /*----------------PERSONAL GOALS------------------------*/
     public void update(PersonalGoalInfo o, PersonalGoal.Event evt) {
@@ -1015,9 +991,6 @@ public class TUI implements UI {
 
         updateView(false);
     }
-
-    final int personalGoalsX = 55;
-    final int personalGoalsY = 24;
 
     private void drawPersonalGoal() {
         if (currentPersonalGoals.size() == 6) {
@@ -1036,32 +1009,35 @@ public class TUI implements UI {
             drawGrid(personalGoalsX, personalGoalsY + 1, shelf[0].length, shelf.length);
             drawGridContents(personalGoalsX, personalGoalsY + 1, shelf);
 
-            drawCenteredString("PERSONAL GOAL",personalGoalsX,personalGoalsY,shelf[0].length * 4 + 1,DEFAULT);
+            drawCenteredString("PERSONAL GOAL", personalGoalsX, personalGoalsY, shelf[0].length * 4 + 1, DEFAULT);
         }
     }
 
-    /*-----------------------------------------------------*/
-
     public void update(UserInfo o, User.Event evt) {
+        if (o.joinTime() != currentSessionTime)
+            return;
         user = o;
+
 
         if (evt == null) {
             serverWaiter.notify(false);
             return;
         }
 
-        switch (evt){
+        switch (evt) {
             case GAME_JOINED, GAME_CREATED -> {
-                printCommandLine(o.eventMessage(),GREEN);
+                printCommandLine(o.eventMessage(), GREEN);
                 serverWaiter.notify(false);
             }
             case ERROR_REPORTED -> {
-                printCommandLine(o.eventMessage(),RED);
+                printCommandLine(o.eventMessage(), RED);
                 serverWaiter.notify(true);
             }
-            case GAME_LEAVED -> printCommandLine(o.eventMessage(),RED);
+            case GAME_LEAVED -> printCommandLine(o.eventMessage(), RED);
         }
     }
+
+    /*-----------------------------------------------------*/
 
     public void update(GamesManagerInfo o, GamesManager.Event evt) {
         switch (evt) {
@@ -1101,6 +1077,12 @@ public class TUI implements UI {
                 updateView(false);
             }
         }
+    }
+
+    private enum View {
+        SERVER_INTERACTION,
+        GAME_INTERACTION,
+        GAME_ENDED
     }
 
     private record Pair(String string, int colour) {

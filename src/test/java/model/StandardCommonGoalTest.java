@@ -3,26 +3,20 @@ package model;
 import model.goalEvaluators.Standard2ColumnsRowOfDifferentTiles;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class StandardCommonGoalTest {
     @Test
-    void constructorWorksCorrectly4Players(){
+    void constructorWorksCorrectly4Players() {
         Standard2ColumnsRowOfDifferentTiles evalTest = new Standard2ColumnsRowOfDifferentTiles(true);
-        try{
-            StandardCommonGoal test = new StandardCommonGoal(4,evalTest);
-        }
-        catch (UnsupportedOperationException e){
-            fail();
-        }
+        assertDoesNotThrow(() -> new StandardCommonGoal(4, evalTest));
     }
+
     @Test
-    void constructorThrowsExceptionMoreThan4Players(){
+    void constructorThrowsExceptionMoreThan4Players() {
         Standard2ColumnsRowOfDifferentTiles evalTest = new Standard2ColumnsRowOfDifferentTiles(true);
-        try{
-            StandardCommonGoal test = new StandardCommonGoal(5,evalTest);
-            fail();
-        }
-        catch (UnsupportedOperationException e){}
+        assertThrows(UnsupportedOperationException.class, () -> new StandardCommonGoal(5, evalTest));
+
     }
 }

@@ -1,11 +1,9 @@
 package model;
 
 import model.abstractModel.PersonalGoal;
-import model.exceptions.GameEndedException;
 import model.exceptions.MatchmakingClosedException;
 import model.exceptions.PlayerAlreadyExistsException;
 import model.exceptions.PlayerNotExistsException;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -21,23 +19,22 @@ class StandardGameTest {
         String actual = gameTest.getGameId();
         assertEquals("esempio", actual);
     }
+
     @Test
     void addPlayerTest() {
     }
 
     @Test
-    void getPlayerTestExists() throws  PlayerNotExistsException {
+    void getPlayerTestExists() throws PlayerNotExistsException {
         StandardGame gameTest = new StandardGame("esempio", 3);
         List<PersonalGoal> obb = new ArrayList<>();
         StandardPlayer player1 = new StandardPlayer("Rebecca", obb);
         try {
             gameTest.addPlayer(player1.getId());
-        } catch (PlayerAlreadyExistsException e) {
-
-        } catch (MatchmakingClosedException e) {
+        } catch (PlayerAlreadyExistsException | MatchmakingClosedException ignored) {
 
         }
-       String actual = gameTest.getPlayer(player1.getId()).getId();
+        String actual = gameTest.getPlayer(player1.getId()).getId();
         assertEquals("Rebecca", actual);
     }
 
@@ -46,10 +43,10 @@ class StandardGameTest {
         StandardGame gameTest = new StandardGame("esempio", 3);
         try {
             gameTest.getPlayer("Rebecca");
-        }
-        catch(Exception e){
+        } catch (Exception ignored) {
         }
     }
+
     @Test
     void getCommonGoalsTest() {
         //List<CommonGoal> obb = new ArrayList<>();
@@ -58,8 +55,8 @@ class StandardGameTest {
 
     @Test
     void getLivingRoomTest() {
-       // LivingRoom example = new StandardLivingRoom(3);
-       // StandardGame gameTest = new StandardGame("esempio", 3);
+        // LivingRoom example = new StandardLivingRoom(3);
+        // StandardGame gameTest = new StandardGame("esempio", 3);
 
     }
 
@@ -79,7 +76,7 @@ class StandardGameTest {
     }
 
     @Test
-    void getTurnPlayerIdTest() throws GameEndedException {
+    void getTurnPlayerIdTest() {
         ArrayList<StandardPlayer> players = new ArrayList<>();
         List<PersonalGoal> obb = new ArrayList<>();
         players.add(new StandardPlayer("Rebecca", obb));
@@ -93,17 +90,14 @@ class StandardGameTest {
         StandardGame gameTest = new StandardGame("123", 3);
         try {
             gameTest.addPlayer("Rebecca");
-        } catch (PlayerAlreadyExistsException e) {
-            throw new RuntimeException(e);
-        } catch (MatchmakingClosedException e) {
-            throw new RuntimeException(e);
+        } catch (PlayerAlreadyExistsException | MatchmakingClosedException e) {
+            fail(e.getMessage());
         }
         //gameTest.setTurnQueue(playerTurnQueue); //TODO COME FACCIO A SETTARE IL TURNO DI UN GIOCATORE PER TESTARE?
 
         // Verifico che il giocatore corretto sia restituito
         assertEquals("Rebecca", gameTest.getTurnPlayerId());
     }
-
 
 
     @Test
@@ -113,7 +107,7 @@ class StandardGameTest {
         //game.setStatus(expectedStatus);
 
         // Verifichiamo che lo stato restituito dal metodo corrisponde allo stato atteso
-       // assertEquals(expectedStatus, game.getGameStatus());
+        // assertEquals(expectedStatus, game.getGameStatus());
     }
 
     @Test

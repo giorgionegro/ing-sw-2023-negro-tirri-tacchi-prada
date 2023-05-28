@@ -1,28 +1,19 @@
 package controller;
 
-import controller.exceptions.GameAccessDeniedException;
-import controller.interfaces.GameController;
-import distibuted.ClientEndPoint;
 import distibuted.interfaces.ClientInterface;
 import distibuted.interfaces.ServerInterface;
+import model.User;
+import model.abstractModel.*;
+import model.exceptions.GameNotExistsException;
+import modelView.*;
+import org.junit.jupiter.api.Test;
 
 import java.rmi.RemoteException;
 
-import model.StandardGame;
-import model.User;
-import model.abstractModel.*;
-import model.exceptions.GameAlreadyExistsException;
-import model.exceptions.GameNotExistsException;
-import modelView.*;
-
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
-import view.GUI.GUI;
-
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class StandardServerControllerTest {
-
 
 
     /**
@@ -87,7 +78,9 @@ class StandardServerControllerTest {
         };
 
 
-        assertThrows(AssertionError.class, ()->{ServerInterface actualConnectResult = standardServerController.connect(client);});
+        assertThrows(AssertionError.class, () -> {
+            ServerInterface actualConnectResult = standardServerController.connect(client);
+        });
         //test detaching observer
 
         var client2 = new ClientInterface() {
@@ -144,15 +137,13 @@ class StandardServerControllerTest {
         standardServerController.connect(client2);
 
 
-
-
     }
 
     /**
      * Method under test: {@link StandardServerController#disconnect(ClientInterface)}
      */
     @Test
-    void testDisconnect() throws RemoteException, GameNotExistsException {
+    void testDisconnect() throws RemoteException {
         // Arrange
         StandardServerController standardServerController = new StandardServerController();
         ClientInterface client = new ClientInterface() {
@@ -207,10 +198,10 @@ class StandardServerControllerTest {
 
 
         standardServerController.connect(client);
-        assertThrows(RemoteException.class, ()->{standardServerController.disconnect(client);});
+        assertThrows(RemoteException.class, () -> standardServerController.disconnect(client));
 
-        standardServerController.createGame(client,new NewGameInfo("test", "STANDARD", 2, 2));
-        standardServerController.joinGame(client,new LoginInfo("1", "test",2));
+        standardServerController.createGame(client, new NewGameInfo("test", "STANDARD", 2, 2));
+        standardServerController.joinGame(client, new LoginInfo("1", "test", 2));
         standardServerController.disconnect(client);
 
         // Assert
@@ -273,12 +264,15 @@ class StandardServerControllerTest {
 
             }
         };
-        LoginInfo info = new LoginInfo("1", "test",2);
+        LoginInfo info = new LoginInfo("1", "test", 2);
 
         standardServerController.joinGame(client, info);
-        standardServerController.createGame(client,new NewGameInfo("test", "STANDARD", 2, 2));
-        standardServerController.joinGame(client,info);
-        standardServerController.joinGame(client,info);
+        standardServerController.connect(client);
+
+        standardServerController.createGame(client, new NewGameInfo("test", "STANDARD", 2, 2));
+
+        standardServerController.joinGame(client, info);
+        standardServerController.joinGame(client, info);
 
     }
 
@@ -344,7 +338,7 @@ class StandardServerControllerTest {
         // Act
         standardServerController.connect(client);
         // Assert
-        assertThrows(RemoteException.class, () ->standardServerController.leaveGame(client));
+        assertThrows(RemoteException.class, () -> standardServerController.leaveGame(client));
 
     }
 
@@ -354,6 +348,74 @@ class StandardServerControllerTest {
     @Test
     void testCreateGame() throws RemoteException {
         // Arrange
+        StandardServerController standardServerController = new StandardServerController();
+        ClientInterface client = new ClientInterface() {
+            @Override
+            public void bind(ServerInterface server) throws RemoteException {
+                throw new RemoteException();
+            }
+
+            @Override
+            public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(GameInfo o, Game.Event evt) throws RemoteException {
+            }
+
+            @Override
+            public void update(GamesManagerInfo o, GamesManager.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(LivingRoomInfo o, LivingRoom.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(PersonalGoalInfo o, PersonalGoal.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(PlayerChatInfo o, PlayerChat.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(PlayerInfo o, Player.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(ShelfInfo o, Shelf.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(UserInfo o, User.Event evt) throws RemoteException {
+
+            }
+        };
+        LoginInfo info = new LoginInfo("1", "test", 2);
+        standardServerController.createGame(client, new NewGameInfo("test", "STANDARD", 2, 2));
+        standardServerController.connect(client);
+        standardServerController.createGame(client, new NewGameInfo("test", "STANDARD", 2, 2));
+        standardServerController.createGame(client, new NewGameInfo("test", "STANDARD", 2, 2));
+
+
+        // Assert
+    }
+
+
+    /**
+     * Method under test: {@link StandardServerController#getGame(String)}
+     */
+    @Test
+    void testGetGame() throws GameNotExistsException, RemoteException {
+
         StandardServerController standardServerController = new StandardServerController();
         ClientInterface client = new ClientInterface() {
             @Override
@@ -404,52 +466,17 @@ class StandardServerControllerTest {
 
             }
         };
-        LoginInfo info = new LoginInfo("1", "test",2);
+        LoginInfo info = new LoginInfo("1", "test", 2);
         standardServerController.connect(client);
-        standardServerController.createGame(client,new NewGameInfo("test", "STANDARD", 2, 2));
-        standardServerController.createGame(client,new NewGameInfo("test", "STANDARD", 2, 2));
+        standardServerController.createGame(client, new NewGameInfo("test", "STANDARD", 2, 2));
+        standardServerController.createGame(client, new NewGameInfo("test", "STANDARD", 2, 2));
 
 
-        // Assert
-        // TODO: Add assertions on result
+        assertDoesNotThrow(() -> standardServerController.getGame("test"));
+        assertThrows(GameNotExistsException.class, () -> standardServerController.getGame("test2"));
+
     }
 
-    /**
-     * Method under test: {@link StandardServerController#createGame(String, int)}
-     */
-    @Test
-    @Disabled
-    void testCreateGame2() throws GameAlreadyExistsException {
-        // Arrange
-        // TODO: Populate arranged inputs
-        StandardServerController standardServerController = null;
-        String gameId = "";
-        int playerNumber = 0;
-
-        // Act
-        standardServerController.createGame(gameId, playerNumber);
-
-        // Assert
-        // TODO: Add assertions on result
-    }
-
-    /**
-     * Method under test: {@link StandardServerController#getGame(String)}
-     */
-    @Test
-    @Disabled
-    void testGetGame() throws GameNotExistsException {
-        // Arrange
-        // TODO: Populate arranged inputs
-        StandardServerController standardServerController = null;
-        String gameId = "";
-
-        // Act
-        GameController actualGame = standardServerController.getGame(gameId);
-
-        // Assert
-        // TODO: Add assertions on result
-    }
 
 }
 

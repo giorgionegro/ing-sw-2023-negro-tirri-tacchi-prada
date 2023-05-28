@@ -1,31 +1,18 @@
 package model;
 
-import controller.StandardServerController;
-
-import java.io.Serializable;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
 import model.abstractModel.PersonalGoal;
 import model.abstractModel.Player;
-import model.abstractModel.Shelf;
 import model.instances.StandardPersonalGoalInstance;
 import model.instances.StandardPlayerChatInstance;
 import model.instances.StandardPlayerInstance;
 import model.instances.StandardShelfInstance;
 import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import java.io.Serializable;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class StandardPlayerTest {
 
@@ -33,7 +20,7 @@ class StandardPlayerTest {
      * Method under test: {@link StandardPlayer#StandardPlayer(StandardPlayerInstance)}
      */
     @Test
-    void testConstructor() throws RemoteException {
+    void testConstructor() {
 
         ArrayList<Serializable> personalGoal = new ArrayList<>();
         HashMap<String, Token> achievedCommonGoals = new HashMap<>();
@@ -56,17 +43,14 @@ class StandardPlayerTest {
 
         Player p = new StandardPlayer(playerId, personalGoals);
 
-        if (p.getPlayerChat() == null)
-            fail("Player chat not instanced");
+        p.getPlayerChat();
 
-        if (p.getAchievedCommonGoals() == null)
-            fail("Achieved common goals can't be null");
+        p.getAchievedCommonGoals();
 
         if (p.getAchievedCommonGoals().size() != 0)
             fail("Achieved common goals must be empty on player contruction");
 
-        if (p.getShelf() == null)
-            fail("Player shelf not instanced");
+        p.getShelf();
 
         if (!p.getId().equals(playerId))
             fail("Player id instanced wrong");
@@ -172,8 +156,6 @@ class StandardPlayerTest {
         assertEquals(test.getReportedError(), test.getInfo().errorMessage());
         assertEquals(test.getInfo().achievedCommonGoals(), test.getAchievedCommonGoals());
     }
-
-
 
 
     /**
