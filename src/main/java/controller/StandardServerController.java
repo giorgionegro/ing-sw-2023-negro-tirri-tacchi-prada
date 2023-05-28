@@ -132,6 +132,7 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
                 throw new GameAccessDeniedException("Client is not connected correctly");
             createGame(gameInfo.gameId(), gameInfo.playerNumber());
             users.get(client).reportEvent(User.Status.NOT_JOINED, "Game created", gameInfo.time(), User.Event.GAME_CREATED);
+            System.err.println("GAME CREATED: "+gameInfo.gameId());
         } catch (GameAlreadyExistsException | GameAccessDeniedException e) {
             if (users.containsKey(client) && users.get(client) != null)
                 users.get(client).reportEvent(User.Status.NOT_JOINED, e.getMessage(), gameInfo.time(), User.Event.ERROR_REPORTED);

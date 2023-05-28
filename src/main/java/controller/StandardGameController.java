@@ -186,14 +186,14 @@ public class StandardGameController implements GameController, LobbyController {
 
             Player newPlayer = game.getPlayer(info.playerId());
 
-            addObservers(newClient, newPlayer);
-
             userAssociation.put(newClient,newUser);
 
             /* Put newClient into known client */
             playerAssociation.put(newUser, newPlayer);
 
             newUser.reportEvent(User.Status.JOINED, "Joined game: "+game.getGameId()+", you are:"+info.playerId(), info.time(), User.Event.GAME_JOINED);
+
+            addObservers(newClient, newPlayer);
 
             /* If game is ready to be started we force the first */
             if (game.getGameStatus().equals(Game.GameStatus.STARTED)) {

@@ -1,5 +1,7 @@
 package view.GUI;
 
+import util.ResourceProvider;
+
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import java.awt.*;
@@ -8,13 +10,12 @@ public class MyFrame extends JFrame {
     public MyFrame() {
         this.setLayout(new BorderLayout());
 
-        ImageIcon icon = new ImageIcon (GUI.class.getResource("/Icon.png").getPath());
-        this.setIconImage(icon.getImage());
+        Image icon = new ImageIcon (ResourceProvider.getResourcePath("/AppIcon.png")).getImage();
+        this.setIconImage(icon);
 
-        this.setTitle("My Shelfie Game");
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setSize((int)Toolkit.getDefaultToolkit().getScreenSize().getWidth(), (int)Toolkit.getDefaultToolkit().getScreenSize().getHeight());
-        this.setResizable(false);
-
+        this.setTitle("My Shelfie");
+        this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        this.setSize(new Dimension(1300, 900));
+        this.setResizable(true);
     }
 }
