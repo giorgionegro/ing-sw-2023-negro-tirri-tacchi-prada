@@ -5,7 +5,8 @@ import distibuted.interfaces.ServerInterface;
 import model.User;
 import model.abstractModel.*;
 import modelView.*;
-import view.TimedLock;
+import util.TimedLock;
+import view.GUI.panels.*;
 import view.interfaces.UI;
 
 import java.awt.*;
@@ -29,25 +30,25 @@ public class  GUI implements UI, ActionListener {
 
     private void createNetworkChoice(){
         root.removeAll();
-        root.add(networkChoise, BorderLayout.CENTER);
+        root.add(networkChoise);
         refresh();
     }
 
     public void home(){
         root.removeAll();
-        root.add(homePanel, BorderLayout.CENTER);
+        root.add(homePanel);
         refresh();
     }
 
     public void createGame(){
         root.removeAll();
-        root.add(create, BorderLayout.CENTER);
+        root.add(create);
         refresh();
     }
 
     public void joinGame(){
         root.removeAll();
-        root.add(join, BorderLayout.CENTER);
+        root.add(join);
         refresh();
     }
 

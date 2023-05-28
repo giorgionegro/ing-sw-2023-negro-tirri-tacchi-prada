@@ -10,6 +10,7 @@ import model.abstractModel.*;
 import modelView.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import util.TimedLock;
 import view.interfaces.UI;
 
 import java.io.*;
@@ -44,6 +45,7 @@ public class TUI implements UI {
     private final @NotNull  List<PersonalGoalInfo> currentPersonalGoals = new ArrayList<>();
 
     private long currentSessionTime = -1;
+    private UserInfo user;
     private final @NotNull List<GamesManagerInfo> games = new ArrayList<>();
     private @Nullable GameInfo currentGameState;
 
@@ -911,7 +913,7 @@ public class TUI implements UI {
 
     private @NotNull Map<String, String[]> getCommonGoalRes() {
         Map<String, String[]> ris = new HashMap<>();
-        File dir = new File(this.getClass().getResource("/commonGoals/CLI").getPath());
+        File dir = new File(this.getClass().getResource("/CommonGoals/CLI").getPath());
         if (dir.isDirectory()) {
             File[] res;
             if (dir.listFiles() != null)
