@@ -16,18 +16,20 @@ import java.awt.event.ActionListener;
 import java.rmi.RemoteException;
 
 public class JoinGamePanel extends JPanel implements ActionListener, UserView {
-    Image CreateGame;
+    private final Image CreateGame = new ImageIcon(getClass().getResource("/desktop.png")).getImage();
     private final ActionListener listener;
-    JButton PlayButton;
-    JTextField PlayerId;
-    JTextField GameId;
+    private final JButton PlayButton;
+    private final JButton exitButton;
+    private final JTextField PlayerId;
+    private final JTextField GameId;
     private final ServerInterface serverInterface;
     private final ClientInterface clientInterface;
+    private final TimedLock<Boolean> serverWaiter = new TimedLock<>(false);
     public JoinGamePanel(ActionListener listener, ServerInterface serverInterface, ClientInterface clientInterface){
         this.listener = listener;
         this.serverInterface = serverInterface;
         this.clientInterface = clientInterface;
-        CreateGame = new ImageIcon(getClass().getResource("/desktop.png")).getImage();
+
         ImageIcon button = new ImageIcon(getClass().getResource("/img.png"));
         ImageIcon buttonIdG = new ImageIcon(getClass().getResource("/GameID.png"));
         ImageIcon buttonIdP = new ImageIcon(getClass().getResource("/PlayerID.png"));
@@ -78,6 +80,12 @@ public class JoinGamePanel extends JPanel implements ActionListener, UserView {
         PlayButtonLabel.setFont(font1);
         PlayButton.add(PlayButtonLabel);
 
+        exitButton = new JButton();
+        exitButton.setIcon(button);
+        JLabel exitButtonLabel = new JLabel("BACK");
+        exitButtonLabel.setFont(font1);
+        exitButton.add(exitButtonLabel);
+
         ButtonsJoinPanel.add(PlayerIdField,c);
         c.gridx++;
         ButtonsJoinPanel.add(PlayerId,c);
@@ -88,34 +96,35 @@ public class JoinGamePanel extends JPanel implements ActionListener, UserView {
         ButtonsJoinPanel.add(GameId,c);
         c.gridy++;
         ButtonsJoinPanel.add(PlayButton,c);
+        c.gridx--;
+        ButtonsJoinPanel.add(exitButton,c);
 
         PlayButton.addActionListener(this);
+        exitButton.addActionListener(this);
+
         this.add(ButtonsJoinPanel);
-
-
     }
 
-        @Override
-        protected void paintComponent(Graphics g) {
-            super.paintComponent(g);
-            if(CreateGame!=null){
-                double ratio = 1.765;
-                double windowRatio = (double)getWidth()/getHeight();
-                int width;
-                int height;
-                if(windowRatio>ratio) {
-                    width = getWidth();
-                    height = (int) (getWidth()/ratio);
-                }else{
-                    height = getHeight();
-                    width = (int) (getHeight()*ratio);
-                }
-                g.drawImage(CreateGame, 0, 0, width, height, null);
-
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        if(CreateGame!=null){
+            double ratio = 1.765;
+            double windowRatio = (double)getWidth()/getHeight();
+            int width;
+            int height;
+            if(windowRatio>ratio) {
+                width = getWidth();
+                height = (int) (getWidth()/ratio);
+            }else{
+                height = getHeight();
+                width = (int) (getHeight()*ratio);
             }
-        }
+            g.drawImage(CreateGame, 0, 0, width, height, null);
 
-        TimedLock<Boolean> serverWaiter = new TimedLock<>(false);
+        }
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == PlayButton) {
@@ -144,6 +153,8 @@ public class JoinGamePanel extends JPanel implements ActionListener, UserView {
             }catch(RemoteException re){
                 //TODO errore generico di connessione
             }
+        } else if (e.getSource() == exitButton) {
+            listener.actionPerformed(new ActionEvent(this,e.getID(),"EXIT"));
         }
     }
 
