@@ -5,7 +5,7 @@ import distibuted.interfaces.ServerInterface;
 import model.User;
 import modelView.NewGameInfo;
 import modelView.UserInfo;
-import util.ResourceProvider;
+
 import util.TimedLock;
 import view.interfaces.UserView;
 
@@ -28,10 +28,10 @@ public class CreateGamePanel extends JPanel implements ActionListener, UserView 
         this.listener = listener;
         this.serverInterface = serverInterface;
         this.clientInterface = clientInterface;
-        CreateGame = new ImageIcon (ResourceProvider.getResourcePath("/desktop.png"));
-        ImageIcon button = new ImageIcon(ResourceProvider.getResourcePath("/img.png"));
-        ImageIcon buttonIdG = new ImageIcon(ResourceProvider.getResourcePath("/GameID.png"));
-        ImageIcon buttonIdN = new ImageIcon(ResourceProvider.getResourcePath("/nplayers.png"));
+        CreateGame = new ImageIcon (getClass().getResource("/desktop.png"));
+        ImageIcon button = new ImageIcon(getClass().getResource("/img.png"));
+        ImageIcon buttonIdG = new ImageIcon(getClass().getResource("/GameID.png"));
+        ImageIcon buttonIdN = new ImageIcon(getClass().getResource("/nplayers.png"));
         Font font1 = new Font("Century", Font.BOLD, 24);
 
 

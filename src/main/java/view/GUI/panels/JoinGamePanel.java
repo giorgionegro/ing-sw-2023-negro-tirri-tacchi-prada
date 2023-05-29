@@ -5,7 +5,7 @@ import distibuted.interfaces.ServerInterface;
 import model.User;
 import modelView.LoginInfo;
 import modelView.UserInfo;
-import util.ResourceProvider;
+
 import util.TimedLock;
 import view.interfaces.UserView;
 
@@ -27,10 +27,10 @@ public class JoinGamePanel extends JPanel implements ActionListener, UserView {
         this.listener = listener;
         this.serverInterface = serverInterface;
         this.clientInterface = clientInterface;
-        CreateGame = new ImageIcon(ResourceProvider.getResourcePath("/desktop.png")).getImage();
-        ImageIcon button = new ImageIcon(ResourceProvider.getResourcePath("/img.png"));
-        ImageIcon buttonIdG = new ImageIcon(ResourceProvider.getResourcePath("/GameID.png"));
-        ImageIcon buttonIdP = new ImageIcon(ResourceProvider.getResourcePath("/PlayerID.png"));
+        CreateGame = new ImageIcon(getClass().getResource("/desktop.png")).getImage();
+        ImageIcon button = new ImageIcon(getClass().getResource("/img.png"));
+        ImageIcon buttonIdG = new ImageIcon(getClass().getResource("/GameID.png"));
+        ImageIcon buttonIdP = new ImageIcon(getClass().getResource("/PlayerID.png"));
         Font font1 = new Font("Century", Font.BOLD, 24);
 
         GridBagConstraints c = new GridBagConstraints();

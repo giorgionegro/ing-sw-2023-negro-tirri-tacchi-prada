@@ -14,12 +14,12 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.swing.JComponent;
 
-import util.ResourceProvider;
+
 import view.GUI.*;
 import view.interfaces.*;
 
 public class GamePanel extends JComponent implements ActionListener, ShelfView, PlayerChatView, CommonGoalView, PlayerView, GameView, LivingRoomView, PersonalGoalView {
-    private final Image parquet = new ImageIcon(ResourceProvider.getResourcePath("/parquet.jpg")).getImage();
+    private final Image parquet = new ImageIcon(getClass().getResource("/parquet.jpg")).getImage();
     private GameInfo currentGameState;
     private final LivingRoomPanel livingRoomBoard;
     private final Map<String, ShelfPanel> opponentShelfBoards = new HashMap<>();
@@ -240,14 +240,11 @@ public class GamePanel extends JComponent implements ActionListener, ShelfView, 
         @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() instanceof PlayerMoveInfo) {
-            //TODO pulisci selezione
             try {
                 serverInterface.doPlayerMove(clientInterface, (PlayerMoveInfo) e.getSource());
             } catch (RemoteException ex) {
                 throw new RuntimeException(ex);
             }
-
-
         } else if (e.getSource() instanceof Message) {
             try {
                 serverInterface.sendMessage(clientInterface, (Message) e.getSource());
@@ -270,6 +267,7 @@ public class GamePanel extends JComponent implements ActionListener, ShelfView, 
     @Override
     public void update(LivingRoomInfo o, LivingRoom.Event evt) throws RemoteException {
         livingRoomBoard.update(o,evt);
+        tilesOrderingPanel.actionPerformed(new ActionEvent(this, 0, "CLEAR SELECTION"));
     }
 
     @Override

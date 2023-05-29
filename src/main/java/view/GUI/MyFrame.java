@@ -1,6 +1,6 @@
 package view.GUI;
 
-import util.ResourceProvider;
+
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -10,7 +10,7 @@ public class MyFrame extends JFrame {
     public MyFrame() {
         this.setLayout(new BorderLayout());
 
-        Image icon = new ImageIcon (ResourceProvider.getResourcePath("/AppIcon.png")).getImage();
+        Image icon = new ImageIcon (getClass().getResource("/AppIcon.png")).getImage();
         this.setIconImage(icon);
 
         this.setTitle("My Shelfie");
