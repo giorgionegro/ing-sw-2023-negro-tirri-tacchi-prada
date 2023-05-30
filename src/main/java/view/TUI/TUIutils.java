@@ -3,7 +3,8 @@ package view.TUI;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
-public class TUIutils {
+public enum TUIutils {
+    ;
 
     public static final int WHITE = 37;
     public static final int GREEN = 32;

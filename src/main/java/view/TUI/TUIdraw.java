@@ -16,7 +16,8 @@ import static view.TUI.TUI.*;
 import static view.TUI.TUIutils.DEFAULT;
 import static view.TUI.TUIutils.getColour;
 
-public class TUIdraw {
+public enum TUIdraw {
+    ;
     private static final Map<String, String[]> commonGoalRes = getCommonGoalRes();
     static int commandLineWidth = 75;
 
