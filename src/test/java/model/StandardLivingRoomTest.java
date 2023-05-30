@@ -1,16 +1,17 @@
 package model;
 
-
+import model.instances.StandardLivingRoomInstance;
 import org.junit.jupiter.api.Test;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class StandardLivingRoomTest {
     @Test
-    //after refillBoard(), check that all the board cells that should be empty actually are
-    //when there are 2 Players
+        //after refillBoard(), check that all the board cells that should be empty actually are
+        //when there are 2 Players
     void twoPlayerBoardHasCorrectEmptyTiles(){
         StandardLivingRoom test = new StandardLivingRoom(2);
         test.refillBoard();
@@ -67,8 +68,8 @@ class StandardLivingRoomTest {
     }
 
     @Test
-    //after refillBoard(), check that all the board cells that should contain a TIle actually do
-    //when there are 2 Players
+        //after refillBoard(), check that all the board cells that should contain a TIle actually do
+        //when there are 2 Players
     void twoPlayerBoardFilledCorrectly(){
         StandardLivingRoom test = new StandardLivingRoom(2);
         test.refillBoard();
@@ -119,8 +120,8 @@ class StandardLivingRoomTest {
     }
 
     @Test
-    //after refillBoard(), check that all the board cells that should be empty actually are
-    //when there are 3 Players
+        //after refillBoard(), check that all the board cells that should be empty actually are
+        //when there are 3 Players
     void threePlayerBoardHasCorrectEmptyTiles(){
         StandardLivingRoom test = new StandardLivingRoom(3);
         test.refillBoard();
@@ -181,8 +182,8 @@ class StandardLivingRoomTest {
     }
 
     @Test
-    //after refillBoard(), check that all the board cells that should contain a TIle actually do
-    //when there are 3 Players
+        //after refillBoard(), check that all the board cells that should contain a TIle actually do
+        //when there are 3 Players
     void threePlayerBoardFilledCorrectly(){
         StandardLivingRoom test = new StandardLivingRoom(3);
         test.refillBoard();
@@ -245,8 +246,8 @@ class StandardLivingRoomTest {
     }
 
     @Test
-    //after refillBoard(), check that all the board cells that should be empty actually are
-    //when there are 4 Players
+        //after refillBoard(), check that all the board cells that should be empty actually are
+        //when there are 4 Players
     void fourPlayerBoardHasCorrectEmptyTiles(){
         StandardLivingRoom test = new StandardLivingRoom(4);
         test.refillBoard();
@@ -299,8 +300,8 @@ class StandardLivingRoomTest {
     }
 
     @Test
-    //after refillBoard(), check that all the board cells that should contain a TIle actually do
-    //when there are 4 Players
+        //after refillBoard(), check that all the board cells that should contain a TIle actually do
+        //when there are 4 Players
     void fourPlayerBoardFilledCorrectly(){
         StandardLivingRoom test = new StandardLivingRoom(4);
         test.refillBoard();
@@ -371,8 +372,8 @@ class StandardLivingRoomTest {
     }
 
     @Test
-    //two different instances of StandardLivingRoom should have a randomly arranged bag
-    //and consequently different Tiles inside the Board
+        //two different instances of StandardLivingRoom should have a randomly arranged bag
+        //and consequently different Tiles inside the Board
     void boardFilledRandomly(){
         StandardLivingRoom test1 = new StandardLivingRoom(4);
         test1.refillBoard();
@@ -384,7 +385,7 @@ class StandardLivingRoomTest {
     }
 
     @Test
-    //check that set and get board work correctly
+        //check that set and get board work correctly
     void SetGetBoard(){
         StandardLivingRoom test = new StandardLivingRoom(4);
         test.refillBoard();
@@ -396,8 +397,8 @@ class StandardLivingRoomTest {
     }
 
     @Test
-    //if the Player cannot pick more than 1 Tile from the board (it only contains islands of Tiles)
-    //calling refillBoard() should fill the board
+        //if the Player cannot pick more than 1 Tile from the board (it only contains islands of Tiles)
+        //calling refillBoard() should fill the board
     void boardRefilledWhenOnlyIslands(){
         StandardLivingRoom test = new StandardLivingRoom(4);
         Tile[][] newBoard = new Tile[9][9];
@@ -410,8 +411,8 @@ class StandardLivingRoomTest {
     }
 
     @Test
-    //if the Player can pick more than 1 Tile from the board (it doesn't only contain islands of Tiles)
-    //calling refillBoard() should not fill the board
+        //if the Player can pick more than 1 Tile from the board (it doesn't only contain islands of Tiles)
+        //calling refillBoard() should not fill the board
     void boardNotRefilledWhenNotOnlyIslands(){
         StandardLivingRoom test = new StandardLivingRoom(4);
         Tile[][] newBoard1 = new Tile[9][9];
@@ -431,7 +432,7 @@ class StandardLivingRoomTest {
     }
 
     @Test
-    //when the board is filled the tiles are taken from the bag (29 Tiles in case of 2 Players and an empty board)
+        //when the board is filled the tiles are taken from the bag (29 Tiles in case of 2 Players and an empty board)
     void bagWorksCorrectly2Players(){
         StandardLivingRoom test = new StandardLivingRoom(2);
         test.refillBoard();
@@ -440,7 +441,7 @@ class StandardLivingRoomTest {
     }
 
     @Test
-    //when the board is filled the tiles are taken from the bag (37 Tiles in case of 3 Players and an empty board)
+        //when the board is filled the tiles are taken from the bag (37 Tiles in case of 3 Players and an empty board)
     void bagWorksCorrectly3Players(){
         StandardLivingRoom test = new StandardLivingRoom(3);
         test.refillBoard();
@@ -448,7 +449,7 @@ class StandardLivingRoomTest {
     }
 
     @Test
-    //when the board is filled the tiles are taken from the bag (45 Tiles in case of 3 Players and an empty board)
+        //when the board is filled the tiles are taken from the bag (45 Tiles in case of 3 Players and an empty board)
     void bagWorksCorrectly4Players(){
         StandardLivingRoom test = new StandardLivingRoom(4);
         test.refillBoard();
@@ -456,7 +457,7 @@ class StandardLivingRoomTest {
     }
 
     @Test
-    //when new StandardLivingRoom(int nPlayers) is called with nPlayers>4
+        //when new StandardLivingRoom(int nPlayers) is called with nPlayers>4
     void numberOfPlayersGreaterThan4(){
         try{
             StandardLivingRoom test = new StandardLivingRoom(5);
@@ -468,7 +469,7 @@ class StandardLivingRoomTest {
     }
 
     @Test
-    //when new StandardLivingRoom(int nPlayers) is called with nPlayers<2
+        //when new StandardLivingRoom(int nPlayers) is called with nPlayers<2
     void numberOfPlayersLesserThan2(){
         try{
             StandardLivingRoom test = new StandardLivingRoom(1);
@@ -480,7 +481,7 @@ class StandardLivingRoomTest {
     }
 
     @Test
-    //board stops refilling if bag is empty
+        //board stops refilling if bag is empty
     void boardRefillWorksCorrectlyCenterSquare(){
         StandardLivingRoom test = new StandardLivingRoom(4);
         for(int i=0; i<130; i++){
@@ -491,7 +492,7 @@ class StandardLivingRoomTest {
     }
 
     @Test
-    //board stops refilling if bag is empty
+        //board stops refilling if bag is empty
     void boardRefillWorksCorrectlySideSquares(){
         StandardLivingRoom test = new StandardLivingRoom(4);
         for(int i=0; i<122; i++){
@@ -502,7 +503,7 @@ class StandardLivingRoomTest {
     }
 
     @Test
-    //board stops refilling if bag is empty
+        //board stops refilling if bag is empty
     void boardRefillWorksCorrectlyMissingCells(){
         StandardLivingRoom test = new StandardLivingRoom(4);
         for(int i=0; i<106; i++){
@@ -524,7 +525,7 @@ class StandardLivingRoomTest {
     }
 
     @Test
-    //board stops refilling if bag is empty
+        //board stops refilling if bag is empty
     void boardRefillWorksCorrectlyMissingCells4Players(){
         StandardLivingRoom test = new StandardLivingRoom(4);
         for(int i=0; i<94; i++){
@@ -532,5 +533,12 @@ class StandardLivingRoomTest {
         }
         test.refillBoard();
         assertTrue(test.getBoard()[1][5] == Tile.EMPTY && test.getBoard()[0][4] != Tile.EMPTY);
+    }
+    @Test
+    void getInstanceTest(){
+        StandardLivingRoom test = new StandardLivingRoom(2);
+        Serializable instanceTest = test.getInstance();
+        StandardLivingRoom iTest = new StandardLivingRoom((StandardLivingRoomInstance) instanceTest);
+        assertTrue(test.getInfo().equals(iTest.getInfo()));
     }
 }

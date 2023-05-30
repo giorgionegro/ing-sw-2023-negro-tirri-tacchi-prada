@@ -134,4 +134,12 @@ class StandardPlayerTest {
         assertEquals(test.getReportedError(), test.getInfo().errorMessage());
         assertEquals(test.getInfo().achievedCommonGoals(), test.getAchievedCommonGoals());
     }
+    @Test
+    void instanceTest(){
+        StandardPlayer test = new StandardPlayer("p1", getPersonalGoals());
+        test.reportError("Error test");
+        test.addAchievedCommonGoal("Test", Token.TOKEN_6_POINTS);
+        StandardPlayer instanceTest = new StandardPlayer((StandardPlayerInstance) test.getInstance());
+        assertEquals(test.getInfo(), instanceTest.getInfo());
+    }
 }
