@@ -1,9 +1,12 @@
 package model;
 
+import model.abstractModel.Game;
 import model.abstractModel.PersonalGoal;
 import model.exceptions.MatchmakingClosedException;
 import model.exceptions.PlayerAlreadyExistsException;
 import model.exceptions.PlayerNotExistsException;
+import model.instances.StandardGameInstance;
+import modelView.GameInfo;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -21,7 +24,14 @@ class StandardGameTest {
     }
 
     @Test
-    void addPlayerTest() {
+    void addPlayerTest() throws MatchmakingClosedException, PlayerAlreadyExistsException {
+        StandardGame game = new StandardGame("test", 2);
+        game.addPlayer("1");
+        game.addPlayer("2");
+        game = new StandardGame((StandardGameInstance) game.getInstance());
+        StandardGame finalGame = game;
+        assertThrows(MatchmakingClosedException.class, () -> finalGame.addPlayer("3"));
+        assertDoesNotThrow(() -> finalGame.addPlayer("1"));
     }
 
     @Test
@@ -95,8 +105,37 @@ class StandardGameTest {
         }
         //gameTest.setTurnQueue(playerTurnQueue); //TODO COME FACCIO A SETTARE IL TURNO DI UN GIOCATORE PER TESTARE?
 
-        // Verifico che il giocatore corretto sia restituito
+        //Verifico che il giocatore corretto sia restituito
         assertEquals("Rebecca", gameTest.getTurnPlayerId());
+    }
+
+
+    /**
+     * Method under test: {@link StandardGame#getInfo()}
+     */
+    @Test
+    void testGetInfo3() throws MatchmakingClosedException, PlayerAlreadyExistsException {
+        StandardGame standardGame = new StandardGame("42", 2);
+        standardGame.addPlayer("Player Id");
+        GameInfo actualInfo = standardGame.getInfo();
+        assertFalse(actualInfo.lastTurn());
+        assertEquals(Game.GameStatus.MATCHMAKING, actualInfo.status());
+        assertEquals(1, actualInfo.points().size());
+        assertEquals("Player Id", actualInfo.playerOnTurn());
+    }
+
+    /**
+     * Method under test: {@link StandardGame#getInfo()}
+     */
+    @Test
+    void testGetInfo4() throws MatchmakingClosedException, PlayerAlreadyExistsException {
+        StandardGame standardGame = new StandardGame("42", 2);
+        standardGame.addPlayer("java.util.List");
+        standardGame.addPlayer("Player Id");
+        GameInfo actualInfo = standardGame.getInfo();
+        assertFalse(actualInfo.lastTurn());
+        assertEquals(Game.GameStatus.STARTED, actualInfo.status());
+        assertEquals(2, actualInfo.points().size());
     }
 
 

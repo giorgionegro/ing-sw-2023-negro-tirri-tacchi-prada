@@ -18,8 +18,8 @@ import static view.TUI.TUIutils.getColour;
 
 public enum TUIdraw {
     ;
+    static final int commandLineWidth = 75;
     private static final Map<String, String[]> commonGoalRes = getCommonGoalRes();
-    static int commandLineWidth = 75;
 
     static void drawGrid(int startX, int startY, int gridRowDim, int gridColDim, char[][] cliPixel, int[][] cliPixelColor) {
         String middle = "│   ".repeat(gridRowDim) + "│";
@@ -131,17 +131,17 @@ public enum TUIdraw {
             boolean firstOfTheGroup = true;
             for (Map.Entry<String, Integer> player : group.getValue()) {
                 String pos;
-                String Ppoints;
+                String pPoints;
                 if (firstOfTheGroup) {
                     pos = String.valueOf(position);
                     firstOfTheGroup = false;
                 } else {
                     pos = "|";
                 }
-                Ppoints = String.valueOf(player.getValue());
+                pPoints = String.valueOf(player.getValue());
                 drawCenteredString(pos, gameEndX, leaderBoardY + line, positionTitle.length(), DEFAULT, cliPixel, cliPixelColor);
                 drawCenteredString(player.getKey(), gameEndX + positionTitle.length() + 1, leaderBoardY + line, idTitle.length(), DEFAULT, cliPixel, cliPixelColor);
-                drawCenteredString(Ppoints, gameEndX + positionTitle.length() + idTitle.length() + 2, leaderBoardY + line, pointsTitle.length(), DEFAULT, cliPixel, cliPixelColor);
+                drawCenteredString(pPoints, gameEndX + positionTitle.length() + idTitle.length() + 2, leaderBoardY + line, pointsTitle.length(), DEFAULT, cliPixel, cliPixelColor);
                 line++;
             }
             position++;
@@ -197,32 +197,23 @@ public enum TUIdraw {
         if (currentPlayerChat != null) {
             List<Message> messages = currentPlayerChat.messages();
             Collections.reverse(messages);
-
             drawBox(chatY + 1, chatX, chatBoxHeight, chatBoxWidth, DEFAULT, cliPixel, cliPixelColor);
-
             int chatContentsX = chatX + 1;
             int chatContentsY = chatY + 2;
             int chatContentsHeight = chatBoxHeight - 2;
             int chatContentsWidth = chatBoxWidth - 4;
-
             String[] chatBuffer = new String[chatContentsHeight];
             Arrays.fill(chatBuffer, "");
-
             int pointer = chatContentsHeight - 1;
             for (Message m : messages) {
                 String text = m.getSender() + " to " + ((m.getSubject().isBlank()) ? "Everyone" : m.getSubject()) + ": " + m.getText();
                 List<String> temp = new ArrayList<>();
-
                 do {
                     int size = Math.min(text.length(), chatContentsWidth);
-
                     String s = text.substring(0, size);
                     temp.add(s);
-
-
                     text = "    " + text.substring(size);
                 } while (!text.isBlank());
-
                 for (int i = temp.size() - 1; i >= 0; i--) {
                     chatBuffer[pointer] = temp.get(i);
                     pointer--;

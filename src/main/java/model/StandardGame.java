@@ -84,13 +84,13 @@ public class StandardGame extends Game {
         this.joinedPlayer = 0;
         this.maxPlayerNumber = playerNumber;
         this.gameId = gameId;
-        this.commonGoals = setCommonGoals(playerNumber);
+        this.commonGoals = this.setCommonGoals(playerNumber);
         this.livingRoom = new StandardLivingRoom(playerNumber);
         this.players = new HashMap<>();
         this.playerTurnQueue = new ArrayList<>();
         this.lastTurn = false;
         this.status = GameStatus.MATCHMAKING;
-        this.personalGoals = setPersonalGoals();
+        this.personalGoals = this.setPersonalGoals();
     }
 
     /**
@@ -101,15 +101,15 @@ public class StandardGame extends Game {
     public StandardGame(@NotNull StandardGameInstance instance) {
         this.joinedPlayer = 0;
         this.players = new HashMap<>();
-        instance.players().forEach((s, standardPlayerInstance) -> players.put(s, new StandardPlayer((StandardPlayerInstance) standardPlayerInstance)));
+        instance.players().forEach((s, standardPlayerInstance) -> this.players.put(s, new StandardPlayer((StandardPlayerInstance) standardPlayerInstance)));
         this.maxPlayerNumber = instance.maxPlayerNumber();
         this.gameId = instance.gameId();
         this.commonGoals = new ArrayList<>();
-        instance.commonGoals().forEach(standardCommonGoalInstance -> commonGoals.add(new StandardCommonGoal((StandardCommonGoalInstance) standardCommonGoalInstance)));
+        instance.commonGoals().forEach(standardCommonGoalInstance -> this.commonGoals.add(new StandardCommonGoal((StandardCommonGoalInstance) standardCommonGoalInstance)));
         this.livingRoom = new StandardLivingRoom((StandardLivingRoomInstance) instance.livingRoom());
         this.playerTurnQueue = new ArrayList<>();
-        instance.playersTurnQueue().forEach(s -> playerTurnQueue.add(players.get(s)));
-        this.firstPlayer = players.get(instance.firstPlayer());
+        instance.playersTurnQueue().forEach(s -> this.playerTurnQueue.add(this.players.get(s)));
+        this.firstPlayer = this.players.get(instance.firstPlayer());
         this.status = GameStatus.RESTARTING;
         this.lastTurn = instance.lastTurn();
         //re-initialize the personal goals is not needed
@@ -123,7 +123,7 @@ public class StandardGame extends Game {
      */
     @Override
     public String getGameId() {
-        return gameId;
+        return this.gameId;
     }
 
     /**
@@ -137,49 +137,49 @@ public class StandardGame extends Game {
     public void addPlayer(String playerId) throws PlayerAlreadyExistsException, MatchmakingClosedException {
 
         /* If matchmaking is closed (reached max number of connected player) we discard the request */
-        if (!(status.equals(GameStatus.MATCHMAKING) || status.equals(GameStatus.RESTARTING)))
+        if (!(this.status == GameStatus.MATCHMAKING || this.status == GameStatus.RESTARTING))
             throw new MatchmakingClosedException();
 
         /* If trying to add an already existing playerId we discard the request */
-        if (status.equals(GameStatus.MATCHMAKING)) {
-            if (players.containsKey(playerId))
+        if (this.status == GameStatus.MATCHMAKING) {
+            if (this.players.containsKey(playerId))
                 throw new PlayerAlreadyExistsException();
 
             /* Initialize Player model */
-            List<PersonalGoal> pGoals = personalGoals.pop();
+            List<PersonalGoal> pGoals = this.personalGoals.pop();
             Player newPlayer = new StandardPlayer(playerId, pGoals);
 
             /* Associate Player with playerId */
-            players.put(playerId, newPlayer);
+            this.players.put(playerId, newPlayer);
 
             /* Add Player to turnQueue */
-            playerTurnQueue.add(newPlayer);
+            this.playerTurnQueue.add(newPlayer);
 
-            joinedPlayer++;
+            this.joinedPlayer++;
 
-            setChanged();
-            notifyObservers(Event.PLAYER_JOINED);
+            this.setChanged();
+            this.notifyObservers(Event.PLAYER_JOINED);
         } else {
-            if (!players.containsKey(playerId))
+            if (!this.players.containsKey(playerId))
                 throw new MatchmakingClosedException();
 
             //TODO problema che due giocatori possono riconnettersi allo stesso giocatore
-            joinedPlayer++;
-            setChanged();
-            notifyObservers(Event.PLAYER_REJOINED);
+            this.joinedPlayer++;
+            this.setChanged();
+            this.notifyObservers(Event.PLAYER_REJOINED);
         }
         /* If we have now reached the max playerNumber we set game ready to be started */
-        if (joinedPlayer == maxPlayerNumber) {
+        if (this.joinedPlayer == this.maxPlayerNumber) {
 
-            if (status == GameStatus.MATCHMAKING) {
+            if (this.status == GameStatus.MATCHMAKING) {
                 /* Update turn sequence and firstPlayer */
-                Collections.shuffle(playerTurnQueue);
-                firstPlayer = playerTurnQueue.get(0);
+                Collections.shuffle(this.playerTurnQueue);
+                this.firstPlayer = this.playerTurnQueue.get(0);
             }
 
             this.status = GameStatus.STARTED;
-            setChanged();
-            notifyObservers(Event.GAME_STARTED);
+            this.setChanged();
+            this.notifyObservers(Event.GAME_STARTED);
         }
     }
 
@@ -192,10 +192,10 @@ public class StandardGame extends Game {
      */
     @Override
     public Player getPlayer(String playerId) throws PlayerNotExistsException {
-        if (!players.containsKey(playerId))
+        if (!this.players.containsKey(playerId))
             throw new PlayerNotExistsException();
 
-        return players.get(playerId);
+        return this.players.get(playerId);
     }
 
     /**
@@ -205,7 +205,7 @@ public class StandardGame extends Game {
      */
     @Override
     public @NotNull List<CommonGoal> getCommonGoals() {
-        return new ArrayList<>(commonGoals);
+        return new ArrayList<>(this.commonGoals);
     }
 
     /**
@@ -215,7 +215,7 @@ public class StandardGame extends Game {
      */
     @Override
     public @NotNull LivingRoom getLivingRoom() {
-        return livingRoom;
+        return this.livingRoom;
     }
 
     /**
@@ -226,8 +226,8 @@ public class StandardGame extends Game {
     @Override
     public void setLastTurn() {
         this.lastTurn = true;
-        setChanged();
-        notifyObservers(Event.LAST_TURN);
+        this.setChanged();
+        this.notifyObservers(Event.LAST_TURN);
     }
 
     /**
@@ -237,7 +237,7 @@ public class StandardGame extends Game {
      */
     @Override
     public boolean isLastTurn() {
-        return lastTurn;
+        return this.lastTurn;
     }
 
     /**
@@ -247,15 +247,15 @@ public class StandardGame extends Game {
      */
     @Override
     public String getTurnPlayerId() {
-        return playerTurnQueue.get(playerTurnQueue.size() - 1).getId();
+        return this.playerTurnQueue.get(this.playerTurnQueue.size() - 1).getId();
     }
 
     @Override
     public void close() {
         this.status = GameStatus.ENDED;
         //save state
-        setChanged();
-        notifyObservers(Event.GAME_ENDED);
+        this.setChanged();
+        this.notifyObservers(Event.GAME_ENDED);
     }
 
     /**
@@ -265,7 +265,7 @@ public class StandardGame extends Game {
      */
     @Override
     public GameStatus getGameStatus() {
-        return status;
+        return this.status;
     }
 
     /**
@@ -273,12 +273,12 @@ public class StandardGame extends Game {
      */
     @Override
     public void updatePlayersTurn() throws GameEndedException {
-        Player p = playerTurnQueue.remove(0);
-        playerTurnQueue.add(p);
-        setChanged();
-        notifyObservers(Event.NEXT_TURN);
+        Player p = this.playerTurnQueue.remove(0);
+        this.playerTurnQueue.add(p);
+        this.setChanged();
+        this.notifyObservers(Event.NEXT_TURN);
 
-        if (p.equals(firstPlayer) && lastTurn)
+        if (p.equals(this.firstPlayer) && this.lastTurn)
             throw new GameEndedException();
     }
 
@@ -290,27 +290,27 @@ public class StandardGame extends Game {
     @Override
     public @NotNull Serializable getInstance() {
         Map<String, Serializable> playersInstance = new HashMap<>();
-        players.forEach((s, player) -> playersInstance.put(s, player.getInstance()));
+        this.players.forEach((s, player) -> playersInstance.put(s, player.getInstance()));
 
         List<Serializable> commonGoalsInstance = new ArrayList<>();
-        commonGoals.forEach(commonGoal -> commonGoalsInstance.add(commonGoal.getInstance()));
+        this.commonGoals.forEach(commonGoal -> commonGoalsInstance.add(commonGoal.getInstance()));
 
-        Serializable livingRoomInstance = livingRoom.getInstance();
+        Serializable livingRoomInstance = this.livingRoom.getInstance();
 
         List<String> playerTurnQueueInstance = new ArrayList<>();
-        playerTurnQueue.forEach(player -> playerTurnQueueInstance.add(player.getId()));
+        this.playerTurnQueue.forEach(player -> playerTurnQueueInstance.add(player.getId()));
 
-        String firstPlayerInstance = Objects.requireNonNull(firstPlayer).getId();
+        String firstPlayerInstance = Objects.requireNonNull(this.firstPlayer).getId();
 
         return new StandardGameInstance(
                 playersInstance,
                 commonGoalsInstance,
                 livingRoomInstance,
-                gameId,
+                this.gameId,
                 playerTurnQueueInstance,
                 firstPlayerInstance,
-                maxPlayerNumber,
-                lastTurn
+                this.maxPlayerNumber,
+                this.lastTurn
         );
     }
 
@@ -353,18 +353,18 @@ public class StandardGame extends Game {
      */
     private @NotNull Stack<List<PersonalGoal>> setPersonalGoals() {
         Stack<List<PersonalGoal>> result = new Stack<>();
-        result.add(createPersonalGoal(new Tile[]{Tile.PLANTS_1, Tile.FRAMES_1, Tile.CATS_1, Tile.BOOKS_1, Tile.GAMES_1, Tile.TROPHIES_1}, new int[]{0, 0, 1, 2, 3, 5}, new int[]{0, 2, 4, 3, 1, 2}));
-        result.add(createPersonalGoal(new Tile[]{Tile.PLANTS_1, Tile.CATS_1, Tile.GAMES_1, Tile.BOOKS_1, Tile.TROPHIES_1, Tile.FRAMES_1}, new int[]{1, 2, 2, 3, 4, 5}, new int[]{1, 0, 2, 4, 3, 4}));
-        result.add(createPersonalGoal(new Tile[]{Tile.FRAMES_1, Tile.GAMES_1, Tile.PLANTS_1, Tile.CATS_1, Tile.TROPHIES_1, Tile.BOOKS_1}, new int[]{1, 1, 2, 3, 3, 4}, new int[]{0, 3, 2, 1, 4, 0}));
-        result.add(createPersonalGoal(new Tile[]{Tile.GAMES_1, Tile.TROPHIES_1, Tile.FRAMES_1, Tile.PLANTS_1, Tile.BOOKS_1, Tile.CATS_1}, new int[]{0, 2, 2, 3, 4, 4}, new int[]{4, 0, 2, 3, 1, 2}));
-        result.add(createPersonalGoal(new Tile[]{Tile.TROPHIES_1, Tile.FRAMES_1, Tile.BOOKS_1, Tile.PLANTS_1, Tile.GAMES_1, Tile.CATS_1}, new int[]{1, 3, 3, 4, 5, 5}, new int[]{1, 1, 2, 4, 0, 3}));
-        result.add(createPersonalGoal(new Tile[]{Tile.TROPHIES_1, Tile.CATS_1, Tile.BOOKS_1, Tile.GAMES_1, Tile.FRAMES_1, Tile.PLANTS_1}, new int[]{0, 0, 2, 4, 4, 5}, new int[]{2, 4, 3, 1, 3, 0}));
-        result.add(createPersonalGoal(new Tile[]{Tile.CATS_1, Tile.FRAMES_1, Tile.PLANTS_1, Tile.TROPHIES_1, Tile.GAMES_1, Tile.BOOKS_1}, new int[]{0, 1, 2, 3, 4, 5}, new int[]{0, 3, 1, 0, 4, 2}));
-        result.add(createPersonalGoal(new Tile[]{Tile.FRAMES_1, Tile.CATS_1, Tile.TROPHIES_1, Tile.PLANTS_1, Tile.BOOKS_1, Tile.GAMES_1}, new int[]{0, 1, 2, 3, 4, 5}, new int[]{4, 1, 2, 0, 3, 3}));
-        result.add(createPersonalGoal(new Tile[]{Tile.GAMES_1, Tile.CATS_1, Tile.BOOKS_1, Tile.TROPHIES_1, Tile.PLANTS_1, Tile.FRAMES_1}, new int[]{0, 2, 3, 4, 4, 5}, new int[]{2, 2, 4, 1, 4, 0}));
-        result.add(createPersonalGoal(new Tile[]{Tile.TROPHIES_1, Tile.GAMES_1, Tile.BOOKS_1, Tile.CATS_1, Tile.FRAMES_1, Tile.PLANTS_1}, new int[]{0, 1, 2, 3, 4, 5}, new int[]{4, 1, 0, 3, 1, 3}));
-        result.add(createPersonalGoal(new Tile[]{Tile.PLANTS_1, Tile.BOOKS_1, Tile.GAMES_1, Tile.FRAMES_1, Tile.CATS_1, Tile.TROPHIES_1}, new int[]{0, 1, 2, 3, 4, 5}, new int[]{2, 1, 0, 2, 4, 3}));
-        result.add(createPersonalGoal(new Tile[]{Tile.BOOKS_1, Tile.PLANTS_1, Tile.FRAMES_1, Tile.TROPHIES_1, Tile.GAMES_1, Tile.CATS_1}, new int[]{0, 1, 2, 3, 4, 5}, new int[]{2, 1, 2, 3, 4, 0}));
+        result.add(this.createPersonalGoal(new Tile[]{Tile.PLANTS_1, Tile.FRAMES_1, Tile.CATS_1, Tile.BOOKS_1, Tile.GAMES_1, Tile.TROPHIES_1}, new int[]{0, 0, 1, 2, 3, 5}, new int[]{0, 2, 4, 3, 1, 2}));
+        result.add(this.createPersonalGoal(new Tile[]{Tile.PLANTS_1, Tile.CATS_1, Tile.GAMES_1, Tile.BOOKS_1, Tile.TROPHIES_1, Tile.FRAMES_1}, new int[]{1, 2, 2, 3, 4, 5}, new int[]{1, 0, 2, 4, 3, 4}));
+        result.add(this.createPersonalGoal(new Tile[]{Tile.FRAMES_1, Tile.GAMES_1, Tile.PLANTS_1, Tile.CATS_1, Tile.TROPHIES_1, Tile.BOOKS_1}, new int[]{1, 1, 2, 3, 3, 4}, new int[]{0, 3, 2, 1, 4, 0}));
+        result.add(this.createPersonalGoal(new Tile[]{Tile.GAMES_1, Tile.TROPHIES_1, Tile.FRAMES_1, Tile.PLANTS_1, Tile.BOOKS_1, Tile.CATS_1}, new int[]{0, 2, 2, 3, 4, 4}, new int[]{4, 0, 2, 3, 1, 2}));
+        result.add(this.createPersonalGoal(new Tile[]{Tile.TROPHIES_1, Tile.FRAMES_1, Tile.BOOKS_1, Tile.PLANTS_1, Tile.GAMES_1, Tile.CATS_1}, new int[]{1, 3, 3, 4, 5, 5}, new int[]{1, 1, 2, 4, 0, 3}));
+        result.add(this.createPersonalGoal(new Tile[]{Tile.TROPHIES_1, Tile.CATS_1, Tile.BOOKS_1, Tile.GAMES_1, Tile.FRAMES_1, Tile.PLANTS_1}, new int[]{0, 0, 2, 4, 4, 5}, new int[]{2, 4, 3, 1, 3, 0}));
+        result.add(this.createPersonalGoal(new Tile[]{Tile.CATS_1, Tile.FRAMES_1, Tile.PLANTS_1, Tile.TROPHIES_1, Tile.GAMES_1, Tile.BOOKS_1}, new int[]{0, 1, 2, 3, 4, 5}, new int[]{0, 3, 1, 0, 4, 2}));
+        result.add(this.createPersonalGoal(new Tile[]{Tile.FRAMES_1, Tile.CATS_1, Tile.TROPHIES_1, Tile.PLANTS_1, Tile.BOOKS_1, Tile.GAMES_1}, new int[]{0, 1, 2, 3, 4, 5}, new int[]{4, 1, 2, 0, 3, 3}));
+        result.add(this.createPersonalGoal(new Tile[]{Tile.GAMES_1, Tile.CATS_1, Tile.BOOKS_1, Tile.TROPHIES_1, Tile.PLANTS_1, Tile.FRAMES_1}, new int[]{0, 2, 3, 4, 4, 5}, new int[]{2, 2, 4, 1, 4, 0}));
+        result.add(this.createPersonalGoal(new Tile[]{Tile.TROPHIES_1, Tile.GAMES_1, Tile.BOOKS_1, Tile.CATS_1, Tile.FRAMES_1, Tile.PLANTS_1}, new int[]{0, 1, 2, 3, 4, 5}, new int[]{4, 1, 0, 3, 1, 3}));
+        result.add(this.createPersonalGoal(new Tile[]{Tile.PLANTS_1, Tile.BOOKS_1, Tile.GAMES_1, Tile.FRAMES_1, Tile.CATS_1, Tile.TROPHIES_1}, new int[]{0, 1, 2, 3, 4, 5}, new int[]{2, 1, 0, 2, 4, 3}));
+        result.add(this.createPersonalGoal(new Tile[]{Tile.BOOKS_1, Tile.PLANTS_1, Tile.FRAMES_1, Tile.TROPHIES_1, Tile.GAMES_1, Tile.CATS_1}, new int[]{0, 1, 2, 3, 4, 5}, new int[]{2, 1, 2, 3, 4, 0}));
         Collections.shuffle(result);
         return result;
     }
@@ -393,20 +393,20 @@ public class StandardGame extends Game {
     @Override
     public @NotNull GameInfo getInfo() {
         Map<String, Integer> points = new HashMap<>();
-        players.forEach((s, player) -> {
+        this.players.forEach((s, player) -> {
             /*  Points earned by each player are the sum of points earned by
                 achieving common goals and by forming groups of tiles       */
-            int playerPoints = getCommonGoalPoints(player.getAchievedCommonGoals().values().stream().toList())
-                    + getShelfTilesGroupsPoints(player.getShelf().getTiles());
+            int playerPoints = this.getCommonGoalPoints(player.getAchievedCommonGoals().values().stream().toList())
+                    + this.getShelfTilesGroupsPoints(player.getShelf().getTiles());
 
 
             /* Show points earned from personal goals only at game end */
-            if (status == GameStatus.ENDED)
-                playerPoints += getPersonalGoalPoints(player.getPersonalGoals());
+            if (this.status == GameStatus.ENDED)
+                playerPoints += this.getPersonalGoalPoints(player.getPersonalGoals());
 
             points.put(s, playerPoints);
         });
-        return new GameInfo(status, lastTurn, getTurnPlayerId(), points);
+        return new GameInfo(this.status, this.lastTurn, this.getTurnPlayerId(), points);
     }
 
 
@@ -415,6 +415,7 @@ public class StandardGame extends Game {
         for (PersonalGoal p : personalGoals)
             if (p.isAchieved())
                 achieved++;
+
 
         return switch (achieved) {
             case 0 -> 0;
@@ -425,6 +426,8 @@ public class StandardGame extends Game {
             case 5 -> 9;
             default -> 12;
         };
+
+
     }
 
     private int getCommonGoalPoints(@NotNull List<Token> tokens) {
@@ -448,7 +451,7 @@ public class StandardGame extends Game {
         for (int i = 0; i < shelf.length; i++)
             for (int j = 0; j < shelf[0].length; j++)
                 if (shelf[i][j] != Tile.EMPTY) {
-                    int groupSize = depthSearch(i, j, shelf, checked, shelf[i][j].getColor());
+                    int groupSize = this.depthSearch(i, j, shelf, checked, shelf[i][j].getColor());
 
                     if (groupSize >= 6)
                         ris += 8;
@@ -475,14 +478,12 @@ public class StandardGame extends Game {
 
         if (!shelf[i][j].getColor().equals(tileColor))
             return 0;
-
         checked[i][j] = true;
-
         return 1
-                + depthSearch(i - 1, j, shelf, checked, tileColor)
-                + depthSearch(i + 1, j, shelf, checked, tileColor)
-                + depthSearch(i, j + 1, shelf, checked, tileColor)
-                + depthSearch(i, j - 1, shelf, checked, tileColor);
+                + this.depthSearch(i - 1, j, shelf, checked, tileColor)
+                + this.depthSearch(i + 1, j, shelf, checked, tileColor)
+                + this.depthSearch(i, j + 1, shelf, checked, tileColor)
+                + this.depthSearch(i, j - 1, shelf, checked, tileColor);
     }
 
 
