@@ -1,7 +1,10 @@
 package model;
 
 import model.goalEvaluators.Standard2ColumnsRowOfDifferentTiles;
+import model.instances.StandardCommonGoalInstance;
 import org.junit.jupiter.api.Test;
+
+import java.io.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -34,6 +37,20 @@ class StandardCommonGoalTest {
             fail();
         }
         assertThrows(UnsupportedOperationException.class, () -> new StandardCommonGoal(5, evalTest));
+
+    }
+    @Test
+    void instanceTest(){
+        Standard2ColumnsRowOfDifferentTiles evalTest = new Standard2ColumnsRowOfDifferentTiles(true);
+        try {
+            StandardCommonGoal test = new StandardCommonGoal(4, evalTest);
+            Serializable instanceTest = test.getInstance();
+            StandardCommonGoal iTest = new StandardCommonGoal((StandardCommonGoalInstance) instanceTest);
+            assertEquals(test.getInfo(), iTest.getInfo());
+        }
+        catch (Exception e){
+            fail();
+        }
 
     }
 }
