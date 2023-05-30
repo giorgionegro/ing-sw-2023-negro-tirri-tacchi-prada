@@ -46,14 +46,12 @@ public class StandardCommonGoal extends CommonGoal {
     @Override
     protected void fillStack(int nToken) {
         if(nToken<5){
-            tokenStack.push(Token.TOKEN_2_POINTS);
+            if(nToken>3)
+                tokenStack.push(Token.TOKEN_2_POINTS);
             tokenStack.push(Token.TOKEN_4_POINTS);
-            if(nToken>2){
+            if(nToken>2)
                 tokenStack.push(Token.TOKEN_6_POINTS);
-                if(nToken>3){
-                    tokenStack.push(Token.TOKEN_8_POINTS);
-                }
-            }
+            tokenStack.push(Token.TOKEN_8_POINTS);
         }else{
             throw new UnsupportedOperationException("The number of players is more than the maximum accepted (4max)");
         }

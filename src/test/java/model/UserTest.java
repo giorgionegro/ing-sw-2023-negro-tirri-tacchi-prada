@@ -41,5 +41,9 @@ class UserTest {
         assertEquals(test.getEventMessage(), "New error");
     }
 
-
+    @Test
+    void infoTest(){
+        User test = new User();
+        assertTrue(test.getStatus().equals(test.getInfo().status()) && test.getStatus().equals(test.getInfo().status()) && test.getEventMessage().equals(test.getInfo().eventMessage()));
+    }
 }

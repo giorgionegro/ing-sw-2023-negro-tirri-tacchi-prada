@@ -1,8 +1,5 @@
 package model;
 
-import java.util.Stack;
-
-import model.instances.StandardLivingRoomInstance;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -67,7 +64,7 @@ class StandardLivingRoomTest {
             }
         }
 
-        if (actualBoard[0][3] != Tile.EMPTY ||
+        if( actualBoard[0][3] != Tile.EMPTY ||
                 actualBoard[0][4] != Tile.EMPTY ||
                 actualBoard[0][5] != Tile.EMPTY ||
                 actualBoard[1][5] != Tile.EMPTY ||
@@ -81,53 +78,53 @@ class StandardLivingRoomTest {
                 actualBoard[5][8] != Tile.EMPTY ||
                 actualBoard[7][3] != Tile.EMPTY ||
                 actualBoard[8][4] != Tile.EMPTY ||
-                actualBoard[8][5] != Tile.EMPTY) {
+                actualBoard[8][5] != Tile.EMPTY){
             fail();
         }
     }
 
     @Test
-        //after refillBoard(), check that all the board cells that should contain a TIle actually do
-        //when there are 2 Players
-    void twoPlayerBoardFilledCorrectly() {
+    //after refillBoard(), check that all the board cells that should contain a TIle actually do
+    //when there are 2 Players
+    void twoPlayerBoardFilledCorrectly(){
         StandardLivingRoom test = new StandardLivingRoom(2);
         test.refillBoard();
         Tile[][] actualBoard = test.getBoard();
-        for (int i = 3; i < 6; i++) {
-            for (int j = 3; j < 6; j++) {
-                if (actualBoard[i][j] == Tile.EMPTY) {
+        for(int i=3; i<6; i++){
+            for(int j=3; j<6; j++){
+                if(actualBoard[i][j] == Tile.EMPTY){
                     fail();
                 }
             }
         }
 
-        for (int i = 1; i < 3; i++) {
-            for (int j = 3; j < 5; j++) {
-                if (actualBoard[i][j] == Tile.EMPTY) {
+        for(int i=1; i<3; i++){
+            for(int j=3; j<5; j++){
+                if(actualBoard[i][j] == Tile.EMPTY){
                     fail();
                 }
             }
         }
 
-        for (int i = 3; i < 5; i++) {
-            for (int j = 6; j < 8; j++) {
-                if (actualBoard[i][j] == Tile.EMPTY) {
+        for(int i=3; i<5; i++){
+            for(int j=6; j<8; j++){
+                if(actualBoard[i][j] == Tile.EMPTY){
                     fail();
                 }
             }
         }
 
-        for (int i = 4; i < 6; i++) {
-            for (int j = 1; j < 3; j++) {
-                if (actualBoard[i][j] == Tile.EMPTY) {
+        for(int i=4; i<6; i++){
+            for(int j=1; j<3; j++){
+                if(actualBoard[i][j] == Tile.EMPTY){
                     fail();
                 }
             }
         }
 
-        for (int i = 6; i < 8; i++) {
-            for (int j = 4; j < 6; j++) {
-                if (actualBoard[i][j] == Tile.EMPTY) {
+        for(int i=6; i<8; i++){
+            for(int j=4; j<6; j++){
+                if(actualBoard[i][j] == Tile.EMPTY){
                     fail();
                 }
             }
