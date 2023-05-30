@@ -3,7 +3,6 @@ package model;
 import model.instances.StandardLivingRoomInstance;
 import org.junit.jupiter.api.Test;
 
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Stack;
 
@@ -553,11 +552,6 @@ class StandardLivingRoomTest {
         StandardLivingRoom test = new StandardLivingRoom(2);
         assertTrue(Arrays.deepEquals(test.getBoard(), test.getInfo().board()));
     }
-    @Test
-    void getInstanceTest(){
-        StandardLivingRoom test = new StandardLivingRoom(2);
-        Serializable instanceTest = test.getInstance();
-        StandardLivingRoom iTest = new StandardLivingRoom((StandardLivingRoomInstance) instanceTest);
-        assertTrue(test.getInfo().equals(iTest.getInfo()));
-    }
+
+
 }

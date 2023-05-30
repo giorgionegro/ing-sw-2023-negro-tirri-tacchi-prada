@@ -3,13 +3,12 @@ package util;
 public class ResourceProvider {
     private static ResourceProvider instance;
 
-    private synchronized static ResourceProvider getInstance(){
-        if(instance==null)
-            instance = new ResourceProvider();
-
-        return instance;
+    private ResourceProvider() {
+        super();
     }
-    public static String getResourcePath(String resPath){
-        return getInstance().getClass().getResource(resPath).getPath();
+
+
+    public static String getResourcePath(String resPath) {
+        return ResourceProvider.class.getResource(resPath).getPath();
     }
 }

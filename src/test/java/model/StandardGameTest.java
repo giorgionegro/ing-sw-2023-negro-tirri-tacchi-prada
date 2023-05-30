@@ -1,16 +1,13 @@
 package model;
 
 import model.abstractModel.Game;
-import model.abstractModel.PersonalGoal;
-import model.abstractModel.Game;
 import model.abstractModel.LivingRoom;
-import model.abstractModel.Player;
+import model.abstractModel.PersonalGoal;
 import model.exceptions.GameEndedException;
 import model.exceptions.MatchmakingClosedException;
 import model.exceptions.PlayerAlreadyExistsException;
 import model.exceptions.PlayerNotExistsException;
 import model.instances.StandardGameInstance;
-import modelView.GameInfo;
 import modelView.GameInfo;
 import org.junit.jupiter.api.Test;
 
@@ -22,26 +19,23 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class StandardGameTest {
     @Test
-    void newStandardGameTest(){
-        try{
+    void newStandardGameTest() {
+        try {
             StandardGame test = new StandardGame("testID", 5);
             fail();
-        }
-        catch(IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             System.out.println("Illegal argument caught nPlayer > 4");
         }
-        try{
+        try {
             StandardGame test = new StandardGame("testID", 1);
             fail();
-        }
-        catch(IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             System.out.println("Illegal argument caught nPlayer < 2");
         }
-        try{
+        try {
             StandardGame test = new StandardGame("testID", 4);
-            assertTrue(Objects.equals(test.getGameId(), "testID"));
-        }
-        catch (Exception e){
+            assertEquals("testID", test.getGameId());
+        } catch (Exception e) {
             fail();
         }
     }
@@ -57,12 +51,13 @@ class StandardGameTest {
         assertDoesNotThrow(() -> finalGame.addPlayer("1"));
     }
 
-   @Test
+    @Test
     void closeGameTest() {
-       StandardGame test = new StandardGame("1", 2);
-       test.close();
-       assertEquals(test.getGameStatus(), Game.GameStatus.ENDED);
-   }
+        StandardGame test = new StandardGame("1", 2);
+        test.close();
+        assertEquals(test.getGameStatus(), Game.GameStatus.ENDED);
+    }
+
     @Test
     void getPlayerTestExists() throws PlayerNotExistsException {
         StandardGame gameTest = new StandardGame("esempio", 3);
@@ -77,90 +72,83 @@ class StandardGameTest {
     }
 
     @Test
-    void setLastTurnTest(){
+    void setLastTurnTest() {
         StandardGame test = new StandardGame("testID", 2);
         assertFalse(test.isLastTurn());
         test.setLastTurn();
         assertTrue(test.isLastTurn());
     }
+
     @Test
-    void turnPlayerTest(){
-         StandardGame test = new StandardGame("testID", 2);
-        try{
+    void turnPlayerTest() {
+        StandardGame test = new StandardGame("testID", 2);
+        try {
             test.addPlayer("player1");
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             fail();
         }
         assertEquals(test.getTurnPlayerId(), "player1");
 
-        try{
+        try {
             test.addPlayer("player2");
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             fail();
         }
         String beforeUpdate = test.getTurnPlayerId();
-        try{
+        try {
             test.updatePlayersTurn();
-        }
-        catch (GameEndedException e){
+        } catch (GameEndedException e) {
             fail();
         }
-        assertFalse(Objects.equals(test.getTurnPlayerId(), beforeUpdate));
-        if(Objects.equals(beforeUpdate, "player1")){
+        assertNotEquals(test.getTurnPlayerId(), beforeUpdate);
+        if (Objects.equals(beforeUpdate, "player1")) {
             assertEquals(test.getTurnPlayerId(), "player2");
-        }
-        else{
+        } else {
             assertEquals(test.getTurnPlayerId(), "player1");
         }
         test.setLastTurn();
-        try{
+        try {
             test.updatePlayersTurn();
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             fail();
         }
 
-        try{
+        try {
             test.updatePlayersTurn();
             fail();
-        }
-        catch(GameEndedException e){
+        } catch (GameEndedException e) {
             System.out.println("Game ended caught");
         }
     }
+
     @Test
-    void getStatusTest(){
+    void getStatusTest() {
         StandardGame test = new StandardGame("testID", 2);
-        try{
+        try {
             test.addPlayer("p1");
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             fail();
         }
         assertEquals(test.getGameStatus(), Game.GameStatus.MATCHMAKING);
-        try{
+        try {
             test.addPlayer("p2");
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             fail();
         }
         assertEquals(test.getGameStatus(), Game.GameStatus.STARTED);
     }
+
     @Test
-    void getInfoTest(){
+    void getInfoTest() {
         StandardGame test = new StandardGame("testID", 2);
-        try{
+        try {
             test.addPlayer("p1");
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             fail();
         }
-        try{
+        try {
             test.addPlayer("p2");
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             fail();
         }
         String turn = test.getTurnPlayerId();
@@ -169,18 +157,19 @@ class StandardGameTest {
         GameInfo testInfo2 = test.getInfo();
         //assertTrue(testInfo2.lastTurn() == true && testInfo2.playerOnTurn() == "p1" && testInfo2.status().equals(Game.GameStatus.ENDED) && testInfo2.points().get("p1") == 0);
         assertEquals(testInfo2.playerOnTurn(), turn);
-        assertEquals(true, testInfo2.lastTurn());
+        assertTrue(testInfo2.lastTurn());
         assertEquals(Game.GameStatus.ENDED, testInfo2.status());
         assertEquals(0, (int) testInfo2.points().get("p1"));
     }
     //TODO tanti casi da controllare
 
     @Test
-    void getLivingRoomTest(){
+    void getLivingRoomTest() {
         StandardGame test = new StandardGame("testID", 2);
         LivingRoom livingTest = test.getLivingRoom();
         //TODO pensare a un test
     }
+
     @Test
     void getTurnPlayerIdTest() {
         ArrayList<StandardPlayer> players = new ArrayList<>();
@@ -206,12 +195,10 @@ class StandardGameTest {
     }
 
 
-
-
     @Test
-    void goalTest(){
+    void goalTest() {
         StandardGame test = new StandardGame("testID", 2);
-        try{
+        try {
             test.addPlayer("p1");
             test.addPlayer("p2");
 
@@ -241,17 +228,11 @@ class StandardGameTest {
             test.getPlayer("p1").addAchievedCommonGoal(test.getCommonGoals().get(0).getEvaluator().getDescription(), test.getCommonGoals().get(0).getTopToken());
 
             assertEquals(20, test.getInfo().points().get("p1"));
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             fail();
         }
 
     }
-
-
-
-
-
 
 
     /**
@@ -283,18 +264,16 @@ class StandardGameTest {
     }
 
     @Test
-    void depthSearchTest(){
+    void depthSearchTest() {
         StandardGame test = new StandardGame("testID", 2);
         try {
             test.addPlayer("p1");
-        } catch (PlayerAlreadyExistsException e) {
-            fail();
-        } catch (MatchmakingClosedException e) {
+        } catch (PlayerAlreadyExistsException | MatchmakingClosedException e) {
             fail();
         }
         Tile[][] modifiedShelf = new Tile[5][6];
-        for(int i=0; i<5; i++){
-            for(int j=0; j<6; j++){
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 6; j++) {
                 modifiedShelf[i][j] = Tile.EMPTY;
             }
         }
@@ -306,7 +285,7 @@ class StandardGameTest {
         } catch (PlayerNotExistsException e) {
             throw new RuntimeException(e);
         }
-        assertTrue(test.getInfo().points().get("p1") == 2);
+        assertEquals(2, (int) test.getInfo().points().get("p1"));
 
         modifiedShelf[0][3] = Tile.TROPHIES_1;
         try {
@@ -314,15 +293,15 @@ class StandardGameTest {
         } catch (PlayerNotExistsException e) {
             throw new RuntimeException(e);
         }
-        assertTrue(test.getInfo().points().get("p1") == 3);
+        assertEquals(3, (int) test.getInfo().points().get("p1"));
 
         modifiedShelf[1][0] = Tile.TROPHIES_1;
         try {
             test.getPlayer("p1").getShelf().setTiles(modifiedShelf);
         } catch (PlayerNotExistsException e) {
-        throw new RuntimeException(e);
+            throw new RuntimeException(e);
         }
-        assertTrue(test.getInfo().points().get("p1") == 6);
+        assertEquals(6, (int) test.getInfo().points().get("p1"));
 
         modifiedShelf[2][0] = Tile.TROPHIES_1;
         try {
@@ -330,7 +309,7 @@ class StandardGameTest {
         } catch (PlayerNotExistsException e) {
             throw new RuntimeException(e);
         }
-        assertTrue(test.getInfo().points().get("p1") == 8);
+        assertEquals(8, (int) test.getInfo().points().get("p1"));
 
         modifiedShelf[3][0] = Tile.GAMES_1;
         try {
@@ -338,10 +317,18 @@ class StandardGameTest {
         } catch (PlayerNotExistsException e) {
             throw new RuntimeException(e);
         }
-        assertTrue(test.getInfo().points().get("p1") == 8);
+        assertEquals(8, (int) test.getInfo().points().get("p1"));
     }
-    @Test
-    void rejoinTest(){
 
+    @Test
+    void rejoinTest() {
+
+    }
+
+
+    @Test
+    void getPlayerTest() {
+        StandardGame test = new StandardGame("testID", 2);
+        assertThrows(PlayerNotExistsException.class, () -> test.getPlayer("1"));
     }
 }

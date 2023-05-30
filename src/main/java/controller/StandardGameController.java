@@ -4,10 +4,14 @@ import controller.exceptions.GameAccessDeniedException;
 import controller.interfaces.GameController;
 import controller.interfaces.LobbyController;
 import distibuted.interfaces.ClientInterface;
-import model.*;
+import model.Tile;
+import model.Token;
+import model.User;
 import model.abstractModel.*;
 import model.exceptions.*;
-import modelView.*;
+import modelView.LoginInfo;
+import modelView.PickedTile;
+import modelView.PlayerMoveInfo;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import util.Observable;
@@ -20,7 +24,7 @@ public class StandardGameController implements GameController, LobbyController {
     private final Game game;
     private final @NotNull Map<ClientInterface, User> userAssociation;
 
-    private final @NotNull Map<User,Player> playerAssociation;
+    private final @NotNull Map<User, Player> playerAssociation;
 
     /**
      * @param game game to be managed
@@ -35,6 +39,7 @@ public class StandardGameController implements GameController, LobbyController {
 
     /**
      * Observer to update the PlayerInfo
+     *
      * @param newClient client to be added
      * @return Player's Observer to be added
      */
@@ -54,6 +59,7 @@ public class StandardGameController implements GameController, LobbyController {
 
     /**
      * Observer to update the GameStatus
+     *
      * @param newClient client to be added
      * @return Observer of the GameStatus to be added
      */
@@ -73,6 +79,7 @@ public class StandardGameController implements GameController, LobbyController {
 
     /**
      * Observer to update the CommonGoal
+     *
      * @param newClient client to be added
      * @return Observer of the CommonGoal to be added
      */
@@ -93,6 +100,7 @@ public class StandardGameController implements GameController, LobbyController {
 
     /**
      * Observer to update the LivingRoom
+     *
      * @param newClient client to be added
      * @return Observer of the LivingRoom to be added
      */
@@ -113,6 +121,7 @@ public class StandardGameController implements GameController, LobbyController {
 
     /**
      * Observer to update the PlayerChat
+     *
      * @param newClient client to be added
      * @return Observer of the PlayerChat to be added
      */
@@ -133,6 +142,7 @@ public class StandardGameController implements GameController, LobbyController {
 
     /**
      * Observer to update the PersonalGoal
+     *
      * @param newClient client to be added
      * @return Observer of the PersonalGoal to be added
      */
@@ -153,6 +163,7 @@ public class StandardGameController implements GameController, LobbyController {
 
     /**
      * Observer to update the Shelf
+     *
      * @param newClient client to be added
      * @return Observer of the Shelf to be added
      */
@@ -175,30 +186,30 @@ public class StandardGameController implements GameController, LobbyController {
      * Add player to the game with all necessary preparations
      *
      * @param newClient client that wants to join the game
-     * @param info  login info of the player
+     * @param info      login info of the player
      * @throws GameAccessDeniedException if the game is already ended or the player id already exists or the matchmaking is closed
      */
     @Override
     public synchronized void joinPlayer(@NotNull ClientInterface newClient, @NotNull User newUser, @NotNull LoginInfo info) throws GameAccessDeniedException {
         //Should we just Throw the different exceptions instead of catching them?
         try {
-            game.addPlayer(info.playerId());
+            this.game.addPlayer(info.playerId());
 
-            Player newPlayer = game.getPlayer(info.playerId());
+            Player newPlayer = this.game.getPlayer(info.playerId());
 
-            userAssociation.put(newClient,newUser);
+            this.userAssociation.put(newClient, newUser);
 
             /* Put newClient into known client */
-            playerAssociation.put(newUser, newPlayer);
+            this.playerAssociation.put(newUser, newPlayer);
 
-            newUser.reportEvent(User.Status.JOINED, "Joined game: "+game.getGameId()+", you are:"+info.playerId(), info.time(), User.Event.GAME_JOINED);
+            newUser.reportEvent(User.Status.JOINED, "Joined game: " + this.game.getGameId() + ", you are:" + info.playerId(), info.time(), User.Event.GAME_JOINED);
 
-            addObservers(newClient, newPlayer);
+            this.addObservers(newClient, newPlayer);
 
             /* If game is ready to be started we force the first */
-            if (game.getGameStatus().equals(Game.GameStatus.STARTED)) {
-                game.getLivingRoom().refillBoard();
-                game.updatePlayersTurn();
+            if (this.game.getGameStatus() == Game.GameStatus.STARTED) {
+                this.game.getLivingRoom().refillBoard();
+                this.game.updatePlayersTurn();
             }
         } catch (PlayerAlreadyExistsException | PlayerNotExistsException e) {
             throw new GameAccessDeniedException("Player id already exists");//Same as above
@@ -207,17 +218,17 @@ public class StandardGameController implements GameController, LobbyController {
         }
     }
 
-    private void closeTheGame(String message){
+    private void closeTheGame(String message) {
         long eventTime = System.currentTimeMillis();
-        for(User u : userAssociation.values()){
-            u.reportEvent(User.Status.NOT_JOINED,message,eventTime, User.Event.GAME_LEAVED);
+        for (User u : this.userAssociation.values()) {
+            u.reportEvent(User.Status.NOT_JOINED, message, eventTime, User.Event.GAME_LEAVED);
         }
 
-        game.close();
-        game.deleteObservers();
-        game.getCommonGoals().forEach(Observable::deleteObservers);
-        game.getLivingRoom().deleteObservers();
-        for(Player p : playerAssociation.values()){
+        this.game.close();
+        this.game.deleteObservers();
+        this.game.getCommonGoals().forEach(Observable::deleteObservers);
+        this.game.getLivingRoom().deleteObservers();
+        for (Player p : this.playerAssociation.values()) {
             p.deleteObservers();
             p.getPlayerChat().deleteObservers();
             p.getPersonalGoals().forEach(Observable::deleteObservers);
@@ -226,12 +237,12 @@ public class StandardGameController implements GameController, LobbyController {
     }
 
     @Override
-    public synchronized void leavePlayer(ClientInterface client) throws GameAccessDeniedException{
-        if(!userAssociation.containsKey(client))
+    public synchronized void leavePlayer(ClientInterface client) throws GameAccessDeniedException {
+        if (!this.userAssociation.containsKey(client))
             throw new GameAccessDeniedException("Client not connected to this game");
-        Player leavedPlayer = playerAssociation.get(userAssociation.get(client));
-        String eventMessage = leavedPlayer.getId()+" has leaved the game";
-        closeTheGame(eventMessage);
+        Player leavedPlayer = this.playerAssociation.get(this.userAssociation.get(client));
+        String eventMessage = leavedPlayer.getId() + " has leaved the game";
+        this.closeTheGame(eventMessage);
 
         System.err.println("PLAYER USCITO");
     }
@@ -244,31 +255,31 @@ public class StandardGameController implements GameController, LobbyController {
      */
     private void addObservers(@NotNull ClientInterface newClient, @NotNull Player newPlayer) {
         /* Add Player status observer */
-        newPlayer.addObserver(getPlayerObserver(newClient));
+        newPlayer.addObserver(this.getPlayerObserver(newClient));
 
         /* Add Game status observer */
-        game.addObserver(getGameObserver(newClient));
+        this.game.addObserver(this.getGameObserver(newClient));
 
         /* Add CommonGoal status observers */
-        game.getCommonGoals().forEach(goal -> goal.addObserver(getCommonGoalObserver(newClient)));
+        this.game.getCommonGoals().forEach(goal -> goal.addObserver(this.getCommonGoalObserver(newClient)));
 
         /* Add LivingRoom status observer */
-        game.getLivingRoom().addObserver(getLivingRoomObserver(newClient));
+        this.game.getLivingRoom().addObserver(this.getLivingRoomObserver(newClient));
 
         /* Add PlayerChat status observer */
-        newPlayer.getPlayerChat().addObserver(getPlayerChatObserver(newClient));
+        newPlayer.getPlayerChat().addObserver(this.getPlayerChatObserver(newClient));
 
         /* Add PersonalGoals status observer */
-        newPlayer.getPersonalGoals().forEach(personalGoal -> personalGoal.addObserver(getPersonalGoalObserver(newClient)));
+        newPlayer.getPersonalGoals().forEach(personalGoal -> personalGoal.addObserver(this.getPersonalGoalObserver(newClient)));
 
         /* Add Shelf status observer */
-        newPlayer.getShelf().addObserver(getShelfObserver(newClient, newPlayer));
+        newPlayer.getShelf().addObserver(this.getShelfObserver(newClient, newPlayer));
         /* Add Shelf status observer of new player to all already joined players */
         /* Add Shelf status observer of all already joined players to new player */
-        userAssociation.forEach((joinedClient, joinedUser) -> {
-            newPlayer.getShelf().addObserver(getShelfObserver(joinedClient, newPlayer));
-            Player joinedPlayer = playerAssociation.get(joinedUser);
-            joinedPlayer.getShelf().addObserver(getShelfObserver(newClient, joinedPlayer));
+        this.userAssociation.forEach((joinedClient, joinedUser) -> {
+            newPlayer.getShelf().addObserver(this.getShelfObserver(joinedClient, newPlayer));
+            Player joinedPlayer = this.playerAssociation.get(joinedUser);
+            joinedPlayer.getShelf().addObserver(this.getShelfObserver(newClient, joinedPlayer));
         });
     }
 
@@ -281,19 +292,19 @@ public class StandardGameController implements GameController, LobbyController {
     public synchronized void doPlayerMove(ClientInterface client, @Nullable PlayerMoveInfo playerMove) {
         try {
             /* If we receive a request from an invalid client we discard it */
-            if (!userAssociation.containsKey(client))
+            if (!this.userAssociation.containsKey(client))
                 throw new IllegalArgumentException("User not allowed");
             /* If game is not started we discard the request*/
-            if (!game.getGameStatus().equals(Game.GameStatus.STARTED))
+            if (game.getGameStatus() != Game.GameStatus.STARTED)
                 throw new GameNotStartedException();
-                /* Get player information associated with his client */
-            Player player = playerAssociation.get(userAssociation.get(client));
+            /* Get player information associated with his client */
+            Player player = this.playerAssociation.get(this.userAssociation.get(client));
             /* If it isn't player turn we discard the request*/
-            if (!player.getId().equals(game.getTurnPlayerId()))
+            if (!player.getId().equals(this.game.getTurnPlayerId()))
                 throw new IllegalArgumentException("Not player's turn");
             /* Get board and player shelf status */
             Tile[][] shelf = player.getShelf().getTiles();
-            Tile[][] board = game.getLivingRoom().getBoard();
+            Tile[][] board = this.game.getLivingRoom().getBoard();
 
             /* Do some checks on "move" object, if malformed we discard it */
             if (playerMove == null || playerMove.pickedTiles() == null || playerMove.pickedTiles().size() == 0)
@@ -302,42 +313,42 @@ public class StandardGameController implements GameController, LobbyController {
             if (playerMove.columnToInsert() < 0 || playerMove.columnToInsert() > shelf[0].length - 1)
                 throw new IllegalArgumentException("Column index out of bounds");
 
-            if (!areTilesDifferent(new ArrayList<>(playerMove.pickedTiles())))
+            if (!this.areTilesDifferent(new ArrayList<>(playerMove.pickedTiles())))
                 throw new IllegalArgumentException("Tiles are not different");
 
-            if(!areTilesAligned(new ArrayList<>(playerMove.pickedTiles())))
+            if (!this.areTilesAligned(new ArrayList<>(playerMove.pickedTiles())))
                 throw new IllegalArgumentException("Tile are not aligned");
 
             for (PickedTile tile : playerMove.pickedTiles())
-                if (!isTilePickable(tile.row(), tile.col(), board))
+                if (!this.isTilePickable(tile.row(), tile.col(), board))
                     throw new IllegalArgumentException("Tile not pickable");
 
-            if (playerMove.pickedTiles().size() > freeShelfColumnSpaces(playerMove.columnToInsert(), shelf))
+            if (playerMove.pickedTiles().size() > this.freeShelfColumnSpaces(playerMove.columnToInsert(), shelf))
                 throw new IllegalArgumentException("Not enough space to insert tiles in shelf");
 
             /* Foreach tile we pick it from board and put it on the shelf */
             for (PickedTile tile : playerMove.pickedTiles()) {
                 Tile picked = board[tile.row()][tile.col()];
                 board[tile.row()][tile.col()] = Tile.EMPTY;
-                insertTileInShelf(playerMove.columnToInsert(), shelf, picked);
+                this.insertTileInShelf(playerMove.columnToInsert(), shelf, picked);
             }
 
             /* Update board and player shelf status*/
-            game.getLivingRoom().setBoard(board);
-            game.getLivingRoom().refillBoard();
+            this.game.getLivingRoom().setBoard(board);
+            this.game.getLivingRoom().refillBoard();
             player.getShelf().setTiles(shelf);
 
             /* If shelf has been filled we signal that this will be the last round of turns */
-            if (evaluateFullShelf(shelf)) {
+            if (this.evaluateFullShelf(shelf)) {
                 /* If nobody else has already completed the shelf we assign a "GAME_END" token*/
-                if (!game.isLastTurn())
+                if (!this.game.isLastTurn())
                     player.addAchievedCommonGoal("First player that have completed the shelf", Token.TOKEN_GAME_END);
 
-                game.setLastTurn();
+                this.game.setLastTurn();
             }
 
             /* Check if player has achieved common goals */
-            for (CommonGoal commonGoal : game.getCommonGoals())
+            for (CommonGoal commonGoal : this.game.getCommonGoals())
                 if (!player.getAchievedCommonGoals().containsKey(commonGoal.getEvaluator().getId()))
                     if (commonGoal.getEvaluator().evaluate(shelf)) {
                         player.addAchievedCommonGoal(commonGoal.getEvaluator().getId(), commonGoal.popToken());
@@ -345,62 +356,61 @@ public class StandardGameController implements GameController, LobbyController {
 
 
             /* Check if player has achieved personal goals*/
-            for(PersonalGoal personalGoal : player.getPersonalGoals()){
-                if(!personalGoal.isAchieved())
-                    if(personalGoal.evaluate(shelf))
+            for (PersonalGoal personalGoal : player.getPersonalGoals()) {
+                if (!personalGoal.isAchieved())
+                    if (personalGoal.evaluate(shelf))
                         personalGoal.setAchieved();
             }
 
             //TODO salvare il gioco
 
             /* Pass turn to next player */
-            game.updatePlayersTurn();
+            this.game.updatePlayersTurn();
 
         } catch (IllegalArgumentException | GameNotStartedException e) {
-            if (userAssociation.containsKey(client) && playerAssociation.containsKey(userAssociation.get(client))) {
-                playerAssociation.get(userAssociation.get(client)).reportError(e.getMessage());
-            }
-            else {
+            if (this.userAssociation.containsKey(client) && this.playerAssociation.containsKey(this.userAssociation.get(client))) {
+                this.playerAssociation.get(this.userAssociation.get(client)).reportError(e.getMessage());
+            } else {
                 e.printStackTrace();
             }
-        } catch (GameEndedException e){
+        } catch (GameEndedException e) {
             e.printStackTrace();
         }
     }
 
     /**
-     * Send a message to players included in the message subject
+     * Send a message to players included in the message receiver
+     *
      * @param client     new player's ClientInterface
      * @param newMessage message to send
      */
     public synchronized void sendMessage(ClientInterface client, @NotNull Message newMessage) {
         try {
-            if (!userAssociation.containsKey(client))
+            if (!this.userAssociation.containsKey(client))
                 throw new IllegalArgumentException("User not allowed");
 
-            boolean subjectfound = false;
-            for(Player p : playerAssociation.values()){
-                if(p.getId().equals(newMessage.getSubject())){
-                    subjectfound = true;
+            boolean receiverFound = false;
+            for (Player p : this.playerAssociation.values()) {
+                if (p.getId().equals(newMessage.getReceiver())) {
+                    receiverFound = true;
                     break;
                 }
             }
 
-            if(!(newMessage.getSubject().isEmpty() || subjectfound))
-                throw new IllegalArgumentException("Subject of the message does not exists");
+            if (!(newMessage.getReceiver().isEmpty() || receiverFound))
+                throw new IllegalArgumentException("Receiver of the message does not exists");
 
             //TODO sender is not a player?
 
-            for (Player p : playerAssociation.values()) {
-                if (newMessage.getSubject().isEmpty() || newMessage.getSubject().equals(p.getId()) || newMessage.getSender().equals(p.getId()))
+            for (Player p : this.playerAssociation.values()) {
+                if (newMessage.getReceiver().isEmpty() || newMessage.getReceiver().equals(p.getId()) || newMessage.getSender().equals(p.getId()))
                     p.getPlayerChat().addMessage(newMessage);
             }
 
         } catch (IllegalArgumentException e) {
-            if (userAssociation.containsKey(client) && playerAssociation.containsKey(userAssociation.get(client))) {
-                playerAssociation.get(userAssociation.get(client)).reportError(e.getMessage());
-            }
-            else {
+            if (this.userAssociation.containsKey(client) && this.playerAssociation.containsKey(this.userAssociation.get(client))) {
+                this.playerAssociation.get(this.userAssociation.get(client)).reportError(e.getMessage());
+            } else {
                 e.printStackTrace();
             }
         }
@@ -408,13 +418,14 @@ public class StandardGameController implements GameController, LobbyController {
 
 
     //do we need javadoc for private methods?
+
     /**
      * @param pickedTiles list of picked tiles
      * @return true if tiles are different, false otherwise
      */
     private boolean areTilesDifferent(@NotNull List<PickedTile> pickedTiles) {
-        for (int i = 0; i < pickedTiles.size() ; i++) {
-            for (int j = i + 1; j < pickedTiles.size() ; j++) {
+        for (int i = 0; i < pickedTiles.size(); i++) {
+            for (int j = i + 1; j < pickedTiles.size(); j++) {
                 if (pickedTiles.get(i).row() == pickedTiles.get(j).row())
                     if (pickedTiles.get(i).col() == pickedTiles.get(j).col())
                         return false;
@@ -425,6 +436,7 @@ public class StandardGameController implements GameController, LobbyController {
 
 
     //Same as above
+
     /**
      * @param column column to check
      * @param shelf  player shelf
@@ -440,6 +452,7 @@ public class StandardGameController implements GameController, LobbyController {
     }
 
     //Same as above
+
     /**
      * @param column column to check
      * @param shelf  player shelf
@@ -460,7 +473,7 @@ public class StandardGameController implements GameController, LobbyController {
      * @return true if tile is pickable, false otherwise
      */
     private boolean isTilePickable(int row, int column, Tile[] @NotNull [] board) {
-        if (row < 0 || column < 0 || row > board.length - 1 || column > board[row].length - 1 || board[row][column].equals(Tile.EMPTY) || board[row][column] == null)
+        if (row < 0 || column < 0 || row > board.length - 1 || column > board[row].length - 1 || board[row][column] == Tile.EMPTY || board[row][column] == null)
             return false;
 
         if (row == 0 || column == 0 || row == board.length - 1 || column == board[0].length - 1)
@@ -485,24 +498,24 @@ public class StandardGameController implements GameController, LobbyController {
         return true;
     }
 
-    private boolean areTilesAligned(@NotNull List<PickedTile> pickedTiles){
+    private boolean areTilesAligned(@NotNull List<PickedTile> pickedTiles) {
         boolean rowAligned = true;
         boolean colAligned = true;
 
-        for(int i = 1; i<pickedTiles.size(); i++){
-            rowAligned = rowAligned && (pickedTiles.get(i-1).row() == pickedTiles.get(i).row());
-            colAligned = colAligned && (pickedTiles.get(i-1).col() == pickedTiles.get(i).col());
+        for (int i = 1; i < pickedTiles.size(); i++) {
+            rowAligned = rowAligned && (pickedTiles.get(i - 1).row() == pickedTiles.get(i).row());
+            colAligned = colAligned && (pickedTiles.get(i - 1).col() == pickedTiles.get(i).col());
         }
-        if(rowAligned){
+        if (rowAligned) {
             pickedTiles.sort(Comparator.comparingInt(PickedTile::col));
-            for(int i=0; i< pickedTiles.size()-1; i++)
-                if(pickedTiles.get(i).col()+1!=pickedTiles.get(i+1).col())
+            for (int i = 0; i < pickedTiles.size() - 1; i++)
+                if (pickedTiles.get(i).col() + 1 != pickedTiles.get(i + 1).col())
                     return false;
         }
-        if(colAligned){
+        if (colAligned) {
             pickedTiles.sort(Comparator.comparingInt(PickedTile::row));
-            for(int i=0; i< pickedTiles.size()-1; i++)
-                if(pickedTiles.get(i).row()+1!=pickedTiles.get(i+1).row())
+            for (int i = 0; i < pickedTiles.size() - 1; i++)
+                if (pickedTiles.get(i).row() + 1 != pickedTiles.get(i + 1).row())
                     return false;
         }
 

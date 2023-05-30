@@ -36,6 +36,7 @@ public class TUI implements UI {
     final int[][] cliPixelColor = new int[renderHeight][renderWidth];
     //old cmds to be shifted up
     final List<Pair> oldCmds = new ArrayList<>();
+    final Object renderLock = new Object();
 
     /*----------------------------------------*/
 
@@ -50,7 +51,7 @@ public class TUI implements UI {
     /*--------SERVER INTERACTION FUNCTIONS--------*/
     private final Map<String, ShelfInfo> currentShelves;
     /*------------VIEW UTILITIES---------------*/
-    final private TimedLock<Boolean> serverWaiter = new TimedLock<>(false);
+    private final TimedLock<Boolean> serverWaiter = new TimedLock<>(false);
     private final Scanner scanner = new Scanner(System.in);
     private final Map<String, Integer> points = new HashMap<>();
 
@@ -77,11 +78,12 @@ public class TUI implements UI {
     private View currentView;
 
     public TUI() {
-        currentView = View.SERVER_INTERACTION;
-        currentShelves = new HashMap<>();
-        drawBox(0, 0, renderHeight, renderWidth, DEFAULT, cliPixel, cliPixelColor);
-        drawCommandLine(cursor, oldCmds, cliPixel, cliPixelColor);
-        updateView(false);
+        super();
+        this.currentView = View.SERVER_INTERACTION;
+        this.currentShelves = new HashMap<>();
+        drawBox(0, 0, renderHeight, renderWidth, DEFAULT, this.cliPixel, this.cliPixelColor);
+        drawCommandLine(this.cursor, this.oldCmds, this.cliPixel, this.cliPixelColor);
+        this.updateView(false);
     }
 
     //move cursor to arbitrary position
@@ -92,11 +94,11 @@ public class TUI implements UI {
 
     /*-------------UI--------------------------*/
     public String askRMIorSocket() {
-        return readCommandLine("Connect with RMI (r) or SOCKET (s)?, empty to exit: ");
+        return this.readCommandLine("Connect with RMI (r) or SOCKET (s)?, empty to exit: ");
     }
 
     public void showError(String error) {
-        printCommandLine(error, RED);
+        this.printCommandLine(error, RED);
     }
 
     public void run(ServerInterface server, ClientInterface client) {
@@ -105,143 +107,144 @@ public class TUI implements UI {
 
         this.currentView = View.SERVER_INTERACTION;
 
-        if (!serverWaiter.hasBeenNotified()) {
+        if (!this.serverWaiter.hasBeenNotified()) {
             try {
-                serverWaiter.setValue(true);
-                serverWaiter.lock(6000);
+                this.serverWaiter.setValue(true);
+                this.serverWaiter.lock(6000);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
         }
 
-        Boolean exit = serverWaiter.getValue();
+        Boolean exit = this.serverWaiter.getValue();
 
-        serverWaiter.reset();
+        this.serverWaiter.reset();
 
         if (!exit) {
-            printCommandLine("CONNECTED", GREEN);
+            this.printCommandLine("CONNECTED", GREEN);
         }
 
         while (!exit) {
-            String readLine = readCommandLine("(h for commands)-> ");
+            String readLine = this.readCommandLine("(h for commands)-> ");
             switch (readLine) {
-                case "h" -> printCommandLine("1: Create a game\n2: Join a game\nexit: Close this window");
+                case "h" -> this.printCommandLine("1: Create a game\n2: Join a game\nexit: Close this window");
                 case "1" -> {
                     try {
-                        createGame();
+                        this.createGame();
                     } catch (RemoteException e) {
-                        printCommandLine(e.getMessage(), RED);
+                        this.printCommandLine(e.getMessage(), RED);
                     }
                 }
                 case "2" -> {
                     try {
-                        joinGame();
+                        this.joinGame();
                     } catch (RemoteException e) {
-                        printCommandLine("Error while joining a game", RED);
+                        this.printCommandLine("Error while joining a game", RED);
                     }
                 }
                 case "exit" -> exit = true;
-                default -> printCommandLine("Wrong command", RED);
+                default -> this.printCommandLine("Wrong command", RED);
 
             }
         }
     }
 
     private void createGame() throws RemoteException {
-        String gameId = readCommandLine("GameId: ");
-        String p = readCommandLine("PlayerNumber (between 2 and 4): ");
+        String gameId = this.readCommandLine("GameId: ");
+        String p = this.readCommandLine("PlayerNumber (between 2 and 4): ");
         int k = Integer.parseInt(p);
         if (k > 1 && k < 5) {
 
-            currentSessionTime = System.currentTimeMillis();
-            serverWaiter.reset();
-            server.createGame(client, new NewGameInfo(gameId, "STANDARD", k, currentSessionTime));
+            this.currentSessionTime = System.currentTimeMillis();
+            this.serverWaiter.reset();
+            this.server.createGame(this.client, new NewGameInfo(gameId, "STANDARD", k, this.currentSessionTime));
 
-            if (!serverWaiter.hasBeenNotified()) {
-                serverWaiter.setValue(true);
+            if (!this.serverWaiter.hasBeenNotified()) {
+                this.serverWaiter.setValue(true);
                 try {
-                    serverWaiter.lock(6000);
+                    this.serverWaiter.lock(6000);
                 } catch (InterruptedException e) {
                     throw new RemoteException("Connection timeout error");
                 }
             }
 
-            if (serverWaiter.getValue())
-                throw new RemoteException(user.eventMessage());
+            if (this.serverWaiter.getValue())
+                throw new RemoteException(this.user.eventMessage());
         } else {
             throw new RemoteException("Wrong parameters (number between 2 and 4)");
         }
     }
 
     private void joinGame() throws RemoteException {
-        String gameId = readCommandLine("GameId: ");
-        String playerId = readCommandLine("Write playerId (empty to exit): ");
+        String gameId = this.readCommandLine("GameId: ");
+        String playerId = this.readCommandLine("Write playerId (empty to exit): ");
         if (!playerId.equals("")) {
-            serverWaiter.reset();
-            currentSessionTime = System.currentTimeMillis();
-            server.joinGame(client, new LoginInfo(playerId, gameId, currentSessionTime));
+            this.serverWaiter.reset();
+            this.currentSessionTime = System.currentTimeMillis();
+            this.server.joinGame(this.client, new LoginInfo(playerId, gameId, this.currentSessionTime));
         } else
             return;
 
-        if (!serverWaiter.hasBeenNotified()) {
+        if (!this.serverWaiter.hasBeenNotified()) {
             try {
-                serverWaiter.setValue(true);
-                serverWaiter.lock(6000);
+                this.serverWaiter.setValue(true);
+                this.serverWaiter.lock(6000);
             } catch (InterruptedException e) {
                 throw new RemoteException("Login timeout error");
             }
         }
 
-        if (!serverWaiter.getValue()) {
+        if (!this.serverWaiter.getValue()) {
             this.thisPlayerId = playerId;
-            gameRoutine();
+            this.gameRoutine();
         }
     }
 
     private void gameRoutine() throws RemoteException {
-        currentView = View.GAME_INTERACTION;
-        updateView(true);
-        GameRunning = true;
+        this.currentView = View.GAME_INTERACTION;
+        this.updateView(true);
+        this.GameRunning = true;
         while (this.GameRunning) {
-            String readLine = readCommandLine("(h for commands)-> ");
+            String readLine = this.readCommandLine("(h for commands)-> ");
             if (this.GameRunning)
                 switch (readLine) {
-                    case "h" -> printCommandLine("1: Update view status\n2: Pick tiles\n3: Send message");
-                    case "1" -> updateView(false);
-                    case "2" -> pickTiles();
-                    case "3" -> sendMessage();
-                    case "4" -> leave();
-                    default -> printCommandLine("Wrong command", RED);
+                    case "h" -> this.printCommandLine("1: Update view status\n2: Pick tiles\n3: Send message");
+                    case "1" -> this.updateView(false);
+                    case "2" -> this.pickTiles();
+                    case "3" -> this.sendMessage();
+                    case "4" -> this.leave();
+                    default -> this.printCommandLine("Wrong command", RED);
                 }
         }
-        resetInfo();
-        currentView = View.SERVER_INTERACTION;
-        updateView(true);
+        this.resetInfo();
+        this.currentView = View.SERVER_INTERACTION;
+        this.updateView(true);
     }
 
     /*--------------------------------------------------*/
 
     public void resetInfo() {
-        currentPersonalGoals.clear();
-        currentGameState = null;
-        commonGoals.clear();
-        achievedCommonGoals.clear();
-        currentShelves.clear();
-        currentLivingRoom = null;
-        currentPlayerChat = null;
-        thisPlayerId = null;
+        this.currentPersonalGoals.clear();
+        this.currentGameState = null;
+        this.commonGoals.clear();
+        this.achievedCommonGoals.clear();
+        this.currentShelves.clear();
+        this.currentLivingRoom = null;
+        this.currentPlayerChat = null;
+        this.thisPlayerId = null;
     }
 
 
     private void sendMessage() throws RemoteException {
-
-        viewLock = true;
-
-        String subject = readCommandLine("Message Subject (empty for everyone): ");
-        String content = readCommandLine("Message content: ");
-        viewLock = false;
-
-        server.sendMessage(client, new StandardMessage(thisPlayerId, subject, content));
+        String receiver;
+        String content;
+        synchronized (this.renderLock) {
+            this.viewLock = true;
+            receiver = this.readCommandLine("To (empty for everyone): ");
+            content = this.readCommandLine("Message content: ");
+            this.viewLock = false;
+        }
+        this.server.sendMessage(this.client, new StandardMessage(this.thisPlayerId, receiver, content));
 
     }
 
@@ -250,10 +253,10 @@ public class TUI implements UI {
         List<PickedTile> tiles = new ArrayList<>();
         boolean choosing = true;
         do {
-            viewLock = true;
-            printCommandLine("Remaining pickable tiles: " + pickableNum + "\nWrite row,col r2,c2 to pick up to three tiles");
-            viewLock = false;
-            String choice = readCommandLine("-> ");
+            this.viewLock = true;
+            this.printCommandLine("Remaining pickable tiles: " + pickableNum + "\nWrite row,col r2,c2 to pick up to three tiles");
+            this.viewLock = false;
+            String choice = this.readCommandLine("-> ");
             String[] split = choice.split(" ");
             //if more than 3 tiles are picked ignores the rest
             List<PickedTile> tTiles = new ArrayList<>();
@@ -264,13 +267,13 @@ public class TUI implements UI {
                     int x = Integer.parseInt(split1[0]);
                     int y = Integer.parseInt(split1[1]);
                     tTiles.add(new PickedTile(x, y));
-                    printCommandLine("Tile " + x + "," + y + " picked", GREEN);
+                    this.printCommandLine("Tile " + x + "," + y + " picked", GREEN);
                 } catch (NumberFormatException e) {
-                    printCommandLine("Illegal character", RED);
+                    this.printCommandLine("Illegal character", RED);
                     formatError = true;
                     break;
                 } catch (ArrayIndexOutOfBoundsException e) {
-                    printCommandLine("Wrong format, Should be r1,c1 r2,c2 r3,c3", RED);
+                    this.printCommandLine("Wrong format, Should be r1,c1 r2,c2 r3,c3", RED);
                     formatError = true;
                     break;
                 }
@@ -278,12 +281,12 @@ public class TUI implements UI {
             if (formatError)
                 continue;
             //check if the tiles are pick-able, pick-able if they are all in the same row or column and adjacent to each other
-            boolean pickable = pickable(tTiles, currentLivingRoom.board());
+            boolean pickable = this.pickable(tTiles, this.currentLivingRoom.board());
             if (pickable) {
                 tiles.addAll(tTiles);
                 choosing = false;
             } else {
-                printCommandLine("Tiles not pickable", RED);
+                this.printCommandLine("Tiles not pickable", RED);
             }
         } while (choosing);
 
@@ -291,41 +294,41 @@ public class TUI implements UI {
         int sC = 0;
         do {
             try {
-                viewLock = true;
-                String sCol = readCommandLine("Shelf col: ");
-                viewLock = false;
+                this.viewLock = true;
+                String sCol = this.readCommandLine("Shelf col: ");
+                this.viewLock = false;
                 sC = Integer.parseInt(sCol);
-                printCommandLine("Shelf " + sC + " chosen", GREEN);
+                this.printCommandLine("Shelf " + sC + " chosen", GREEN);
                 //check if column has enough space for the tiles
-                Tile[][] myShelf = currentShelves.get(thisPlayerId).shelf();
+                Tile[][] myShelf = this.currentShelves.get(this.thisPlayerId).shelf();
                 int finalSC = sC;
                 // count empty tiles in the column sC
                 int emptyTiles = Arrays.stream(myShelf).mapToInt(row -> row[finalSC] == Tile.EMPTY ? 1 : 0).sum();//TODO test this
                 if (emptyTiles < tiles.size()) {
-                    printCommandLine("Not enough space in the shelf", RED);
+                    this.printCommandLine("Not enough space in the shelf", RED);
                     continue;
                 }
                 choosing = false;
             } catch (NumberFormatException e) {
-                printCommandLine("Not a number", RED);
+                this.printCommandLine("Not a number", RED);
             }
         } while (choosing);
 
-        server.doPlayerMove(client, new PlayerMoveInfo(tiles, sC));
+        this.server.doPlayerMove(this.client, new PlayerMoveInfo(tiles, sC));
     }
 
     private boolean pickable(List<PickedTile> pickedTiles, Tile[][] board) {
-        if (!areTilesDifferent(new ArrayList<>(pickedTiles))) {
-            printCommandLine("Tiles are not different", RED);
+        if (!this.areTilesDifferent(new ArrayList<>(pickedTiles))) {
+            this.printCommandLine("Tiles are not different", RED);
             return false;
         }
-        if (!areTilesAligned(new ArrayList<>(pickedTiles))) {
-            printCommandLine("Tiles are not aligned", RED);
+        if (!this.areTilesAligned(new ArrayList<>(pickedTiles))) {
+            this.printCommandLine("Tiles are not aligned", RED);
             return false;
         }
         for (PickedTile tile : pickedTiles)
-            if (!isTilePickable(tile.row(), tile.col(), board)) {
-                printCommandLine("Tile not pickable", RED);
+            if (!this.isTilePickable(tile.row(), tile.col(), board)) {
+                this.printCommandLine("Tile not pickable", RED);
                 return false;
             }
         return true;
@@ -382,7 +385,7 @@ public class TUI implements UI {
      * @return true if tile is pickable, false otherwise
      */
     private boolean isTilePickable(int row, int column, Tile[] @NotNull [] board) {
-        if (row < 0 || column < 0 || row > board.length - 1 || column > board[row].length - 1 || board[row][column].equals(Tile.EMPTY) || board[row][column] == null)
+        if (row < 0 || column < 0 || row > board.length - 1 || column > board[row].length - 1 || board[row][column] == Tile.EMPTY || board[row][column] == null)
             return false;
 
         if (row == 0 || column == 0 || row == board.length - 1 || column == board[0].length - 1)
@@ -396,37 +399,37 @@ public class TUI implements UI {
 
     private void leave() {
         try {
-            server.leaveGame(client);
+            this.server.leaveGame(this.client);
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
     }
 
     private void updateView(boolean force) {
-        if (!viewLock || force) {
+        if (!this.viewLock || force) {
             //clear the matrix
-            Arrays.stream(cliPixel).forEach(a -> Arrays.fill(a, ' '));
-            Arrays.stream(cliPixelColor).forEach(a -> Arrays.fill(a, DEFAULT));
+            Arrays.stream(this.cliPixel).forEach(a -> Arrays.fill(a, ' '));
+            Arrays.stream(this.cliPixelColor).forEach(a -> Arrays.fill(a, DEFAULT));
 
-            drawBox(0, 0, renderHeight, renderWidth, DEFAULT, cliPixel, cliPixelColor);
-            drawCommandLine(cursor, oldCmds, cliPixel, cliPixelColor);
+            drawBox(0, 0, renderHeight, renderWidth, DEFAULT, this.cliPixel, this.cliPixelColor);
+            drawCommandLine(this.cursor, this.oldCmds, this.cliPixel, this.cliPixelColor);
 
-            switch (currentView) {
+            switch (this.currentView) {
                 case GAME_INTERACTION -> {
-                    drawCommandLine(cursor, oldCmds, cliPixel, cliPixelColor);
-                    drawGameState(currentGameState, cliPixel, cliPixelColor);
-                    drawLivingRoom(currentLivingRoom, cliPixel, cliPixelColor);
-                    drawShelves(currentShelves, thisPlayerId, currentGameState, cliPixel, cliPixelColor);
-                    drawChat(currentPlayerChat, cliPixel, cliPixelColor);
-                    drawCommonGoals(commonGoals, achievedCommonGoals, cliPixel, cliPixelColor);
-                    drawPersonalGoal(currentPersonalGoals, cliPixel, cliPixelColor);
+                    drawCommandLine(this.cursor, this.oldCmds, this.cliPixel, this.cliPixelColor);
+                    drawGameState(this.currentGameState, this.cliPixel, this.cliPixelColor);
+                    drawLivingRoom(this.currentLivingRoom, this.cliPixel, this.cliPixelColor);
+                    drawShelves(this.currentShelves, this.thisPlayerId, this.currentGameState, this.cliPixel, this.cliPixelColor);
+                    drawChat(this.currentPlayerChat, this.cliPixel, this.cliPixelColor);
+                    drawCommonGoals(this.commonGoals, this.achievedCommonGoals, this.cliPixel, this.cliPixelColor);
+                    drawPersonalGoal(this.currentPersonalGoals, this.cliPixel, this.cliPixelColor);
                 }
-                case GAME_ENDED -> drawGameEnd(points, cliPixel, cliPixelColor);
+                case GAME_ENDED -> drawGameEnd(this.points, this.cliPixel, this.cliPixelColor);
             }
 
-            updated++;
-            drawString(updated + " ", 0, 0, GREEN, 20, cliPixel, cliPixelColor);
-            render();
+            this.updated++;
+            drawString(this.updated + " ", 0, 0, GREEN, 20, this.cliPixel, this.cliPixelColor);
+            this.render();
         }
 
     }
@@ -434,7 +437,7 @@ public class TUI implements UI {
     /*--------------------------------------------------*/
 
     private String renderPixel(int x, int y) {
-        return "\u001B[" + cliPixelColor[x][y] + "m" + cliPixel[x][y] + "\u001B[0m";
+        return "\u001B[" + this.cliPixelColor[x][y] + "m" + this.cliPixel[x][y] + "\u001B[0m";
     }
 
 
@@ -446,49 +449,53 @@ public class TUI implements UI {
 
 
     public String readCommandLine(String message) {
-        cursor = message;
-        out.print(message);
-        String cmd = scanner.nextLine();
-        cursor = "";
-        oldCmds.add(new Pair(message + " " + cmd, DEFAULT));
-        //trim old commands to 8
-        while (oldCmds.size() > 8)
-            oldCmds.remove(0);
+        this.cursor = message;
 
-        updateView(true);
+        out.print(" " + message);
+        String cmd = this.scanner.nextLine();
+        this.cursor = "";
+        this.oldCmds.add(new Pair(message + " " + cmd, DEFAULT));
+        //trim old commands to 8
+        while (this.oldCmds.size() > 8)
+            this.oldCmds.remove(0);
+
+        this.updateView(true);
         return cmd;
+
     }
 
     public void printCommandLine(String toPrint) {
-        printCommandLine(toPrint, DEFAULT);
+        this.printCommandLine(toPrint, DEFAULT);
     }
 
     public void printCommandLine(String toPrint, int colour) {
         String[] lines = toPrint.split("\n");
         for (String s : lines)
-            oldCmds.add(new Pair(s, colour));
+            this.oldCmds.add(new Pair(s, colour));
 
-        while (oldCmds.size() > 8)
-            oldCmds.remove(0);
+        while (this.oldCmds.size() > 8)
+            this.oldCmds.remove(0);
 
-        updateView(true);
+        this.updateView(true);
     }
 
-    public synchronized void render() {
-        ClearScreen(s -> {
-            printCommandLine(s, DEFAULT);
-            return null;
-        });
-        if (currentGameState != null) {
-            drawGameState(currentGameState, cliPixel, cliPixelColor);
-        }
-        for (int i = 0; i < cliPixel.length; i++) {
-            for (int j = 0; j < cliPixel[0].length; j++) {
-                out.print(renderPixel(i, j));
+    public void render() {
+        synchronized (this.renderLock) {
+            ClearScreen(s -> {
+                this.printCommandLine(s, DEFAULT);
+                return null;
+            });
+            if (this.currentGameState != null) {
+                drawGameState(this.currentGameState, this.cliPixel, this.cliPixelColor);
             }
-            out.println();
+            for (int i = 0; i < this.cliPixel.length; i++) {
+                for (int j = 0; j < this.cliPixel[0].length; j++) {
+                    out.print(this.renderPixel(i, j));
+                }
+                out.println();
+            }
+            moveCursor(commandLineY + commandLineHeight, commandLineX + 2 + this.cursor.length());
         }
-        moveCursor(commandLineY + commandLineHeight, commandLineX + 2 + cursor.length() + 1);
     }
 
     /**
@@ -500,7 +507,7 @@ public class TUI implements UI {
     public void update(PlayerChatInfo pC, PlayerChat.Event evt) {
         //set current player chat
         this.currentPlayerChat = pC;
-        updateView(false);
+        this.updateView(false);
     }
 
     /*-----------------------------------------------------------*/
@@ -515,7 +522,7 @@ public class TUI implements UI {
     public void update(LivingRoomInfo lR, LivingRoom.Event evt) {
         //set current living room
         this.currentLivingRoom = lR;
-        updateView(false);
+        this.updateView(false);
     }
 
 
@@ -528,9 +535,9 @@ public class TUI implements UI {
     public void update(ShelfInfo sV, Shelf.Event evt) {
         //set current shelf
 
-        currentShelves.put(sV.playerId(), sV);
+        this.currentShelves.put(sV.playerId(), sV);
 
-        updateView(false);
+        this.updateView(false);
     }
 
 
@@ -541,8 +548,8 @@ public class TUI implements UI {
      * @param evt @{@link CommonGoal.Event}
      */
     public void update(CommonGoalInfo cG, CommonGoal.Event evt) {
-        commonGoals.put(cG.id(), cG);
-        updateView(false);
+        this.commonGoals.put(cG.id(), cG);
+        this.updateView(false);
     }
 
 
@@ -553,16 +560,16 @@ public class TUI implements UI {
      * @param evt @{@link Game.Event}
      */
     public void update(GameInfo g, Game.Event evt) {
-        currentGameState = g;
+        this.currentGameState = g;
 
         if (g.status() == Game.GameStatus.ENDED) {
-            GameRunning = false;
+            this.GameRunning = false;
             this.currentView = View.GAME_ENDED;
-            points.clear();
-            points.putAll(g.points());
-            printCommandLine("Game Ended, press enter to return to login menu");
+            this.points.clear();
+            this.points.putAll(g.points());
+            this.printCommandLine("Game Ended, press enter to return to login menu");
         } else if (g.status() == Game.GameStatus.STARTED) {
-            updateView(true);
+            this.updateView(true);
         }
     }
 
@@ -575,14 +582,14 @@ public class TUI implements UI {
      */
     public void update(PersonalGoalInfo pG, PersonalGoal.Event evt) {
         //check if personal goal is already present in current personal goals
-        int index = currentPersonalGoals.stream().map(PersonalGoalInfo::description).toList().indexOf(pG.description());
+        int index = this.currentPersonalGoals.stream().map(PersonalGoalInfo::description).toList().indexOf(pG.description());
 
         if (index != -1)
-            currentPersonalGoals.set(index, pG);
+            this.currentPersonalGoals.set(index, pG);
         else
-            currentPersonalGoals.add(pG);
+            this.currentPersonalGoals.add(pG);
 
-        updateView(false);
+        this.updateView(false);
     }
 
 
@@ -593,26 +600,26 @@ public class TUI implements UI {
      * @param evt @{@link User.Event}
      */
     public void update(UserInfo u, User.Event evt) {
-        if (u.joinTime() != currentSessionTime)
+        if (u.joinTime() != this.currentSessionTime)
             return;
-        user = u;
+        this.user = u;
 
 
         if (evt == null) {
-            serverWaiter.notify(false);
+            this.serverWaiter.notify(false);
             return;
         }
 
         switch (evt) {
             case GAME_JOINED, GAME_CREATED -> {
-                printCommandLine(u.eventMessage(), GREEN);
-                serverWaiter.notify(false);
+                this.printCommandLine(u.eventMessage(), GREEN);
+                this.serverWaiter.notify(false);
             }
             case ERROR_REPORTED -> {
-                printCommandLine(u.eventMessage(), RED);
-                serverWaiter.notify(true);
+                this.printCommandLine(u.eventMessage(), RED);
+                this.serverWaiter.notify(true);
             }
-            case GAME_LEAVED -> printCommandLine(u.eventMessage(), RED);
+            case GAME_LEAVED -> this.printCommandLine(u.eventMessage(), RED);
         }
     }
 
@@ -625,8 +632,8 @@ public class TUI implements UI {
      */
     public void update(GamesManagerInfo gM, GamesManager.Event evt) {
         switch (evt) {
-            case GAME_CREATED -> games.add(gM);
-            case GAME_REMOVED -> games.remove(gM);
+            case GAME_CREATED -> this.games.add(gM);
+            case GAME_REMOVED -> this.games.remove(gM);
         }
         //drawGameList();
     }
@@ -643,10 +650,10 @@ public class TUI implements UI {
             return;
         }
         switch (evt) {
-            case ERROR_REPORTED -> printCommandLine(p.errorMessage(), RED);
+            case ERROR_REPORTED -> this.printCommandLine(p.errorMessage(), RED);
             case COMMONGOAL_ACHIEVED -> {
-                achievedCommonGoals = p.achievedCommonGoals();
-                updateView(false);
+                this.achievedCommonGoals = p.achievedCommonGoals();
+                this.updateView(false);
             }
         }
     }
