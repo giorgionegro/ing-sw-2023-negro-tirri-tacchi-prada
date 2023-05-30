@@ -25,4 +25,10 @@ class UserTest {
         test.reportEvent(User.Status.NOT_JOINED,"New error",0, User.Event.ERROR_REPORTED);
         assertEquals(test.getEventMessage(), "New error");
     }
+
+    @Test
+    void infoTest(){
+        User test = new User();
+        assertTrue(test.getStatus().equals(test.getInfo().status()) && test.getStatus().equals(test.getInfo().status()) && test.getEventMessage().equals(test.getInfo().eventMessage()));
+    }
 }

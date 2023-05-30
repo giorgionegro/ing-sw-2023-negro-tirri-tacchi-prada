@@ -2,6 +2,7 @@ package model;
 
 import model.abstractModel.PersonalGoal;
 import model.abstractModel.Player;
+import model.instances.StandardPlayerInstance;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;

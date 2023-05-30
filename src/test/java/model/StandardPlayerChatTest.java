@@ -2,6 +2,7 @@ package model;
 
 import model.abstractModel.Message;
 import model.abstractModel.PlayerChat;
+import model.instances.StandardPlayerChatInstance;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -59,5 +60,15 @@ class StandardPlayerChatTest {
             if(!messagesTestList.get(i).equals(messagesFromChat.get(i)))
                 fail("Chat saved an message wrong");
         }
+        StandardPlayerChat iTest = new StandardPlayerChat((StandardPlayerChatInstance) chat.getInstance());
+        assertEquals(chat.getInfo(), iTest.getInfo());
+    }
+    @Test
+    void getInfoTest(){
+        PlayerChat chat = new StandardPlayerChat();
+        if(chat.getMessages().size()!=0)
+            fail("Chat message list is not empty on construction");
+        chat.addMessage(new StandardMessage("Sender", "Subject", "Test"));
+        assertEquals(chat.getMessages(), chat.getInfo().messages());
     }
 }
