@@ -19,8 +19,7 @@ import java.util.*;
 public class StandardGameController implements GameController, LobbyController {
     private final Game game;
     private final @NotNull Map<ClientInterface, User> userAssociation;
-
-    private final @NotNull Map<User,Player> playerAssociation;
+    private final @NotNull Map<User,String> playerAssociation;
 
     /**
      * @param game game to be managed
@@ -157,12 +156,12 @@ public class StandardGameController implements GameController, LobbyController {
      * @return Observer of the Shelf to be added
      */
 
-    private @NotNull Observer<Shelf, Shelf.Event> getShelfObserver(@NotNull ClientInterface newClient, @NotNull Player joinedPlayer) {
+    private @NotNull Observer<Shelf, Shelf.Event> getShelfObserver(@NotNull ClientInterface newClient, @NotNull String joinedPlayerId) {
         return new Observer<>() {
             @Override
             public void update(@NotNull Shelf o, Shelf.Event arg) {
                 try {
-                    newClient.update(o.getInfo(joinedPlayer.getId()), arg);
+                    newClient.update(o.getInfo(joinedPlayerId), arg);
                 } catch (RemoteException e) {
                     System.err.println("...detaching shelf observer");
                     o.deleteObserver(this);
@@ -184,24 +183,24 @@ public class StandardGameController implements GameController, LobbyController {
         try {
             game.addPlayer(info.playerId());
 
-            Player newPlayer = game.getPlayer(info.playerId());
-
             userAssociation.put(newClient,newUser);
 
             /* Put newClient into known client */
-            playerAssociation.put(newUser, newPlayer);
+            playerAssociation.put(newUser, info.playerId());
 
-            newUser.reportEvent(User.Status.JOINED, "Joined game: "+game.getGameId()+", you are:"+info.playerId(), info.time(), User.Event.GAME_JOINED);
+            newUser.reportEvent(User.Status.JOINED, "Joined game: "+info.gameId()+", you are:"+info.playerId(), info.time(), User.Event.GAME_JOINED);
 
-            addObservers(newClient, newPlayer);
+            addObservers(newClient, info.playerId());
 
             /* If game is ready to be started we force the first */
             if (game.getGameStatus().equals(Game.GameStatus.STARTED)) {
                 game.getLivingRoom().refillBoard();
                 game.updatePlayersTurn();
             }
-        } catch (PlayerAlreadyExistsException | PlayerNotExistsException e) {
+        } catch (PlayerAlreadyExistsException e) {
             throw new GameAccessDeniedException("Player id already exists");//Same as above
+        } catch (PlayerNotExistsException e){
+            throw new RuntimeException("Model is not working as intended");
         } catch (MatchmakingClosedException | GameEndedException e) {
             throw new GameAccessDeniedException("Game matchmaking closed"); //Same as above
         }
@@ -217,11 +216,16 @@ public class StandardGameController implements GameController, LobbyController {
         game.deleteObservers();
         game.getCommonGoals().forEach(Observable::deleteObservers);
         game.getLivingRoom().deleteObservers();
-        for(Player p : playerAssociation.values()){
-            p.deleteObservers();
-            p.getPlayerChat().deleteObservers();
-            p.getPersonalGoals().forEach(Observable::deleteObservers);
-            p.getShelf().deleteObservers();
+        for(String playerId : playerAssociation.values()){
+            try {
+                Player p = game.getPlayer(playerId);
+                p.deleteObservers();
+                p.getPlayerChat().deleteObservers();
+                p.getPersonalGoals().forEach(Observable::deleteObservers);
+                p.getShelf().deleteObservers();
+            }catch (PlayerNotExistsException e) {
+                throw new RuntimeException(e); //TODO
+            }
         }
     }
 
@@ -229,8 +233,9 @@ public class StandardGameController implements GameController, LobbyController {
     public synchronized void leavePlayer(ClientInterface client) throws GameAccessDeniedException{
         if(!userAssociation.containsKey(client))
             throw new GameAccessDeniedException("Client not connected to this game");
-        Player leavedPlayer = playerAssociation.get(userAssociation.get(client));
-        String eventMessage = leavedPlayer.getId()+" has leaved the game";
+
+        String leavedPlayer = playerAssociation.get(userAssociation.get(client));
+        String eventMessage = leavedPlayer +" has leaved the game";
         closeTheGame(eventMessage);
 
         System.err.println("PLAYER USCITO");
@@ -240,9 +245,11 @@ public class StandardGameController implements GameController, LobbyController {
      * Add observers to all needed objects
      *
      * @param newClient new player's ClientInterface
-     * @param newPlayer new player's Player object
+     * @param newPlayerId new player's id
      */
-    private void addObservers(@NotNull ClientInterface newClient, @NotNull Player newPlayer) {
+    private void addObservers(@NotNull ClientInterface newClient, @NotNull String newPlayerId) throws PlayerNotExistsException {
+
+        Player newPlayer = game.getPlayer(newPlayerId);
         /* Add Player status observer */
         newPlayer.addObserver(getPlayerObserver(newClient));
 
@@ -262,14 +269,15 @@ public class StandardGameController implements GameController, LobbyController {
         newPlayer.getPersonalGoals().forEach(personalGoal -> personalGoal.addObserver(getPersonalGoalObserver(newClient)));
 
         /* Add Shelf status observer */
-        newPlayer.getShelf().addObserver(getShelfObserver(newClient, newPlayer));
+        newPlayer.getShelf().addObserver(getShelfObserver(newClient, newPlayerId));
         /* Add Shelf status observer of new player to all already joined players */
         /* Add Shelf status observer of all already joined players to new player */
-        userAssociation.forEach((joinedClient, joinedUser) -> {
-            newPlayer.getShelf().addObserver(getShelfObserver(joinedClient, newPlayer));
-            Player joinedPlayer = playerAssociation.get(joinedUser);
-            joinedPlayer.getShelf().addObserver(getShelfObserver(newClient, joinedPlayer));
-        });
+        for(Map.Entry<ClientInterface,User> association : userAssociation.entrySet()){
+            newPlayer.getShelf().addObserver(getShelfObserver(association.getKey(), newPlayerId));
+
+            String joinedPlayerId = playerAssociation.get(association.getValue());
+            game.getPlayer(joinedPlayerId).getShelf().addObserver(getShelfObserver(newClient, joinedPlayerId));
+        }
     }
 
     /**
@@ -282,16 +290,18 @@ public class StandardGameController implements GameController, LobbyController {
         try {
             /* If we receive a request from an invalid client we discard it */
             if (!userAssociation.containsKey(client))
-                throw new IllegalArgumentException("User not allowed");
+                throw new GameAccessDeniedException("User not allowed");
             /* If game is not started we discard the request*/
             if (!game.getGameStatus().equals(Game.GameStatus.STARTED))
                 throw new GameNotStartedException();
-                /* Get player information associated with his client */
-            Player player = playerAssociation.get(userAssociation.get(client));
+            /* Get player information associated with his client */
+            String playerId = playerAssociation.get(userAssociation.get(client));
+            Player player = game.getPlayer(playerId);
             /* If it isn't player turn we discard the request*/
-            if (!player.getId().equals(game.getTurnPlayerId()))
+            if (!playerId.equals(game.getTurnPlayerId()))
                 throw new IllegalArgumentException("Not player's turn");
             /* Get board and player shelf status */
+
             Tile[][] shelf = player.getShelf().getTiles();
             Tile[][] board = game.getLivingRoom().getBoard();
 
@@ -357,14 +367,16 @@ public class StandardGameController implements GameController, LobbyController {
             game.updatePlayersTurn();
 
         } catch (IllegalArgumentException | GameNotStartedException e) {
-            if (userAssociation.containsKey(client) && playerAssociation.containsKey(userAssociation.get(client))) {
-                playerAssociation.get(userAssociation.get(client)).reportError(e.getMessage());
-            }
-            else {
-                e.printStackTrace();
+            try{
+                String playerId = playerAssociation.get(userAssociation.get(client));
+                game.getPlayer(playerId).reportError(e.getMessage());
+            } catch (PlayerNotExistsException ex) {
+                throw new RuntimeException("Model is not working as intended");//TODO severe error
             }
         } catch (GameEndedException e){
             e.printStackTrace();
+        } catch (GameAccessDeniedException | PlayerNotExistsException e) {
+            System.err.println("COMMAND FROM UNAUTHENTICATED USER");
         }
     }
 
@@ -376,33 +388,27 @@ public class StandardGameController implements GameController, LobbyController {
     public synchronized void sendMessage(ClientInterface client, @NotNull Message newMessage) {
         try {
             if (!userAssociation.containsKey(client))
-                throw new IllegalArgumentException("User not allowed");
+                throw new GameAccessDeniedException("User not allowed");
 
-            boolean subjectfound = false;
-            for(Player p : playerAssociation.values()){
-                if(p.getId().equals(newMessage.getSubject())){
-                    subjectfound = true;
-                    break;
-                }
-            }
-
-            if(!(newMessage.getSubject().isEmpty() || subjectfound))
+            if(!(newMessage.getSubject().isEmpty() || playerAssociation.containsValue(newMessage.getSubject())))
                 throw new IllegalArgumentException("Subject of the message does not exists");
 
-            //TODO sender is not a player?
-
-            for (Player p : playerAssociation.values()) {
-                if (newMessage.getSubject().isEmpty() || newMessage.getSubject().equals(p.getId()) || newMessage.getSender().equals(p.getId()))
-                    p.getPlayerChat().addMessage(newMessage);
+            for (String playerId : playerAssociation.values()) {
+                if (newMessage.getSubject().isEmpty() || newMessage.getSubject().equals(playerId) || newMessage.getSender().equals(playerId))
+                    game.getPlayer(playerId).getPlayerChat().addMessage(newMessage);
             }
 
         } catch (IllegalArgumentException e) {
-            if (userAssociation.containsKey(client) && playerAssociation.containsKey(userAssociation.get(client))) {
-                playerAssociation.get(userAssociation.get(client)).reportError(e.getMessage());
+            try{
+                String playerId = playerAssociation.get(userAssociation.get(client));
+                game.getPlayer(playerId).reportError(e.getMessage());
+            } catch (PlayerNotExistsException ex) {
+                throw new RuntimeException("Model is not working as intended");//TODO severe error
             }
-            else {
-                e.printStackTrace();
-            }
+        } catch (GameAccessDeniedException e) {
+            System.err.println("COMMAND FROM UNAUTHENTICATED USER");
+        } catch (PlayerNotExistsException e) {
+            throw new RuntimeException("Model is not working as instended");
         }
     }
 

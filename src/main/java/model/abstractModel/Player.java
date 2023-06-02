@@ -24,12 +24,6 @@ public abstract class Player extends Observable<Player.Event>{
     }
 
     /**
-     * This method returns the player id
-     * @return id of the player
-     */
-    public abstract @NotNull String getId();
-
-    /**
      * This method returns a copy of the current representation of the player shelf
      * @return a copy of the current representation of the player shelf
      */

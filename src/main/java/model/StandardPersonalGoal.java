@@ -5,7 +5,6 @@ import model.instances.StandardPersonalGoalInstance;
 import modelView.PersonalGoalInfo;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.Serializable;
 import java.util.Arrays;
 
 /**
@@ -111,14 +110,5 @@ public  class StandardPersonalGoal extends PersonalGoal {
     @Override
     public @NotNull PersonalGoalInfo getInfo() {
         return new PersonalGoalInfo(achieved, getDescription());
-    }
-
-    /**
-     * {@inheritDoc}
-     * @return A {@link StandardPersonalGoalInstance} constructed using instance values
-     */
-    @Override
-    public @NotNull Serializable getInstance() {
-        return new StandardPersonalGoalInstance(tile,row,column,achieved);
     }
 }

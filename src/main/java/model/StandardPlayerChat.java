@@ -61,13 +61,4 @@ public class StandardPlayerChat extends PlayerChat {
     public @NotNull PlayerChatInfo getInfo() {
         return new PlayerChatInfo(getMessages());
     }
-
-    /**
-     * {@inheritDoc}
-     * @return A {@link model.instances.StandardPlayerInstance} constructed using instance values
-     */
-    @Override
-    public @NotNull Serializable getInstance() {
-        return new StandardPlayerChatInstance(messages);
-    }
 }

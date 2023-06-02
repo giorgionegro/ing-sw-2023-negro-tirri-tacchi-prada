@@ -8,7 +8,7 @@ import distibuted.ServerEndpoint;
 import distibuted.interfaces.AppServer;
 import distibuted.interfaces.ClientInterface;
 import distibuted.interfaces.ServerInterface;
-import model.StandardGame;
+import model.GameBuilder;
 import model.User;
 import model.abstractModel.Game;
 import model.exceptions.GameAlreadyExistsException;
@@ -130,10 +130,12 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
         try {
             if (!users.containsKey(client))
                 throw new GameAccessDeniedException("Client is not connected correctly");
-            createGame(gameInfo.gameId(), gameInfo.playerNumber());
+
+            createGame(gameInfo);
+
             users.get(client).reportEvent(User.Status.NOT_JOINED, "Game created", gameInfo.time(), User.Event.GAME_CREATED);
             System.err.println("GAME CREATED: "+gameInfo.gameId());
-        } catch (GameAlreadyExistsException | GameAccessDeniedException e) {
+        } catch (GameAlreadyExistsException | GameAccessDeniedException | IllegalArgumentException e) {
             if (users.containsKey(client) && users.get(client) != null)
                 users.get(client).reportEvent(User.Status.NOT_JOINED, e.getMessage(), gameInfo.time(), User.Event.ERROR_REPORTED);
         }
@@ -151,12 +153,12 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
 
 
     @Override
-    public void createGame(String gameId, int playerNumber) throws GameAlreadyExistsException {
-        if (gameControllers.containsKey(gameId))
+    public void createGame(NewGameInfo newGameInfo) throws GameAlreadyExistsException, IllegalArgumentException {
+        if (gameControllers.containsKey(newGameInfo.gameId()))
             throw new GameAlreadyExistsException();
 
-        Game newGame = new StandardGame(gameId, playerNumber);
+        Game newGame = GameBuilder.build(newGameInfo);
 
-        gameControllers.put(gameId, new StandardGameController(newGame));
+        gameControllers.put(newGameInfo.gameId(), new StandardGameController(newGame));
     }
 }

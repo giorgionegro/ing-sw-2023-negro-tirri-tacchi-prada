@@ -54,12 +54,6 @@ public abstract class Game extends Observable<Game.Event>{
     }
 
     /**
-     * This method returns the gameId
-     * @return the gameId
-     */
-    public abstract String getGameId();
-
-    /**
      * This method returns the current game status
      * @return the current game status
      */
