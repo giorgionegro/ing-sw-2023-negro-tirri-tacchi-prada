@@ -40,8 +40,8 @@ public class TUI implements UI {
     /*-----------VIEW COMPONENTS--------------*/
     static final int renderHeight = 53;
     static final int renderWidth = 140;
-    final char[][] cliPixel = new char[renderHeight][renderWidth];
-    final int[][] cliPixelColor = new int[renderHeight][renderWidth];
+    final char[][] cliPixels = new char[renderHeight][renderWidth];
+    final int[][] cliPixelsColor = new int[renderHeight][renderWidth];
     final int chatX = 80;
     final int chatY = 23;
     final int chatBoxWidth = 58;
@@ -490,8 +490,8 @@ public class TUI implements UI {
     private void updateView(boolean force) {
         if (!viewLock || force) {
             //clear the matrix
-            Arrays.stream(cliPixel).forEach(a -> Arrays.fill(a, ' '));
-            Arrays.stream(cliPixelColor).forEach(a -> Arrays.fill(a, DEFAULT));
+            Arrays.stream(cliPixels).forEach(a -> Arrays.fill(a, ' '));
+            Arrays.stream(cliPixelsColor).forEach(a -> Arrays.fill(a, DEFAULT));
 
             drawBox(0, 0, renderHeight, renderWidth, DEFAULT);
             drawCommandLine();
@@ -519,7 +519,7 @@ public class TUI implements UI {
     /*--------------------------------------------------*/
 
     private String renderPixel(int x, int y) {
-        return "\u001B[" + cliPixelColor[x][y] + "m" + cliPixel[x][y] + "\u001B[0m";
+        return "\u001B[" + cliPixelsColor[x][y] + "m" + cliPixels[x][y] + "\u001B[0m";
     }
 
     private void ClearScreen() {
@@ -569,10 +569,10 @@ public class TUI implements UI {
                 s = '├';
                 t = '┤';
             }
-            cliPixel[startY + i * 2][startX] = s;
-            cliPixelColor[startY + i * 2][startX] = DEFAULT;
-            cliPixel[startY + i * 2][startX + gridRowDim * 4] = t;
-            cliPixelColor[startY + i * 2][startX + gridRowDim * 4] = DEFAULT;
+            cliPixels[startY + i * 2][startX] = s;
+            cliPixelsColor[startY + i * 2][startX] = DEFAULT;
+            cliPixels[startY + i * 2][startX + gridRowDim * 4] = t;
+            cliPixelsColor[startY + i * 2][startX + gridRowDim * 4] = DEFAULT;
         }
     }
 
@@ -588,8 +588,8 @@ public class TUI implements UI {
                     c = ' ';
 
                 for (int k = 0; k < 3; k++) {
-                    cliPixel[startY + i * 2][k + startX + j * 4] = c;
-                    cliPixelColor[startY + i * 2][k + startX + j * 4] = color;
+                    cliPixels[startY + i * 2][k + startX + j * 4] = c;
+                    cliPixelsColor[startY + i * 2][k + startX + j * 4] = color;
                 }
             }
         }
@@ -603,8 +603,8 @@ public class TUI implements UI {
             toDraw = toDraw.substring(0, size);
 
         for (int i = 0; (i < toDraw.length() && (i + startCol) < (renderWidth - 2)); i++) {
-            cliPixel[row][startCol + i] = toDraw.charAt(i);
-            cliPixelColor[row][startCol + i] = colour;
+            cliPixels[row][startCol + i] = toDraw.charAt(i);
+            cliPixelsColor[row][startCol + i] = colour;
         }
     }
 
@@ -625,29 +625,29 @@ public class TUI implements UI {
     private void drawBox(int row, int col, int height, int width, int colour) {
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
-                if (i == 0 && j == 0) cliPixel[row + i][col + j] = '┌';
-                else if (i == 0 && j == width - 1) cliPixel[row + i][col + j] = '┐';
+                if (i == 0 && j == 0) cliPixels[row + i][col + j] = '┌';
+                else if (i == 0 && j == width - 1) cliPixels[row + i][col + j] = '┐';
                 else if (i == height - 1 && j == 0) {
-                    cliPixel[row + i][col + j] = '└';
-                    cliPixelColor[row + i][col + j] = colour;
+                    cliPixels[row + i][col + j] = '└';
+                    cliPixelsColor[row + i][col + j] = colour;
                 } else if (i == height - 1 && j == width - 1) {
-                    cliPixel[row + i][col + j] = '┘';
-                    cliPixelColor[row + i][col + j] = colour;
+                    cliPixels[row + i][col + j] = '┘';
+                    cliPixelsColor[row + i][col + j] = colour;
                 } else if (i == 0) {
-                    cliPixel[row + i][col + j] = '─';
-                    cliPixelColor[row + i][col + j] = colour;
+                    cliPixels[row + i][col + j] = '─';
+                    cliPixelsColor[row + i][col + j] = colour;
                 } else if (i == height - 1) {
-                    cliPixel[row + i][col + j] = '─';
-                    cliPixelColor[row + i][col + j] = colour;
+                    cliPixels[row + i][col + j] = '─';
+                    cliPixelsColor[row + i][col + j] = colour;
                 } else if (j == 0) {
-                    cliPixel[row + i][col + j] = '│';
-                    cliPixelColor[row + i][col + j] = colour;
+                    cliPixels[row + i][col + j] = '│';
+                    cliPixelsColor[row + i][col + j] = colour;
                 } else if (j == width - 1) {
-                    cliPixel[row + i][col + j] = '│';
-                    cliPixelColor[row + i][col + j] = colour;
+                    cliPixels[row + i][col + j] = '│';
+                    cliPixelsColor[row + i][col + j] = colour;
                 } else {
-                    cliPixel[row + i][col + j] = ' ';
-                    cliPixelColor[row + i][col + j] = DEFAULT;
+                    cliPixels[row + i][col + j] = ' ';
+                    cliPixelsColor[row + i][col + j] = DEFAULT;
                 }
             }
         }
@@ -687,8 +687,8 @@ public class TUI implements UI {
         if (currentGameState != null) {
             drawGameState();
         }
-        for (int i = 0; i < cliPixel.length; i++) {
-            for (int j = 0; j < cliPixel[0].length; j++) {
+        for (int i = 0; i < cliPixels.length; i++) {
+            for (int j = 0; j < cliPixels[0].length; j++) {
                 out.print(renderPixel(i, j));
             }
             out.println();
@@ -776,8 +776,8 @@ public class TUI implements UI {
                     number = " " + number + " ";
                 }
                 for (int c = 0; c < number.length(); c++) {
-                    cliPixel[livingRoomY + 1][livingRoomX + 2 + i * 4 + c] = number.charAt(c);
-                    cliPixelColor[livingRoomY + 1][livingRoomX + 2 + i * 4 + c] = DEFAULT;
+                    cliPixels[livingRoomY + 1][livingRoomX + 2 + i * 4 + c] = number.charAt(c);
+                    cliPixelsColor[livingRoomY + 1][livingRoomX + 2 + i * 4 + c] = DEFAULT;
                 }
             }
             //draw numbers on the side
@@ -787,8 +787,8 @@ public class TUI implements UI {
                     number = "0" + number;
                 }
                 for (int c = 0; c < number.length(); c++) {
-                    cliPixel[livingRoomY + 3 + i * 2][livingRoomX] = number.charAt(c);
-                    cliPixelColor[livingRoomY + 3 + i * 2][livingRoomX] = DEFAULT;
+                    cliPixels[livingRoomY + 3 + i * 2][livingRoomX] = number.charAt(c);
+                    cliPixelsColor[livingRoomY + 3 + i * 2][livingRoomX] = DEFAULT;
                 }
             }
 
