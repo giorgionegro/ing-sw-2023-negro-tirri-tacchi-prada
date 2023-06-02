@@ -9,7 +9,7 @@ import util.Observable;
  * <p>
  * It defines all the required methods needed to manage living room board.
  */
-public abstract class Shelf extends Observable<Shelf.Event> implements SerializableModel{
+public abstract class Shelf extends Observable<Shelf.Event>{
     /**
      * This enumeration contains all the living room events that can be sent to observers
      */

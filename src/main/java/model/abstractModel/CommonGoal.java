@@ -12,7 +12,7 @@ import java.util.Stack;
  * <p>
  * It contains all the methods required to manage common goal information
  **/
-public abstract class CommonGoal extends Observable<CommonGoal.Event> implements SerializableModel{
+public abstract class CommonGoal extends Observable<CommonGoal.Event>{
 
     /**
      * This enumeration contains all the goal events that can be sent to observers

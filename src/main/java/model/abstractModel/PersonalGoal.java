@@ -9,7 +9,7 @@ import util.Observable;
  * <p>
  * It defines all the required methods needed to access personal goal information and manage personal goal achieved status
  */
-public abstract class PersonalGoal extends Observable<PersonalGoal.Event> implements SerializableModel{
+public abstract class PersonalGoal extends Observable<PersonalGoal.Event>{
     /**
      * This enumeration contains all the personal goal events that can be sent to observers
      */
