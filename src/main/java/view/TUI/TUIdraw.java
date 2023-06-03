@@ -18,9 +18,24 @@ import static view.TUI.TUIutils.getColour;
 
 public enum TUIdraw {
     ;
+    /**
+     * width of command line
+     */
     static final int commandLineWidth = 75;
+    /**
+     * Map containing CommonGoal description and array of String that represents common goal image
+     */
     private static final Map<String, String[]> commonGoalRes = getCommonGoalRes();
 
+    /**
+     * This method is used to draw grids of different shape and size based on its parameters
+     * @param startX integer representing start horizontal coordinate
+     * @param startY integer representing start vertical coordinate
+     * @param gridRowDim integer representing row dimension of the grid
+     * @param gridColDim integer representing column dimension of the grid
+     * @param cliPixel 2d array of characters representing the pixels
+     * @param cliPixelColor 2d array of integers representing the color of the pixels
+     */
     static void drawGrid(int startX, int startY, int gridRowDim, int gridColDim, char[][] cliPixel, int[][] cliPixelColor) {
         String middle = "│   ".repeat(gridRowDim) + "│";
 
@@ -76,6 +91,16 @@ public enum TUIdraw {
         }
     }
 
+    /**
+     * This method draws a String from the start coordinates
+     * @param toDraw String to draw
+     * @param row integer representing start row coordinate
+     * @param startCol integer representing start column coordinate
+     * @param colour integer representing color of the String to be drawn
+     * @param size size the drawn String can occupy
+     * @param cliPixel 2d array of characters representing the pixels
+     * @param cliPixelColor 2d array of integers representing the color of the pixels
+     */
     //draw String from start coordinate
     static void drawString(String toDraw, int row, int startCol, int colour, int size, char[][] cliPixel, int[][] cliPixelColor) {
         if (row < 0 || row >= renderHeight || startCol < 0 || startCol >= renderWidth)
@@ -89,6 +114,12 @@ public enum TUIdraw {
         }
     }
 
+    /**
+     * this method draws the list of available games
+     * @param games game manager info
+     * @param cliPixel 2d array of characters representing the pixels
+     * @param cliPixelColor 2d array of integers representing the color of the pixels
+     */
     static void drawGameList(List<GamesManagerInfo> games, char[][] cliPixel, int[][] cliPixelColor) {
         // a game will be | game name | max players | current players | joinable |
         // a game will be | 10 chars   | 5 chars      | 5 chars          | 10 chars |
@@ -108,6 +139,12 @@ public enum TUIdraw {
         }
     }
 
+    /**
+     * This method draws the endgame screen
+     * @param points Map that associates Player ID to its points
+     * @param cliPixel 2d array of characters representing the pixels
+     * @param cliPixelColor 2d array of integers representing the color of the pixels
+     */
     static void drawGameEnd(Map<String, Integer> points, char[][] cliPixel, int[][] cliPixelColor) {
         final int gameEndY = 14;
         final int gameEndX = 50;
@@ -149,6 +186,16 @@ public enum TUIdraw {
 
     }
 
+    /**
+     * This method draws a String centered in a certains space
+     * @param text String to draw centered
+     * @param startX integer representing start horizontal coordinate
+     * @param startY integer representing start vertical coordinate
+     * @param spaceWidth integer representing width of space that the String can occupy
+     * @param colour colour of the String to draw
+     * @param cliPixel 2d array of characters representing the pixels
+     * @param cliPixelColor 2d array of integers representing the color of the pixels
+     */
     @SuppressWarnings("SameParameterValue")
     static void drawCenteredString(String text, int startX, int startY, int spaceWidth, int colour, char[][] cliPixel, int[][] cliPixelColor) {
         StringBuilder title = new StringBuilder();
@@ -157,6 +204,16 @@ public enum TUIdraw {
         drawString(title.toString(), startY, startX, colour, title.length(), cliPixel, cliPixelColor);
     }
 
+    /**
+     * This method draws a box based on the parameters
+     * @param row integer representing start row of the box
+     * @param col integer representing start column of the box
+     * @param height integer representing height of the box
+     * @param width integer representing width of the box
+     * @param colour integer representing color of the box
+     * @param cliPixel 2d array of characters representing the pixels
+     * @param cliPixelColor 2d array of integers representing the color of the pixels
+     */
     @SuppressWarnings("SameParameterValue")
     static void drawBox(int row, int col, int height, int width, int colour, char[][] cliPixel, int[][] cliPixelColor) {
         for (int i = 0; i < height; i++) {
@@ -189,6 +246,12 @@ public enum TUIdraw {
         }
     }
 
+    /**
+     * this method draws the player chat
+     * @param currentPlayerChat object containing List of messages of one player
+     * @param cliPixel 2d array of characters representing the pixels
+     * @param cliPixelColor 2d array of integers representing the color of the pixels
+     */
     static void drawChat(PlayerChatInfo currentPlayerChat, char[][] cliPixel, int[][] cliPixelColor) {
         final int chatX = 80;
         final int chatY = 23;
@@ -233,6 +296,12 @@ public enum TUIdraw {
         }
     }
 
+    /**
+     * this method draws the living room board
+     * @param currentLivingRoom object containing the living room game board
+     * @param cliPixel 2d array of characters representing the pixels
+     * @param cliPixelColor 2d array of integers representing the color of the pixels
+     */
     static void drawLivingRoom(LivingRoomInfo currentLivingRoom, char[][] cliPixel, int[][] cliPixelColor) {
         final int livingRoomX = 1;
         final int livingRoomY = 1;
@@ -270,6 +339,13 @@ public enum TUIdraw {
         }
     }
 
+    /**
+     * //TODO javadoc drawCommandLine
+     * @param cursor
+     * @param oldCmds
+     * @param cliPixel 2d array of characters representing the pixels
+     * @param cliPixelColor 2d array of integers representing the color of the pixels
+     */
     static void drawCommandLine(String cursor, List<Pair> oldCmds, char[][] cliPixel, int[][] cliPixelColor) {
 
 
@@ -281,6 +357,12 @@ public enum TUIdraw {
         drawOldCmds(oldCmds, cliPixel, cliPixelColor);
     }
 
+    /**
+     * //TODO javadoc drawOldCmds
+     * @param oldCmds
+     * @param cliPixel 2d array of characters representing the pixels
+     * @param cliPixelColor 2d array of integers representing the color of the pixels
+     */
     private static void drawOldCmds(List<Pair> oldCmds, char[][] cliPixel, int[][] cliPixelColor) {
         while (oldCmds.size() > (commandLineHeight - 4))
             oldCmds.remove(0);
@@ -290,6 +372,14 @@ public enum TUIdraw {
         }
     }
 
+    /**
+     * this method draws the shelves of the players in the game
+     * @param currentShelves map that associates each playerId to its shelf
+     * @param thisPlayerId ID of the player who is
+     * @param currentGameState current game info
+     * @param cliPixel 2d array of characters representing the pixels
+     * @param cliPixelColor 2d array of integers representing the color of the pixels
+     */
     static void drawShelves(Map<String, ShelfInfo> currentShelves, String thisPlayerId, GameInfo currentGameState, char[][] cliPixel, int[][] cliPixelColor) {
         final int shelvesX = 43;
 
@@ -354,6 +444,13 @@ public enum TUIdraw {
         }
     }
 
+    /**
+     * this method draws the common goal
+     * @param commonGoals map containing common goal id and common goal info
+     * @param achievedCommonGoals map containing achieved common goals id and token
+     * @param cliPixel 2d array of characters representing the pixels
+     * @param cliPixelColor 2d array of integers representing the color of the pixels
+     */
     static void drawCommonGoals(Map<String, CommonGoalInfo> commonGoals, Map<String, Token> achievedCommonGoals, char[][] cliPixel, int[][] cliPixelColor) {
         final int commonGoalsY = 23;
         final int commonGoalsX = 3;
@@ -397,6 +494,10 @@ public enum TUIdraw {
         }
     }
 
+    /**
+     * //TODO javadoc getCommonGoalRes
+     * @return
+     */
     private static Map<String, String[]> getCommonGoalRes() {
         Map<String, String[]> ris = new HashMap<>();
         File dir = new File(Objects.requireNonNull(TUIdraw.class.getResource("/commonGoals/CLI")).getPath());
@@ -422,6 +523,12 @@ public enum TUIdraw {
         return ris;
     }
 
+    /**
+     * this method draws that it is the last turn if it is the last turn
+     * @param currentGameState game info
+     * @param cliPixel 2d array of characters representing the pixels
+     * @param cliPixelColor 2d array of integers representing the color of the pixels
+     */
     static void drawGameState(GameInfo currentGameState, char[][] cliPixel, int[][] cliPixelColor) {
         if (currentGameState != null) {
             //draw is last turn if it is
@@ -431,6 +538,12 @@ public enum TUIdraw {
     }
 
 
+    /**
+     * this method draws the personal goal
+     * @param currentPersonalGoals list of personal goals info
+     * @param cliPixel 2d array of characters representing the pixels
+     * @param cliPixelColor 2d array of integers representing the color of the pixels
+     */
     static void drawPersonalGoal(List<PersonalGoalInfo> currentPersonalGoals, char[][] cliPixel, int[][] cliPixelColor) {
         final int personalGoalsX = 55;
         final int personalGoalsY = 24;

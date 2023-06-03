@@ -15,6 +15,10 @@ public enum TUIutils {
     public static final int RED = 31;
     public static final int DEFAULT = 39;
 
+    /** This method returns the numeric value of a String that represents a color
+     * @param color String of a certain color
+     * @return integer value of said color
+     */
     public static int getColour(String color) {
         int colour;
         switch (color) {
@@ -29,6 +33,11 @@ public enum TUIutils {
         return colour;
     }
 
+    /**
+     * //TODO function javadoc
+     * This method checks what OS the game is being run on and clears the terminal.
+     * @param function
+     */
     public static void ClearScreen(Function<String, Void> function) {
         try {
             String operatingSystem = System.getProperty("os.name"); //Check the current operating system
