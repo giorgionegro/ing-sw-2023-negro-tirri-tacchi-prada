@@ -5,7 +5,7 @@ import distibuted.interfaces.ServerInterface;
 import model.User;
 import modelView.NewGameInfo;
 import modelView.UserInfo;
-import util.ResourceProvider;
+
 import util.TimedLock;
 import view.interfaces.UserView;
 
@@ -16,10 +16,12 @@ import java.awt.event.ActionListener;
 import java.rmi.RemoteException;
 
 public class CreateGamePanel extends JPanel implements ActionListener, UserView {
-    ImageIcon CreateGame;
-    JButton createButton;
-    JTextField GameId;
-    JComboBox<Integer> comboBox;
+    private final Image CreateGame = new ImageIcon (getClass().getResource("/desktop.png")).getImage();
+    private final JButton createButton;
+
+    private final JButton exitButton;
+    private final JTextField GameId;
+    private final JComboBox<Integer> comboBox;
     private final ActionListener listener;
     private final ServerInterface serverInterface;
     private final ClientInterface clientInterface;
@@ -28,12 +30,11 @@ public class CreateGamePanel extends JPanel implements ActionListener, UserView 
         this.listener = listener;
         this.serverInterface = serverInterface;
         this.clientInterface = clientInterface;
-        CreateGame = new ImageIcon (ResourceProvider.getResourcePath("/desktop.png"));
-        ImageIcon button = new ImageIcon(ResourceProvider.getResourcePath("/img.png"));
-        ImageIcon buttonIdG = new ImageIcon(ResourceProvider.getResourcePath("/GameID.png"));
-        ImageIcon buttonIdN = new ImageIcon(ResourceProvider.getResourcePath("/nplayers.png"));
-        Font font1 = new Font("Century", Font.BOLD, 24);
 
+        ImageIcon button = new ImageIcon(getClass().getResource("/img.png"));
+        ImageIcon buttonIdG = new ImageIcon(getClass().getResource("/GameID.png"));
+        ImageIcon buttonIdN = new ImageIcon(getClass().getResource("/nplayers.png"));
+        Font font1 = new Font("Century", Font.BOLD, 24);
 
         GridBagConstraints c = new GridBagConstraints();
         c.gridx=0;
@@ -81,6 +82,11 @@ public class CreateGamePanel extends JPanel implements ActionListener, UserView 
         PlayButtonLabel.setFont(font1);
         createButton.add(PlayButtonLabel);
 
+        exitButton = new JButton();
+        exitButton.setIcon(button);
+        JLabel exitButtonLabel = new JLabel("BACK");
+        exitButtonLabel.setFont(font1);
+        exitButton.add(exitButtonLabel);
 
         ButtonsCreatePanel.add(GameIdField,c);
         c.gridx++;
@@ -92,11 +98,13 @@ public class CreateGamePanel extends JPanel implements ActionListener, UserView 
         ButtonsCreatePanel.add(comboBox, c);
         c.gridy++;
         ButtonsCreatePanel.add(createButton,c);
+        c.gridx--;
+        ButtonsCreatePanel.add(exitButton,c);
 
         createButton.addActionListener(this);
+        exitButton.addActionListener(this);
 
         this.add(ButtonsCreatePanel);
-
     }
 
     protected void paintComponent(Graphics g) {
@@ -113,7 +121,7 @@ public class CreateGamePanel extends JPanel implements ActionListener, UserView 
                 height = getHeight();
                 width = (int) (getHeight()*ratio);
             }
-            g.drawImage(CreateGame.getImage(), 0, 0, width, height, null);
+            g.drawImage(CreateGame, 0, 0, width, height, null);
 
         }
     }
@@ -151,6 +159,8 @@ public class CreateGamePanel extends JPanel implements ActionListener, UserView 
             }catch(RemoteException re){
                 //TODO show errore generico di connessione
             }
+        } else if (e.getSource()==exitButton) {
+            listener.actionPerformed(new ActionEvent(this,e.getID(),"EXIT"));
         }
     }
 

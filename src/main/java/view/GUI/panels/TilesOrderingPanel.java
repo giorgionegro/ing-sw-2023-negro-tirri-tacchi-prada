@@ -1,6 +1,10 @@
 package view.GUI.panels;
 
-import util.ResourceProvider;
+import model.Tile;
+import modelView.PickedTile;
+import modelView.PlayerInfo;
+import modelView.PlayerMoveInfo;
+
 import view.GUI.components.SwapButton;
 import view.GUI.components.TileButton;
 
@@ -12,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TilesOrderingPanel extends JPanel implements ActionListener{
-    private final Image background = new ImageIcon(ResourceProvider.getResourcePath("/TilesOrderingTableBackground.png")).getImage();
+    private final Image background = new ImageIcon(getClass().getResource("/TilesOrderingTableBackground.png")).getImage();
     private final GridBagConstraints tileSpacer = new GridBagConstraints(
             1,1,
             1,1,
@@ -64,7 +68,9 @@ public class TilesOrderingPanel extends JPanel implements ActionListener{
         this.moveSender = moveSender;
 
         swapButton1 = new SwapButton();
+        swapButton1.addActionListener(this);
         swapButton2 = new SwapButton();
+        swapButton2.addActionListener(this);
 
         this.setLayout(new GridBagLayout());
         this.add(new Container(), verticalSpacerContraints);
@@ -99,7 +105,7 @@ public class TilesOrderingPanel extends JPanel implements ActionListener{
 
         int y = topPadding + 2*verticalSkip;
         for(TileButton t : pickedTiles){
-            Image tileImage = new ImageIcon(ResourceProvider.getResourcePath("/Tile/"+t.getTile().name()+".png")).getImage();
+            Image tileImage = new ImageIcon(getClass().getResource("/Tile/"+t.getTile().name()+".png")).getImage();
             g.drawImage(tileImage, leftPadding, y, size, size, null);
             y-=verticalSkip;
         }
@@ -107,7 +113,13 @@ public class TilesOrderingPanel extends JPanel implements ActionListener{
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if(e.getSource()==swapButton1){
+        if(e.getSource()==moveSender){
+            //Resets the selection if there is an update of livingRoom
+            for(TileButton t : pickedTiles) {
+                t.setSelected(false);
+            }
+            pickedTiles.clear();
+        }else if(e.getSource()==swapButton1){
             if(pickedTiles.size()==3){
                 pickedTiles.add(pickedTiles.remove(1));
             }
@@ -116,8 +128,21 @@ public class TilesOrderingPanel extends JPanel implements ActionListener{
                 pickedTiles.add(0,pickedTiles.remove(1));
             }
         } else if (e.getSource()==columnChoser) {
-            //TODO Prepara per mandare la mossa a moveSender
 
+            if(pickedTiles.size()>0){
+                int column = Integer.parseInt(e.getActionCommand());
+
+                List<PickedTile> picked = new ArrayList<>();
+                for(TileButton t : pickedTiles) {
+                    picked.add(new PickedTile(t.getTileY(), t.getTileX()));
+                    t.setSelected(false);
+                }
+
+                pickedTiles.clear();
+
+                PlayerMoveInfo move = new PlayerMoveInfo(picked, column);
+                moveSender.actionPerformed(new ActionEvent(move, 0, "SEND MOVE"));
+            }
 
         } else if(e.getSource() instanceof TileButton){
             TileButton button = ((TileButton) e.getSource());

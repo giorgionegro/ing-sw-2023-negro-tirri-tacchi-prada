@@ -14,51 +14,45 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.swing.JComponent;
 
-import util.ResourceProvider;
+
 import view.GUI.*;
 import view.interfaces.*;
 
 public class GamePanel extends JComponent implements ActionListener, ShelfView, PlayerChatView, CommonGoalView, PlayerView, GameView, LivingRoomView, PersonalGoalView {
-    private final Image parquet = new ImageIcon(ResourceProvider.getResourcePath("/parquet.jpg")).getImage();
+    private final Image parquet = new ImageIcon(getClass().getResource("/parquet.jpg")).getImage();
     private GameInfo currentGameState;
-    private final LivingRoomPanel livingRoomBoard;
-    private final Map<String, ShelfPanel> opponentShelfBoards = new HashMap<>();
-    private final PlayerShelfPanel playerShelf;
-
+    private LivingRoomPanel livingRoomBoard;
+    private Map<String, ShelfPanel> opponentShelfBoards;
+    private Map<String,JLabel> opponentLabels;
+    private PlayerShelfPanel playerShelf;
+    private final JLabel playerLabel = new JLabel();
     private final ServerInterface serverInterface;
     private final ClientInterface clientInterface;
-    private final TilesOrderingPanel tilesOrderingPanel;
-    private final PersonalGoalPanel personalGoalPanel;
-    private final CommonGoalsPanel commonGoalsPanel;
+    private TilesOrderingPanel tilesOrderingPanel;
+    private PersonalGoalPanel personalGoalPanel;
+    private CommonGoalsPanel commonGoalsPanel;
     private String thisPlayerId;
 
-    private final ChatPanel chatPanel;
+    private final JButton exitButton = new JButton();
 
-    public GamePanel(ServerInterface serverInterface, ClientInterface clientInterface){
+    private final JLabel errorLabel = new JLabel();
+    private ChatPanel chatPanel;
+
+    private final ActionListener listener;
+
+    public GamePanel(ActionListener listener, ServerInterface serverInterface, ClientInterface clientInterface){
         this.serverInterface = serverInterface;
         this.clientInterface = clientInterface;
 
+        this.listener = listener;
+
+        reset();
+    }
+
+    public void reset(){
+        opponentShelfBoards = new HashMap<>();
+        opponentLabels = new HashMap<>();
         initializeLayout();
-
-        tilesOrderingPanel = new TilesOrderingPanel(this);
-        tableContainer.add(tilesOrderingPanel);
-
-        playerShelf = new PlayerShelfPanel(tilesOrderingPanel);
-        tilesOrderingPanel.setColumnChoser(playerShelf);
-        playerShelfContainer.add(playerShelf);
-
-        livingRoomBoard = new LivingRoomPanel(tilesOrderingPanel);
-        livingRoomContainer.add(livingRoomBoard);
-
-        chatPanel = new ChatPanel(serverInterface, clientInterface);
-        chatContainer.add(chatPanel);
-
-        personalGoalPanel = new PersonalGoalPanel();
-        personalGoalContainer.add(personalGoalPanel);
-
-        commonGoalsPanel = new CommonGoalsPanel();
-        commonGoalContainer.add(commonGoalsPanel);
-
         this.revalidate();
         this.repaint();
     }
@@ -68,7 +62,7 @@ public class GamePanel extends JComponent implements ActionListener, ShelfView, 
     private final Container livingRoomContainer = new Container();
 
     private final Container opponentsShelvesContainer = new Container();
-    private final Container opponentLabels = new Container();
+    private final Container opponentLabelsContainer = new Container();
 
     private final Container tableContainer = new Container();
 
@@ -80,7 +74,7 @@ public class GamePanel extends JComponent implements ActionListener, ShelfView, 
 
     private final Container commonGoalContainer = new Container();
 
-    private final JLabel playerLabel = new JLabel();
+    private final Container interactionContainer = new Container();
 
     private void initializeLayout(){
         this.setLayout(new GridBagLayout());
@@ -106,7 +100,6 @@ public class GamePanel extends JComponent implements ActionListener, ShelfView, 
                 0,0
         );
         this.add(opponentsShelvesContainer, opponentsShelvesConstraints);
-
 
         tableContainer.setLayout(new AspectRatioLayout((float)205/635));
         GridBagConstraints tableConstraints = new GridBagConstraints(
@@ -144,7 +137,7 @@ public class GamePanel extends JComponent implements ActionListener, ShelfView, 
         chatContainer.setLayout(new BorderLayout());
         GridBagConstraints chatConstraints = new GridBagConstraints(
                 0,5,
-                1,1,
+                1,2,
                 16,6,
                 GridBagConstraints.NORTHWEST, GridBagConstraints.BOTH,
                 new Insets(0,0,0,0),
@@ -167,6 +160,7 @@ public class GamePanel extends JComponent implements ActionListener, ShelfView, 
         Font font = new Font("Century", Font.BOLD, 20);
         playerLabel.setFont(font);
         playerLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        playerLabel.setBackground(new Color(255,127,39));
         GridBagConstraints playerLabelConstraints = new GridBagConstraints(
                 2,4,
                 1,1,
@@ -177,7 +171,7 @@ public class GamePanel extends JComponent implements ActionListener, ShelfView, 
         );
         this.add(playerLabel,playerLabelConstraints);
 
-        opponentLabels.setLayout(new GridBagLayout());
+        opponentLabelsContainer.setLayout(new GridBagLayout());
         GridBagConstraints opponentLabelsConstraints = new GridBagConstraints(
                 1,1,
                 3,1,
@@ -186,7 +180,67 @@ public class GamePanel extends JComponent implements ActionListener, ShelfView, 
                 new Insets(0,0,0,0),
                 0,0
         );
-        this.add(opponentLabels,opponentLabelsConstraints);
+        this.add(opponentLabelsContainer,opponentLabelsConstraints);
+
+
+        interactionContainer.setLayout(new GridBagLayout());
+        GridBagConstraints interactionConstraints = new GridBagConstraints(
+                1,6,
+                3,1,
+                1,1,
+                GridBagConstraints.NORTHWEST,
+                GridBagConstraints.BOTH,
+                new Insets(0,0,0,0),
+                0,0
+        );
+        this.add(interactionContainer,interactionConstraints);
+
+        tilesOrderingPanel = new TilesOrderingPanel(this);
+        tableContainer.add(tilesOrderingPanel);
+
+        playerShelf = new PlayerShelfPanel(tilesOrderingPanel);
+        tilesOrderingPanel.setColumnChoser(playerShelf);
+        playerShelfContainer.add(playerShelf);
+
+        livingRoomBoard = new LivingRoomPanel(tilesOrderingPanel);
+        livingRoomContainer.add(livingRoomBoard);
+
+        chatPanel = new ChatPanel(serverInterface, clientInterface);
+        chatContainer.add(chatPanel);
+
+        personalGoalPanel = new PersonalGoalPanel();
+        personalGoalContainer.add(personalGoalPanel);
+
+        commonGoalsPanel = new CommonGoalsPanel();
+        commonGoalContainer.add(commonGoalsPanel);
+
+        errorLabel.setText("");
+        errorLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        exitButton.setPreferredSize(new Dimension(0,0));
+        GridBagConstraints errorLabelConstraints = new GridBagConstraints(
+                0,0,
+                1,1,
+                6,1,
+                GridBagConstraints.NORTHWEST,
+                GridBagConstraints.BOTH,
+                new Insets(0,0,0,0),
+                0,0
+        );
+        interactionContainer.add(errorLabel,errorLabelConstraints);
+
+        exitButton.setText("EXIT");
+        exitButton.addActionListener(this);
+        exitButton.setPreferredSize(new Dimension(0,0));
+        GridBagConstraints exitButtonConstraint = new GridBagConstraints(
+                1,0,
+                1,1,
+                1,1,
+                GridBagConstraints.NORTHWEST,
+                GridBagConstraints.BOTH,
+                new Insets(0,0,0,0),
+                0,0
+        );
+        interactionContainer.add(exitButton,exitButtonConstraint);
     }
 
     /*------------------------------------------------------------*/
@@ -205,6 +259,8 @@ public class GamePanel extends JComponent implements ActionListener, ShelfView, 
         JLabel playerLabel = new JLabel(playerId);
         playerLabel.setHorizontalAlignment(SwingConstants.CENTER);
         playerLabel.setFont(font);
+        playerLabel.setBackground(new Color(255,127,39));
+
 
         GridBagConstraints shelfConstraints = new GridBagConstraints(
                 -1,-1,
@@ -217,7 +273,8 @@ public class GamePanel extends JComponent implements ActionListener, ShelfView, 
         );
 
         opponentsShelvesContainer.add(shelfContainer,shelfConstraints);
-        opponentLabels.add(playerLabel,shelfConstraints);
+        opponentLabelsContainer.add(playerLabel,shelfConstraints);
+        opponentLabels.put(playerId,playerLabel);
     }
 
     @Override
@@ -240,20 +297,24 @@ public class GamePanel extends JComponent implements ActionListener, ShelfView, 
         @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() instanceof PlayerMoveInfo) {
-            //TODO pulisci selezione
             try {
                 serverInterface.doPlayerMove(clientInterface, (PlayerMoveInfo) e.getSource());
             } catch (RemoteException ex) {
                 throw new RuntimeException(ex);
             }
-
-
         } else if (e.getSource() instanceof Message) {
             try {
                 serverInterface.sendMessage(clientInterface, (Message) e.getSource());
             } catch (RemoteException ex) {
                 throw new RuntimeException(ex);
             }
+        } else if (e.getSource() == exitButton) {
+            try {
+                serverInterface.leaveGame(clientInterface);
+            } catch (RemoteException ex) {
+                throw new RuntimeException(ex);//TODO
+            }
+            listener.actionPerformed(new ActionEvent(this,e.getID(),"EXIT"));
         }
     }
 
@@ -264,12 +325,25 @@ public class GamePanel extends JComponent implements ActionListener, ShelfView, 
 
     @Override
     public void update(GameInfo o, Game.Event evt) throws RemoteException {
+        if(evt == Game.Event.NEXT_TURN){
+            playerLabel.setOpaque(false);
+            for(JLabel label : opponentLabels.values())
+                label.setOpaque(false);
 
+            if(o.playerOnTurn().equals(thisPlayerId))
+                playerLabel.setOpaque(true);
+            else
+                opponentLabels.get(o.playerOnTurn()).setOpaque(true);
+
+            this.revalidate();
+            this.repaint();
+        }
     }
 
     @Override
     public void update(LivingRoomInfo o, LivingRoom.Event evt) throws RemoteException {
         livingRoomBoard.update(o,evt);
+        tilesOrderingPanel.actionPerformed(new ActionEvent(this, 0, "CLEAR SELECTION"));
     }
 
     @Override
@@ -285,6 +359,9 @@ public class GamePanel extends JComponent implements ActionListener, ShelfView, 
     @Override
     public void update(PlayerInfo o, Player.Event evt) throws RemoteException {
         commonGoalsPanel.update(o,evt);
+        errorLabel.setText(o.errorMessage());
+        this.revalidate();
+        this.repaint();
     }
 
     @Override

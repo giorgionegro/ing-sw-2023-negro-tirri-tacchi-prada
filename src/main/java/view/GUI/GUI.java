@@ -22,6 +22,7 @@ public class  GUI implements UI, ActionListener {
     private CreateGamePanel create;
     private GamePanel game;
     private final Container root;
+
     public GUI(){
         MyFrame frame = new MyFrame();
         frame.setVisible(true);
@@ -130,9 +131,9 @@ public class  GUI implements UI, ActionListener {
 
     @Override
     public void run(ServerInterface server, ClientInterface client) {
-        this.game = new GamePanel(server,client);
         this.create = new CreateGamePanel(this,server,client);
         this.join = new JoinGamePanel(this,server, client);
+        this.game = new GamePanel(this,server,client);
         home();
         //TODO trovare una soluzione migliore di sospendere questo thread così
         try {
@@ -174,6 +175,10 @@ public class  GUI implements UI, ActionListener {
         } else if (e.getSource() == create) {
             switch (e.getActionCommand()){
                 case "CREATED" -> joinGame();
+                case "EXIT" -> home();
+            }
+        } else if (e.getSource() == game) {
+            switch (e.getActionCommand()){
                 case "EXIT" -> home();
             }
         }

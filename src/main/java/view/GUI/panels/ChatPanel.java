@@ -83,6 +83,9 @@ public class ChatPanel extends JPanel implements ActionListener, PlayerChatView,
         this.clientInterface = clientInterface;
 
         this.setLayout(new GridBagLayout());
+        scrolltextarea.setPreferredSize(new Dimension(0,0));
+
+        invia.addActionListener(this);
         this.add(scrolltextarea,textareaConstraints);
         this.add(invia,buttonConstraints);
         this.add(mex, textfieldConstraints);
@@ -92,8 +95,7 @@ public class ChatPanel extends JPanel implements ActionListener, PlayerChatView,
     public void actionPerformed(ActionEvent e) {
         if(e.getSource() == invia){
             String message =  mex.getText();
-            String subject = (String) subjectsCombo.getSelectedItem();
-
+            String subject = subjects.get((String) subjectsCombo.getSelectedItem());
             try {
                 serverInterface.sendMessage(clientInterface,new StandardMessage(playerId, subject,message));
             } catch (RemoteException ex) {
@@ -109,18 +111,28 @@ public class ChatPanel extends JPanel implements ActionListener, PlayerChatView,
     private void updateText(){
         JTextArea textarea = new JTextArea();
 
-        //TODO sistemare questione dello scrolling
-        textarea.setPreferredSize(new Dimension(0,0));
-        textarea.setMinimumSize(new Dimension(0,0));
         textarea.setBackground(new Color(255,255,200));
         textarea.setEditable(false);
 
         textarea.setLineWrap(true);
-        for(Message m : messages)
-            textarea.append(m.getSender()+": "+m.getText()+"\n");
+        for(Message m : messages){
+            String subject = m.getSubject();
+            if(subject.equals(playerId))
+                subject = "YOU";
+            if(subject.equals(""))
+                subject = "Everyone";
 
-        scrolltextarea.setViewport(new JViewport());
+            textarea.append(m.getSender()+" to "+subject+": "+m.getText()+"\n");
+        }
+
         scrolltextarea.setViewportView(textarea);
+
+        //Scrolls to the end
+        scrolltextarea.revalidate();
+        JScrollBar verticalScrollBar = scrolltextarea.getVerticalScrollBar();
+        verticalScrollBar.setValue(verticalScrollBar.getMaximum());
+        scrolltextarea.revalidate();
+        scrolltextarea.repaint();
     }
 
     @Override
