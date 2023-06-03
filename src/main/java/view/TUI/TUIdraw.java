@@ -269,7 +269,7 @@ public enum TUIdraw {
             Arrays.fill(chatBuffer, "");
             int pointer = chatContentsHeight - 1;
             for (Message m : messages) {
-                String text = m.getSender() + " to " + ((m.getSubject().isBlank()) ? "Everyone" : m.getSubject()) + ": " + m.getText();
+                String text = m.getSender() + " to " + ((m.getReceiver().isBlank()) ? "Everyone" : m.getReceiver()) + ": " + m.getText();
                 List<String> temp = new ArrayList<>();
                 do {
                     int size = Math.min(text.length(), chatContentsWidth);
@@ -353,7 +353,7 @@ public enum TUIdraw {
 
         drawCenteredString("COMMAND LINE", commandLineX, commandLineY, commandLineWidth, DEFAULT, cliPixel, cliPixelColor);
 
-        drawString(cursor, commandLineY + commandLineHeight - 1, commandLineX, DEFAULT, commandLineWidth - 3, cliPixel, cliPixelColor);
+        drawString(cursor, commandLineY + commandLineHeight - 1, commandLineX + 2, DEFAULT, commandLineWidth - 3, cliPixel, cliPixelColor);
         drawOldCmds(oldCmds, cliPixel, cliPixelColor);
     }
 

@@ -552,4 +552,6 @@ class StandardLivingRoomTest {
         StandardLivingRoom test = new StandardLivingRoom(2);
         assertTrue(Arrays.deepEquals(test.getBoard(), test.getInfo().board()));
     }
+
+
 }

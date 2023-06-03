@@ -15,25 +15,23 @@ class StandardCommonGoalTest {
     @Test
     void constructorThrowsExceptionMoreThan4Players() {
         Standard2ColumnsRowOfDifferentTiles evalTest = new Standard2ColumnsRowOfDifferentTiles(true);
-        try{
-            StandardCommonGoal test = new StandardCommonGoal(5,evalTest);
-            fail();
-        }
-        catch (UnsupportedOperationException e){
-            e.printStackTrace();
-        }
+
+        assertThrows(UnsupportedOperationException.class, () -> new StandardCommonGoal(5, evalTest));
+
     }
+
     @Test
-    void getIdTest(){
+    void getIdTest() {
         Standard2ColumnsRowOfDifferentTiles evalTest = new Standard2ColumnsRowOfDifferentTiles(true);
-        try{
-            StandardCommonGoal test = new StandardCommonGoal(4,evalTest);
+        try {
+            StandardCommonGoal test = new StandardCommonGoal(4, evalTest);
             assertEquals("Standard2ColumnsOfDifferentTiles", test.getEvaluator().getId());
-        }
-        catch (UnsupportedOperationException e){
+        } catch (UnsupportedOperationException e) {
             fail();
         }
         assertThrows(UnsupportedOperationException.class, () -> new StandardCommonGoal(5, evalTest));
 
     }
+
+
 }
