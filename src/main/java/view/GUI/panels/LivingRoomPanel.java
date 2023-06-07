@@ -3,7 +3,7 @@ package view.GUI.panels;
 import model.Tile;
 import model.abstractModel.LivingRoom;
 import modelView.LivingRoomInfo;
-import util.ResourceProvider;
+
 import view.GUI.AspectRatioLayout;
 import view.GUI.components.TileButton;
 import view.interfaces.LivingRoomView;
@@ -14,7 +14,7 @@ import java.awt.event.ActionListener;
 import java.rmi.RemoteException;
 
 public class LivingRoomPanel extends JPanel implements LivingRoomView {
-    private final Image background = new ImageIcon(ResourceProvider.getResourcePath("/LivingRoomBackground.png")).getImage();
+    private final Image background = new ImageIcon(getClass().getResource("/LivingRoomBackground.png")).getImage();
     private final Container topSpacer = new Container();
     private final Container leftSpacer = new Container();
     private final Container rightSpacer = new Container();

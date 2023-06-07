@@ -5,7 +5,7 @@ import model.abstractModel.CommonGoal;
 import model.abstractModel.Player;
 import modelView.CommonGoalInfo;
 import modelView.PlayerInfo;
-import util.ResourceProvider;
+
 import view.GUI.AspectRatioLayout;
 import view.interfaces.CommonGoalView;
 import view.interfaces.PlayerView;
@@ -64,9 +64,9 @@ public class CommonGoalsPanel extends JPanel implements PlayerView, CommonGoalVi
         this.add(new Container(),spacerConstraints);
 
         for(String id : commonGoals.keySet()){
-            Image commonGoalImg = new ImageIcon(ResourceProvider.getResourcePath("/CommonGoals/GUI/" +id+".jpg")).getImage();
-            Image tokenImg = new ImageIcon(ResourceProvider.getResourcePath("/Token/" +commonGoals.get(id).name()+".png")).getImage();
-            Image achievedImg = new ImageIcon(ResourceProvider.getResourcePath("/CommonGoals/GUI/achieved.png")).getImage();
+            Image commonGoalImg = new ImageIcon(getClass().getResource("/CommonGoals/GUI/" +id+".jpg")).getImage();
+            Image tokenImg = new ImageIcon(getClass().getResource("/Token/" +commonGoals.get(id).name()+".png")).getImage();
+            Image achievedImg = new ImageIcon(getClass().getResource("/CommonGoals/GUI/achieved.png")).getImage();
 
             JLabel commonGoal1 = new JLabel() {
                 protected void paintComponent(Graphics g) {

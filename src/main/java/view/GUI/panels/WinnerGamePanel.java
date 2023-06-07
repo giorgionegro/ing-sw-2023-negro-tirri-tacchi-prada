@@ -1,7 +1,6 @@
 package view.GUI.panels;
 
-import util.ResourceProvider;
-import view.GUI.GUI;
+
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,8 +11,8 @@ public class WinnerGamePanel extends JPanel implements ActionListener {
     Image CreateGame;
 
     public WinnerGamePanel() {
-        CreateGame = new ImageIcon(ResourceProvider.getResourcePath("/winner.jpg")).getImage();
-        ImageIcon button = new ImageIcon(ResourceProvider.getResourcePath("/img.png"));
+        CreateGame = new ImageIcon(getClass().getResource("/winner.jpg")).getImage();
+        ImageIcon button = new ImageIcon(getClass().getResource("/img.png"));
 
 
         GridBagConstraints c = new GridBagConstraints();

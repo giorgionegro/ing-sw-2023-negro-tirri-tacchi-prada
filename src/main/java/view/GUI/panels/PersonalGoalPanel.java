@@ -3,7 +3,7 @@ package view.GUI.panels;
 import model.Tile;
 import model.abstractModel.PersonalGoal;
 import modelView.PersonalGoalInfo;
-import util.ResourceProvider;
+
 import view.interfaces.PersonalGoalView;
 
 import javax.swing.*;
@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class PersonalGoalPanel extends JPanel implements PersonalGoalView {
-    private final Image personalGoalImage = new ImageIcon(ResourceProvider.getResourcePath("/PersonalGoalBackground.jpg")).getImage();
+    private final Image personalGoalImage = new ImageIcon(getClass().getResource("/PersonalGoalBackground.jpg")).getImage();
 
     private final Map<Tile[][],Boolean> personalGoals = new HashMap<>();
 
@@ -47,7 +47,7 @@ public class PersonalGoalPanel extends JPanel implements PersonalGoalView {
             int x = leftPadding;
             for(int j=0;j<5;j++){
                 if(merged[i][j]!=Tile.EMPTY) {
-                    Image tileImage = new ImageIcon(ResourceProvider.getResourcePath("/Tile/"+merged[i][j].name()+".png")).getImage();
+                    Image tileImage = new ImageIcon(getClass().getResource("/Tile/"+merged[i][j].name()+".png")).getImage();
                     g.drawImage(tileImage, x+1, y+1, size-1, size-1, null);
                 }
                 x+=horizontalSkip;
