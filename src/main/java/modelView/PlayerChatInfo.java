@@ -8,5 +8,4 @@ import java.util.List;
 /**
  * @param messages - list of messages
  */
-public record PlayerChatInfo(List<Message> messages) implements Serializable {
-}
+public record PlayerChatInfo(List<Message> messages) implements Serializable {}
