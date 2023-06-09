@@ -1,11 +1,9 @@
 package model;
 
 import model.abstractModel.Shelf;
-import model.instances.StandardShelfInstance;
 import modelView.ShelfInfo;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.Serializable;
 import java.util.Arrays;
 
 public class StandardShelf extends Shelf {
@@ -21,10 +19,6 @@ public class StandardShelf extends Shelf {
         this.tiles = new Tile[6][5];
         for(Tile[] a : tiles)
             Arrays.fill(a,Tile.EMPTY);
-    }
-
-    public StandardShelf(@NotNull StandardShelfInstance instance){
-        this.tiles = instance.tiles();
     }
 
     /**
@@ -55,14 +49,5 @@ public class StandardShelf extends Shelf {
     @Override
     public @NotNull ShelfInfo getInfo(String playerId) {
         return new ShelfInfo(playerId, getTiles());
-    }
-
-    /**
-     * {@inheritDoc}
-     * @return A {@link StandardShelfInstance} constructed using instance values
-     */
-    @Override
-    public @NotNull Serializable getInstance(){
-        return new StandardShelfInstance(tiles);
     }
 }

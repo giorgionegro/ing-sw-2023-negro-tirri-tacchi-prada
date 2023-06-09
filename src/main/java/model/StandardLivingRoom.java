@@ -1,11 +1,9 @@
 package model;
 
 import model.abstractModel.LivingRoom;
-import model.instances.StandardLivingRoomInstance;
 import modelView.LivingRoomInfo;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.Serializable;
 import java.util.*;
 
 public class StandardLivingRoom extends LivingRoom {
@@ -35,16 +33,6 @@ public class StandardLivingRoom extends LivingRoom {
         this.bag = loadBag();
         this.board = new Tile[9][9];
         Arrays.stream(this.board).forEach(tiles -> Arrays.fill(tiles, Tile.EMPTY));
-    }
-
-    /**
-     * Construct a {@link StandardLivingRoom} using the given instance
-     * @param instance The {@link StandardLivingRoom} instance
-     */
-    public StandardLivingRoom(@NotNull StandardLivingRoomInstance instance){
-        this.board = instance.board();
-        this.bag = instance.bag();
-        this.numberOfPlayers = instance.numberOfPlayers();
     }
 
     /**
@@ -88,15 +76,6 @@ public class StandardLivingRoom extends LivingRoom {
     @Override
     public @NotNull LivingRoomInfo getInfo(){
         return new LivingRoomInfo(getBoard());
-    }
-
-    /**
-     * {@inheritDoc}
-     * @return A {@link StandardLivingRoomInstance} constructed using instance values
-     */
-    @Override
-    public @NotNull Serializable getInstance(){
-        return new StandardLivingRoomInstance(board,bag,numberOfPlayers);
     }
 
     /**

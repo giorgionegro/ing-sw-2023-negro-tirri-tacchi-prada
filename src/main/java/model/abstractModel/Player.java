@@ -13,7 +13,7 @@ import java.util.Map;
  * <p>
  * It defines all the methods required to access player components and manage player information
  */
-public abstract class Player extends Observable<Player.Event> implements SerializableModel{
+public abstract class Player extends Observable<Player.Event>{
 
     /**
      * This enumeration contains all the events that can be sent to observers
@@ -22,12 +22,6 @@ public abstract class Player extends Observable<Player.Event> implements Seriali
         COMMONGOAL_ACHIEVED,
         ERROR_REPORTED
     }
-
-    /**
-     * This method returns the player id
-     * @return id of the player
-     */
-    public abstract @NotNull String getId();
 
     /**
      * This method returns a copy of the current representation of the player shelf

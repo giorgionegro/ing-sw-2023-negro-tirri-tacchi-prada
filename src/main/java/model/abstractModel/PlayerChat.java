@@ -10,7 +10,7 @@ import java.util.List;
  * <p>
  * It defines all the methods required to manage the messages sent to a specific player.
  */
-public abstract class PlayerChat extends Observable<PlayerChat.Event> implements SerializableModel{
+public abstract class PlayerChat extends Observable<PlayerChat.Event>{
 
     /**
      * This enumerable contains all the chat events that can be sent to observers

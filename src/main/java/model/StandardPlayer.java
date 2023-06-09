@@ -4,14 +4,9 @@ import model.abstractModel.PersonalGoal;
 import model.abstractModel.Player;
 import model.abstractModel.PlayerChat;
 import model.abstractModel.Shelf;
-import model.instances.StandardPersonalGoalInstance;
-import model.instances.StandardPlayerChatInstance;
-import model.instances.StandardPlayerInstance;
-import model.instances.StandardShelfInstance;
 import modelView.PlayerInfo;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -21,10 +16,6 @@ import java.util.*;
  */
 public class StandardPlayer extends Player {
 
-    /**
-     * id of the player
-     */
-    private final String idPlayer;
     /**
      * shelf of the player (2D array of tiles)
      */
@@ -53,33 +44,14 @@ public class StandardPlayer extends Player {
     /**
      * Constructor of a new Player with no achieved common goal and an empty chat, but initialized with the given shelf,
      * personal goals and playerId.
-     * @param idPlayer id of the player
+     * @param idPlayer id of the player //TODO sistemare javaDoc
      * @param personalGoal personal goals of the player
      */
-    public StandardPlayer(String idPlayer, @NotNull List<PersonalGoal> personalGoal){
-        this.idPlayer = idPlayer;
-        this.shelf = new StandardShelf();
+    public StandardPlayer(@NotNull Shelf shelf, @NotNull List<PersonalGoal> personalGoal, @NotNull PlayerChat chat){
+        this.shelf = shelf;
         this.personalGoal = new ArrayList<>(personalGoal);
         this.achievedCommonGoals = new HashMap<>();
-        this.chat = new StandardPlayerChat();
-    }
-
-    public StandardPlayer(@NotNull StandardPlayerInstance instance){
-        this.idPlayer = instance.idPlayer();
-        this.shelf = new StandardShelf((StandardShelfInstance) instance.shelf());
-        this.personalGoal = new ArrayList<>();
-        instance.personalGoal().forEach(standardPersonalGoalInstance -> personalGoal.add(new StandardPersonalGoal((StandardPersonalGoalInstance) standardPersonalGoalInstance)));
-        this.achievedCommonGoals = instance.achievedCommonGoals();
-        this.chat = new StandardPlayerChat((StandardPlayerChatInstance) instance.chat());
-    }
-
-    /**
-     * {@inheritDoc}
-     * @return {@link #idPlayer}
-     */
-    @Override
-    public @NotNull String getId(){
-        return idPlayer;
+        this.chat = chat;
     }
 
     /**
@@ -153,17 +125,5 @@ public class StandardPlayer extends Player {
     @Override
     public @NotNull PlayerInfo getInfo(){
         return new PlayerInfo(errorReport, new HashMap<>(achievedCommonGoals));
-    }
-
-    /**
-     * {@inheritDoc}
-     * @return A {@link StandardPlayerInstance} constructed using instance values
-     */
-    @Override
-    public @NotNull Serializable getInstance(){
-        List<Serializable> personalGoalInstance = new ArrayList<>();
-        personalGoal.forEach(goal -> personalGoalInstance.add(goal.getInstance()));
-
-        return new StandardPlayerInstance(idPlayer,shelf.getInstance(),personalGoalInstance,achievedCommonGoals,chat.getInstance());
     }
 }

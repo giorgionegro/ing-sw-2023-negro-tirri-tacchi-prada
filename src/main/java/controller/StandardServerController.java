@@ -8,7 +8,7 @@ import distibuted.ServerEndpoint;
 import distibuted.interfaces.AppServer;
 import distibuted.interfaces.ClientInterface;
 import distibuted.interfaces.ServerInterface;
-import model.StandardGame;
+import model.GameBuilder;
 import model.User;
 import model.abstractModel.Game;
 import model.exceptions.GameAlreadyExistsException;
@@ -20,9 +20,7 @@ import util.Observer;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -52,13 +50,13 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
                 try {
                     client.update(o.getInfo(), arg);
                 } catch (RemoteException e) {
-                    System.err.println("...detaching user observer");
+                    System.err.println("Distribution: unable to update observer ->...detaching user observer");
                     o.deleteObserver(this);
                 }
             }
         });
 
-        this.users.put(client, user);
+        users.put(client, user);
 
         ServerInterface server = new ServerEndpoint(this, this);
 
@@ -67,22 +65,27 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
                 client.bind(server);
             } catch (RemoteException e) {
                 try {
-                    this.disconnect(client);
+                    disconnect(client);
                 } catch (RemoteException ex) {
                     System.err.println("Error while disconnecting client");
                 }
             }
         });
 
-        System.err.println("CLIENT CONNECTED");
+        System.out.println("CLIENT CONNECTED");
 
         return server;
     }
 
     @Override
     public void disconnect(ClientInterface client) throws RemoteException {
-        this.leaveGame(client);
-        User user = this.users.remove(client);
+        try{
+            leaveGame(client);
+        }catch(RemoteException e){
+            System.err.println("ServerController: Failed to detach client from game, continuing disconnection...");
+        }
+
+        User user = users.remove(client);
         user.deleteObservers();
 
         System.err.println("CLIENT DISCONNECTED");
@@ -96,30 +99,27 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
             if (!this.gameControllers.containsKey(info.gameId()))
                 throw new GameAccessDeniedException("Game does not exists");
 
-            User user = this.users.get(client);
+            User user = users.get(client);
 
             if (user.getStatus() == User.Status.JOINED)
                 throw new GameAccessDeniedException("User already joined");
             StandardGameController gameController = this.gameControllers.get(info.gameId());
             gameController.joinPlayer(client, user, info);
 
-            this.activeUsers.put(user, gameController);
+            activeUsers.put(user, gameController);
 
-            System.err.println("GIOCATORE JOIN");
+            System.err.println("PLAYER: "+info.playerId()+" JOINED: "+info.gameId());
+
         } catch (GameAccessDeniedException e) {
-            if (this.users.containsKey(client) && this.users.get(client) != null)
-                this.users.get(client).reportEvent(User.Status.NOT_JOINED, e.getMessage(), info.time(), User.Event.ERROR_REPORTED);
+            if (users.containsKey(client) && users.get(client) != null)
+                users.get(client).reportEvent(User.Status.NOT_JOINED, e.getMessage(), info.time(), User.Event.ERROR_REPORTED);
         }
     }
 
     @Override
     public void leaveGame(ClientInterface client) throws RemoteException {
         try {
-            this.activeUsers.get(this.users.get(client)).leavePlayer(client);
-            List<User> users = new ArrayList<>(this.activeUsers.keySet());
-            for (User u : users)
-                if (u.getStatus() == User.Status.NOT_JOINED)
-                    this.activeUsers.remove(u);
+            activeUsers.get(users.get(client)).leavePlayer(client);
         } catch (NullPointerException | GameAccessDeniedException e) {
             throw new RemoteException("Client is not connected correctly");
         }
@@ -128,14 +128,16 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
     @Override
     public void createGame(ClientInterface client, @NotNull NewGameInfo gameInfo) throws RemoteException {
         try {
-            if (!this.users.containsKey(client))
+            if (!users.containsKey(client))
                 throw new GameAccessDeniedException("Client is not connected correctly");
-            this.createGame(gameInfo.gameId(), gameInfo.playerNumber());
-            this.users.get(client).reportEvent(User.Status.NOT_JOINED, "Game created", gameInfo.time(), User.Event.GAME_CREATED);
-            System.err.println("GAME CREATED: " + gameInfo.gameId());
-        } catch (GameAlreadyExistsException | GameAccessDeniedException e) {
-            if (this.users.containsKey(client) && this.users.get(client) != null)
-                this.users.get(client).reportEvent(User.Status.NOT_JOINED, e.getMessage(), gameInfo.time(), User.Event.ERROR_REPORTED);
+
+            createGame(gameInfo);
+
+            users.get(client).reportEvent(User.Status.NOT_JOINED, "Game created", gameInfo.time(), User.Event.GAME_CREATED);
+            System.err.println("GAME CREATED: "+gameInfo.gameId());
+        } catch (GameAlreadyExistsException | GameAccessDeniedException | IllegalArgumentException e) {
+            if (users.containsKey(client) && users.get(client) != null)
+                users.get(client).reportEvent(User.Status.NOT_JOINED, e.getMessage(), gameInfo.time(), User.Event.ERROR_REPORTED);
         }
     }
 
@@ -143,20 +145,20 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
 
     @Override
     public GameController getGame(String gameId) throws GameNotExistsException {
-        if (!this.gameControllers.containsKey(gameId))
+        if (!gameControllers.containsKey(gameId))
             throw new GameNotExistsException();
 
-        return this.gameControllers.get(gameId);
+        return gameControllers.get(gameId);
     }
 
 
     @Override
-    public void createGame(String gameId, int playerNumber) throws GameAlreadyExistsException {
-        if (this.gameControllers.containsKey(gameId))
+    public void createGame(NewGameInfo newGameInfo) throws GameAlreadyExistsException, IllegalArgumentException {
+        if (gameControllers.containsKey(newGameInfo.gameId()))
             throw new GameAlreadyExistsException();
 
-        Game newGame = new StandardGame(gameId, playerNumber);
+        Game newGame = GameBuilder.build(newGameInfo);
 
-        this.gameControllers.put(gameId, new StandardGameController(newGame));
+        gameControllers.put(newGameInfo.gameId(), new StandardGameController(newGame));
     }
 }

@@ -8,6 +8,4 @@ import java.io.Serializable;
  * @param type TODO rivedere il game type
  * @param playerNumber number of players
  */
-public record NewGameInfo(String gameId, String type, int playerNumber, long time) implements Serializable {
-
-}
+public record NewGameInfo(String gameId, String type, int playerNumber, long time) implements Serializable {}

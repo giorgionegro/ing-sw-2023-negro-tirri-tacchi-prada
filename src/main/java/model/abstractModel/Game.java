@@ -14,7 +14,7 @@ import java.util.List;
  * <p>
  * It defines all the required methods needed to access game components and status and to manage game's turn sequence.
  */
-public abstract class Game extends Observable<Game.Event> implements SerializableModel{
+public abstract class Game extends Observable<Game.Event>{
     /**
      * This enumeration contains all the game events that can be sent to observers
      */
@@ -48,16 +48,10 @@ public abstract class Game extends Observable<Game.Event> implements Serializabl
      */
     public enum GameStatus{
         MATCHMAKING,
-        RESTARTING,
         STARTED,
+        SUSPENDED,
         ENDED
     }
-
-    /**
-     * This method returns the gameId
-     * @return the gameId
-     */
-    public abstract String getGameId();
 
     /**
      * This method returns the current game status
@@ -103,6 +97,8 @@ public abstract class Game extends Observable<Game.Event> implements Serializabl
      * @throws MatchmakingClosedException when not {@code getGameStatus().equals(GameStatus.MATCHMAKING)}
      */
     public abstract void addPlayer(String playerId) throws PlayerAlreadyExistsException, MatchmakingClosedException;
+
+    public abstract void removePlayer(String playerId) throws PlayerNotExistsException;
 
     /**
      * This method returns the Player associated to the playerId
