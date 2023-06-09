@@ -79,7 +79,12 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
 
     @Override
     public void disconnect(ClientInterface client) throws RemoteException {
-        leaveGame(client);
+        try{
+            leaveGame(client);
+        }catch(RemoteException e){
+            System.err.println("ServerController: Failed to detach client from game, continuing disconnection...");
+        }
+
         User user = users.remove(client);
         user.deleteObservers();
 
