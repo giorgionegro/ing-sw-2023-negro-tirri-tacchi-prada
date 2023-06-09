@@ -264,22 +264,6 @@ public class StandardGame extends Game{
     }
 
     /**
-     * this method returns a list of single Tile positions representing a personal goal
-     *
-     * @param tiles array of Tiles of the personal goal
-     * @param rows  array of row position of each Tile
-     * @param cols  array of column position of each Tile
-     * @return ArrayList representing a standard personal goal
-     */
-    private @NotNull ArrayList<PersonalGoal> createPersonalGoal(Tile @NotNull [] tiles, int[] rows, int[] cols) {
-        ArrayList<PersonalGoal> personalGoal = new ArrayList<>();
-        for (int i = 0; i < tiles.length; i++) {
-            personalGoal.add(new StandardPersonalGoal(tiles[i], rows[i], cols[i]));
-        }
-        return personalGoal;
-    }
-
-    /**
      * {@inheritDoc}
      *
      * @return An {@link GameInfo} representing this object instance

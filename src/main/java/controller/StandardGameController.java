@@ -274,6 +274,8 @@ public class StandardGameController implements GameController, LobbyController {
                     /* Remove player on model side */
                     game.removePlayer(leavedPlayer);
 
+                    System.err.println("PLAYER HAS LEFT");
+
                     /* If model signal SUSPENDED status then wait 6 second for a player to rejoin */
                     if(game.getGameStatus() == Game.GameStatus.SUSPENDED){
                         lobbyLock.reset();
