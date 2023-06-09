@@ -21,8 +21,7 @@ public class GameBuilder {
                 for(int i=0;i< newGameInfo.playerNumber();i++)
                     avaiablePlayers.add(new StandardPlayer(new StandardShelf(),avaiablePersonalGoals.pop(),new StandardPlayerChat()));
 
-                StandardGame game = new StandardGame(avaiablePlayers,livingRoom,avaiableCommonGoals);
-                return game;
+                return new StandardGame(avaiablePlayers,livingRoom,avaiableCommonGoals);
             }
         }
         throw new IllegalArgumentException("Unknown gameInfo");

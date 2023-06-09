@@ -20,9 +20,7 @@ import util.Observer;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -52,7 +50,7 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
                 try {
                     client.update(o.getInfo(), arg);
                 } catch (RemoteException e) {
-                    System.err.println("...detaching user observer");
+                    System.err.println("Distribution: unable to update observer ->...detaching user observer");
                     o.deleteObserver(this);
                 }
             }
@@ -74,7 +72,7 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
             }
         });
 
-        System.err.println("CLIENT CONNECTED");
+        System.out.println("CLIENT CONNECTED");
 
         return server;
     }
@@ -105,7 +103,8 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
 
             activeUsers.put(user, gameController);
 
-            System.err.println("GIOCATORE JOIN");
+            System.err.println("PLAYER: "+info.playerId()+" JOINED: "+info.gameId());
+
         } catch (GameAccessDeniedException e) {
             if (users.containsKey(client) && users.get(client) != null)
                 users.get(client).reportEvent(User.Status.NOT_JOINED, e.getMessage(), info.time(), User.Event.ERROR_REPORTED);
@@ -116,10 +115,6 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
     public void leaveGame(ClientInterface client) throws RemoteException {
         try {
             activeUsers.get(users.get(client)).leavePlayer(client);
-            List<User> users = new ArrayList<>(activeUsers.keySet());
-            for (User u : users)
-                if (u.getStatus() == User.Status.NOT_JOINED)
-                    activeUsers.remove(u);
         } catch (NullPointerException | GameAccessDeniedException e) {
             throw new RemoteException("Client is not connected correctly");
         }

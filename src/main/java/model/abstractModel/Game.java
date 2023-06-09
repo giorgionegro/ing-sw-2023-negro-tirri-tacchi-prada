@@ -48,8 +48,8 @@ public abstract class Game extends Observable<Game.Event>{
      */
     public enum GameStatus{
         MATCHMAKING,
-        RESTARTING,
         STARTED,
+        SUSPENDED,
         ENDED
     }
 
@@ -97,6 +97,8 @@ public abstract class Game extends Observable<Game.Event>{
      * @throws MatchmakingClosedException when not {@code getGameStatus().equals(GameStatus.MATCHMAKING)}
      */
     public abstract void addPlayer(String playerId) throws PlayerAlreadyExistsException, MatchmakingClosedException;
+
+    public abstract void removePlayer(String playerId) throws PlayerNotExistsException;
 
     /**
      * This method returns the Player associated to the playerId

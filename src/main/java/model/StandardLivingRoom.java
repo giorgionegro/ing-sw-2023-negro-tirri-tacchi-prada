@@ -1,7 +1,6 @@
 package model;
 
 import model.abstractModel.LivingRoom;
-import model.instances.StandardLivingRoomInstance;
 import modelView.LivingRoomInfo;
 import org.jetbrains.annotations.NotNull;
 
@@ -34,16 +33,6 @@ public class StandardLivingRoom extends LivingRoom {
         this.bag = loadBag();
         this.board = new Tile[9][9];
         Arrays.stream(this.board).forEach(tiles -> Arrays.fill(tiles, Tile.EMPTY));
-    }
-
-    /**
-     * Construct a {@link StandardLivingRoom} using the given instance
-     * @param instance The {@link StandardLivingRoom} instance
-     */
-    public StandardLivingRoom(@NotNull StandardLivingRoomInstance instance){
-        this.board = instance.board();
-        this.bag = instance.bag();
-        this.numberOfPlayers = instance.numberOfPlayers();
     }
 
     /**

@@ -52,7 +52,7 @@ public class StandardGame extends Game{
      */
     private GameStatus status;
 
-    private List<Player> avaiablePlayers;
+    private final List<Player> availablePlayers;
 
     /**
      * Construct an {@link StandardGame} instance with given id and player number
@@ -65,8 +65,8 @@ public class StandardGame extends Game{
      * @param gameId       id of the game
      * @param playerNumber max number of player that can join the game //TODO sistemare
      */
-    public StandardGame(List<Player> avaiablePlayers, LivingRoom livingRoom, List<CommonGoal> commonGoals){
-        this.avaiablePlayers = new ArrayList<>(avaiablePlayers);
+    public StandardGame(List<Player> availablePlayers, LivingRoom livingRoom, List<CommonGoal> commonGoals){
+        this.availablePlayers = new ArrayList<>(availablePlayers);
         this.livingRoom = livingRoom;
         this.players = new HashMap<>();
         this.commonGoals = new ArrayList<>(commonGoals);
@@ -83,19 +83,12 @@ public class StandardGame extends Game{
      */
     @Override
     public void addPlayer(String playerId) throws PlayerAlreadyExistsException, MatchmakingClosedException {
-        //TODO al momento della chiusura rimetto tutti i valori di players in avaiable players mantenendo players immacolato
-        //TODO alla riconnessione se il player corrispondente all'id è all'interno della lista allora avviene la riconnessione
-        /* If matchmaking is closed (reached max number of connected player) we discard the request */
-        if (!(status.equals(GameStatus.MATCHMAKING) || status.equals(GameStatus.RESTARTING)))
-            throw new MatchmakingClosedException();
-
-        /* If trying to add an already existing playerId we discard the request */
-        if (status.equals(GameStatus.MATCHMAKING)) {
+        if(status == GameStatus.MATCHMAKING){
             if (players.containsKey(playerId))
                 throw new PlayerAlreadyExistsException();
 
             /* Initialize Player model */
-           Player newPlayer = avaiablePlayers.remove(0);
+            Player newPlayer = availablePlayers.remove(0);
 
             /* Associate Player with playerId */
             players.put(playerId, newPlayer);
@@ -105,30 +98,65 @@ public class StandardGame extends Game{
 
             setChanged();
             notifyObservers(Event.PLAYER_JOINED);
-        } else {
-            if (!players.containsKey(playerId))
-                throw new MatchmakingClosedException();
 
-            //TODO problema che due giocatori possono riconnettersi allo stesso giocatore
-            Player rejoined = players.get(playerId);
-            avaiablePlayers.remove(rejoined);
-
-            setChanged();
-            notifyObservers(Event.PLAYER_REJOINED);
-        }
-        /* If we have now reached the max playerNumber we set game ready to be started */
-        if (avaiablePlayers.isEmpty()) {
-
-            if (status == GameStatus.MATCHMAKING) {
+            /* If we have now reached the max playerNumber we set game ready to be started */
+            if (availablePlayers.isEmpty()) {
                 /* Update turn sequence and firstPlayer */
                 Collections.shuffle(playerTurnQueue);
                 firstPlayer = playerTurnQueue.get(0);
+
+                this.status = GameStatus.STARTED;
+                setChanged();
+                notifyObservers(Event.GAME_STARTED);
+            }
+        }else if(status == GameStatus.STARTED || status == GameStatus.SUSPENDED){
+            if(!players.containsKey(playerId))
+                throw new MatchmakingClosedException();
+
+            Player requestedPlayer = players.get(playerId);
+
+            /* If player referred by playerId is available for reconnection */
+            if(availablePlayers.contains(requestedPlayer)){
+                /* Remove player from available */
+                availablePlayers.remove(requestedPlayer);
+
+                setChanged();
+                notifyObservers(Event.PLAYER_JOINED);
+
+            }else{
+                throw new PlayerAlreadyExistsException();
             }
 
-            this.status = GameStatus.STARTED;
+            status = GameStatus.STARTED;
             setChanged();
-            notifyObservers(Event.GAME_STARTED);
+            notifyObservers(Event.PLAYER_REJOINED);
+        } else if (status == GameStatus.ENDED) {
+            throw new MatchmakingClosedException();
         }
+    }
+
+    @Override
+    public void removePlayer(String playerId) throws PlayerNotExistsException {
+        if(!players.containsKey(playerId))
+            throw new PlayerNotExistsException();
+
+        availablePlayers.add(players.get(playerId));
+
+        /* If firstPlayer then the next one player became the new firstPlayer */
+        if(firstPlayer.equals(playerId)) {
+            int playerTurnCurrentIndex = playerTurnQueue.indexOf(playerId);
+
+            if(playerTurnCurrentIndex == playerTurnQueue.size()-1)
+                playerTurnCurrentIndex = -1;
+
+            firstPlayer = playerTurnQueue.get(playerTurnCurrentIndex+1);
+        }
+
+        int online = players.size()-availablePlayers.size();
+        if(online==1)
+            this.status = GameStatus.SUSPENDED;
+        else if (online==0)
+            this.status = GameStatus.ENDED;
     }
 
     /**
@@ -223,6 +251,11 @@ public class StandardGame extends Game{
     public void updatePlayersTurn() throws GameEndedException {
         String p = playerTurnQueue.remove(0);
         playerTurnQueue.add(p);
+        while(availablePlayers.contains(players.get(p))){
+            p = playerTurnQueue.remove(0);
+            playerTurnQueue.add(p);
+        }
+
         setChanged();
         notifyObservers(Event.NEXT_TURN);
 

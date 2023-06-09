@@ -4,10 +4,6 @@ import model.abstractModel.PersonalGoal;
 import model.abstractModel.Player;
 import model.abstractModel.PlayerChat;
 import model.abstractModel.Shelf;
-import model.instances.StandardPersonalGoalInstance;
-import model.instances.StandardPlayerChatInstance;
-import model.instances.StandardPlayerInstance;
-import model.instances.StandardShelfInstance;
 import modelView.PlayerInfo;
 import org.jetbrains.annotations.NotNull;
 
@@ -56,14 +52,6 @@ public class StandardPlayer extends Player {
         this.personalGoal = new ArrayList<>(personalGoal);
         this.achievedCommonGoals = new HashMap<>();
         this.chat = chat;
-    }
-
-    public StandardPlayer(@NotNull StandardPlayerInstance instance){
-        this.shelf = new StandardShelf((StandardShelfInstance) instance.shelf());
-        this.personalGoal = new ArrayList<>();
-        instance.personalGoal().forEach(standardPersonalGoalInstance -> personalGoal.add(new StandardPersonalGoal((StandardPersonalGoalInstance) standardPersonalGoalInstance)));
-        this.achievedCommonGoals = instance.achievedCommonGoals();
-        this.chat = new StandardPlayerChat((StandardPlayerChatInstance) instance.chat());
     }
 
     /**
