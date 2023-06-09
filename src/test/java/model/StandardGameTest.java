@@ -40,8 +40,9 @@ class StandardGameTest {
         }
     }
 
+
     @Test
-    void addPlayerTest() throws MatchmakingClosedException, PlayerAlreadyExistsException {
+    void matchmakingClosedTest() throws MatchmakingClosedException, PlayerAlreadyExistsException {
         StandardGame game = new StandardGame("test", 2);
         game.addPlayer("1");
         game.addPlayer("2");
@@ -327,7 +328,7 @@ class StandardGameTest {
 
 
     @Test
-    void getPlayerTest() {
+    void playerNotExistsExceptionTest() {
         StandardGame test = new StandardGame("testID", 2);
         assertThrows(PlayerNotExistsException.class, () -> test.getPlayer("1"));
     }

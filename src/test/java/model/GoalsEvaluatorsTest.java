@@ -4,11 +4,28 @@ import model.abstractModel.GoalEvaluator;
 import model.goalEvaluators.*;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
+import util.TimedLock;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class GoalsEvaluatorsTest {
 
+
+    /**
+     * Methods under test:
+     * <ul>
+     *     <li>{@link Standard2ColumnsRowOfDifferentTiles#evaluate(Tile[][])}
+     *     <li>{@link Standard2ColumnsRowOfDifferentTiles#getDescription()}
+     *     <li>{@link Standard2ColumnsRowOfDifferentTiles#Standard2ColumnsRowOfDifferentTiles(boolean)}
+ *     </ul>
+     *     <p>
+     *         Reasons:
+     *         <ul>
+     *               <li>test with true constructor parameter(Columns)</li>
+     *          <li>test with a correct configuration</li>
+     *         <li>test with a standard shelf and a shelf with 2 missing columns for the goal to be true.</li>
+     *         </ul>
+     */
     @Test
     void testStandard2ColumnsOfDifferentTiles() {
         GoalEvaluator goal = new Standard2ColumnsRowOfDifferentTiles(true);
@@ -21,6 +38,21 @@ class GoalsEvaluatorsTest {
         assertEquals("Two columns formed each from 6 different types of tiles", goal.getDescription());
     }
 
+    /**
+     * Methods under test:
+     * <ul>
+     *     <li>{@link Standard2ColumnsRowOfDifferentTiles#evaluate(Tile[][])}
+     *     <li>{@link Standard2ColumnsRowOfDifferentTiles#getDescription()}
+     *     <li>{@link Standard2ColumnsRowOfDifferentTiles#Standard2ColumnsRowOfDifferentTiles(boolean)}
+     *     </ul>
+     *     <p>
+     *         Reasons:
+     *         <ul>
+     *                             <li>test with false constructor parameter(Rows)</li>
+     *          <li>test with a correct configuration</li>
+     *         <li>test with a incorrect configuration.</li>
+     *         </ul>
+     */
     @Test
     void testStandard2RowsOfDifferentTiles() {
         Standard2ColumnsRowOfDifferentTiles goal = new Standard2ColumnsRowOfDifferentTiles(false);
@@ -32,6 +64,26 @@ class GoalsEvaluatorsTest {
         assertNotEquals(goal.getDescription(), null);
     }
 
+
+    /**
+     * Methods under test:
+     * <ul>
+     *     <li>{@link Standard3or4ColumnsRowMax3Types#evaluate(Tile[][])}
+     *     <li>{@link Standard3or4ColumnsRowMax3Types#getDescription()}
+     *     <li>{@link Standard3or4ColumnsRowMax3Types#Standard3or4ColumnsRowMax3Types(boolean)}
+     *     </ul>
+     *     <p>
+     *         Reasons:
+     *         <ul>
+     *             <li>test with true constructor parameter(Columns)</li>
+     *             <li>test with a correct configuration</li>
+     *             <li>test with an incorrect configuration</li>
+     *             <li>test get description</li>
+     *             <li>test with false constructor parameter(Rows)</li>
+     *             <li>test with a correct configuration</li>
+     *             <li>test with an incorrect configuration</li>
+     *             <li>test get description</li>
+     */
     @Test
     void testStandard34ColumnsRowMax3Types() {
         GoalEvaluator goal = new Standard3or4ColumnsRowMax3Types(true);
@@ -52,6 +104,21 @@ class GoalsEvaluatorsTest {
         assertNotEquals(null, goal.getDescription());
     }
 
+    /**
+     * Methods under test:
+     * <ul>
+     *     <li>{@link Standard4Groups4Tiles#evaluate(Tile[][])}
+     *     <li>{@link Standard4Groups4Tiles#getDescription()}
+     *     <li>{@link Standard4Groups4Tiles)} default constructor
+     *     </ul>
+     *     <p>
+     *         Reasons:
+     *         <ul>
+     *             <li>test with a correct configuration</li>
+     *             <li>test with an incorrect configuration</li>
+     *             <li>test get description</li>
+     *             </ul>
+     */
     @Test
     void testStandard4Groups4Tiles() {
         Standard4Groups4Tiles goal = new Standard4Groups4Tiles();
@@ -64,7 +131,21 @@ class GoalsEvaluatorsTest {
         assertNotEquals(null, goal.getDescription());
     }
 
-
+    /**
+     * Methods under test:
+     * <ul>
+     *     <li>{@link Standard5TileDiagonal#evaluate(Tile[][])}
+     *     <li>{@link Standard5TileDiagonal#getDescription()}
+     *     <li>{@link Standard5TileDiagonal)} default constructor
+     *     </ul>
+     *     <p>
+     *         Reasons:
+     *         <ul>
+     *             <li>test with a correct configuration</li>
+     *             <li>test with an incorrect configuration</li>
+     *             <li>test get description</li>
+     *             </ul>
+     */
     @Test
     void testStandard5TileDiagonal() {
         //Test top left to bottom right

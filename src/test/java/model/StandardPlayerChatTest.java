@@ -90,6 +90,8 @@ class StandardPlayerChatTest {
 
     /**
      * Method under test: {@link StandardPlayerChat#getInfo()}
+     * <p>
+     *     Test if the method returns the correct empty info.
      */
     @Test
     void testGetInfo() {
@@ -98,6 +100,7 @@ class StandardPlayerChatTest {
 
     /**
      * Method under test: {@link StandardPlayerChat#getInstance()}
+     * Test if PlayerChat created by getInstance() of empty message list has an empty message list.
      */
     @Test
     void testGetInstance() {
