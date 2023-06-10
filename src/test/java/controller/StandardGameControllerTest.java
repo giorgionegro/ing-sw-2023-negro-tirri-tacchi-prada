@@ -1120,8 +1120,8 @@ class StandardGameControllerTest {
         assertEquals(game.getPlayer("2").getPlayerChat().getMessages().get(0).getText(), "test");
         assertEquals(game.getPlayer("1").getPlayerChat().getMessages().get(0).getSender(), "1");
         assertEquals(game.getPlayer("2").getPlayerChat().getMessages().get(0).getSender(), "1");
-        assertEquals(game.getPlayer("1").getPlayerChat().getMessages().get(0).getSubject(), "2");
-        assertEquals(game.getPlayer("2").getPlayerChat().getMessages().get(0).getSubject(), "2");
+        assertEquals(game.getPlayer("1").getPlayerChat().getMessages().get(0).getReceiver(), "2");
+        assertEquals(game.getPlayer("2").getPlayerChat().getMessages().get(0).getReceiver(), "2");
         //now we test for a message from a non-existing client
         var client3 = new ClientInterface() {
             @Override

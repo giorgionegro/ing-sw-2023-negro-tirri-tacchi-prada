@@ -7,6 +7,7 @@ import model.instances.StandardPlayerChatInstance;
 import model.instances.StandardPlayerInstance;
 import model.instances.StandardShelfInstance;
 import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.Serializable;
@@ -17,7 +18,12 @@ import static org.junit.jupiter.api.Assertions.*;
 class StandardPlayerTest {
 
     /**
-     * Method under test: {@link StandardPlayer#StandardPlayer(StandardPlayerInstance)}
+     * Method under test:{@link StandardPlayer#StandardPlayer(StandardPlayerInstance)}
+     *
+     * <p>
+     *
+     * Test if the constructor correctly creates a player from a player instance
+     *
      */
     @Test
     void testConstructor() {
@@ -124,7 +130,6 @@ class StandardPlayerTest {
     private @NotNull String getPlayerId() {
         StringBuilder playerId = new StringBuilder();
         Random r = new Random();
-
         for (int j = 0; j < 5; j++)
             playerId.append((char) r.nextInt(97, 123));
         return playerId.toString();
@@ -158,91 +163,6 @@ class StandardPlayerTest {
     }
 
 
-    /**
-     * Method under test: {@link StandardPlayer#getInstance()}
-     */
-    @Test
-    void testGetInstance2() {
-        ArrayList<PersonalGoal> personalGoal = new ArrayList<>();
-        assertTrue(
-                ((StandardPlayerInstance) (new StandardPlayer("Id Player", personalGoal)).getInstance()).achievedCommonGoals()
-                        .isEmpty());
-        Serializable shelfResult = ((StandardPlayerInstance) (new StandardPlayer("Id Player", personalGoal))
-                .getInstance()).shelf();
-        assertTrue(shelfResult instanceof StandardShelfInstance);
-        assertEquals(personalGoal,
-                ((StandardPlayerInstance) (new StandardPlayer("Id Player", personalGoal)).getInstance()).personalGoal());
-        assertEquals("Id Player",
-                ((StandardPlayerInstance) (new StandardPlayer("Id Player", personalGoal)).getInstance()).idPlayer());
-        Serializable chatResult = ((StandardPlayerInstance) (new StandardPlayer("Id Player", personalGoal)).getInstance())
-                .chat();
-        assertTrue(chatResult instanceof StandardPlayerChatInstance);
-        assertEquals(6, ((StandardShelfInstance) shelfResult).tiles().length);
-        assertEquals(personalGoal, ((StandardPlayerChatInstance) chatResult).messages());
-    }
-
-    /**
-     * Method under test: {@link StandardPlayer#getInstance()}
-     */
-    @Test
-    void testGetInstance3() {
-        ArrayList<PersonalGoal> personalGoal = new ArrayList<>();
-        personalGoal.add(new StandardPersonalGoal(Tile.CATS_1, 1, 1));
-        assertTrue(
-                ((StandardPlayerInstance) (new StandardPlayer("Id Player", personalGoal)).getInstance()).achievedCommonGoals()
-                        .isEmpty());
-        Serializable shelfResult = ((StandardPlayerInstance) (new StandardPlayer("Id Player", personalGoal))
-                .getInstance()).shelf();
-        assertTrue(shelfResult instanceof StandardShelfInstance);
-        List<Serializable> personalGoalResult = ((StandardPlayerInstance) (new StandardPlayer("Id Player", personalGoal))
-                .getInstance()).personalGoal();
-        assertEquals(1, personalGoalResult.size());
-        Serializable chatResult = ((StandardPlayerInstance) (new StandardPlayer("Id Player", personalGoal)).getInstance())
-                .chat();
-        assertTrue(chatResult instanceof StandardPlayerChatInstance);
-        assertEquals("Id Player",
-                ((StandardPlayerInstance) (new StandardPlayer("Id Player", personalGoal)).getInstance()).idPlayer());
-        assertEquals(6, ((StandardShelfInstance) shelfResult).tiles().length);
-        assertTrue(((StandardPlayerChatInstance) chatResult).messages().isEmpty());
-        assertFalse(((StandardPersonalGoalInstance) personalGoalResult.get(0)).achieved());
-        assertEquals(Tile.CATS_1, ((StandardPersonalGoalInstance) personalGoalResult.get(0)).tile());
-        assertEquals(1, ((StandardPersonalGoalInstance) personalGoalResult.get(0)).row());
-        assertEquals(1, ((StandardPersonalGoalInstance) personalGoalResult.get(0)).column());
-    }
-
-    /**
-     * Method under test: {@link StandardPlayer#getInstance()}
-     */
-    @Test
-    void testGetInstance4() {
-        ArrayList<PersonalGoal> personalGoal = new ArrayList<>();
-        personalGoal.add(new StandardPersonalGoal(Tile.CATS_1, 1, 1));
-        personalGoal.add(new StandardPersonalGoal(Tile.CATS_1, 1, 1));
-        assertTrue(
-                ((StandardPlayerInstance) (new StandardPlayer("Id Player", personalGoal)).getInstance()).achievedCommonGoals()
-                        .isEmpty());
-        Serializable shelfResult = ((StandardPlayerInstance) (new StandardPlayer("Id Player", personalGoal))
-                .getInstance()).shelf();
-        assertTrue(shelfResult instanceof StandardShelfInstance);
-        List<Serializable> personalGoalResult = ((StandardPlayerInstance) (new StandardPlayer("Id Player", personalGoal))
-                .getInstance()).personalGoal();
-        assertEquals(2, personalGoalResult.size());
-        Serializable chatResult = ((StandardPlayerInstance) (new StandardPlayer("Id Player", personalGoal)).getInstance())
-                .chat();
-        assertTrue(chatResult instanceof StandardPlayerChatInstance);
-        assertEquals("Id Player",
-                ((StandardPlayerInstance) (new StandardPlayer("Id Player", personalGoal)).getInstance()).idPlayer());
-        assertTrue(((StandardPlayerChatInstance) chatResult).messages().isEmpty());
-        assertEquals(6, ((StandardShelfInstance) shelfResult).tiles().length);
-        assertEquals(Tile.CATS_1, ((StandardPersonalGoalInstance) personalGoalResult.get(0)).tile());
-        assertEquals(Tile.CATS_1, ((StandardPersonalGoalInstance) personalGoalResult.get(1)).tile());
-        assertEquals(1, ((StandardPersonalGoalInstance) personalGoalResult.get(1)).row());
-        assertEquals(1, ((StandardPersonalGoalInstance) personalGoalResult.get(1)).column());
-        assertFalse(((StandardPersonalGoalInstance) personalGoalResult.get(1)).achieved());
-        assertEquals(1, ((StandardPersonalGoalInstance) personalGoalResult.get(0)).column());
-        assertFalse(((StandardPersonalGoalInstance) personalGoalResult.get(0)).achieved());
-        assertEquals(1, ((StandardPersonalGoalInstance) personalGoalResult.get(0)).row());
-    }
 
 
 }

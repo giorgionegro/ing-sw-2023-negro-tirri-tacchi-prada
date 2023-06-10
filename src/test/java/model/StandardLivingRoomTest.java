@@ -1,17 +1,12 @@
 package model;
 
-import java.util.Stack;
-
 import model.instances.StandardLivingRoomInstance;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.Stack;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class StandardLivingRoomTest {
     /**
@@ -557,4 +552,6 @@ class StandardLivingRoomTest {
         StandardLivingRoom test = new StandardLivingRoom(2);
         assertTrue(Arrays.deepEquals(test.getBoard(), test.getInfo().board()));
     }
+
+
 }

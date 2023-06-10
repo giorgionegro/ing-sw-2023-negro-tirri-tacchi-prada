@@ -37,7 +37,17 @@ class StandardShelfTest {
         assertFalse(actualStandardShelf.hasChanged());
         assertEquals(1, actualStandardShelf.getTiles().length);
     }
+    @Test
+    void shelfInstanceTest(){
+        StandardShelf test = new StandardShelf();
+        StandardShelf instanceTest = new StandardShelf((StandardShelfInstance) test.getInstance());
+        assertTrue(Arrays.deepEquals(test.getTiles(), instanceTest.getTiles()));
+
+        StandardShelf test2 = new StandardShelf();
+        Tile[][] modifiedShelf = new Tile[6][5];
+        modifiedShelf[0][0] = Tile.FRAMES_1;
+        test2.setTiles(modifiedShelf);
+        StandardShelf instanceTest2 = new StandardShelf((StandardShelfInstance) test2.getInstance());
+        assertTrue(Arrays.deepEquals(test2.getTiles(), instanceTest2.getTiles()));
+    }
 }
-
-
-

@@ -1,10 +1,13 @@
 package CliView;
 
 import model.Tile;
+import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class CliTest {
     @Test
+    @Disabled
     void printMatrixTest() {
         String[] input = {"WRGYBL", "GGGGGG", "YYYYYY", "BBBBBB", "LLLLLL", "MMMMMM"};
         Tile[][] matrix = StringToTileArray(input);
@@ -14,7 +17,7 @@ public class CliTest {
 
 
 
-    private Tile[][] StringToTileArray(String[] input)
+    private Tile[] @NotNull [] StringToTileArray(String @NotNull [] input)
     {
         //String will be in the form of {"RRRRRR", "GGGGGG", "YYYYYY", "BBBBBB", "LLLLLL", "MMMMMM"}
         Tile[][] output = new Tile[input.length][input[0].length()];

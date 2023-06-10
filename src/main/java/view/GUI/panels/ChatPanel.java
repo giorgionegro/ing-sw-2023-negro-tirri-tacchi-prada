@@ -116,7 +116,7 @@ public class ChatPanel extends JPanel implements ActionListener, PlayerChatView,
 
         textarea.setLineWrap(true);
         for(Message m : messages){
-            String subject = m.getSubject();
+            String subject = m.getReceiver();
             if(subject.equals(playerId))
                 subject = "YOU";
             if(subject.equals(""))

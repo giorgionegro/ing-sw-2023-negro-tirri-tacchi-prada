@@ -168,10 +168,10 @@ public class StandardGame extends Game{
      */
     @Override
     public Player getPlayer(String playerId) throws PlayerNotExistsException {
-        if (!players.containsKey(playerId))
+        if (!this.players.containsKey(playerId))
             throw new PlayerNotExistsException();
 
-        return players.get(playerId);
+        return this.players.get(playerId);
     }
 
     /**
@@ -181,7 +181,7 @@ public class StandardGame extends Game{
      */
     @Override
     public @NotNull List<CommonGoal> getCommonGoals() {
-        return new ArrayList<>(commonGoals);
+        return new ArrayList<>(this.commonGoals);
     }
 
     /**
@@ -191,7 +191,7 @@ public class StandardGame extends Game{
      */
     @Override
     public @NotNull LivingRoom getLivingRoom() {
-        return livingRoom;
+        return this.livingRoom;
     }
 
     /**
@@ -202,8 +202,8 @@ public class StandardGame extends Game{
     @Override
     public void setLastTurn() {
         this.lastTurn = true;
-        setChanged();
-        notifyObservers(Event.LAST_TURN);
+        this.setChanged();
+        this.notifyObservers(Event.LAST_TURN);
     }
 
     /**
@@ -213,7 +213,7 @@ public class StandardGame extends Game{
      */
     @Override
     public boolean isLastTurn() {
-        return lastTurn;
+        return this.lastTurn;
     }
 
     /**
@@ -230,8 +230,8 @@ public class StandardGame extends Game{
     public void close() {
         this.status = GameStatus.ENDED;
         //save state
-        setChanged();
-        notifyObservers(Event.GAME_ENDED);
+        this.setChanged();
+        this.notifyObservers(Event.GAME_ENDED);
     }
 
     /**
@@ -241,7 +241,7 @@ public class StandardGame extends Game{
      */
     @Override
     public GameStatus getGameStatus() {
-        return status;
+        return this.status;
     }
 
     /**
@@ -259,7 +259,7 @@ public class StandardGame extends Game{
         setChanged();
         notifyObservers(Event.NEXT_TURN);
 
-        if (p.equals(firstPlayer) && lastTurn)
+        if (p.equals(this.firstPlayer) && this.lastTurn)
             throw new GameEndedException();
     }
 
@@ -271,20 +271,20 @@ public class StandardGame extends Game{
     @Override
     public @NotNull GameInfo getInfo() {
         Map<String, Integer> points = new HashMap<>();
-        players.forEach((s, player) -> {
+        this.players.forEach((s, player) -> {
             /*  Points earned by each player are the sum of points earned by
                 achieving common goals and by forming groups of tiles       */
-            int playerPoints = getCommonGoalPoints(player.getAchievedCommonGoals().values().stream().toList())
-                    + getShelfTilesGroupsPoints(player.getShelf().getTiles());
+            int playerPoints = this.getCommonGoalPoints(player.getAchievedCommonGoals().values().stream().toList())
+                    + this.getShelfTilesGroupsPoints(player.getShelf().getTiles());
 
 
             /* Show points earned from personal goals only at game end */
-            if (status == GameStatus.ENDED)
-                playerPoints += getPersonalGoalPoints(player.getPersonalGoals());
+            if (this.status == GameStatus.ENDED)
+                playerPoints += this.getPersonalGoalPoints(player.getPersonalGoals());
 
             points.put(s, playerPoints);
         });
-        return new GameInfo(status, lastTurn, getTurnPlayerId(), points);
+        return new GameInfo(this.status, this.lastTurn, this.getTurnPlayerId(), points);
     }
 
 
@@ -293,6 +293,7 @@ public class StandardGame extends Game{
         for (PersonalGoal p : personalGoals)
             if (p.isAchieved())
                 achieved++;
+
 
         return switch (achieved) {
             case 0 -> 0;
@@ -326,7 +327,7 @@ public class StandardGame extends Game{
         for (int i = 0; i < shelf.length; i++)
             for (int j = 0; j < shelf[0].length; j++)
                 if (shelf[i][j] != Tile.EMPTY) {
-                    int groupSize = depthSearch(i, j, shelf, checked, shelf[i][j].getColor());
+                    int groupSize = this.depthSearch(i, j, shelf, checked, shelf[i][j].getColor());
 
                     if (groupSize >= 6)
                         ris += 8;
@@ -357,10 +358,10 @@ public class StandardGame extends Game{
         checked[i][j] = true;
 
         return 1
-                + depthSearch(i - 1, j, shelf, checked, tileColor)
-                + depthSearch(i + 1, j, shelf, checked, tileColor)
-                + depthSearch(i, j + 1, shelf, checked, tileColor)
-                + depthSearch(i, j - 1, shelf, checked, tileColor);
+                + this.depthSearch(i - 1, j, shelf, checked, tileColor)
+                + this.depthSearch(i + 1, j, shelf, checked, tileColor)
+                + this.depthSearch(i, j + 1, shelf, checked, tileColor)
+                + this.depthSearch(i, j - 1, shelf, checked, tileColor);
     }
 
 
