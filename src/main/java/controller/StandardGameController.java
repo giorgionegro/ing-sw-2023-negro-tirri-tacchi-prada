@@ -482,12 +482,12 @@ public class StandardGameController implements GameController, LobbyController {
                 Player sender = game.getPlayer(senderId);
 
                 /* If subject is not a player of this game then send an error */
-                if(!(newMessage.getSubject().isEmpty() || playerAssociation.containsValue(newMessage.getSubject())))
+                if(!(newMessage.getReceiver().isEmpty() || playerAssociation.containsValue(newMessage.getReceiver())))
                     sender.reportError("Subject of the message does not exists");
 
                 /* If subject is a player or all players send message */
                 for (String playerId : playerAssociation.values()) {
-                    if (newMessage.getSubject().isEmpty() || newMessage.getSubject().equals(playerId) || newMessage.getSender().equals(playerId))
+                    if (newMessage.getReceiver().isEmpty() || newMessage.getReceiver().equals(playerId) || newMessage.getSender().equals(playerId))
                         game.getPlayer(playerId).getPlayerChat().addMessage(newMessage);
                 }
             } catch (PlayerNotExistsException e) {
