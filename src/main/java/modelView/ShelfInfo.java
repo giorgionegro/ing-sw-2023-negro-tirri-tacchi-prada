@@ -5,7 +5,8 @@ import model.Tile;
 import java.io.Serializable;
 
 /**
- * @param playerId player id
- * @param shelf   shelf of the player
+ * This record contains information about the state of a player {@link model.abstractModel.Shelf}
+ * @param playerId id of the player that owns the shelf
+ * @param shelf shelf representation of the player
  */
 public record ShelfInfo(String playerId, Tile[][] shelf) implements Serializable {}
