@@ -2,7 +2,6 @@ package model;
 
 import model.abstractModel.Message;
 import model.abstractModel.PlayerChat;
-import model.instances.StandardPlayerChatInstance;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -64,8 +63,6 @@ class StandardPlayerChatTest {
             if (!messagesTestList.get(i).equals(messagesFromChat.get(i)))
                 fail("Chat saved an message wrong");
         }
-        StandardPlayerChat iTest = new StandardPlayerChat((StandardPlayerChatInstance) chat.getInstance());
-        assertEquals(chat.getInfo(), iTest.getInfo());
     }
     @Test
     void getInfoTest(){
@@ -77,12 +74,12 @@ class StandardPlayerChatTest {
     }
 
     /**
-     * Method under test: {@link StandardPlayerChat#StandardPlayerChat(StandardPlayerChatInstance)}
+     * Method under test: {@link StandardPlayerChat#StandardPlayerChat()}
      */
     @Test
     void testConstructor() {
         ArrayList<Message> messages = new ArrayList<>();
-        StandardPlayerChat actualStandardPlayerChat = new StandardPlayerChat(new StandardPlayerChatInstance(messages));
+        StandardPlayerChat actualStandardPlayerChat = new StandardPlayerChat();
         assertFalse(actualStandardPlayerChat.hasChanged());
         assertEquals(messages, actualStandardPlayerChat.getMessages());
     }
@@ -98,12 +95,5 @@ class StandardPlayerChatTest {
         assertTrue((new StandardPlayerChat()).getInfo().messages().isEmpty());
     }
 
-    /**
-     * Method under test: {@link StandardPlayerChat#getInstance()}
-     * Test if PlayerChat created by getInstance() of empty message list has an empty message list.
-     */
-    @Test
-    void testGetInstance() {
-        assertTrue(((StandardPlayerChatInstance) (new StandardPlayerChat()).getInstance()).messages().isEmpty());
-    }
+
 }

@@ -2,10 +2,6 @@ package model;
 
 import model.abstractModel.PersonalGoal;
 import model.abstractModel.Player;
-import model.instances.StandardPersonalGoalInstance;
-import model.instances.StandardPlayerChatInstance;
-import model.instances.StandardPlayerInstance;
-import model.instances.StandardShelfInstance;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -18,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class StandardPlayerTest {
 
     /**
-     * Method under test:{@link StandardPlayer#StandardPlayer(StandardPlayerInstance)}
+     * Method under test:{@link StandardPlayer()}
      *
      * <p>
      *
@@ -28,14 +24,7 @@ class StandardPlayerTest {
     @Test
     void testConstructor() {
 
-        ArrayList<Serializable> personalGoal = new ArrayList<>();
-        HashMap<String, Token> achievedCommonGoals = new HashMap<>();
-        var shelf = new StandardShelf();
-        var test = new StandardPlayer(new StandardPlayerInstance("Id Player", shelf.getInstance(), personalGoal, achievedCommonGoals, new StandardPlayerChat().getInstance()));
 
-        var test2 = new StandardPlayer("Id Player", new ArrayList<>());
-        assertEquals(test.getId(), test2.getId());
-        assertArrayEquals(test.getShelf().getTiles(), test2.getShelf().getTiles());
 
 
     }
@@ -47,7 +36,7 @@ class StandardPlayerTest {
 
         List<PersonalGoal> personalGoals = getPersonalGoals();
 
-        Player p = new StandardPlayer(playerId, personalGoals);
+        Player p = new StandardPlayer( new StandardShelf(),personalGoals,new StandardPlayerChat());
 
         p.getPlayerChat();
 
@@ -57,9 +46,6 @@ class StandardPlayerTest {
             fail("Achieved common goals must be empty on player contruction");
 
         p.getShelf();
-
-        if (!p.getId().equals(playerId))
-            fail("Player id instanced wrong");
 
         List<PersonalGoal> personalGoalListFromPlayer = p.getPersonalGoals();
 
@@ -74,7 +60,7 @@ class StandardPlayerTest {
 
     @Test
     void testPlayerShelfModification() {
-        Player p = new StandardPlayer(getPlayerId(), getPersonalGoals());
+        Player p = new StandardPlayer( new StandardShelf(),new ArrayList<>(),new StandardPlayerChat());
 
         Tile[][] shelf = new Tile[6][5];
         for (Tile[] tiles : shelf) {
@@ -105,7 +91,7 @@ class StandardPlayerTest {
 
     @Test
     void testPlayerAchievingCommonGoal() {
-        Player p = new StandardPlayer(getPlayerId(), getPersonalGoals());
+        Player p = new StandardPlayer( new StandardShelf(),new ArrayList<>(),new StandardPlayerChat());
 
         String desc1 = "Goal 1";
         String desc2 = "Goal 2";
@@ -148,14 +134,14 @@ class StandardPlayerTest {
 
     @Test
     void reportErrorTest() {
-        StandardPlayer test = new StandardPlayer("p1", getPersonalGoals());
+        Player test = new StandardPlayer( new StandardShelf(),new ArrayList<>(),new StandardPlayerChat());
         test.reportError("Error test");
         assertEquals(test.getReportedError(), "Error test");
     }
 
     @Test
     void getInfoTest() {
-        StandardPlayer test = new StandardPlayer("p1", getPersonalGoals());
+        Player test = new StandardPlayer( new StandardShelf(),new ArrayList<>(),new StandardPlayerChat());
         test.reportError("Error test");
         test.addAchievedCommonGoal("Test", Token.TOKEN_6_POINTS);
         assertEquals(test.getReportedError(), test.getInfo().errorMessage());

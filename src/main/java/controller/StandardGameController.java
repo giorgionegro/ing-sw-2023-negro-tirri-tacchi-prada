@@ -4,14 +4,10 @@ import controller.exceptions.GameAccessDeniedException;
 import controller.interfaces.GameController;
 import controller.interfaces.LobbyController;
 import distibuted.interfaces.ClientInterface;
-import model.Tile;
-import model.Token;
-import model.User;
+import model.*;
 import model.abstractModel.*;
 import model.exceptions.*;
-import modelView.LoginInfo;
-import modelView.PickedTile;
-import modelView.PlayerMoveInfo;
+import modelView.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import util.Observable;
@@ -225,10 +221,10 @@ public class StandardGameController implements GameController, LobbyController {
         }
     }
 
-    private void closeTheGame(String message) {
+    private void closeTheGame(String message){
         long eventTime = System.currentTimeMillis();
-        for (User u : this.userAssociation.values()) {
-            u.reportEvent(User.Status.NOT_JOINED, message, eventTime, User.Event.GAME_LEAVED);
+        for(User u : userAssociation.values()){
+            u.reportEvent(User.Status.NOT_JOINED,message,eventTime, User.Event.GAME_LEAVED);
         }
 
         game.close();
@@ -282,20 +278,30 @@ public class StandardGameController implements GameController, LobbyController {
 
                     /* If model signal SUSPENDED status then wait 6 second for a player to rejoin */
                     if(game.getGameStatus() == Game.GameStatus.SUSPENDED){
-                        lobbyLock.reset();
-                        if(!lobbyLock.hasBeenNotified())
-                            try {
-                                lobbyLock.lock(6000);
-                            } catch (InterruptedException e) {
-                                System.err.println("GameController: Timer is not working as intended");
-                            }
-                        /* If nobody has rejoined then close the game */
-                        if(!lobbyLock.getValue())
-                            closeTheGame("Game closed due to reconnection timeout");
+
+                        new Thread(() -> {
+                            lobbyLock.reset();
+                            if (!lobbyLock.hasBeenNotified())
+                                try {
+                                    lobbyLock.lock(6000);
+                                } catch (InterruptedException e) {
+                                    System.err.println("GameController: Timer is not working as intended");
+                                }
+                            /* If nobody has rejoined then close the game */
+                            if (!lobbyLock.getValue())
+                                closeTheGame("Game closed due to reconnection timeout");
+                            if(skipNeeded)
+                                try {
+                                    game.updatePlayersTurn();
+                                } catch (GameEndedException e) {
+                                    /* If skipping the turn game is ended then close the game */
+                                    closeTheGame("Game Ended");
+                                }
+                        }).start();
                     }
 
                     /* If a skip was needed then skip the turn */
-                    if(skipNeeded)
+                    else if(skipNeeded)
                         try {
                             game.updatePlayersTurn();
                         } catch (GameEndedException e) {
@@ -525,8 +531,8 @@ public class StandardGameController implements GameController, LobbyController {
      * @return true if tiles are different, false otherwise
      */
     private boolean areTilesDifferent(@NotNull List<PickedTile> pickedTiles) {
-        for (int i = 0; i < pickedTiles.size(); i++) {
-            for (int j = i + 1; j < pickedTiles.size(); j++) {
+        for (int i = 0; i < pickedTiles.size() ; i++) {
+            for (int j = i + 1; j < pickedTiles.size() ; j++) {
                 if (pickedTiles.get(i).row() == pickedTiles.get(j).row())
                     if (pickedTiles.get(i).col() == pickedTiles.get(j).col())
                         return false;
@@ -570,7 +576,7 @@ public class StandardGameController implements GameController, LobbyController {
      * @return true if tile is pickable, false otherwise
      */
     private boolean isTilePickable(int row, int column, Tile[] @NotNull [] board) {
-        if (row < 0 || column < 0 || row > board.length - 1 || column > board[row].length - 1 || board[row][column] == Tile.EMPTY || board[row][column] == null)
+        if (row < 0 || column < 0 || row > board.length - 1 || column > board[row].length - 1 || board[row][column].equals(Tile.EMPTY) || board[row][column] == null)
             return false;
 
         if (row == 0 || column == 0 || row == board.length - 1 || column == board[0].length - 1)
@@ -595,24 +601,24 @@ public class StandardGameController implements GameController, LobbyController {
         return true;
     }
 
-    private boolean areTilesAligned(@NotNull List<PickedTile> pickedTiles) {
+    private boolean areTilesAligned(@NotNull List<PickedTile> pickedTiles){
         boolean rowAligned = true;
         boolean colAligned = true;
 
-        for (int i = 1; i < pickedTiles.size(); i++) {
-            rowAligned = rowAligned && (pickedTiles.get(i - 1).row() == pickedTiles.get(i).row());
-            colAligned = colAligned && (pickedTiles.get(i - 1).col() == pickedTiles.get(i).col());
+        for(int i = 1; i<pickedTiles.size(); i++){
+            rowAligned = rowAligned && (pickedTiles.get(i-1).row() == pickedTiles.get(i).row());
+            colAligned = colAligned && (pickedTiles.get(i-1).col() == pickedTiles.get(i).col());
         }
-        if (rowAligned) {
+        if(rowAligned){
             pickedTiles.sort(Comparator.comparingInt(PickedTile::col));
-            for (int i = 0; i < pickedTiles.size() - 1; i++)
-                if (pickedTiles.get(i).col() + 1 != pickedTiles.get(i + 1).col())
+            for(int i=0; i< pickedTiles.size()-1; i++)
+                if(pickedTiles.get(i).col()+1!=pickedTiles.get(i+1).col())
                     return false;
         }
-        if (colAligned) {
+        if(colAligned){
             pickedTiles.sort(Comparator.comparingInt(PickedTile::row));
-            for (int i = 0; i < pickedTiles.size() - 1; i++)
-                if (pickedTiles.get(i).row() + 1 != pickedTiles.get(i + 1).row())
+            for(int i=0; i< pickedTiles.size()-1; i++)
+                if(pickedTiles.get(i).row()+1!=pickedTiles.get(i+1).row())
                     return false;
         }
 

@@ -65,7 +65,7 @@ public class StandardGame extends Game{
      * @param gameId       id of the game
      * @param playerNumber max number of player that can join the game //TODO sistemare
      */
-    public StandardGame(List<Player> availablePlayers, LivingRoom livingRoom, List<CommonGoal> commonGoals){
+    protected StandardGame(List<Player> availablePlayers, LivingRoom livingRoom, List<CommonGoal> commonGoals){
         this.availablePlayers = new ArrayList<>(availablePlayers);
         this.livingRoom = livingRoom;
         this.players = new HashMap<>();
@@ -229,7 +229,6 @@ public class StandardGame extends Game{
     @Override
     public void close() {
         this.status = GameStatus.ENDED;
-        //save state
         this.setChanged();
         this.notifyObservers(Event.GAME_ENDED);
     }
@@ -293,7 +292,6 @@ public class StandardGame extends Game{
         for (PersonalGoal p : personalGoals)
             if (p.isAchieved())
                 achieved++;
-
 
         return switch (achieved) {
             case 0 -> 0;

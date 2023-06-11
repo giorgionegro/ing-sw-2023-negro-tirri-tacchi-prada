@@ -32,8 +32,8 @@ public class TUI implements UI {
     static final int commandLineX = 1;
     static int commandLineY = 41;
     static int commandLineHeight = 10;
-    final char[][] cliPixel = new char[renderHeight][renderWidth];
-    final int[][] cliPixelColor = new int[renderHeight][renderWidth];
+    final char[][] canvas = new char[renderHeight][renderWidth];
+    final int[][] canvasColors = new int[renderHeight][renderWidth];
     //old cmds to be shifted up
     final List<Pair> oldCmds = new ArrayList<>();
     final Object renderLock = new Object();
@@ -81,8 +81,8 @@ public class TUI implements UI {
         super();
         this.currentView = View.SERVER_INTERACTION;
         this.currentShelves = new HashMap<>();
-        drawBox(0, 0, renderHeight, renderWidth, DEFAULT, this.cliPixel, this.cliPixelColor);
-        drawCommandLine(this.cursor, this.oldCmds, this.cliPixel, this.cliPixelColor);
+        drawBox(0, 0, renderHeight, renderWidth, DEFAULT, this.canvas, this.canvasColors);
+        drawCommandLine(this.cursor, this.oldCmds, this.canvas, this.canvasColors);
         this.updateView(false);
     }
 
@@ -208,7 +208,7 @@ public class TUI implements UI {
             String readLine = this.readCommandLine("(h for commands)-> ");
             if (this.GameRunning)
                 switch (readLine) {
-                    case "h" -> this.printCommandLine("1: Update view status\n2: Pick tiles\n3: Send message");
+                    case "h" -> this.printCommandLine("1: Update view status\n2: Pick tiles\n3: Send message\n4: Leave game");
                     case "1" -> this.updateView(false);
                     case "2" -> this.pickTiles();
                     case "3" -> this.sendMessage();
@@ -400,6 +400,7 @@ public class TUI implements UI {
     private void leave() {
         try {
             this.server.leaveGame(this.client);
+            this.GameRunning = false;
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
@@ -408,27 +409,27 @@ public class TUI implements UI {
     private void updateView(boolean force) {
         if (!this.viewLock || force) {
             //clear the matrix
-            Arrays.stream(this.cliPixel).forEach(a -> Arrays.fill(a, ' '));
-            Arrays.stream(this.cliPixelColor).forEach(a -> Arrays.fill(a, DEFAULT));
+            Arrays.stream(this.canvas).forEach(a -> Arrays.fill(a, ' '));
+            Arrays.stream(this.canvasColors).forEach(a -> Arrays.fill(a, DEFAULT));
 
-            drawBox(0, 0, renderHeight, renderWidth, DEFAULT, this.cliPixel, this.cliPixelColor);
-            drawCommandLine(this.cursor, this.oldCmds, this.cliPixel, this.cliPixelColor);
+            drawBox(0, 0, renderHeight, renderWidth, DEFAULT, this.canvas, this.canvasColors);
+            drawCommandLine(this.cursor, this.oldCmds, this.canvas, this.canvasColors);
 
             switch (this.currentView) {
                 case GAME_INTERACTION -> {
-                    drawCommandLine(this.cursor, this.oldCmds, this.cliPixel, this.cliPixelColor);
-                    drawGameState(this.currentGameState, this.cliPixel, this.cliPixelColor);
-                    drawLivingRoom(this.currentLivingRoom, this.cliPixel, this.cliPixelColor);
-                    drawShelves(this.currentShelves, this.thisPlayerId, this.currentGameState, this.cliPixel, this.cliPixelColor);
-                    drawChat(this.currentPlayerChat, this.cliPixel, this.cliPixelColor);
-                    drawCommonGoals(this.commonGoals, this.achievedCommonGoals, this.cliPixel, this.cliPixelColor);
-                    drawPersonalGoal(this.currentPersonalGoals, this.cliPixel, this.cliPixelColor);
+                    drawCommandLine(this.cursor, this.oldCmds, this.canvas, this.canvasColors);
+                    drawGameState(this.currentGameState, this.canvas, this.canvasColors);
+                    drawLivingRoom(this.currentLivingRoom, this.canvas, this.canvasColors);
+                    drawShelves(this.currentShelves, this.thisPlayerId, this.currentGameState, this.canvas, this.canvasColors);
+                    drawChat(this.currentPlayerChat, this.canvas, this.canvasColors);
+                    drawCommonGoals(this.commonGoals, this.achievedCommonGoals, this.canvas, this.canvasColors);
+                    drawPersonalGoal(this.currentPersonalGoals, this.canvas, this.canvasColors);
                 }
-                case GAME_ENDED -> drawGameEnd(this.points, this.cliPixel, this.cliPixelColor);
+                case GAME_ENDED -> drawGameEnd(this.points, this.canvas, this.canvasColors);
             }
 
             this.updated++;
-            drawString(this.updated + " ", 0, 0, GREEN, 20, this.cliPixel, this.cliPixelColor);
+            drawString(this.updated + " ", 0, 0, GREEN, 20, this.canvas, this.canvasColors);
             this.render();
         }
 
@@ -437,7 +438,7 @@ public class TUI implements UI {
     /*--------------------------------------------------*/
 
     private String renderPixel(int x, int y) {
-        return "\u001B[" + this.cliPixelColor[x][y] + "m" + this.cliPixel[x][y] + "\u001B[0m";
+        return "\u001B[" + this.canvasColors[x][y] + "m" + this.canvas[x][y] + "\u001B[0m";
     }
 
 
@@ -486,10 +487,10 @@ public class TUI implements UI {
                 return null;
             });
             if (this.currentGameState != null) {
-                drawGameState(this.currentGameState, this.cliPixel, this.cliPixelColor);
+                drawGameState(this.currentGameState, this.canvas, this.canvasColors);
             }
-            for (int i = 0; i < this.cliPixel.length; i++) {
-                for (int j = 0; j < this.cliPixel[0].length; j++) {
+            for (int i = 0; i < this.canvas.length; i++) {
+                for (int j = 0; j < this.canvas[0].length; j++) {
                     out.print(this.renderPixel(i, j));
                 }
                 out.println();

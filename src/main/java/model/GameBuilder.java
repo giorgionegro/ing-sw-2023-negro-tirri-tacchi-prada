@@ -11,7 +11,9 @@ import java.util.List;
 import java.util.Stack;
 
 public class GameBuilder {
-    public static Game build(NewGameInfo newGameInfo) throws IllegalArgumentException{
+
+    private GameBuilder(){}
+    public static @NotNull Game build(NewGameInfo newGameInfo) throws IllegalArgumentException{
         switch (newGameInfo.type()){
             case "STANDARD" -> {
                 List<Player> avaiablePlayers = new ArrayList<>();
@@ -23,8 +25,8 @@ public class GameBuilder {
 
                 return new StandardGame(avaiablePlayers,livingRoom,avaiableCommonGoals);
             }
+            default -> throw new IllegalArgumentException("Unexpected value: " + newGameInfo.type());
         }
-        throw new IllegalArgumentException("Unknown gameInfo");
     }
 
     private static @NotNull ArrayList<CommonGoal> setCommonGoals(int nPlayers) {

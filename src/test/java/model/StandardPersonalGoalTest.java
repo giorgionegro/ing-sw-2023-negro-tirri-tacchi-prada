@@ -1,6 +1,8 @@
 package model;
 
-import model.instances.StandardPersonalGoalInstance;
+import modelView.PersonalGoalInfo;
+import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -11,6 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+
 class StandardPersonalGoalTest {
 
     /**
@@ -18,11 +21,26 @@ class StandardPersonalGoalTest {
      */
     @Test
     void testConstructor() {
-        StandardPersonalGoal actualStandardPersonalGoal = new StandardPersonalGoal(
-                new StandardPersonalGoalInstance(Tile.CATS_1, 1, 1, true));
+        StandardPersonalGoal actualStandardPersonalGoal = new StandardPersonalGoal(Tile.CATS_1, 1, 1);
         assertEquals(6, actualStandardPersonalGoal.getDescription().length);
-        assertTrue(actualStandardPersonalGoal.isAchieved());
+        Tile [][] description = actualStandardPersonalGoal.getDescription();
+        assertTrue(actualStandardPersonalGoal.evaluate(description));
         assertFalse(actualStandardPersonalGoal.hasChanged());
+    }
+
+    /**
+     * Method under test: {@link StandardPersonalGoal#StandardPersonalGoal(Tile, int, int)}
+     */
+    @Test
+    void testConstructor2() {
+        StandardPersonalGoal actualStandardPersonalGoal = new StandardPersonalGoal(Tile.CATS_1, 1, 1);
+
+        assertEquals(6, actualStandardPersonalGoal.getDescription().length);
+        assertFalse(actualStandardPersonalGoal.isAchieved());
+        assertFalse(actualStandardPersonalGoal.hasChanged());
+        PersonalGoalInfo info = actualStandardPersonalGoal.getInfo();
+        assertFalse(info.achieved());
+        assertEquals(6, info.description().length);
     }
 
     @Test
@@ -35,6 +53,7 @@ class StandardPersonalGoalTest {
     }
 
     @Test
+
     void testAchieving() {
         StandardPersonalGoal test = new StandardPersonalGoal(Tile.BOOKS_2, 3, 4);
         if (test.isAchieved())

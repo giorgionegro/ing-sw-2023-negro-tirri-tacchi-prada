@@ -1,6 +1,5 @@
 package model;
 
-import model.instances.StandardShelfInstance;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -28,26 +27,14 @@ class StandardShelfTest {
     }
 
     /**
-     * test: {@link StandardShelf#StandardShelf(StandardShelfInstance)}
+     * test: {@link StandardShelf#StandardShelf()}
      */
     @Test
     void testConstructor() {
-        StandardShelf actualStandardShelf = new StandardShelf(
-                new StandardShelfInstance(new Tile[][]{new Tile[]{Tile.CATS_1}}));
+        StandardShelf actualStandardShelf = new StandardShelf();
         assertFalse(actualStandardShelf.hasChanged());
-        assertEquals(1, actualStandardShelf.getTiles().length);
+        assertEquals(6, actualStandardShelf.getTiles().length);
+        assertEquals(5, actualStandardShelf.getTiles()[0].length);
     }
-    @Test
-    void shelfInstanceTest(){
-        StandardShelf test = new StandardShelf();
-        StandardShelf instanceTest = new StandardShelf((StandardShelfInstance) test.getInstance());
-        assertTrue(Arrays.deepEquals(test.getTiles(), instanceTest.getTiles()));
 
-        StandardShelf test2 = new StandardShelf();
-        Tile[][] modifiedShelf = new Tile[6][5];
-        modifiedShelf[0][0] = Tile.FRAMES_1;
-        test2.setTiles(modifiedShelf);
-        StandardShelf instanceTest2 = new StandardShelf((StandardShelfInstance) test2.getInstance());
-        assertTrue(Arrays.deepEquals(test2.getTiles(), instanceTest2.getTiles()));
-    }
 }
