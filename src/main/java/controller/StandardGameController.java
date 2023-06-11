@@ -278,20 +278,30 @@ public class StandardGameController implements GameController, LobbyController {
 
                     /* If model signal SUSPENDED status then wait 6 second for a player to rejoin */
                     if(game.getGameStatus() == Game.GameStatus.SUSPENDED){
-                        lobbyLock.reset();
-                        if(!lobbyLock.hasBeenNotified())
-                            try {
-                                lobbyLock.lock(6000);
-                            } catch (InterruptedException e) {
-                                System.err.println("GameController: Timer is not working as intended");
-                            }
-                        /* If nobody has rejoined then close the game */
-                        if(!lobbyLock.getValue())
-                            closeTheGame("Game closed due to reconnection timeout");
+
+                        new Thread(() -> {
+                            lobbyLock.reset();
+                            if (!lobbyLock.hasBeenNotified())
+                                try {
+                                    lobbyLock.lock(6000);
+                                } catch (InterruptedException e) {
+                                    System.err.println("GameController: Timer is not working as intended");
+                                }
+                            /* If nobody has rejoined then close the game */
+                            if (!lobbyLock.getValue())
+                                closeTheGame("Game closed due to reconnection timeout");
+                            if(skipNeeded)
+                                try {
+                                    game.updatePlayersTurn();
+                                } catch (GameEndedException e) {
+                                    /* If skipping the turn game is ended then close the game */
+                                    closeTheGame("Game Ended");
+                                }
+                        }).start();
                     }
 
                     /* If a skip was needed then skip the turn */
-                    if(skipNeeded)
+                    else if(skipNeeded)
                         try {
                             game.updatePlayersTurn();
                         } catch (GameEndedException e) {
@@ -478,12 +488,12 @@ public class StandardGameController implements GameController, LobbyController {
                 Player sender = game.getPlayer(senderId);
 
                 /* If subject is not a player of this game then send an error */
-                if(!(newMessage.getSubject().isEmpty() || playerAssociation.containsValue(newMessage.getSubject())))
+                if(!(newMessage.getReceiver().isEmpty() || playerAssociation.containsValue(newMessage.getReceiver())))
                     sender.reportError("Subject of the message does not exists");
 
                 /* If subject is a player or all players send message */
                 for (String playerId : playerAssociation.values()) {
-                    if (newMessage.getSubject().isEmpty() || newMessage.getSubject().equals(playerId) || newMessage.getSender().equals(playerId))
+                    if (newMessage.getReceiver().isEmpty() || newMessage.getReceiver().equals(playerId) || newMessage.getSender().equals(playerId))
                         game.getPlayer(playerId).getPlayerChat().addMessage(newMessage);
                 }
             } catch (PlayerNotExistsException e) {
