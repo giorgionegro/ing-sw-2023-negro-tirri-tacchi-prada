@@ -6,6 +6,11 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 
+/**
+ * This class is an implementation of {@link Shelf}
+ * <p>
+ * It defines shelf as a 6 by 5 2d array of Tiles
+ */
 public class StandardShelf extends Shelf {
 
     /**
@@ -13,7 +18,7 @@ public class StandardShelf extends Shelf {
      */
     private Tile[][] tiles;
     /**
-     * Class constructor, initializes shelf with an empty 6 by 5 2d array pf Tiles
+     * Class constructor, initializes shelf with an empty 6 by 5 2d array of Tiles
      */
     public StandardShelf(){
         this.tiles = new Tile[6][5];

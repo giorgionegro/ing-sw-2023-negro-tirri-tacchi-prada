@@ -61,22 +61,19 @@ public class User extends Observable<User.Event> {
     }
 
     /**
-     * TODO
-     * @param status
-     * @param eventMessage
-     * @param interactionTime
-     * @param evt
+     * This method reports an event to the user, all events modify the status of the user
+     * @param status the new status of the user
+     * @param eventMessage the description of the event
+     * @param eventTimeStamp the timestamp of the event
+     * @param eventType the type of the event
      */
-    public void reportEvent(Status status, String eventMessage, long interactionTime, User.Event evt){
+    public void reportEvent(Status status, String eventMessage, long eventTimeStamp, User.Event eventType){
         this.status = status;
-        this.interactionTime = interactionTime;
+        this.interactionTime = eventTimeStamp;
         this.eventMessage = eventMessage;
         setChanged();
-        notifyObservers(evt);
+        notifyObservers(eventType);
     }
-
-
-
 
     /**
      * This method returns the last error that user encountered during server interaction

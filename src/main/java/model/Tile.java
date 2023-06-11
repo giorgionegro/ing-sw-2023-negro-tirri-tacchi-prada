@@ -1,5 +1,8 @@
 package model;
 
+/**
+ * This enumeration contains all the possible tiles that can appear in the game
+ */
 public enum Tile {
     CATS_1("Green"),
     CATS_2("Green"),
@@ -22,11 +25,23 @@ public enum Tile {
 
     EMPTY("Empty");
 
+    /**
+     * The color of the tile, there can be many tiles with the same color
+     */
     private final String color;
+
+    /**
+     * The color of the tile
+     * @param color a string representation of the color
+     */
     Tile(String color){
         this.color = color;
     }
 
+    /**
+     * This method returns the color of the tile
+     * @return {@link #color}
+     */
     public String getColor() {
         return color;
     }

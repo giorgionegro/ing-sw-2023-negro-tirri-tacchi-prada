@@ -6,6 +6,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
+/**
+ * This class is an implementation of {@link LivingRoom}
+ */
 public class StandardLivingRoom extends LivingRoom {
     /**
      * Game board of this living room
@@ -50,7 +53,6 @@ public class StandardLivingRoom extends LivingRoom {
      */
     @Override
     public void setBoard(Tile[] @NotNull [] modifiedBoard) {
-        //TODO: check modifiedBoard is valid (correct empty spaces in relation to number of Players)
         board = Arrays.stream(modifiedBoard).map(Tile[]::clone).toArray(Tile[][]::new);
         setChanged();
         notifyObservers(Event.BOARD_MODIFIED);

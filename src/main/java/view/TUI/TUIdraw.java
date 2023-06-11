@@ -114,30 +114,6 @@ public enum TUIdraw {
         }
     }
 
-    /**
-     * this method draws the list of available games
-     * @param games game manager info
-     * @param cliPixel 2d array of characters representing the pixels
-     * @param cliPixelColor 2d array of integers representing the color of the pixels
-     */
-    static void drawGameList(List<GamesManagerInfo> games, char[][] cliPixel, int[][] cliPixelColor) {
-        // a game will be | game name | max players | current players | joinable |
-        // a game will be | 10 chars   | 5 chars      | 5 chars          | 10 chars |
-        for (int i = 0; i < games.size(); i++) {
-            String toDraw = games.get(i).gameId();
-            toDraw += " ".repeat(10 - toDraw.length());
-            toDraw += games.get(i).maxPlayers();
-            toDraw += " ".repeat(5 - toDraw.length() + 10);
-            toDraw += games.get(i).connectedPlayers();
-            toDraw += " ".repeat(5 - toDraw.length() + 15);
-            if (games.get(i).connectedPlayers() < games.get(i).maxPlayers())
-                toDraw += "joinable";
-            else
-                toDraw += "not joinable";
-            toDraw += " ".repeat(10 - toDraw.length() + 25);
-            drawString(toDraw, 10 + i, 10, DEFAULT, 50 - 2, cliPixel, cliPixelColor);
-        }
-    }
 
     /**
      * This method draws the endgame screen

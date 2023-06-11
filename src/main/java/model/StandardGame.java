@@ -52,21 +52,21 @@ public class StandardGame extends Game{
      */
     private GameStatus status;
 
+    /**
+     * List of player objects that aren't associated with a connected player
+     * <p>
+     * It is used as available player on Matchmaking and as list of disconnected player when a player exit game during Gameplay
+     */
     private final List<Player> availablePlayers;
 
     /**
-     * Construct an {@link StandardGame} instance with given id and player number
-     * <p>
-     * The instance is initialized with empty player list, two randomly chosen common goals, an {@link StandardLivingRoom} instance
-     * and on matchmaking status.
-     * <p>
-     * Player number must be between 2 and 4
-     *
-     * @param gameId       id of the game
-     * @param playerNumber max number of player that can join the game //TODO sistemare
+     * Construct an {@link StandardGame} instance with given players information, living room information and common goals information
+     * @param players players information
+     * @param livingRoom living room information
+     * @param commonGoals common goals information
      */
-    protected StandardGame(List<Player> availablePlayers, LivingRoom livingRoom, List<CommonGoal> commonGoals){
-        this.availablePlayers = new ArrayList<>(availablePlayers);
+    protected StandardGame(List<Player> players, @NotNull LivingRoom livingRoom, List<CommonGoal> commonGoals){
+        this.availablePlayers = new ArrayList<>(players);
         this.livingRoom = livingRoom;
         this.players = new HashMap<>();
         this.commonGoals = new ArrayList<>(commonGoals);
@@ -87,7 +87,7 @@ public class StandardGame extends Game{
             if (players.containsKey(playerId))
                 throw new PlayerAlreadyExistsException();
 
-            /* Initialize Player model */
+            /* Get Player model */
             Player newPlayer = availablePlayers.remove(0);
 
             /* Associate Player with playerId */
@@ -96,6 +96,7 @@ public class StandardGame extends Game{
             /* Add Player to turnQueue */
             playerTurnQueue.add(playerId);
 
+            /* Notify that a new player has joined the game*/
             setChanged();
             notifyObservers(Event.PLAYER_JOINED);
 
@@ -110,6 +111,9 @@ public class StandardGame extends Game{
                 notifyObservers(Event.GAME_STARTED);
             }
         }else if(status == GameStatus.STARTED || status == GameStatus.SUSPENDED){
+            /*If a player is trying to reconnect then...*/
+
+            /* If it's trying to reconnect with a different player id then discard request */
             if(!players.containsKey(playerId))
                 throw new MatchmakingClosedException();
 
@@ -119,10 +123,6 @@ public class StandardGame extends Game{
             if(availablePlayers.contains(requestedPlayer)){
                 /* Remove player from available */
                 availablePlayers.remove(requestedPlayer);
-
-                setChanged();
-                notifyObservers(Event.PLAYER_JOINED);
-
             }else{
                 throw new PlayerAlreadyExistsException();
             }
@@ -135,6 +135,11 @@ public class StandardGame extends Game{
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * @param playerId the id of the player that needs to be removed
+     * @throws PlayerNotExistsException when no player is associated with playerId
+     */
     @Override
     public void removePlayer(String playerId) throws PlayerNotExistsException {
         if(!players.containsKey(playerId))
@@ -226,6 +231,9 @@ public class StandardGame extends Game{
         return playerTurnQueue.get(playerTurnQueue.size() - 1);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void close() {
         this.status = GameStatus.ENDED;
@@ -286,7 +294,11 @@ public class StandardGame extends Game{
         return new GameInfo(this.status, this.lastTurn, this.getTurnPlayerId(), points);
     }
 
-
+    /**
+     * This method returns an amount of points based on the number of personalGoals achieved
+     * @param personalGoals list of all personal goals
+     * @return the amount of points earned by personal goals
+     */
     private int getPersonalGoalPoints(@NotNull List<PersonalGoal> personalGoals) {
         int achieved = 0;
         for (PersonalGoal p : personalGoals)
@@ -304,6 +316,12 @@ public class StandardGame extends Game{
         };
     }
 
+
+    /**
+     * This method returns an amount of points equivalent to the sum of provided tokens
+     * @param tokens the list of earned tokens
+     * @return the amount of points equivalent to the sum of provided tokens
+     */
     private int getCommonGoalPoints(@NotNull List<Token> tokens) {
         int ris = 0;
 
@@ -313,6 +331,11 @@ public class StandardGame extends Game{
         return ris;
     }
 
+    /**
+     * This method returns an amount of points based on evaluation of how many and how big are groups of tiles in a shelf
+     * @param shelf the shelf to be evaluated
+     * @return the amount of points the shelf is worth
+     */
     private int getShelfTilesGroupsPoints(Tile[] @NotNull [] shelf) {
         int ris = 0;
 
@@ -340,6 +363,9 @@ public class StandardGame extends Game{
         return ris;
     }
 
+    /**
+     * This function provides support for {@code getShelfTilesGroupPoints()} and provide a recursive depth search on tile groups
+     */
     private int depthSearch(int i, int j, Tile[][] shelf, boolean[] @NotNull [] checked, String tileColor) {
         if (i < 0 || i >= checked.length || j < 0 || j >= checked[0].length)
             return 0;

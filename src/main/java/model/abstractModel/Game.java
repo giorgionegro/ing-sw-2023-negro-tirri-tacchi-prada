@@ -23,6 +23,9 @@ public abstract class Game extends Observable<Game.Event>{
          * This event is sent whenever a player joins the game
          */
         PLAYER_JOINED,
+        /**
+         * This event is sent whenever a player rejoins the game
+         */
         PLAYER_REJOINED,
         /**
          * This event is sent when the game has just been started
@@ -98,6 +101,12 @@ public abstract class Game extends Observable<Game.Event>{
      */
     public abstract void addPlayer(String playerId) throws PlayerAlreadyExistsException, MatchmakingClosedException;
 
+    /**
+     * This method remove a Player from the game, the Player is referenced by playerId. After this method has been
+     * invoked with success then {@code getPlayer(playerId)} will throw {@link PlayerNotExistsException}
+     * @param playerId the id of the player that needs to be removed
+     * @throws PlayerNotExistsException if there is no Player associated to {@code playerId}
+     */
     public abstract void removePlayer(String playerId) throws PlayerNotExistsException;
 
     /**

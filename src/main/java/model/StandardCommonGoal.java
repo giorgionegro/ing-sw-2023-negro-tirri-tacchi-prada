@@ -2,10 +2,11 @@ package model;
 
 import model.abstractModel.CommonGoal;
 import model.abstractModel.GoalEvaluator;
+
 /**
  * This class is an implementation of {@link CommonGoal}
  * <p>
- * It initializes the {@link #tokenStack} with as much token as player.
+ * It initializes the {@link #tokenStack} with as much tokens as players.
  */
 public class StandardCommonGoal extends CommonGoal {
 

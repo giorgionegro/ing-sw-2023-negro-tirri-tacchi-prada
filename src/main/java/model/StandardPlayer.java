@@ -42,10 +42,10 @@ public class StandardPlayer extends Player {
     private String errorReport;
 
     /**
-     * Constructor of a new Player with no achieved common goal and an empty chat, but initialized with the given shelf,
-     * personal goals and playerId.
-     * @param idPlayer id of the player //TODO sistemare javaDoc
+     * Constructor of a new Player with no achieved common goal and initialized with the given shelf, chat and personal goals,
+     * @param shelf the player shelf
      * @param personalGoal personal goals of the player
+     * @param chat the player chat
      */
     public StandardPlayer(@NotNull Shelf shelf, @NotNull List<PersonalGoal> personalGoal, @NotNull PlayerChat chat){
         this.shelf = shelf;
