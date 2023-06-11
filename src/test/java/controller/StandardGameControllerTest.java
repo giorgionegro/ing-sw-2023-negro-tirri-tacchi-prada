@@ -46,11 +46,6 @@ class StandardGameControllerTest {
             }
 
             @Override
-            public void update(GamesManagerInfo o, GamesManager.Event evt) throws RemoteException {
-
-            }
-
-            @Override
             public void update(LivingRoomInfo o, LivingRoom.Event evt) throws RemoteException {
 
             }
@@ -112,11 +107,6 @@ class StandardGameControllerTest {
 
             @Override
             public void update(GameInfo o, Game.Event evt) throws RemoteException {
-
-            }
-
-            @Override
-            public void update(GamesManagerInfo o, GamesManager.Event evt) throws RemoteException {
 
             }
 
@@ -200,10 +190,6 @@ class StandardGameControllerTest {
 
             }
 
-            @Override
-            public void update(GamesManagerInfo o, GamesManager.Event evt) throws RemoteException {
-
-            }
 
             @Override
             public void update(LivingRoomInfo o, LivingRoom.Event evt) throws RemoteException {
@@ -237,7 +223,6 @@ class StandardGameControllerTest {
             }
         };
 
-        ClientInterface finalClient1 = client;
         User finalUser1 = user;
         LoginInfo finalLoginInfo1 = loginInfo;
         try {
@@ -265,10 +250,6 @@ class StandardGameControllerTest {
 
             }
 
-            @Override
-            public void update(GamesManagerInfo o, GamesManager.Event evt) throws RemoteException {
-
-            }
 
             @Override
             public void update(LivingRoomInfo o, LivingRoom.Event evt) throws RemoteException {
@@ -365,11 +346,6 @@ class StandardGameControllerTest {
             }
 
             @Override
-            public void update(GamesManagerInfo o, GamesManager.Event evt) throws RemoteException {
-
-            }
-
-            @Override
             public void update(LivingRoomInfo o, LivingRoom.Event evt) throws RemoteException {
 
             }
@@ -445,11 +421,6 @@ class StandardGameControllerTest {
             }
 
             @Override
-            public void update(GamesManagerInfo o, GamesManager.Event evt) throws RemoteException {
-
-            }
-
-            @Override
             public void update(LivingRoomInfo o, LivingRoom.Event evt) throws RemoteException {
 
             }
@@ -484,12 +455,8 @@ class StandardGameControllerTest {
         } catch (Exception e) {
             fail("Exception thrown" + e.getMessage());
         }
-        //join the second player
-        user = new User();
-        loginInfo = new LoginInfo("1", "42", 1);
 
-        User finalUser = user;
-        LoginInfo finalLoginInfo = loginInfo;
+        //join the second player
         client = new ClientInterface() {
             @Override
             public void bind(ServerInterface server) throws RemoteException {
@@ -503,11 +470,6 @@ class StandardGameControllerTest {
 
             @Override
             public void update(GameInfo o, Game.Event evt) throws RemoteException {
-
-            }
-
-            @Override
-            public void update(GamesManagerInfo o, GamesManager.Event evt) throws RemoteException {
 
             }
 
@@ -574,10 +536,6 @@ class StandardGameControllerTest {
 
             }
 
-            @Override
-            public void update(GamesManagerInfo o, GamesManager.Event evt) throws RemoteException {
-
-            }
 
             @Override
             public void update(LivingRoomInfo o, LivingRoom.Event evt) throws RemoteException {
@@ -637,11 +595,6 @@ class StandardGameControllerTest {
 
             }
 
-            @Override
-            public void update(GamesManagerInfo o, GamesManager.Event evt) throws RemoteException {
-                throw new RemoteException();
-
-            }
 
             @Override
             public void update(LivingRoomInfo o, LivingRoom.Event evt) throws RemoteException {
@@ -722,10 +675,6 @@ class StandardGameControllerTest {
 
             }
 
-            @Override
-            public void update(GamesManagerInfo o, GamesManager.Event evt) throws RemoteException {
-
-            }
 
             @Override
             public void update(LivingRoomInfo o, LivingRoom.Event evt) throws RemoteException {
@@ -790,10 +739,6 @@ class StandardGameControllerTest {
 
             }
 
-            @Override
-            public void update(GamesManagerInfo o, GamesManager.Event evt) throws RemoteException {
-
-            }
 
             @Override
             public void update(GameInfo o, Game.Event evt) throws RemoteException {
@@ -849,10 +794,6 @@ class StandardGameControllerTest {
 
             }
 
-            @Override
-            public void update(GamesManagerInfo o, GamesManager.Event evt) throws RemoteException {
-
-            }
 
             @Override
             public void update(GameInfo o, Game.Event evt) throws RemoteException {
@@ -1045,11 +986,6 @@ class StandardGameControllerTest {
             }
 
             @Override
-            public void update(GamesManagerInfo o, GamesManager.Event evt) throws RemoteException {
-
-            }
-
-            @Override
             public void update(GameInfo o, Game.Event evt) throws RemoteException {
 
             }
@@ -1095,10 +1031,6 @@ class StandardGameControllerTest {
 
             }
 
-            @Override
-            public void update(GamesManagerInfo o, GamesManager.Event evt) throws RemoteException {
-
-            }
 
             @Override
             public void update(GameInfo o, Game.Event evt) throws RemoteException {
@@ -1170,10 +1102,6 @@ class StandardGameControllerTest {
 
             }
 
-            @Override
-            public void update(GamesManagerInfo o, GamesManager.Event evt) throws RemoteException {
-
-            }
 
             @Override
             public void update(GameInfo o, Game.Event evt) throws RemoteException {
