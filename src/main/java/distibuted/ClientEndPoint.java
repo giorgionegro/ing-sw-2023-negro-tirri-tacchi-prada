@@ -19,15 +19,6 @@ public class ClientEndPoint extends UnicastRemoteObject implements ClientInterfa
     }
 
     @Override
-    public void update(GamesManagerInfo o, GamesManager.Event evt) {
-        try {
-            views.update(o,evt);
-        } catch (RemoteException e) {
-            //TODO
-        }
-    }
-
-    @Override
     public void update(LivingRoomInfo o, LivingRoom.Event evt) {
         try {
             views.update(o,evt);

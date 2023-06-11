@@ -50,21 +50,6 @@ public class ServerSocketHandler extends SocketHandler<ServerInterface> implemen
     }
 
     @Override
-    public void update(GamesManagerInfo o, GamesManager.Event evt) throws RemoteException {
-        try{
-            send((SocketObject) (sender,receiver) -> {
-                try{
-                    ((GamesManagerView) receiver).update(o,evt);
-                }catch(ClassCastException e){
-                    throw new RemoteException("Socket object not usable");
-                }
-            });
-        } catch (IOException e) {
-            throw new RemoteException("Unable to send the socket object");
-        }
-    }
-
-    @Override
     public void update(LivingRoomInfo o, LivingRoom.Event evt) throws RemoteException {
         try{
             send((SocketObject) (sender,receiver) -> {

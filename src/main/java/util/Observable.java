@@ -3,6 +3,8 @@ package util;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Vector;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * This class represents an observable object, or "data"
@@ -43,6 +45,9 @@ import java.util.Vector;
  */
 @SuppressWarnings("deprecation")
 public class Observable<Event extends Enum<Event>> {
+
+    //TODO
+    ExecutorService executorService = Executors.newFixedThreadPool(1);
     private boolean changed = false;
     private final @NotNull Vector<Observer<? extends Observable<Event>, Event>> obs;
 
@@ -139,8 +144,10 @@ public class Observable<Event extends Enum<Event>> {
             clearChanged();
         }
 
-        for (int i = arrLocal.length-1; i>=0; i--)
-            ((Observer<Observable<Event>, Event>)arrLocal[i]).update(this, arg);
+        executorService.submit(() -> {
+            for (int i = arrLocal.length-1; i>=0; i--)
+                ((Observer<Observable<Event>, Event>)arrLocal[i]).update(this, arg);
+        });
     }
 
     /**
