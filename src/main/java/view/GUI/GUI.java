@@ -82,11 +82,6 @@ public class  GUI implements UI, ActionListener {
     }
 
     @Override
-    public void update(GamesManagerInfo o, GamesManager.Event evt) throws RemoteException {
-        //TODO enrico deciditi ad implementarlo
-    }
-
-    @Override
     public void update(LivingRoomInfo o, LivingRoom.Event evt) throws RemoteException {
         game.update(o,evt);
     }

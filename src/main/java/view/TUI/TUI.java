@@ -43,7 +43,6 @@ public class TUI implements UI {
     /*-----------------------------------------*/
 
     private final List<PersonalGoalInfo> currentPersonalGoals = new ArrayList<>();
-    private final List<GamesManagerInfo> games = new ArrayList<>();
     private final Map<String, CommonGoalInfo> commonGoals = new HashMap<>();
 
     /*------------------------------------------*/
@@ -623,22 +622,6 @@ public class TUI implements UI {
             case GAME_LEAVED -> this.printCommandLine(u.eventMessage(), RED);
         }
     }
-
-
-    /**
-     * receives updates for the @{@link GamesManagerInfo}
-     *
-     * @param gM  @{@link GamesManagerInfo}
-     * @param evt @{@link GamesManager.Event}
-     */
-    public void update(GamesManagerInfo gM, GamesManager.Event evt) {
-        switch (evt) {
-            case GAME_CREATED -> this.games.add(gM);
-            case GAME_REMOVED -> this.games.remove(gM);
-        }
-        //drawGameList();
-    }
-
 
     /**
      * receives updates for the @{@link PlayerInfo}
