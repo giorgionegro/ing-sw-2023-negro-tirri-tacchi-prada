@@ -48,6 +48,7 @@ public class  GUI implements UI, ActionListener {
     }
 
     public void joinGame(){
+        game.resetGameLayout();
         root.removeAll();
         root.add(join);
         refresh();
@@ -155,11 +156,11 @@ public class  GUI implements UI, ActionListener {
             }
         } else if (e.getSource() == join) {
             String[] parts = e.getActionCommand().split("\n");
-           switch (parts[0]){
+            switch (parts[0]){
                case "ID" -> game.setPlayerId(parts[1]);
                case "JOINED" -> playGame();
                case "EXIT" -> home();
-           }
+            }
         } else if (e.getSource() == create) {
             switch (e.getActionCommand()){
                 case "CREATED" -> joinGame();
