@@ -64,13 +64,6 @@ public class  GUI implements UI, ActionListener {
         root.repaint();
     }
 
-    public void winner(){
-        WinnerGamePanel winner = new WinnerGamePanel();
-        root.removeAll();
-        root.add(winner, BorderLayout.CENTER);
-        refresh();
-    }
-
     @Override
     public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
         game.update(o,evt);

@@ -1,6 +1,7 @@
 package view.GUI.panels;
 
 import model.Tile;
+import model.Token;
 import model.abstractModel.LivingRoom;
 import modelView.LivingRoomInfo;
 
@@ -15,6 +16,8 @@ import java.rmi.RemoteException;
 
 public class LivingRoomPanel extends JPanel implements LivingRoomView {
     private final Image background = new ImageIcon(getClass().getResource("/LivingRoomBackground.png")).getImage();
+    private final Image endGameToken = new ImageIcon(getClass().getResource("/Token/"+ Token.TOKEN_GAME_END.name() + ".png")).getImage();
+
     private final Container topSpacer = new Container();
     private final Container leftSpacer = new Container();
     private final Container rightSpacer = new Container();
@@ -76,6 +79,7 @@ public class LivingRoomPanel extends JPanel implements LivingRoomView {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         g.drawImage(background, 0, 0, getWidth(), getHeight(), null);
+        g.drawImage(endGameToken,0,0,getWidth(),getHeight(),null);
     }
 
     @Override
