@@ -34,7 +34,7 @@ public class ServerEndpoint extends UnicastRemoteObject implements ServerInterfa
         try {
             serverController.createGame(client,newGameInfo);
         } catch (RemoteException e) {
-            e.printStackTrace();
+            printError("CreateGame",e.getMessage());
         }
     }
 
@@ -43,8 +43,10 @@ public class ServerEndpoint extends UnicastRemoteObject implements ServerInterfa
         try {
             serverController.joinGame(client, loginInfo);
             gameController = gameManagerController.getGame(loginInfo.gameId());
-        } catch (RemoteException | GameNotExistsException e) {
-            e.printStackTrace();
+        } catch (RemoteException e) {
+            printError("JoinGame", e.getMessage());
+        } catch (GameNotExistsException e){
+            gameController = null;
         }
     }
 
@@ -52,9 +54,10 @@ public class ServerEndpoint extends UnicastRemoteObject implements ServerInterfa
     public void leaveGame(ClientInterface client){
         try {
             serverController.leaveGame(client);
-            this.gameController = null;
         } catch (RemoteException e) {
-            e.printStackTrace();
+            printError("LeaveGame", e.getMessage());
+        } finally {
+            gameController = null;
         }
     }
 
@@ -64,7 +67,7 @@ public class ServerEndpoint extends UnicastRemoteObject implements ServerInterfa
             try {
                 gameController.doPlayerMove(client, move);
             } catch (RemoteException e) {
-                e.printStackTrace();
+                printError("DoPlayerMove", e.getMessage());
             }
         }
     }
@@ -75,8 +78,14 @@ public class ServerEndpoint extends UnicastRemoteObject implements ServerInterfa
             try {
                 gameController.sendMessage(client, message);
             } catch (RemoteException e) {
-                e.printStackTrace();
+                printError("SendMessage", e.getMessage());
             }
         }
+    }
+
+    private void printError(String from, String message){
+        if(!message.isBlank())
+            message = " : "+message;
+        System.err.print("ServerEndpoint: exception from " + from + message);
     }
 }
