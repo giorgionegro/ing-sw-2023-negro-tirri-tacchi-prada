@@ -20,7 +20,7 @@ import view.interfaces.*;
 
 public class GamePanel extends JComponent implements ActionListener, ShelfView, PlayerChatView, CommonGoalView, PlayerView, GameView, LivingRoomView, PersonalGoalView {
     private final Image parquet = new ImageIcon(getClass().getResource("/parquet.jpg")).getImage();
-    private GameInfo currentGameState;
+
     private LivingRoomPanel livingRoomBoard;
     private Map<String, ShelfPanel> opponentShelfBoards;
     private Map<String,JLabel> opponentLabels;
@@ -32,6 +32,7 @@ public class GamePanel extends JComponent implements ActionListener, ShelfView, 
     private PersonalGoalPanel personalGoalPanel;
     private CommonGoalsPanel commonGoalsPanel;
     private String thisPlayerId;
+    private WinnerGamePanel winnerPanel;
 
     private final JButton exitButton = new JButton();
 
@@ -315,6 +316,8 @@ public class GamePanel extends JComponent implements ActionListener, ShelfView, 
                 throw new RuntimeException(ex);//TODO
             }
             listener.actionPerformed(new ActionEvent(this,e.getID(),"EXIT"));
+        } else if (e.getSource() == winnerPanel) {
+            listener.actionPerformed(new ActionEvent(this,e.getID(),"EXIT"));
         }
     }
 
@@ -337,6 +340,23 @@ public class GamePanel extends JComponent implements ActionListener, ShelfView, 
 
             this.revalidate();
             this.repaint();
+        }else if (o.status() == Game.GameStatus.ENDED) {
+           this.removeAll();
+            winnerPanel = new WinnerGamePanel(this,o.points());
+            GridBagConstraints winnerConstraints = new GridBagConstraints(
+                    0,0,
+                    1,1,
+                    1,1,
+                    GridBagConstraints.NORTHWEST,
+                    GridBagConstraints.BOTH,
+                    new Insets(0,0,0,0),
+                    0,0
+            );
+            this.add(winnerPanel,winnerConstraints);
+        } else if (o.status() == Game.GameStatus.STARTED) {
+           //TODO
+        }else if (o.status() == Game.GameStatus.MATCHMAKING || o.status() == Game.GameStatus.RESTARTING) {
+            //TODO
         }
     }
 

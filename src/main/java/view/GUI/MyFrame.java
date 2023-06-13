@@ -15,7 +15,7 @@ public class MyFrame extends JFrame {
 
         this.setTitle("My Shelfie");
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-        this.setSize(new Dimension(1300, 900));
+        this.setSize(new Dimension(1100, 700));
         this.setResizable(true);
     }
 }
