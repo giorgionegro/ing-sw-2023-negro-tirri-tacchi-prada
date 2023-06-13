@@ -3,6 +3,7 @@ package controller;
 import controller.exceptions.GameAccessDeniedException;
 import controller.interfaces.GameController;
 import controller.interfaces.GameManagerController;
+import controller.interfaces.LobbyController;
 import controller.interfaces.ServerController;
 import distibuted.ServerEndpoint;
 import distibuted.interfaces.AppServer;
@@ -29,11 +30,13 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
 
     private static final ExecutorService executorService = Executors.newCachedThreadPool();
     private final @NotNull Map<ClientInterface, User> users;
-    private final @NotNull Map<User, StandardGameController> activeUsers;
-    private final @NotNull Map<String, StandardGameController> gameControllers;
+    private final @NotNull Map<User, LobbyController> activeUsers;
+    private final Map<String,LobbyController> lobbies;
+    private final Map<LobbyController,GameController> gameControllers;
 
     public StandardServerController() throws RemoteException {
         super();
+        this.lobbies = new HashMap<>();
         this.gameControllers = new HashMap<>();
         this.users = new HashMap<>();
         this.activeUsers = new HashMap<>();
@@ -95,70 +98,86 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
 
     @Override
     public void joinGame(@NotNull ClientInterface client, @NotNull LoginInfo info) throws RemoteException {
-        try {
-            if (!this.gameControllers.containsKey(info.gameId()))
-                throw new GameAccessDeniedException("Game does not exists");
+        if(!this.users.containsKey(client))
+            System.err.println("ServerController: Command from unauthenticated client");
+        else
+            try {
+                if (!this.lobbies.containsKey(info.gameId()))
+                    throw new GameAccessDeniedException("Game does not exists");
 
-            User user = this.users.get(client);
+                User user = this.users.get(client);
 
-            if (user.getStatus() == User.Status.JOINED)
-                throw new GameAccessDeniedException("User already joined");
-            StandardGameController gameController = this.gameControllers.get(info.gameId());
-            gameController.joinPlayer(client, user, info);
+                if (user.getStatus() == User.Status.JOINED)
+                    throw new GameAccessDeniedException("User already joined");
 
-            this.activeUsers.put(user, gameController);
+                LobbyController gameController = this.lobbies.get(info.gameId());
 
-            System.err.println("PLAYER: "+info.playerId()+" JOINED: "+info.gameId());
+                gameController.joinPlayer(client, user, info);
 
-        } catch (GameAccessDeniedException e) {
-            if (this.users.containsKey(client) && this.users.get(client) != null)
+                this.activeUsers.put(user, gameController);
+
+                System.err.println("PLAYER: "+info.playerId()+" JOINED: "+info.gameId());
+
+            } catch (GameAccessDeniedException e) {
                 this.users.get(client).reportEvent(User.Status.NOT_JOINED, e.getMessage(), info.time(), User.Event.ERROR_REPORTED);
-        }
+            }
     }
 
     @Override
     public void leaveGame(ClientInterface client) throws RemoteException {
-        try {
-            activeUsers.get(users.get(client)).leavePlayer(client);
-        } catch (NullPointerException | GameAccessDeniedException e) {
-            throw new RemoteException("Client is not connected correctly");
-        }
+        if(!this.users.containsKey(client))
+            System.err.println("ServerController: Command from unauthenticated client");
+        else
+            try {
+                activeUsers.get(users.get(client)).leavePlayer(client);
+            } catch (NullPointerException | GameAccessDeniedException e) {
+                throw new RemoteException("Client is not connected to any game");
+            }
     }
 
     @Override
     public void createGame(ClientInterface client, @NotNull NewGameInfo gameInfo) throws RemoteException {
-        try {
-            if (!this.users.containsKey(client))
-                throw new GameAccessDeniedException("Client is not connected correctly");
+        if(!this.users.containsKey(client))
+            System.err.println("ServerController: Command from unauthenticated client");
+        else
+            try {
+                createGame(gameInfo);
 
-            createGame(gameInfo);
+                users.get(client).reportEvent(User.Status.NOT_JOINED, "Game created", gameInfo.time(), User.Event.GAME_CREATED);
 
-            users.get(client).reportEvent(User.Status.NOT_JOINED, "Game created", gameInfo.time(), User.Event.GAME_CREATED);
-            System.err.println("GAME CREATED: "+gameInfo.gameId());
-        } catch (GameAlreadyExistsException | GameAccessDeniedException | IllegalArgumentException e) {
-            if (users.containsKey(client) && users.get(client) != null)
+                System.out.println("GAME CREATED: "+gameInfo.gameId());
+            } catch (GameAlreadyExistsException | IllegalArgumentException e) {
                 users.get(client).reportEvent(User.Status.NOT_JOINED, e.getMessage(), gameInfo.time(), User.Event.ERROR_REPORTED);
-        }
+            }
     }
 
     ///GAMES MANAGER CONTROLLER/////////////////
 
     @Override
     public GameController getGame(String gameId) throws GameNotExistsException {
-        if (!this.gameControllers.containsKey(gameId))
+        if (!this.lobbies.containsKey(gameId))
             throw new GameNotExistsException();
 
-        return this.gameControllers.get(gameId);
+        return this.gameControllers.get(this.lobbies.get(gameId));
     }
 
 
     @Override
     public void createGame(NewGameInfo newGameInfo) throws GameAlreadyExistsException, IllegalArgumentException {
-        if (gameControllers.containsKey(newGameInfo.gameId()))
+        if (lobbies.containsKey(newGameInfo.gameId()))
             throw new GameAlreadyExistsException();
 
         Game newGame = GameBuilder.build(newGameInfo);
 
-        gameControllers.put(newGameInfo.gameId(), new StandardGameController(newGame));
+        StandardGameController controller = new StandardGameController(
+                newGame,
+                lobbyController -> {
+                        lobbies.remove(newGameInfo.gameId());
+                        gameControllers.remove(lobbyController);
+                }
+        );
+
+        lobbies.put(newGameInfo.gameId(), controller);
+        gameControllers.put(controller,controller);
     }
 }

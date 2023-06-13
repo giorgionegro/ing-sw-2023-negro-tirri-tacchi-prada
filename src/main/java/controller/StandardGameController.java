@@ -16,6 +16,7 @@ import util.TimedLock;
 
 import java.rmi.RemoteException;
 import java.util.*;
+import java.util.function.Consumer;
 
 public class StandardGameController implements GameController, LobbyController {
     private final Game game;
@@ -24,11 +25,14 @@ public class StandardGameController implements GameController, LobbyController {
 
     private final Map<User,Map<Observable,Observer>> observerAssociation;
 
+    private final Consumer<LobbyController> endGameCallback;
+
     /**
      * @param game game to be managed
      */
-    public StandardGameController(Game game) {
+    public StandardGameController(Game game, Consumer<LobbyController> endGameCallback) {
         this.game = game;
+        this.endGameCallback = endGameCallback;
         this.userAssociation = new HashMap<>();
         this.playerAssociation = new HashMap<>();
         this.observerAssociation = new HashMap<>();
@@ -223,9 +227,12 @@ public class StandardGameController implements GameController, LobbyController {
 
     private void closeTheGame(String message){
         long eventTime = System.currentTimeMillis();
+
         for(User u : userAssociation.values()){
             u.reportEvent(User.Status.NOT_JOINED,message,eventTime, User.Event.GAME_LEAVED);
         }
+
+        userAssociation.clear();
 
         game.close();
         game.deleteObservers();
@@ -242,6 +249,8 @@ public class StandardGameController implements GameController, LobbyController {
                 printModelError("Player should exists but does not exists, skipping observer deletion....");
             }
         }
+
+        endGameCallback.accept(this);
     }
 
     @Override

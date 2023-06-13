@@ -25,7 +25,7 @@ class StandardGameControllerTest {
     @Test
     void joinPlayer() {
         Game game = GameBuilder.build(new NewGameInfo("42", "STANDARD", 2, System.currentTimeMillis()));
-        StandardGameController standardGameController = new StandardGameController(game);
+        StandardGameController standardGameController = new StandardGameController(game, lobbyController -> {});
 
         User user = new User();
         LoginInfo loginInfo = new LoginInfo("1", "42", 1);
@@ -90,7 +90,7 @@ class StandardGameControllerTest {
     @Test
     void joinPlayerCompleteLobby() {
         Game game = GameBuilder.build(new NewGameInfo("42", "STANDARD", 2, System.currentTimeMillis()));
-        StandardGameController standardGameController = new StandardGameController(game);
+        StandardGameController standardGameController = new StandardGameController(game, lobbyController -> {});
 
         User user = new User();
         LoginInfo loginInfo = new LoginInfo("1", "42", 1);
@@ -170,7 +170,7 @@ class StandardGameControllerTest {
     @Test
     void rejoinEndedGame() {
         Game game = GameBuilder.build(new NewGameInfo("42", "STANDARD", 2, System.currentTimeMillis()));
-        StandardGameController standardGameController = new StandardGameController(game);
+        StandardGameController standardGameController = new StandardGameController(game, lobbyController -> {});
 
         User user = new User();
         LoginInfo loginInfo = new LoginInfo("1", "42", 1);
@@ -325,7 +325,7 @@ class StandardGameControllerTest {
     void joinWithExistingId() {
 
         Game game = GameBuilder.build(new NewGameInfo("gameId", "STANDARD", 2, System.currentTimeMillis()));
-        StandardGameController standardGameController = new StandardGameController(game);
+        StandardGameController standardGameController = new StandardGameController(game, lobbyController -> {});
 
         User user = new User();
         LoginInfo loginInfo = new LoginInfo("1", "42", 1);
@@ -391,7 +391,7 @@ class StandardGameControllerTest {
 
     }
 
-    //leave with non existing client
+    //leave with non-existing client
 
     /**
      * Method under test: {@link StandardGameController#leavePlayer(ClientInterface)}
@@ -400,7 +400,7 @@ class StandardGameControllerTest {
     void leaveWithNonExistingClient() {
 
         Game game = GameBuilder.build(new NewGameInfo("gameId", "STANDARD", 2, System.currentTimeMillis()));
-        StandardGameController standardGameController = new StandardGameController(game);
+        StandardGameController standardGameController = new StandardGameController(game, lobbyController -> {});
 
         User user = new User();
         LoginInfo loginInfo = new LoginInfo("1", "42", 1);
@@ -516,7 +516,7 @@ class StandardGameControllerTest {
     @Test
     void observersErrorTest() {
         Game game = GameBuilder.build(new NewGameInfo("gameId", "STANDARD", 2, System.currentTimeMillis()));
-        StandardGameController standardGameController = new StandardGameController(game);
+        StandardGameController standardGameController = new StandardGameController(game, lobbyController -> {});
 
         User user = new User();
         LoginInfo loginInfo = new LoginInfo("1", "42", 1);
@@ -653,7 +653,7 @@ class StandardGameControllerTest {
     @Test
     void doPlayerMove() throws PlayerNotExistsException {
         Game game = GameBuilder.build(new NewGameInfo("gameId", "STANDARD", 2, System.currentTimeMillis()));
-        var standardGameController = new StandardGameController(game);
+        var standardGameController = new StandardGameController(game, lobbyController -> {});
         //first we test a move before the game starts and player is not in the game
         List<PickedTile> pickedTiles = new ArrayList<>();
         pickedTiles.add(new PickedTile(1, 1));
@@ -861,7 +861,7 @@ class StandardGameControllerTest {
         standardGameController.doPlayerMove(client, playerMoveInfo);
         standardGameController.doPlayerMove(client2, playerMoveInfo);
          game = GameBuilder.build(new NewGameInfo("32", "STANDARD", 2, System.currentTimeMillis()));
-        standardGameController = new StandardGameController(game);
+        standardGameController = new StandardGameController(game, lobbyController -> {});
         try {
             standardGameController.joinPlayer(client, new User(), new LoginInfo("1", "32", 1));
         } catch (GameAccessDeniedException e) {
@@ -883,7 +883,7 @@ class StandardGameControllerTest {
         standardGameController.doPlayerMove(client2, playerMoveInfo);
 
         game = GameBuilder.build(new NewGameInfo("32", "STANDARD", 2, System.currentTimeMillis()));
-        standardGameController = new StandardGameController(game);
+        standardGameController = new StandardGameController(game, lobbyController -> {});
         try {
             standardGameController.joinPlayer(client, new User(), new LoginInfo("1", "32", 1));
         } catch (GameAccessDeniedException e) {
@@ -1051,7 +1051,7 @@ class StandardGameControllerTest {
         var         game = GameBuilder.build(new NewGameInfo("42", "STANDARD", 2, System.currentTimeMillis()));
 
 
-        var standardGameController = new StandardGameController(game);
+        var standardGameController = new StandardGameController(game, lobbyController -> {});
 
         try {
             standardGameController.joinPlayer(client, new User(), new LoginInfo("1", "42", 1));
@@ -1120,7 +1120,7 @@ class StandardGameControllerTest {
         };
         standardGameController.sendMessage(client3, new StandardMessage("1", "2", "test"));
 
-        //subject non existing
+        //subject non-existing
         standardGameController.sendMessage(client, new StandardMessage("1", "3", "test"));
 
 
