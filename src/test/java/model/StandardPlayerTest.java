@@ -3,10 +3,8 @@ package model;
 import model.abstractModel.PersonalGoal;
 import model.abstractModel.Player;
 import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import java.io.Serializable;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -23,10 +21,7 @@ class StandardPlayerTest {
      */
     @Test
     void testConstructor() {
-
-
-
-
+        //TODO
     }
 
 

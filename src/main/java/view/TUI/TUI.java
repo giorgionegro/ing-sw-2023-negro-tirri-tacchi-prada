@@ -479,9 +479,8 @@ public class TUI implements UI {
 
     public void render() {
         synchronized (this.renderLock) {
-            ClearScreen(s -> {
-                this.printCommandLine(s, DEFAULT);
-            });
+            ClearScreen(s -> this.printCommandLine(s, DEFAULT));
+
             if (this.currentGameState != null) {
                 drawGameState(this.currentGameState, this.canvas, this.canvasColors);
             }

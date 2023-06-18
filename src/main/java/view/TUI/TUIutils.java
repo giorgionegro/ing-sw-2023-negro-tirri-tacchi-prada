@@ -36,7 +36,7 @@ public final class TUIutils {
     /**
      * //TODO function javadoc
      * This method checks what OS the game is being run on and clears the terminal.
-     * @param function
+     * @param function callback to be run on screen cleaning error
      */
     public static void ClearScreen(Consumer<String> function) {
         try {

@@ -31,7 +31,7 @@ public  class StandardPersonalGoal extends PersonalGoal {
     /**
      * Id of the goal
      */
-    private int id;
+    private final int id;
 
     /**
      * Constructor of StandardPersonalGoal not achieved and parameterized with given tile, row and column

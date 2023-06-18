@@ -1,8 +1,6 @@
 package model;
 
 import modelView.PersonalGoalInfo;
-import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
