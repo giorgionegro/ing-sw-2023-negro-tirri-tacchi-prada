@@ -18,27 +18,173 @@ import java.rmi.RemoteException;
 import java.util.*;
 import java.util.function.Consumer;
 
+/**
+ * This is a combined implementation of a {@link LobbyController} and a {@link GameController}
+ * <p>
+ * The game rules implemented follows the standard rules
+ */
 public class StandardGameController implements GameController, LobbyController {
+    /**
+     * The model of the game this controller is interacting with
+     */
     private final Game game;
-    private final @NotNull Map<ClientInterface, User> userAssociation;
-    private final @NotNull Map<User,String> playerAssociation;
-
-    private final Map<User,Map<Observable,Observer>> observerAssociation;
-
-    private final Consumer<LobbyController> endGameCallback;
 
     /**
-     * @param game game to be managed
+     * Map of association between a client and its user reference on the server
      */
-    public StandardGameController(Game game, Consumer<LobbyController> endGameCallback) {
+    private final @NotNull Map<ClientInterface, User> userAssociation;
+
+    /**
+     * Map of association between a user reference on the server and its playerID into game model
+     */
+    private final @NotNull Map<User,String> playerAssociation;
+
+    /**
+     * Map of association between a client and all the observer it is attached to, observers are also associated with
+     * the observable they are attached to.
+     * This object is mainly used when a client needs to be detached from the game
+     */
+    private final Map<ClientInterface,Map<Observable,Observer>> observerAssociation;
+
+    /**
+     * Consumer called after the game has been definitely closed. This allows to notify who generate this instance that
+     * this game controller is no longer useful
+     */
+    private final Consumer<LobbyController> gameClosedCallback;
+
+    /**
+     * The timed lock used by lobby controller to control leave and join flow
+     */
+    private final TimedLock<Boolean> lobbyLock = new TimedLock<>(false);
+
+    /**
+     * This constructor build an instance that use the given game model and gameClosed callback and with empty user, player and observer assoiation
+     * @param game The game model that the game controller need to use
+     * @param gameClosedCallback The gameClosed callback
+     */
+    public StandardGameController(Game game, Consumer<LobbyController> gameClosedCallback) {
         this.game = game;
-        this.endGameCallback = endGameCallback;
+        this.gameClosedCallback = gameClosedCallback;
         this.userAssociation = new HashMap<>();
         this.playerAssociation = new HashMap<>();
         this.observerAssociation = new HashMap<>();
     }
 
     ///LOBBY CONTROLLER/////////////////////
+
+    /**
+     * {@inheritDoc}
+     * @param newClient The client that needs to be attached to the game
+     * @param newUser The user reference of the client into the server
+     * @param info The login info
+     * @throws GameAccessDeniedException if the game is already ended or the player id already exists or the matchmaking is closed
+     */
+    @Override
+    public void joinPlayer(@NotNull ClientInterface newClient, @NotNull User newUser, @NotNull LoginInfo info) throws GameAccessDeniedException {
+        synchronized (lobbyLock) {
+            try {
+                Game.GameStatus previousStatus = game.getGameStatus();
+
+                game.addPlayer(info.playerId());
+
+                userAssociation.put(newClient, newUser);
+
+                /* Put newClient into known client */
+                playerAssociation.put(newUser, info.playerId());
+
+                newUser.reportEvent(User.Status.JOINED, "Joined game: " + info.gameId() + ", you are:" + info.playerId(), info.time(), User.Event.GAME_JOINED);
+
+                try {
+                    addObservers(newClient, newUser, info.playerId());
+                } catch (PlayerNotExistsException e) {
+                    printModelError("Player that should exists does not exists, warning due to possible malfunctions");
+                }
+
+                Game.GameStatus newStatus = game.getGameStatus();
+
+                if (previousStatus == Game.GameStatus.SUSPENDED) {
+                    lobbyLock.notify(true);
+
+                } else if (previousStatus == Game.GameStatus.MATCHMAKING && newStatus == Game.GameStatus.STARTED) {
+                    /* If game is ready to be started we force the first turn*/
+                    game.getLivingRoom().refillBoard();
+                    game.updatePlayersTurn();
+                }
+            } catch (PlayerAlreadyExistsException e) {
+                throw new GameAccessDeniedException("Player id already exists");//Same as above
+            } catch (MatchmakingClosedException | GameEndedException e) {
+                throw new GameAccessDeniedException("Game matchmaking closed"); //Same as above
+            }
+        }
+    }
+
+    /**
+     * Add observers to all needed objects
+     *
+     * @param newClient new player's ClientInterface
+     * @param newPlayerId new player's id
+     */
+    private void addObservers(@NotNull ClientInterface newClient, User newUser, @NotNull String newPlayerId) throws PlayerNotExistsException {
+        Map<Observable,Observer> newObserverAssociation = new HashMap<>();
+
+        Player newPlayer = game.getPlayer(newPlayerId);
+
+        /* Add Player status observer */
+        Observer<Player,Player.Event> playerEventObservable = getPlayerObserver(newClient);
+        newObserverAssociation.put(newPlayer,playerEventObservable);
+        newPlayer.addObserver(playerEventObservable);
+
+        /* Add Game status observer */
+        Observer<Game,Game.Event> gameEventObserver = getGameObserver(newClient);
+        newObserverAssociation.put(game,gameEventObserver);
+        game.addObserver(gameEventObserver);
+
+        /* Add CommonGoal status observers */
+        game.getCommonGoals().forEach(goal -> {
+                Observer<CommonGoal,CommonGoal.Event> commonGoalEventObserver = getCommonGoalObserver(newClient);
+                newObserverAssociation.put(goal,commonGoalEventObserver);
+                goal.addObserver(commonGoalEventObserver);
+            }
+        );
+
+        /* Add LivingRoom status observer */
+        LivingRoom livingRoom = game.getLivingRoom();
+        Observer<LivingRoom,LivingRoom.Event> livingRoomEventObserver = getLivingRoomObserver(newClient);
+        newObserverAssociation.put(livingRoom,livingRoomEventObserver);
+        livingRoom.addObserver(livingRoomEventObserver);
+
+        /* Add PlayerChat status observer */
+        PlayerChat playerChat = newPlayer.getPlayerChat();
+        Observer<PlayerChat,PlayerChat.Event> playerChatEventObserver = getPlayerChatObserver(newClient);
+        newObserverAssociation.put(playerChat,playerChatEventObserver);
+        playerChat.addObserver(playerChatEventObserver);
+
+        /* Add PersonalGoals status observer */
+        newPlayer.getPersonalGoals().forEach(personalGoal -> {
+            Observer<PersonalGoal,PersonalGoal.Event> personalGoalEventObserver = getPersonalGoalObserver(newClient);
+            newObserverAssociation.put(personalGoal,personalGoalEventObserver);
+            personalGoal.addObserver(personalGoalEventObserver);
+        });
+
+        /* Add Shelf status observer */
+        Shelf newPlayerShelf = newPlayer.getShelf();
+        Observer<Shelf,Shelf.Event> shelfEventObserver = getShelfObserver(newClient,newPlayerId);
+        newObserverAssociation.put(newPlayerShelf,shelfEventObserver);
+        newPlayerShelf.addObserver(getShelfObserver(newClient, newPlayerId));
+
+        /* Add Shelf status observer of new player to all already joined players */
+        /* Add Shelf status observer of all already joined players to new player */
+        for(Map.Entry<ClientInterface,User> association : userAssociation.entrySet()){
+            newPlayerShelf.addObserver(getShelfObserver(association.getKey(), newPlayerId));
+            String joinedPlayerId = playerAssociation.get(association.getValue());
+            Shelf joinedPlayerShelf = game.getPlayer(joinedPlayerId).getShelf();
+            Observer<Shelf,Shelf.Event> joinedPlayerShelfEventObserver = getShelfObserver(newClient,joinedPlayerId);
+            newObserverAssociation.put(joinedPlayerShelf,joinedPlayerShelfEventObserver);
+            joinedPlayerShelf.addObserver(joinedPlayerShelfEventObserver);
+        }
+
+        observerAssociation.put(newClient,newObserverAssociation);
+    }
 
     /**
      * Observer to update the PlayerInfo
@@ -176,83 +322,11 @@ public class StandardGameController implements GameController, LobbyController {
         };
     }
 
-
-    private final TimedLock<Boolean> lobbyLock = new TimedLock<>(false);
-
     /**
-     * Add player to the game with all necessary preparations
-     *
-     * @param newClient client that wants to join the game
-     * @param info  login info of the player
-     * @throws GameAccessDeniedException if the game is already ended or the player id already exists or the matchmaking is closed
+     * {@inheritDoc}
+     * @param client {@inheritDoc}
+     * @throws GameAccessDeniedException if client has not joined this game
      */
-    @Override
-    public void joinPlayer(@NotNull ClientInterface newClient, @NotNull User newUser, @NotNull LoginInfo info) throws GameAccessDeniedException {
-        synchronized (lobbyLock) {
-            try {
-                Game.GameStatus previousStatus = game.getGameStatus();
-
-                game.addPlayer(info.playerId());
-
-                userAssociation.put(newClient, newUser);
-
-                /* Put newClient into known client */
-                playerAssociation.put(newUser, info.playerId());
-
-                newUser.reportEvent(User.Status.JOINED, "Joined game: " + info.gameId() + ", you are:" + info.playerId(), info.time(), User.Event.GAME_JOINED);
-
-                try {
-                    addObservers(newClient, newUser, info.playerId());
-                } catch (PlayerNotExistsException e) {
-                    printModelError("Player that should exists does not exists, warning due to possible malfunctions");
-                }
-
-                Game.GameStatus newStatus = game.getGameStatus();
-
-                if (previousStatus == Game.GameStatus.SUSPENDED) {
-                    lobbyLock.notify(true);
-
-                } else if (previousStatus == Game.GameStatus.MATCHMAKING && newStatus == Game.GameStatus.STARTED) {
-                    /* If game is ready to be started we force the first turn*/
-                    game.getLivingRoom().refillBoard();
-                    game.updatePlayersTurn();
-                }
-            } catch (PlayerAlreadyExistsException e) {
-                throw new GameAccessDeniedException("Player id already exists");//Same as above
-            } catch (MatchmakingClosedException | GameEndedException e) {
-                throw new GameAccessDeniedException("Game matchmaking closed"); //Same as above
-            }
-        }
-    }
-
-    private void closeTheGame(String message){
-        long eventTime = System.currentTimeMillis();
-
-        for(User u : userAssociation.values()){
-            u.reportEvent(User.Status.NOT_JOINED,message,eventTime, User.Event.GAME_LEAVED);
-        }
-
-        userAssociation.clear();
-
-        game.close();
-        game.deleteObservers();
-        game.getCommonGoals().forEach(Observable::deleteObservers);
-        game.getLivingRoom().deleteObservers();
-        for(String playerId : playerAssociation.values()){
-            try {
-                Player p = game.getPlayer(playerId);
-                p.deleteObservers();
-                p.getPlayerChat().deleteObservers();
-                p.getPersonalGoals().forEach(Observable::deleteObservers);
-                p.getShelf().deleteObservers();
-            }catch (PlayerNotExistsException e) {
-                printModelError("Player should exists but does not exists, skipping observer deletion....");
-            }
-        }
-
-        endGameCallback.accept(this);
-    }
-
     @Override
     public void leavePlayer(ClientInterface client) throws GameAccessDeniedException {
         /* Check if client is allowed */
@@ -325,78 +399,41 @@ public class StandardGameController implements GameController, LobbyController {
     }
 
     /**
-     * Add observers to all needed objects
-     *
-     * @param newClient new player's ClientInterface
-     * @param newPlayerId new player's id
+     * This method close definitely the game, detach all the client and call the gameClosed callback, send the given message to all connected user
+     * @param message The message that needs to be sent to the connected user
      */
-    private void addObservers(@NotNull ClientInterface newClient, User newUser, @NotNull String newPlayerId) throws PlayerNotExistsException {
-        Map<Observable,Observer> newObserverAssociation = new HashMap<>();
+    private void closeTheGame(String message){
+        long eventTime = System.currentTimeMillis();
 
-        Player newPlayer = game.getPlayer(newPlayerId);
-
-        /* Add Player status observer */
-        Observer<Player,Player.Event> playerEventObservable = getPlayerObserver(newClient);
-        newObserverAssociation.put(newPlayer,playerEventObservable);
-        newPlayer.addObserver(playerEventObservable);
-
-        /* Add Game status observer */
-        Observer<Game,Game.Event> gameEventObserver = getGameObserver(newClient);
-        newObserverAssociation.put(game,gameEventObserver);
-        game.addObserver(gameEventObserver);
-
-        /* Add CommonGoal status observers */
-        game.getCommonGoals().forEach(goal -> {
-                Observer<CommonGoal,CommonGoal.Event> commonGoalEventObserver = getCommonGoalObserver(newClient);
-                newObserverAssociation.put(goal,commonGoalEventObserver);
-                goal.addObserver(commonGoalEventObserver);
-            }
-        );
-
-        /* Add LivingRoom status observer */
-        LivingRoom livingRoom = game.getLivingRoom();
-        Observer<LivingRoom,LivingRoom.Event> livingRoomEventObserver = getLivingRoomObserver(newClient);
-        newObserverAssociation.put(livingRoom,livingRoomEventObserver);
-        livingRoom.addObserver(livingRoomEventObserver);
-
-        /* Add PlayerChat status observer */
-        PlayerChat playerChat = newPlayer.getPlayerChat();
-        Observer<PlayerChat,PlayerChat.Event> playerChatEventObserver = getPlayerChatObserver(newClient);
-        newObserverAssociation.put(playerChat,playerChatEventObserver);
-        playerChat.addObserver(playerChatEventObserver);
-
-        /* Add PersonalGoals status observer */
-        newPlayer.getPersonalGoals().forEach(personalGoal -> {
-            Observer<PersonalGoal,PersonalGoal.Event> personalGoalEventObserver = getPersonalGoalObserver(newClient);
-            newObserverAssociation.put(personalGoal,personalGoalEventObserver);
-            personalGoal.addObserver(personalGoalEventObserver);
-        });
-
-        /* Add Shelf status observer */
-        Shelf newPlayerShelf = newPlayer.getShelf();
-        Observer<Shelf,Shelf.Event> shelfEventObserver = getShelfObserver(newClient,newPlayerId);
-        newObserverAssociation.put(newPlayerShelf,shelfEventObserver);
-        newPlayerShelf.addObserver(getShelfObserver(newClient, newPlayerId));
-
-        /* Add Shelf status observer of new player to all already joined players */
-        /* Add Shelf status observer of all already joined players to new player */
-        for(Map.Entry<ClientInterface,User> association : userAssociation.entrySet()){
-            newPlayerShelf.addObserver(getShelfObserver(association.getKey(), newPlayerId));
-            String joinedPlayerId = playerAssociation.get(association.getValue());
-            Shelf joinedPlayerShelf = game.getPlayer(joinedPlayerId).getShelf();
-            Observer<Shelf,Shelf.Event> joinedPlayerShelfEventObserver = getShelfObserver(newClient,joinedPlayerId);
-            newObserverAssociation.put(joinedPlayerShelf,joinedPlayerShelfEventObserver);
-            joinedPlayerShelf.addObserver(joinedPlayerShelfEventObserver);
+        for(User u : userAssociation.values()){
+            u.reportEvent(User.Status.NOT_JOINED,message,eventTime, User.Event.GAME_LEAVED);
         }
 
-        observerAssociation.put(newUser,newObserverAssociation);
+        userAssociation.clear();
+
+        game.close();
+        game.deleteObservers();
+        game.getCommonGoals().forEach(Observable::deleteObservers);
+        game.getLivingRoom().deleteObservers();
+        for(String playerId : playerAssociation.values()){
+            try {
+                Player p = game.getPlayer(playerId);
+                p.deleteObservers();
+                p.getPlayerChat().deleteObservers();
+                p.getPersonalGoals().forEach(Observable::deleteObservers);
+                p.getShelf().deleteObservers();
+            }catch (PlayerNotExistsException e) {
+                printModelError("Player should exists but does not exists, skipping observer deletion....");
+            }
+        }
+
+        gameClosedCallback.accept(this);
     }
 
     /**
-     * Execute a player move
-     *
-     * @param client     new player's ClientInterface
-     * @param playerMove player move to execute
+     * {@inheritDoc}
+     * @param client {@inheritDoc}
+     * @param playerMove {@inheritDoc}
      */
     public synchronized void doPlayerMove(ClientInterface client, @Nullable PlayerMoveInfo playerMove) {
         /* Check if client is allowed */
@@ -480,9 +517,9 @@ public class StandardGameController implements GameController, LobbyController {
     }
 
     /**
-     * Send a message to players included in the message subject
-     * @param client     new player's ClientInterface
-     * @param newMessage message to send
+     * {@inheritDoc}
+     * @param client {@inheritDoc}
+     * @param newMessage {@inheritDoc}
      */
     public synchronized void sendMessage(ClientInterface client, @NotNull Message newMessage) {
         /* Check if client is allowed */
@@ -510,7 +547,13 @@ public class StandardGameController implements GameController, LobbyController {
         }
     }
 
-
+    /**
+     * This method checks if the given move is legal or illegal
+     * @param playerMove The move that needs to be checked
+     * @param shelf The player shelf the move is referred
+     * @param board The living room board the move is referred
+     * @throws IllegalArgumentException If move is illegal
+     */
     private void checkWellFormedMove(PlayerMoveInfo playerMove, Tile[][] shelf, Tile[][] board) throws IllegalArgumentException{
         /* Do some checks on "move" object, if malformed we discard it */
         if (playerMove == null || playerMove.pickedTiles() == null || playerMove.pickedTiles().size() == 0)
@@ -609,6 +652,10 @@ public class StandardGameController implements GameController, LobbyController {
         return true;
     }
 
+    /**
+     * @param pickedTiles Tiles picked from board
+     * @return true if picked tiles are aligned ad adjacent one another
+     */
     private boolean areTilesAligned(@NotNull List<PickedTile> pickedTiles){
         boolean rowAligned = true;
         boolean colAligned = true;
@@ -634,6 +681,10 @@ public class StandardGameController implements GameController, LobbyController {
         return rowAligned || colAligned;
     }
 
+    /**
+     * This method prints an error on server console if an error occurred on model manipulation
+     * @param message The message that needs to be print
+     */
     private void printModelError(String message){
         System.err.println("GameController: ModelError: "+message);
     }
