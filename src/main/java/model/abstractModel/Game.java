@@ -24,13 +24,17 @@ public abstract class Game extends Observable<Game.Event>{
          */
         PLAYER_JOINED,
         /**
-         * This event is sent whenever a player rejoins the game
-         */
-        PLAYER_REJOINED,
-        /**
          * This event is sent when the game has just been started
          */
         GAME_STARTED,
+        /**
+         * This event is sent whenever game routine has been temporary suspended
+         */
+        GAME_SUSPENDED,
+        /**
+         * This event is sent whenever game routine has been resumed
+         */
+        GAME_RESUMED,
         /**
          * This event is sent whenever a player takes turn to the next player
          */

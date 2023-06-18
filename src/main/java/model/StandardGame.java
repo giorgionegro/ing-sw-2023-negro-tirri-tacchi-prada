@@ -127,9 +127,15 @@ public class StandardGame extends Game{
                 throw new PlayerAlreadyExistsException();
             }
 
-            status = GameStatus.STARTED;
             setChanged();
-            notifyObservers(Event.PLAYER_REJOINED);
+            notifyObservers(Event.PLAYER_JOINED);
+
+            setChanged();
+            if(status==GameStatus.SUSPENDED){
+                status = GameStatus.STARTED;
+                notifyObservers(Event.GAME_RESUMED);
+            }
+
         } else if (status == GameStatus.ENDED) {
             throw new MatchmakingClosedException();
         }
@@ -158,10 +164,16 @@ public class StandardGame extends Game{
         }
 
         int online = players.size()-availablePlayers.size();
-        if(online==1)
+
+        setChanged();
+        if(online==1) {
             this.status = GameStatus.SUSPENDED;
-        else if (online==0)
+            notifyObservers(Event.GAME_SUSPENDED);
+        }
+        else if (online==0) {
             this.status = GameStatus.ENDED;
+            notifyObservers(Event.GAME_ENDED);
+        }
     }
 
     /**
@@ -256,6 +268,9 @@ public class StandardGame extends Game{
      */
     @Override
     public void updatePlayersTurn() throws GameEndedException {
+        if(status == GameStatus.ENDED)
+            throw new GameEndedException();
+
         String p = playerTurnQueue.remove(0);
         playerTurnQueue.add(p);
         while(availablePlayers.contains(players.get(p))){

@@ -287,7 +287,6 @@ public class StandardGameController implements GameController, LobbyController {
 
                     /* If model signal SUSPENDED status then wait 6 second for a player to rejoin */
                     if(game.getGameStatus() == Game.GameStatus.SUSPENDED){
-
                         new Thread(() -> {
                             lobbyLock.reset();
                             if (!lobbyLock.hasBeenNotified())

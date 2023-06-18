@@ -174,6 +174,7 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
                 lobbyController -> {
                         lobbies.remove(newGameInfo.gameId());
                         gameControllers.remove(lobbyController);
+                        System.err.println("GAME DELETED : "+newGameInfo.gameId());
                 }
         );
 
