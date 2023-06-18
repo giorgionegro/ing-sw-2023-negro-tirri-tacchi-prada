@@ -1,10 +1,10 @@
 package view.TUI;
 
 import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
+import java.util.function.Consumer;
 
-public enum TUIutils {
-    ;
+public final class TUIutils {
+    private TUIutils(){}
 
     public static final int WHITE = 37;
     public static final int GREEN = 32;
@@ -38,7 +38,7 @@ public enum TUIutils {
      * This method checks what OS the game is being run on and clears the terminal.
      * @param function
      */
-    public static void ClearScreen(Function<String, Void> function) {
+    public static void ClearScreen(Consumer<String> function) {
         try {
             String operatingSystem = System.getProperty("os.name"); //Check the current operating system
 
@@ -52,7 +52,7 @@ public enum TUIutils {
                 startProcess.waitFor(10, TimeUnit.MILLISECONDS);
             }
         } catch (Exception e) {
-            function.apply("Error: " + e.getMessage());
+            function.accept("Error: " + e.getMessage());
         }
     }
 

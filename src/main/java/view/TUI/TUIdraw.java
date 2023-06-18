@@ -16,12 +16,16 @@ import static view.TUI.TUI.*;
 import static view.TUI.TUIutils.DEFAULT;
 import static view.TUI.TUIutils.getColour;
 
-public enum TUIdraw {
-    ;
+public final class TUIdraw {
+    private TUIdraw(){}
     /**
      * width of command line
      */
     static final int commandLineWidth = 75;
+    static final int commandLineX = 1;
+    static int commandLineY = 41;
+    static int commandLineHeight = 10;
+
     /**
      * Map containing CommonGoal description and array of String that represents common goal image
      */
@@ -539,6 +543,4 @@ public enum TUIdraw {
             drawCenteredString("PERSONAL GOAL", personalGoalsX, personalGoalsY, shelf[0].length * 4 + 1, DEFAULT, cliPixel, cliPixelColor);
         }
     }
-
-
 }

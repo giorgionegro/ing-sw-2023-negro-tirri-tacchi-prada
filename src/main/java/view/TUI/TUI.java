@@ -29,9 +29,7 @@ public class TUI implements UI {
     static final int renderHeight = 53;
     static final int renderWidth = 140;
     /*-----------------------------------------*/
-    static final int commandLineX = 1;
-    static int commandLineY = 41;
-    static int commandLineHeight = 10;
+
     final char[][] canvas = new char[renderHeight][renderWidth];
     final int[][] canvasColors = new int[renderHeight][renderWidth];
     //old cmds to be shifted up
@@ -483,7 +481,6 @@ public class TUI implements UI {
         synchronized (this.renderLock) {
             ClearScreen(s -> {
                 this.printCommandLine(s, DEFAULT);
-                return null;
             });
             if (this.currentGameState != null) {
                 drawGameState(this.currentGameState, this.canvas, this.canvasColors);
