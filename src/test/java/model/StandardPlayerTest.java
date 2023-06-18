@@ -123,12 +123,12 @@ class StandardPlayerTest {
 
     private @NotNull List<PersonalGoal> getPersonalGoals() {
         List<PersonalGoal> r = new ArrayList<>();
-        r.add(new StandardPersonalGoal(Tile.CATS_1, 0, 0));
-        r.add(new StandardPersonalGoal(Tile.BOOKS_2, 1, 1));
-        r.add(new StandardPersonalGoal(Tile.GAMES_1, 2, 2));
-        r.add(new StandardPersonalGoal(Tile.TROPHIES_1, 3, 3));
-        r.add(new StandardPersonalGoal(Tile.FRAMES_1, 4, 4));
-        r.add(new StandardPersonalGoal(Tile.PLANTS_1, 5, 5));
+        r.add(new StandardPersonalGoal(0,Tile.CATS_1, 0, 0));
+        r.add(new StandardPersonalGoal(1,Tile.BOOKS_2, 1, 1));
+        r.add(new StandardPersonalGoal(2,Tile.GAMES_1, 2, 2));
+        r.add(new StandardPersonalGoal(3,Tile.TROPHIES_1, 3, 3));
+        r.add(new StandardPersonalGoal(4,Tile.FRAMES_1, 4, 4));
+        r.add(new StandardPersonalGoal(5,Tile.PLANTS_1, 5, 5));
         return r;
     }
 

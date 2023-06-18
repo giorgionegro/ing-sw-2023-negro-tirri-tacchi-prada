@@ -28,14 +28,20 @@ public  class StandardPersonalGoal extends PersonalGoal {
      * Signal of achieved goal
      */
     private boolean achieved;
+    /**
+     * Id of the goal
+     */
+    private int id;
 
     /**
      * Constructor of StandardPersonalGoal not achieved and parameterized with given tile, row and column
+     * @param id id of the goal
      * @param tile tile type target of the goal
      * @param row row target of the goal
      * @param column column target of the goal
      */
-    public StandardPersonalGoal(model.Tile tile, int row, int column) {
+    public StandardPersonalGoal(int id, model.Tile tile, int row, int column) {
+        this.id = id;
         this.tile = tile;
         this.row = row;
         this.column = column;
@@ -101,6 +107,6 @@ public  class StandardPersonalGoal extends PersonalGoal {
      */
     @Override
     public @NotNull PersonalGoalInfo getInfo() {
-        return new PersonalGoalInfo(achieved, getDescription());
+        return new PersonalGoalInfo(id,achieved, getDescription());
     }
 }

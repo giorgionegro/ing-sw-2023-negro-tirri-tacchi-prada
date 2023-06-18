@@ -89,7 +89,7 @@ public class GameBuilder {
     private static @NotNull ArrayList<PersonalGoal> createPersonalGoal(Tile @NotNull [] tiles, int[] rows, int[] cols) {
         ArrayList<PersonalGoal> personalGoal = new ArrayList<>();
         for (int i = 0; i < tiles.length; i++) {
-            personalGoal.add(new StandardPersonalGoal(tiles[i], rows[i], cols[i]));
+            personalGoal.add(new StandardPersonalGoal(i,tiles[i], rows[i], cols[i]));
         }
         return personalGoal;
     }

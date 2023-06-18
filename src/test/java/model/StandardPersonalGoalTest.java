@@ -10,30 +10,17 @@ import java.util.Arrays;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 class StandardPersonalGoalTest {
 
     /**
-     * Method under test: {@link StandardPersonalGoal#StandardPersonalGoal(StandardPersonalGoalInstance)}
-     */
-    @Test
-    void testConstructor() {
-        StandardPersonalGoal actualStandardPersonalGoal = new StandardPersonalGoal(Tile.CATS_1, 1, 1);
-        assertEquals(6, actualStandardPersonalGoal.getDescription().length);
-        Tile [][] description = actualStandardPersonalGoal.getDescription();
-        assertTrue(actualStandardPersonalGoal.evaluate(description));
-        assertFalse(actualStandardPersonalGoal.hasChanged());
-    }
-
-    /**
-     * Method under test: {@link StandardPersonalGoal#StandardPersonalGoal(Tile, int, int)}
+     * Method under test: {@link StandardPersonalGoal#StandardPersonalGoal(int,Tile, int, int)}
      */
     @Test
     void testConstructor2() {
-        StandardPersonalGoal actualStandardPersonalGoal = new StandardPersonalGoal(Tile.CATS_1, 1, 1);
+        StandardPersonalGoal actualStandardPersonalGoal = new StandardPersonalGoal(0,Tile.CATS_1, 1, 1);
 
         assertEquals(6, actualStandardPersonalGoal.getDescription().length);
         assertFalse(actualStandardPersonalGoal.isAchieved());
@@ -45,7 +32,7 @@ class StandardPersonalGoalTest {
 
     @Test
     void TestDescription() {
-        StandardPersonalGoal test = new StandardPersonalGoal(Tile.BOOKS_2, 3, 4);
+        StandardPersonalGoal test = new StandardPersonalGoal(0,Tile.BOOKS_2, 3, 4);
         Tile[][] TestMatrix = new Tile[6][5];
         Arrays.stream(TestMatrix).forEach(row -> Arrays.fill(row, Tile.EMPTY));
         TestMatrix[3][4] = Tile.BOOKS_2;
@@ -55,7 +42,7 @@ class StandardPersonalGoalTest {
     @Test
 
     void testAchieving() {
-        StandardPersonalGoal test = new StandardPersonalGoal(Tile.BOOKS_2, 3, 4);
+        StandardPersonalGoal test = new StandardPersonalGoal(0,Tile.BOOKS_2, 3, 4);
         if (test.isAchieved())
             fail("Goal achieved at instance");
 
@@ -67,7 +54,7 @@ class StandardPersonalGoalTest {
     @Test
         //Test Tile out of bound.
     void TestEvaluate() {
-        StandardPersonalGoal test = new StandardPersonalGoal(Tile.BOOKS_2, 3, 4);
+        StandardPersonalGoal test = new StandardPersonalGoal(0,Tile.BOOKS_2, 3, 4);
         try {
             test.evaluate(new Tile[2][3]);
             fail();
@@ -79,7 +66,7 @@ class StandardPersonalGoalTest {
     @Test
         //Test shelf cell empty.
     void TestEvaluate2() {
-        StandardPersonalGoal test = new StandardPersonalGoal(Tile.BOOKS_2, 3, 4);
+        StandardPersonalGoal test = new StandardPersonalGoal(0,Tile.BOOKS_2, 3, 4);
         Tile[][] matrice = new Tile[9][9];
         Arrays.stream(matrice).forEach(row -> Arrays.fill(row, Tile.EMPTY));
         try {
@@ -92,7 +79,7 @@ class StandardPersonalGoalTest {
     @Test
         //Tile in the correct position.
     void TestEvaluate3() {
-        StandardPersonalGoal test = new StandardPersonalGoal(Tile.BOOKS_2, 3, 4);
+        StandardPersonalGoal test = new StandardPersonalGoal(0,Tile.BOOKS_2, 3, 4);
         Tile[][] matrice = new Tile[9][9];
         Arrays.stream(matrice).forEach(row -> Arrays.fill(row, Tile.EMPTY));
         matrice[3][4] = Tile.BOOKS_3;
@@ -102,7 +89,7 @@ class StandardPersonalGoalTest {
     @Test
         //Tile in the wrong position.
     void TestEvaluate4() {
-        StandardPersonalGoal test = new StandardPersonalGoal(Tile.BOOKS_2, 3, 4);
+        StandardPersonalGoal test = new StandardPersonalGoal(0,Tile.BOOKS_2, 3, 4);
         Tile[][] matrice = new Tile[9][9];
         Arrays.stream(matrice).forEach(row -> Arrays.fill(row, Tile.EMPTY));
         matrice[3][4] = Tile.CATS_1;
@@ -111,7 +98,7 @@ class StandardPersonalGoalTest {
 
     @Test
     void getInfoTest() {
-        StandardPersonalGoal test = new StandardPersonalGoal(Tile.BOOKS_2, 3, 4);
+        StandardPersonalGoal test = new StandardPersonalGoal(0,Tile.BOOKS_2, 3, 4);
         assertTrue(Arrays.deepEquals(test.getDescription(), test.getInfo().description()));
     }
 }
