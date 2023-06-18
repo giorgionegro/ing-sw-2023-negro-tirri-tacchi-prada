@@ -152,8 +152,8 @@ public class PlayerShelfPanel extends JPanel implements ShelfView, ActionListene
 
     public int countEmpty(int column){
         int count = 0;
-        for(int i=0;i<shelfState.length;i++){
-            if(shelfState[i][column]==Tile.EMPTY)
+        for (Tile[] tiles : shelfState) {
+            if (tiles[column] == Tile.EMPTY)
                 count++;
         }
         return count;

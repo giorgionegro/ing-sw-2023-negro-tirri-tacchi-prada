@@ -29,7 +29,7 @@ public  class StandardPersonalGoal extends PersonalGoal {
      */
     private boolean achieved;
     /**
-     * Id of the goal
+     * ID of the goal
      */
     private final int id;
 

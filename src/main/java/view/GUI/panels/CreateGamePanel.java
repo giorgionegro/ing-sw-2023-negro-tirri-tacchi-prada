@@ -14,9 +14,10 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.rmi.RemoteException;
+import java.util.Objects;
 
 public class CreateGamePanel extends JPanel implements ActionListener, UserView {
-    private final Image CreateGame = new ImageIcon (getClass().getResource("/desktop.png")).getImage();
+    private final Image CreateGame = new ImageIcon (Objects.requireNonNull(getClass().getResource("/desktop.png"))).getImage();
     private final JButton createButton;
 
     private final JButton exitButton;
@@ -31,9 +32,9 @@ public class CreateGamePanel extends JPanel implements ActionListener, UserView 
         this.serverInterface = serverInterface;
         this.clientInterface = clientInterface;
 
-        ImageIcon button = new ImageIcon(getClass().getResource("/img.png"));
-        ImageIcon buttonIdG = new ImageIcon(getClass().getResource("/GameID.png"));
-        ImageIcon buttonIdN = new ImageIcon(getClass().getResource("/nplayers.png"));
+        ImageIcon button = new ImageIcon(Objects.requireNonNull(getClass().getResource("/img.png")));
+        ImageIcon buttonIdG = new ImageIcon(Objects.requireNonNull(getClass().getResource("/GameID.png")));
+        ImageIcon buttonIdN = new ImageIcon(Objects.requireNonNull(getClass().getResource("/nplayers.png")));
         Font font1 = new Font("Century", Font.BOLD, 24);
 
         GridBagConstraints c = new GridBagConstraints();

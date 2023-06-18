@@ -6,7 +6,7 @@ import model.abstractModel.GoalEvaluator;
 /**
  * This class is an implementation of {@link CommonGoal}
  * <p>
- * It initializes the {@link #tokenStack} with as much tokens as players.
+ * It initializes the {@link #tokenStack} with as many tokens as players.
  */
 public class StandardCommonGoal extends CommonGoal {
 
