@@ -1,8 +1,6 @@
 package view.GUI.panels;
 
-import model.Tile;
 import modelView.PickedTile;
-import modelView.PlayerInfo;
 import modelView.PlayerMoveInfo;
 
 import view.GUI.components.SwapButton;
@@ -14,9 +12,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class TilesOrderingPanel extends JPanel implements ActionListener{
-    private final Image background = new ImageIcon(getClass().getResource("/TilesOrderingTableBackground.png")).getImage();
+    private final Image background = new ImageIcon(Objects.requireNonNull(getClass().getResource("/TilesOrderingTableBackground.png"))).getImage();
     private final GridBagConstraints tileSpacer = new GridBagConstraints(
             1,1,
             1,1,
@@ -105,7 +104,7 @@ public class TilesOrderingPanel extends JPanel implements ActionListener{
 
         int y = topPadding + 2*verticalSkip;
         for(TileButton t : pickedTiles){
-            Image tileImage = new ImageIcon(getClass().getResource("/Tile/"+t.getTile().name()+".png")).getImage();
+            Image tileImage = new ImageIcon(Objects.requireNonNull(getClass().getResource("/Tile/" + t.getTile().name() + ".png"))).getImage();
             g.drawImage(tileImage, leftPadding, y, size, size, null);
             y-=verticalSkip;
         }
@@ -144,8 +143,7 @@ public class TilesOrderingPanel extends JPanel implements ActionListener{
                 moveSender.actionPerformed(new ActionEvent(move, 0, "SEND MOVE"));
             }
 
-        } else if(e.getSource() instanceof TileButton){
-            TileButton button = ((TileButton) e.getSource());
+        } else if(e.getSource() instanceof TileButton button){
             boolean selected = button.isSelected();
             if (selected) {
                 button.setSelected(false);

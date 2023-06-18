@@ -13,10 +13,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.rmi.RemoteException;
+import java.util.Objects;
 
 public class LivingRoomPanel extends JPanel implements LivingRoomView {
-    private final Image background = new ImageIcon(getClass().getResource("/LivingRoomBackground.png")).getImage();
-    private final Image endGameToken = new ImageIcon(getClass().getResource("/Token/"+ Token.TOKEN_GAME_END.name() + ".png")).getImage();
+    private final Image background = new ImageIcon(Objects.requireNonNull(getClass().getResource("/LivingRoomBackground.png"))).getImage();
+    private final Image endGameToken = new ImageIcon(Objects.requireNonNull(getClass().getResource("/Token/" + Token.TOKEN_GAME_END.name() + ".png"))).getImage();
 
     private final Container topSpacer = new Container();
     private final Container leftSpacer = new Container();

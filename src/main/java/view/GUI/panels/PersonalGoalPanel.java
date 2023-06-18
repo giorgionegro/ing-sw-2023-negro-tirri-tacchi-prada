@@ -12,9 +12,10 @@ import java.rmi.RemoteException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class PersonalGoalPanel extends JPanel implements PersonalGoalView {
-    private final Image personalGoalImage = new ImageIcon(getClass().getResource("/PersonalGoalBackground.jpg")).getImage();
+    private final Image personalGoalImage = new ImageIcon(Objects.requireNonNull(getClass().getResource("/PersonalGoalBackground.jpg"))).getImage();
 
     private final Map<Tile[][],Boolean> personalGoals = new HashMap<>();
 
@@ -47,7 +48,7 @@ public class PersonalGoalPanel extends JPanel implements PersonalGoalView {
             int x = leftPadding;
             for(int j=0;j<5;j++){
                 if(merged[i][j]!=Tile.EMPTY) {
-                    Image tileImage = new ImageIcon(getClass().getResource("/Tile/"+merged[i][j].name()+".png")).getImage();
+                    Image tileImage = new ImageIcon(Objects.requireNonNull(getClass().getResource("/Tile/" + merged[i][j].name() + ".png"))).getImage();
                     g.drawImage(tileImage, x+1, y+1, size-1, size-1, null);
                 }
                 x+=horizontalSkip;

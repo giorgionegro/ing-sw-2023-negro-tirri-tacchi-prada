@@ -11,11 +11,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class WinnerGamePanel extends JPanel implements ActionListener {
-    private final Image createGame = new ImageIcon(getClass().getResource("/leaderboardBackground.png")).getImage();
-    private final ImageIcon firstCup = new ImageIcon(getClass().getResource("/firstCup.png"));
-    private final ImageIcon secondCup = new ImageIcon(getClass().getResource("/secondCup.png"));
-    private final ImageIcon thirdCup = new ImageIcon(getClass().getResource("/thirdCup.png"));
-    private final ImageIcon filter = new ImageIcon(getClass().getResource("/filterWinnerPanel.png"));
+    private final Image createGame = new ImageIcon(Objects.requireNonNull(getClass().getResource("/leaderboardBackground.png"))).getImage();
+    private final ImageIcon firstCup = new ImageIcon(Objects.requireNonNull(getClass().getResource("/firstCup.png")));
+    private final ImageIcon secondCup = new ImageIcon(Objects.requireNonNull(getClass().getResource("/secondCup.png")));
+    private final ImageIcon thirdCup = new ImageIcon(Objects.requireNonNull(getClass().getResource("/thirdCup.png")));
+    private final ImageIcon filter = new ImageIcon(Objects.requireNonNull(getClass().getResource("/filterWinnerPanel.png")));
     private final ActionListener listener;
     private final Map<String, Integer> points;
     private final JButton exitButton;
@@ -81,7 +81,7 @@ public class WinnerGamePanel extends JPanel implements ActionListener {
         this.points = points;
         this.listener = listener;
         Font font = new Font("Century", Font.BOLD, 20);
-        Image button = new ImageIcon(getClass().getResource("/img.png")).getImage();
+        Image button = new ImageIcon(Objects.requireNonNull(getClass().getResource("/img.png"))).getImage();
 
 
 
@@ -99,7 +99,7 @@ public class WinnerGamePanel extends JPanel implements ActionListener {
         exitButton.addActionListener(this);
 
         //Title
-        ImageIcon titleImage = new ImageIcon(getClass().getResource("/title.png"));
+        ImageIcon titleImage = new ImageIcon(Objects.requireNonNull(getClass().getResource("/title.png")));
         JLabel title = new JLabel() {
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
@@ -135,7 +135,7 @@ public class WinnerGamePanel extends JPanel implements ActionListener {
         this.add(new Container(), lateralSpacerConstraints);
 
         Container exitContainer = new Container();
-        exitContainer.setLayout(new AspectRatioLayout((float)2/1));
+        exitContainer.setLayout(new AspectRatioLayout((float) 2));
         exitContainer.add(exitButton);
         this.add(exitContainer,exitButtonConstraints);
 

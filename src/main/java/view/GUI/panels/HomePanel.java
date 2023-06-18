@@ -6,6 +6,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Objects;
 
 public class HomePanel extends JPanel implements ActionListener {
     JButton CreateButton;
@@ -15,7 +16,7 @@ public class HomePanel extends JPanel implements ActionListener {
     public HomePanel(ActionListener listener){//JFrame = a GUI window to add components to
         this.listener = listener;
 
-        desktop = new ImageIcon (getClass().getResource("/desktop.png")).getImage();
+        desktop = new ImageIcon (Objects.requireNonNull(getClass().getResource("/desktop.png"))).getImage();
         GridBagConstraints c = new GridBagConstraints();
         c.gridx=0;
         c.gridy=0;
@@ -34,7 +35,7 @@ public class HomePanel extends JPanel implements ActionListener {
         //Title
 
 
-        ImageIcon titleImage = new ImageIcon(getClass().getResource("/title.png"));
+        ImageIcon titleImage = new ImageIcon(Objects.requireNonNull(getClass().getResource("/title.png")));
         JLabel title = new JLabel() {
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
@@ -48,7 +49,7 @@ public class HomePanel extends JPanel implements ActionListener {
         //Buttons
         Font font = new Font("Century", Font.BOLD, 20);
         JoinButton = new JButton();
-        ImageIcon button = new ImageIcon(getClass().getResource("/img.png"));
+        ImageIcon button = new ImageIcon(Objects.requireNonNull(getClass().getResource("/img.png")));
         JoinButton.setIcon(button);
         JLabel join = new JLabel("Join Game");
         join.setFont(font);

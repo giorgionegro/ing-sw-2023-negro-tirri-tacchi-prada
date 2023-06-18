@@ -12,6 +12,7 @@ import java.awt.event.ActionListener;
 import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import javax.swing.JComponent;
 
 
@@ -19,7 +20,7 @@ import view.GUI.*;
 import view.interfaces.*;
 
 public class GamePanel extends JComponent implements ActionListener, ShelfView, PlayerChatView, CommonGoalView, PlayerView, GameView, LivingRoomView, PersonalGoalView {
-    private final Image parquet = new ImageIcon(getClass().getResource("/parquet.jpg")).getImage();
+    private final Image parquet = new ImageIcon(Objects.requireNonNull(getClass().getResource("/parquet.jpg"))).getImage();
 
     private LivingRoomPanel livingRoomBoard;
     private Map<String, ShelfPanel> opponentShelfBoards;

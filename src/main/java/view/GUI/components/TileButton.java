@@ -5,13 +5,14 @@ import model.Tile;
 
 
 import java.awt.*;
+import java.util.Objects;
 
 public class TileButton extends JButton {
     private final int tileX;
     private final int tileY;
     private final Tile tile;
     private final Image image;
-    private final Image selectedImage = new ImageIcon(getClass().getResource("/TileSelectedFilter.png")).getImage();
+    private final Image selectedImage = new ImageIcon(Objects.requireNonNull(getClass().getResource("/TileSelectedFilter.png"))).getImage();
 
     public TileButton(int x, int y, Tile tile){
         this.tileX = x;
@@ -19,7 +20,7 @@ public class TileButton extends JButton {
         this.tile = tile;
 
         this.setPreferredSize(new Dimension(0,0));
-        image = new ImageIcon(getClass().getResource("/Tile/" + tile.name() + ".png")).getImage();
+        image = new ImageIcon(Objects.requireNonNull(getClass().getResource("/Tile/" + tile.name() + ".png"))).getImage();
     }
 
     @Override

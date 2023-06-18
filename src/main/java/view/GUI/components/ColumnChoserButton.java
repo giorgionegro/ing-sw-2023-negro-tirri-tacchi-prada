@@ -4,11 +4,12 @@ package view.GUI.components;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Objects;
 
 public class ColumnChoserButton extends JButton {
 
-    private final ImageIcon insertArrow = new ImageIcon(getClass().getResource("/insert.png"));
-    private final Image disabledImage = new ImageIcon(getClass().getResource("/TileSelectedFilter.png")).getImage();
+    private final ImageIcon insertArrow = new ImageIcon(Objects.requireNonNull(getClass().getResource("/insert.png")));
+    private final Image disabledImage = new ImageIcon(Objects.requireNonNull(getClass().getResource("/TileSelectedFilter.png"))).getImage();
 
     public ColumnChoserButton(int column){
         this.setActionCommand(String.valueOf(column));

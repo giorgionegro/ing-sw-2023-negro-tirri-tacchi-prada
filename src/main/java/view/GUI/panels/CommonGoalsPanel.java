@@ -15,6 +15,7 @@ import java.awt.*;
 import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class CommonGoalsPanel extends JPanel implements PlayerView, CommonGoalView {
 
@@ -64,9 +65,9 @@ public class CommonGoalsPanel extends JPanel implements PlayerView, CommonGoalVi
         this.add(new Container(),spacerConstraints);
 
         for(String id : commonGoals.keySet()){
-            Image commonGoalImg = new ImageIcon(getClass().getResource("/CommonGoals/GUI/" +id+".jpg")).getImage();
-            Image tokenImg = new ImageIcon(getClass().getResource("/Token/" +commonGoals.get(id).name()+".png")).getImage();
-            Image achievedImg = new ImageIcon(getClass().getResource("/CommonGoals/GUI/achieved.png")).getImage();
+            Image commonGoalImg = new ImageIcon(Objects.requireNonNull(getClass().getResource("/CommonGoals/GUI/" + id + ".jpg"))).getImage();
+            Image tokenImg = new ImageIcon(Objects.requireNonNull(getClass().getResource("/Token/" + commonGoals.get(id).name() + ".png"))).getImage();
+            Image achievedImg = new ImageIcon(Objects.requireNonNull(getClass().getResource("/CommonGoals/GUI/achieved.png"))).getImage();
 
             JLabel commonGoal1 = new JLabel() {
                 protected void paintComponent(Graphics g) {

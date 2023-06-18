@@ -6,6 +6,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Objects;
 
 public class NetworkChoicePanel extends JPanel implements ActionListener {
 
@@ -25,7 +26,7 @@ public class NetworkChoicePanel extends JPanel implements ActionListener {
         this.setBackground(new Color(0, 0, 0));
         this.setLayout(new GridBagLayout());
 
-        ImageIcon titleImage = new ImageIcon(this.getClass().getResource("/connect.png").getPath());
+        ImageIcon titleImage = new ImageIcon(Objects.requireNonNull(getClass().getResource("/connect.png")));
         JLabel title = new JLabel() {
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
@@ -38,7 +39,7 @@ public class NetworkChoicePanel extends JPanel implements ActionListener {
         //Buttons
         Font font = new Font("Century", Font.BOLD, 18);
         RMIButton = new JButton();
-        ImageIcon button = new ImageIcon(GUI.class.getResource("/img.png").getPath());
+        ImageIcon button = new ImageIcon(Objects.requireNonNull(getClass().getResource("/img.png")));
         RMIButton.setIcon(button);
         JLabel RMI = new JLabel("     RMI    ");
         RMI.setFont(font);

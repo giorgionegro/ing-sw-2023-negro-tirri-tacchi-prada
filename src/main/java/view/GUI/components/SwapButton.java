@@ -4,10 +4,11 @@ package view.GUI.components;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Objects;
 
 public class SwapButton extends JButton {
 
-    private final Image swapArrowImage = new ImageIcon(getClass().getResource("/SwapTilesIcon.png")).getImage();
+    private final Image swapArrowImage = new ImageIcon(Objects.requireNonNull(getClass().getResource("/SwapTilesIcon.png"))).getImage();
 
     public SwapButton(){
         this.setPreferredSize(new Dimension(0,0));

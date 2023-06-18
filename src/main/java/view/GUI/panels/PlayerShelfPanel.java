@@ -15,11 +15,12 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public class PlayerShelfPanel extends JPanel implements ShelfView, ActionListener {
 
-    private final Image foreground = new ImageIcon(getClass().getResource("/BookshelfForeground.png")).getImage();
-    private final Image background = new ImageIcon(getClass().getResource("/BookshelfBackground.png")).getImage();
+    private final Image foreground = new ImageIcon(Objects.requireNonNull(getClass().getResource("/BookshelfForeground.png"))).getImage();
+    private final Image background = new ImageIcon(Objects.requireNonNull(getClass().getResource("/BookshelfBackground.png"))).getImage();
 
     private Tile[][] shelfState = new Tile[6][5];
 
@@ -119,7 +120,7 @@ public class PlayerShelfPanel extends JPanel implements ShelfView, ActionListene
             int x = leftPadding;
             for (int j = 0; j < shelfState[0].length; j++) {
                 if (tiles[j] != Tile.EMPTY) {
-                    Image tileImage = new ImageIcon(getClass().getResource("/Tile/" + tiles[j].name() + ".png")).getImage();
+                    Image tileImage = new ImageIcon(Objects.requireNonNull(getClass().getResource("/Tile/" + tiles[j].name() + ".png"))).getImage();
                     g.drawImage(tileImage, x, y, size, size, null);
                 }
                 x += horizontalSkip;
@@ -142,11 +143,7 @@ public class PlayerShelfPanel extends JPanel implements ShelfView, ActionListene
         if(e.getSource()==orderingTable){
             int n_picked = Integer.parseInt(e.getActionCommand());
             for(int i = 0; i<columnSelectorList.size();i++){
-                if(countEmpty(i)<n_picked){
-                    columnSelectorList.get(i).setEnabled(false);
-                }else{
-                    columnSelectorList.get(i).setEnabled(true);
-                }
+                columnSelectorList.get(i).setEnabled(countEmpty(i) >= n_picked);
             }
         }else{
             orderingTable.actionPerformed(new ActionEvent(this,0,e.getActionCommand()));

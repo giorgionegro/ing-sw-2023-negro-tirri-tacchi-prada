@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.rmi.RemoteException;
 import java.util.Arrays;
+import java.util.Objects;
 
 import model.Tile;
 import model.abstractModel.Shelf;
@@ -13,8 +14,8 @@ import view.interfaces.ShelfView;
 
 public class ShelfPanel extends JPanel implements ShelfView {
 
-    private final Image foreground = new ImageIcon(getClass().getResource("/BookshelfForeground.png")).getImage();
-    private final Image background = new ImageIcon(getClass().getResource("/BookshelfBackground.png")).getImage();
+    private final Image foreground = new ImageIcon(Objects.requireNonNull(getClass().getResource("/BookshelfForeground.png"))).getImage();
+    private final Image background = new ImageIcon(Objects.requireNonNull(getClass().getResource("/BookshelfBackground.png"))).getImage();
     private Tile[][] shelfState = new Tile[6][5];
 
     public ShelfPanel() {
@@ -44,7 +45,7 @@ public class ShelfPanel extends JPanel implements ShelfView {
             int x = leftPadding;
             for(int j=0;j<5;j++){
                 if(shelfState[i][j]!=Tile.EMPTY) {
-                    Image tileImage = new ImageIcon(getClass().getResource("/Tile/"+shelfState[i][j].name()+".png")).getImage();
+                    Image tileImage = new ImageIcon(Objects.requireNonNull(getClass().getResource("/Tile/" + shelfState[i][j].name() + ".png"))).getImage();
                     g.drawImage(tileImage, x, y, size, size, null);
                 }
                 x+=horizontalSkip;
