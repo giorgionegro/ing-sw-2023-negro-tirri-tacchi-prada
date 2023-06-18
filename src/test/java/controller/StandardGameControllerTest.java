@@ -1,15 +1,17 @@
-
 package controller;
 
 import controller.exceptions.GameAccessDeniedException;
 import distibuted.interfaces.ClientInterface;
 import distibuted.interfaces.ServerInterface;
+
+import java.util.function.Consumer;
+
 import model.*;
 import model.abstractModel.*;
 import model.exceptions.PlayerNotExistsException;
 import modelView.*;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import util.TimedLock;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -17,15 +19,17 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
-@Disabled
+@SuppressWarnings({"MismatchedReadAndWriteOfArray", "BlockingMethodInNonBlockingContext", "unchecked"})
 class StandardGameControllerTest {
 
 
     @Test
     void joinPlayer() {
         Game game = GameBuilder.build(new NewGameInfo("42", "STANDARD", 2, System.currentTimeMillis()));
-        StandardGameController standardGameController = new StandardGameController(game, lobbyController -> {});
+        StandardGameController standardGameController = new StandardGameController(game, lobbyController -> {
+        });
 
         User user = new User();
         LoginInfo loginInfo = new LoginInfo("1", "42", 1);
@@ -76,7 +80,12 @@ class StandardGameControllerTest {
             }
         };
 
-            assertDoesNotThrow(()->standardGameController.joinPlayer(client, user, loginInfo));
+        assertDoesNotThrow(() -> {
+            standardGameController.joinPlayer(client, user, loginInfo);
+            Thread.sleep(100);
+
+
+        });
 
 
     }
@@ -90,7 +99,8 @@ class StandardGameControllerTest {
     @Test
     void joinPlayerCompleteLobby() {
         Game game = GameBuilder.build(new NewGameInfo("42", "STANDARD", 2, System.currentTimeMillis()));
-        StandardGameController standardGameController = new StandardGameController(game, lobbyController -> {});
+        StandardGameController standardGameController = new StandardGameController(game, lobbyController -> {
+        });
 
         User user = new User();
         LoginInfo loginInfo = new LoginInfo("1", "42", 1);
@@ -143,7 +153,7 @@ class StandardGameControllerTest {
 
         User finalUser = user;
         LoginInfo finalLoginInfo = loginInfo;
-        assertDoesNotThrow(()-> standardGameController.joinPlayer(client, finalUser, finalLoginInfo)) ;
+        assertDoesNotThrow(() -> standardGameController.joinPlayer(client, finalUser, finalLoginInfo));
 
         //join the second player
         user = new User();
@@ -151,10 +161,81 @@ class StandardGameControllerTest {
 
         User finalUser1 = user;
         LoginInfo finalLoginInfo1 = loginInfo;
-        assertDoesNotThrow(()-> standardGameController.joinPlayer(client, finalUser1, finalLoginInfo1));
+        assertDoesNotThrow(() -> standardGameController.joinPlayer(client, finalUser1, finalLoginInfo1));
 
 
+    }
 
+    /**
+     * Method under test: {@link StandardGameController#leavePlayer(ClientInterface)}
+     */
+    @Test
+    void testLeavePlayer() throws GameAccessDeniedException {
+
+        Game game = GameBuilder.build(new NewGameInfo("42", "STANDARD", 2, System.currentTimeMillis()));
+
+        // Arrange
+        StandardGameController standardGameController = new StandardGameController(game, mock(Consumer.class));
+        ClientInterface clientInterface = new ClientInterface() {
+            @Override
+            public void bind(ServerInterface server) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(GameInfo o, Game.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(LivingRoomInfo o, LivingRoom.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(PersonalGoalInfo o, PersonalGoal.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(PlayerChatInfo o, PlayerChat.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(PlayerInfo o, Player.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(ShelfInfo o, Shelf.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(UserInfo o, User.Event evt) throws RemoteException {
+
+            }
+        };
+
+        standardGameController.joinPlayer(clientInterface, new User(), new LoginInfo("1", "42", 1));
+        // Act
+        standardGameController.leavePlayer(clientInterface);
+    }
+
+    /**
+     * Method under test: {@link StandardGameController#leavePlayer(ClientInterface)}
+     */
+    @Test
+    void testLeavePlayer2() {
+        // Arrange, Act and Assert
+        assertThrows(GameAccessDeniedException.class,
+                () -> (new StandardGameController(null, mock(Consumer.class))).leavePlayer(null));
     }
 
     //test join with a full lobby, leaving the game and trying to join again
@@ -168,148 +249,54 @@ class StandardGameControllerTest {
      * </ul>
      */
     @Test
-    void rejoinEndedGame() {
+    void rejoinEndedGame() throws GameAccessDeniedException {
         Game game = GameBuilder.build(new NewGameInfo("42", "STANDARD", 2, System.currentTimeMillis()));
-        StandardGameController standardGameController = new StandardGameController(game, lobbyController -> {});
+        StandardGameController standardGameController = new StandardGameController(game, lobbyController -> {
+        });
 
         User user = new User();
         LoginInfo loginInfo = new LoginInfo("1", "42", 1);
-        ClientInterface client = new ClientInterface() {
-            @Override
-            public void bind(ServerInterface server) throws RemoteException {
-
-            }
-
-            @Override
-            public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
-
-            }
-
-            @Override
-            public void update(GameInfo o, Game.Event evt) throws RemoteException {
-
-            }
-
-
-            @Override
-            public void update(LivingRoomInfo o, LivingRoom.Event evt) throws RemoteException {
-
-            }
-
-            @Override
-            public void update(PersonalGoalInfo o, PersonalGoal.Event evt) throws RemoteException {
-
-            }
-
-            @Override
-            public void update(PlayerChatInfo o, PlayerChat.Event evt) throws RemoteException {
-
-            }
-
-            @Override
-            public void update(PlayerInfo o, Player.Event evt) throws RemoteException {
-
-            }
-
-            @Override
-            public void update(ShelfInfo o, Shelf.Event evt) throws RemoteException {
-
-            }
-
-            @Override
-            public void update(UserInfo o, User.Event evt) throws RemoteException {
-
-
-            }
-        };
+        ClientInterface client = mock(ClientInterface.class);
 
         User finalUser1 = user;
         LoginInfo finalLoginInfo1 = loginInfo;
-        try {
+
             standardGameController.joinPlayer(client, user, finalLoginInfo1);
-        } catch (GameAccessDeniedException e) {
-            fail();
-        }
+
 
         //join the second player
         user = new User();
         loginInfo = new LoginInfo("2", "42", 1);
-        var fclient = new ClientInterface() {
-            @Override
-            public void bind(ServerInterface server) throws RemoteException {
-
-            }
-
-            @Override
-            public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
-
-            }
-
-            @Override
-            public void update(GameInfo o, Game.Event evt) throws RemoteException {
-
-            }
-
-
-            @Override
-            public void update(LivingRoomInfo o, LivingRoom.Event evt) throws RemoteException {
-
-            }
-
-            @Override
-            public void update(PersonalGoalInfo o, PersonalGoal.Event evt) throws RemoteException {
-
-            }
-
-            @Override
-            public void update(PlayerChatInfo o, PlayerChat.Event evt) throws RemoteException {
-
-            }
-
-            @Override
-            public void update(PlayerInfo o, Player.Event evt) throws RemoteException {
-
-            }
-
-            @Override
-            public void update(ShelfInfo o, Shelf.Event evt) throws RemoteException {
-
-            }
-
-            @Override
-            public void update(UserInfo o, User.Event evt) throws RemoteException {
-                throw new RemoteException("connected");
-
-            }
-        };
+        var fclient = mock(ClientInterface.class);
 
         LoginInfo finalLoginInfo2 = loginInfo;
-        try {
+
             standardGameController.joinPlayer(fclient, user, finalLoginInfo2);
-        } catch (GameAccessDeniedException e) {
-            fail();
-        }
+
 
         //leave the game
 
-        new Thread( ()-> {
+        new Thread(() -> {
+
             try {
                 standardGameController.leavePlayer(fclient);
             } catch (GameAccessDeniedException e) {
                 throw new RuntimeException(e);
             }
+
         }).start();
 
         //try to join again in 6 seconds
 
 
         User finalUser = user;
-        assertDoesNotThrow(()->standardGameController.joinPlayer(fclient, finalUser, finalLoginInfo2));
+        assertDoesNotThrow(() -> standardGameController.joinPlayer(fclient, finalUser, finalLoginInfo2));
 
 
         //now try to leave again and join after 6 seconds
-        assertDoesNotThrow(()->standardGameController.leavePlayer(fclient));
-        assertDoesNotThrow(()->standardGameController.joinPlayer(fclient, finalUser1, finalLoginInfo2));
+        assertDoesNotThrow(() -> standardGameController.leavePlayer(fclient));
+        assertDoesNotThrow(() -> standardGameController.joinPlayer(fclient, finalUser1, finalLoginInfo2));
+        //network test can really check result without using a real network
 
 
     }
@@ -322,10 +309,11 @@ class StandardGameControllerTest {
      */
 
     @Test
-    void joinWithExistingId() {
+    void joinWithExistingId() throws GameAccessDeniedException {
 
         Game game = GameBuilder.build(new NewGameInfo("gameId", "STANDARD", 2, System.currentTimeMillis()));
-        StandardGameController standardGameController = new StandardGameController(game, lobbyController -> {});
+        StandardGameController standardGameController = new StandardGameController(game, lobbyController -> {
+        });
 
         User user = new User();
         LoginInfo loginInfo = new LoginInfo("1", "42", 1);
@@ -375,11 +363,9 @@ class StandardGameControllerTest {
 
             }
         };
-        try {
+
             standardGameController.joinPlayer(client, user, loginInfo);
-        } catch (Exception e) {
-            fail("Exception thrown" + e.getMessage());
-        }
+
         //join the second player
         user = new User();
         loginInfo = new LoginInfo("1", "42", 1);
@@ -397,10 +383,11 @@ class StandardGameControllerTest {
      * Method under test: {@link StandardGameController#leavePlayer(ClientInterface)}
      */
     @Test
-    void leaveWithNonExistingClient() {
+    void leaveWithNonExistingClient() throws GameAccessDeniedException {
 
         Game game = GameBuilder.build(new NewGameInfo("gameId", "STANDARD", 2, System.currentTimeMillis()));
-        StandardGameController standardGameController = new StandardGameController(game, lobbyController -> {});
+        StandardGameController standardGameController = new StandardGameController(game, lobbyController -> {
+        });
 
         User user = new User();
         LoginInfo loginInfo = new LoginInfo("1", "42", 1);
@@ -450,59 +437,12 @@ class StandardGameControllerTest {
 
             }
         };
-        try {
+
             standardGameController.joinPlayer(client, user, loginInfo);
-        } catch (Exception e) {
-            fail("Exception thrown" + e.getMessage());
-        }
+
 
         //join the second player
-        client = new ClientInterface() {
-            @Override
-            public void bind(ServerInterface server) throws RemoteException {
-
-            }
-
-            @Override
-            public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
-
-            }
-
-            @Override
-            public void update(GameInfo o, Game.Event evt) throws RemoteException {
-
-            }
-
-            @Override
-            public void update(LivingRoomInfo o, LivingRoom.Event evt) throws RemoteException {
-
-            }
-
-            @Override
-            public void update(PersonalGoalInfo o, PersonalGoal.Event evt) throws RemoteException {
-
-            }
-
-            @Override
-            public void update(PlayerChatInfo o, PlayerChat.Event evt) throws RemoteException {
-
-            }
-
-            @Override
-            public void update(PlayerInfo o, Player.Event evt) throws RemoteException {
-
-            }
-
-            @Override
-            public void update(ShelfInfo o, Shelf.Event evt) throws RemoteException {
-
-            }
-
-            @Override
-            public void update(UserInfo o, User.Event evt) throws RemoteException {
-
-            }
-        };
+        client = mock(ClientInterface.class);
         ClientInterface finalClient = client;
         assertThrows(GameAccessDeniedException.class, () -> standardGameController.leavePlayer(finalClient));
 
@@ -514,134 +454,30 @@ class StandardGameControllerTest {
      * {@link StandardGameController#joinPlayer(ClientInterface, User, LoginInfo)}
      */
     @Test
-    void observersErrorTest() {
+    void observersErrorTest() throws GameAccessDeniedException {
         Game game = GameBuilder.build(new NewGameInfo("gameId", "STANDARD", 2, System.currentTimeMillis()));
-        StandardGameController standardGameController = new StandardGameController(game, lobbyController -> {});
+        StandardGameController standardGameController = new StandardGameController(game, lobbyController -> {
+        });
 
         User user = new User();
         LoginInfo loginInfo = new LoginInfo("1", "42", 1);
-        ClientInterface client = new ClientInterface() {
-            @Override
-            public void bind(ServerInterface server) throws RemoteException {
+        ClientInterface client = mock(ClientInterface.class);
 
-            }
-
-            @Override
-            public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
-
-            }
-
-            @Override
-            public void update(GameInfo o, Game.Event evt) throws RemoteException {
-
-            }
-
-
-            @Override
-            public void update(LivingRoomInfo o, LivingRoom.Event evt) throws RemoteException {
-
-            }
-
-            @Override
-            public void update(PersonalGoalInfo o, PersonalGoal.Event evt) throws RemoteException {
-
-            }
-
-            @Override
-            public void update(PlayerChatInfo o, PlayerChat.Event evt) throws RemoteException {
-
-            }
-
-            @Override
-            public void update(PlayerInfo o, Player.Event evt) throws RemoteException {
-
-            }
-
-            @Override
-            public void update(ShelfInfo o, Shelf.Event evt) throws RemoteException {
-
-            }
-
-            @Override
-            public void update(UserInfo o, User.Event evt) throws RemoteException {
-
-            }
-        };
-        try {
             standardGameController.joinPlayer(client, user, loginInfo);
-        } catch (Exception e) {
-            fail("Exception thrown" + e.getMessage());
-        }
+
         //join the second player
         user = new User();
         loginInfo = new LoginInfo("2", "42", 1);
 
         User finalUser = user;
         LoginInfo finalLoginInfo = loginInfo;
-        client = new ClientInterface() {
-            @Override
-            public void bind(ServerInterface server) throws RemoteException {
-
-            }
-
-            @Override
-            public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
-                throw new RemoteException();
-            }
-
-            @Override
-            public void update(GameInfo o, Game.Event evt) throws RemoteException {
-                throw new RemoteException();
-
-            }
-
-
-            @Override
-            public void update(LivingRoomInfo o, LivingRoom.Event evt) throws RemoteException {
-                throw new RemoteException();
-
-            }
-
-            @Override
-            public void update(PersonalGoalInfo o, PersonalGoal.Event evt) throws RemoteException {
-                throw new RemoteException();
-
-            }
-
-            @Override
-            public void update(PlayerChatInfo o, PlayerChat.Event evt) throws RemoteException {
-                throw new RemoteException();
-
-            }
-
-            @Override
-            public void update(PlayerInfo o, Player.Event evt) throws RemoteException {
-                throw new RemoteException();
-
-            }
-
-            @Override
-            public void update(ShelfInfo o, Shelf.Event evt) throws RemoteException {
-                throw new RemoteException();
-            }
-
-            @Override
-            public void update(UserInfo o, User.Event evt) throws RemoteException {
-                throw new RemoteException();
-            }
-        };
+        client = mock(ClientInterface.class);
         ClientInterface finalClient = client;
-        try {
+
             standardGameController.joinPlayer(finalClient, finalUser, finalLoginInfo);
-        } catch (Exception e) {
-            fail("Exception thrown" + e.getMessage());
-        }
+
     }
 
-
-    @Test
-    void leavePlayer() {
-    }
 
 
     //test doPlayerMove
@@ -651,15 +487,20 @@ class StandardGameControllerTest {
      * {@link StandardGameController#doPlayerMove(ClientInterface, PlayerMoveInfo)}
      */
     @Test
-    void doPlayerMove() throws PlayerNotExistsException {
+    void doPlayerMoveLegalMove() throws InterruptedException, GameAccessDeniedException {
         Game game = GameBuilder.build(new NewGameInfo("gameId", "STANDARD", 2, System.currentTimeMillis()));
-        var standardGameController = new StandardGameController(game, lobbyController -> {});
+        var standardGameController = new StandardGameController(game, lobbyController -> {
+        });
         //first we test a move before the game starts and player is not in the game
         List<PickedTile> pickedTiles = new ArrayList<>();
         pickedTiles.add(new PickedTile(1, 1));
 
         var playerMoveInfo = new PlayerMoveInfo(pickedTiles, 1);
-        standardGameController.doPlayerMove(new ClientInterface() {
+        standardGameController.doPlayerMove(mock(ClientInterface.class), playerMoveInfo);
+
+        final GameInfo[] gameInfo1 = {null};
+        final PlayerInfo[] playerInfo1 = {null};
+        ClientInterface client = new ClientInterface() {
             @Override
             public void bind(ServerInterface server) throws RemoteException {
 
@@ -668,11 +509,12 @@ class StandardGameControllerTest {
             @Override
             public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
 
+
             }
 
             @Override
             public void update(GameInfo o, Game.Event evt) throws RemoteException {
-
+                gameInfo1[0] = o;
             }
 
 
@@ -683,120 +525,38 @@ class StandardGameControllerTest {
 
             @Override
             public void update(PersonalGoalInfo o, PersonalGoal.Event evt) throws RemoteException {
-
             }
 
             @Override
             public void update(PlayerChatInfo o, PlayerChat.Event evt) throws RemoteException {
-
             }
 
             @Override
             public void update(PlayerInfo o, Player.Event evt) throws RemoteException {
-
+                playerInfo1[0] = o;
             }
 
             @Override
             public void update(ShelfInfo o, Shelf.Event evt) throws RemoteException {
-
             }
 
             @Override
             public void update(UserInfo o, User.Event evt) throws RemoteException {
-
-            }
-        }, playerMoveInfo);
-
-        var client = new ClientInterface() {
-
-            @Override
-            public void update(UserInfo o, User.Event evt) throws RemoteException {
-
-            }
-
-            @Override
-            public void update(ShelfInfo o, Shelf.Event evt) throws RemoteException {
-
-            }
-
-            @Override
-            public void update(PlayerInfo o, Player.Event evt) throws RemoteException {
-
-            }
-
-            @Override
-            public void update(PlayerChatInfo o, PlayerChat.Event evt) throws RemoteException {
-
-            }
-
-            @Override
-            public void update(PersonalGoalInfo o, PersonalGoal.Event evt) throws RemoteException {
-
-            }
-
-            @Override
-            public void update(LivingRoomInfo o, LivingRoom.Event evt) throws RemoteException {
-
-            }
-
-
-            @Override
-            public void update(GameInfo o, Game.Event evt) throws RemoteException {
-
-            }
-
-            @Override
-            public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
-
-            }
-
-            @Override
-            public void bind(ServerInterface server) throws RemoteException {
-
             }
         };
-        try {
+
             standardGameController.joinPlayer(client, new User(), new LoginInfo("1", "42", 1));
-        } catch (GameAccessDeniedException e) {
-            fail("Exception thrown" + e.getMessage());
-        }
+
         //now we test a move after before the game starts and player is in the game
         standardGameController.doPlayerMove(client, playerMoveInfo);
         //now we add a second player and start the game
-        var client2 = new ClientInterface() {
+        final GameInfo[] gameInfo = {null};
+        final LivingRoomInfo[] livingRoomInfo = {null};
+        final PlayerInfo[] playerInfo = {null};
+
+        ClientInterface client2 = new ClientInterface() {
             @Override
-            public void update(UserInfo o, User.Event evt) throws RemoteException {
-
-            }
-
-            @Override
-            public void update(ShelfInfo o, Shelf.Event evt) throws RemoteException {
-
-            }
-
-            @Override
-            public void update(PlayerInfo o, Player.Event evt) throws RemoteException {
-
-            }
-
-            @Override
-            public void update(PlayerChatInfo o, PlayerChat.Event evt) throws RemoteException {
-
-            }
-
-            @Override
-            public void update(PersonalGoalInfo o, PersonalGoal.Event evt) throws RemoteException {
-
-            }
-
-            @Override
-            public void update(LivingRoomInfo o, LivingRoom.Event evt) throws RemoteException {
-
-            }
-
-
-            @Override
-            public void update(GameInfo o, Game.Event evt) throws RemoteException {
+            public void bind(ServerInterface server) throws RemoteException {
 
             }
 
@@ -806,18 +566,43 @@ class StandardGameControllerTest {
             }
 
             @Override
-            public void bind(ServerInterface server) throws RemoteException {
+            public void update(GameInfo o, Game.Event evt) throws RemoteException {
+                gameInfo[0] = o;
+            }
+
+
+            @Override
+            public void update(LivingRoomInfo o, LivingRoom.Event evt) throws RemoteException {
+                livingRoomInfo[0] = o;
+            }
+
+            @Override
+            public void update(PersonalGoalInfo o, PersonalGoal.Event evt) throws RemoteException {
+            }
+
+            @Override
+            public void update(PlayerChatInfo o, PlayerChat.Event evt) throws RemoteException {
+            }
+
+            @Override
+            public void update(PlayerInfo o, Player.Event evt) throws RemoteException {
+                playerInfo[0] = o;
+            }
+
+            @Override
+            public void update(ShelfInfo o, Shelf.Event evt) throws RemoteException {
 
             }
+
+            @Override
+            public void update(UserInfo o, User.Event evt) throws RemoteException {
+            }
         };
-        try {
+
             standardGameController.joinPlayer(client2, new User(), new LoginInfo("2", "42", 1));
-        } catch (GameAccessDeniedException e) {
-            fail("Exception thrown" + e.getMessage());
-        }
-        standardGameController.doPlayerMove(client2, playerMoveInfo);
-        //with the first player we test a move after the game starts
-        standardGameController.doPlayerMove(client, playerMoveInfo);
+
+
+
         //now we will do some legal moves like picking 4,1
         pickedTiles = new ArrayList<>();
         pickedTiles.add(new PickedTile(4, 1));
@@ -825,17 +610,386 @@ class StandardGameControllerTest {
         standardGameController.doPlayerMove(client, playerMoveInfo);
         //with the second player we test a move after the game starts
         standardGameController.doPlayerMove(client2, playerMoveInfo);
+        //wait 100ms and check living room at 4,1
+        Thread.sleep(100);
+        assert livingRoomInfo[0] != null && livingRoomInfo[0].board()[4][1].equals(Tile.EMPTY);
+    }
+
+
+
+
+    @Test
+    void doPlayerMoveMalformedMove() throws InterruptedException, GameAccessDeniedException {
+        Game game = GameBuilder.build(new NewGameInfo("gameId", "STANDARD", 2, System.currentTimeMillis()));
+        var standardGameController = new StandardGameController(game, lobbyController -> {
+        });
+        //first we test a move before the game starts and player is not in the game
+        List<PickedTile> pickedTiles = new ArrayList<>();
+        pickedTiles.add(new PickedTile(1, 1));
+
+        var playerMoveInfo = new PlayerMoveInfo(pickedTiles, 1);
+        standardGameController.doPlayerMove(mock(ClientInterface.class), playerMoveInfo);
+
+        final GameInfo[] gameInfo1 = {null};
+        final PlayerInfo[] playerInfo1 = {null};
+        ClientInterface client = new ClientInterface() {
+            @Override
+            public void bind(ServerInterface server) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
+
+
+            }
+
+            @Override
+            public void update(GameInfo o, Game.Event evt) throws RemoteException {
+                gameInfo1[0] = o;
+            }
+
+
+            @Override
+            public void update(LivingRoomInfo o, LivingRoom.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(PersonalGoalInfo o, PersonalGoal.Event evt) throws RemoteException {
+            }
+
+            @Override
+            public void update(PlayerChatInfo o, PlayerChat.Event evt) throws RemoteException {
+            }
+
+            @Override
+            public void update(PlayerInfo o, Player.Event evt) throws RemoteException {
+                playerInfo1[0] = o;
+            }
+
+            @Override
+            public void update(ShelfInfo o, Shelf.Event evt) throws RemoteException {
+            }
+
+            @Override
+            public void update(UserInfo o, User.Event evt) throws RemoteException {
+            }
+        };
+
+            standardGameController.joinPlayer(client, new User(), new LoginInfo("1", "42", 1));
+
+        //now we test a move after before the game starts and player is in the game
+        standardGameController.doPlayerMove(client, playerMoveInfo);
+        //now we add a second player and start the game
+        final GameInfo[] gameInfo = {null};
+        final LivingRoomInfo[] livingRoomInfo = {null};
+        final PlayerInfo[] playerInfo = {null};
+
+        ClientInterface client2 = new ClientInterface() {
+            @Override
+            public void bind(ServerInterface server) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(GameInfo o, Game.Event evt) throws RemoteException {
+                gameInfo[0] = o;
+            }
+
+
+            @Override
+            public void update(LivingRoomInfo o, LivingRoom.Event evt) throws RemoteException {
+                livingRoomInfo[0] = o;
+            }
+
+            @Override
+            public void update(PersonalGoalInfo o, PersonalGoal.Event evt) throws RemoteException {
+            }
+
+            @Override
+            public void update(PlayerChatInfo o, PlayerChat.Event evt) throws RemoteException {
+            }
+
+            @Override
+            public void update(PlayerInfo o, Player.Event evt) throws RemoteException {
+                playerInfo[0] = o;
+            }
+
+            @Override
+            public void update(ShelfInfo o, Shelf.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(UserInfo o, User.Event evt) throws RemoteException {
+            }
+        };
+        standardGameController.joinPlayer(client2, new User(), new LoginInfo("2", "42", 1));
+
+
         //malformed move
         pickedTiles = new ArrayList<>();
         playerMoveInfo = new PlayerMoveInfo(pickedTiles, 1);
         standardGameController.doPlayerMove(client, playerMoveInfo);
         standardGameController.doPlayerMove(client2, playerMoveInfo);
 
+        //wait 100ms and check living room at 4,1
+        Thread.sleep(100);
+        assert (playerInfo[0] != null && playerInfo[0].errorMessage().contains("Malformed move")) || (playerInfo1[0] != null && playerInfo1[0].errorMessage().contains("Malformed move"));
+    }
+
+
+
+
+
+
+    @Test
+    void doPlayerMoveColumnOutOfBounds() throws InterruptedException, GameAccessDeniedException {
+        Game game = GameBuilder.build(new NewGameInfo("gameId", "STANDARD", 2, System.currentTimeMillis()));
+        var standardGameController = new StandardGameController(game, lobbyController -> {
+        });
+        //first we test a move before the game starts and player is not in the game
+        List<PickedTile> pickedTiles = new ArrayList<>();
+        pickedTiles.add(new PickedTile(1, 1));
+
+        var playerMoveInfo = new PlayerMoveInfo(pickedTiles, 1);
+        standardGameController.doPlayerMove(mock(ClientInterface.class), playerMoveInfo);
+
+        final GameInfo[] gameInfo1 = {null};
+        final PlayerInfo[] playerInfo1 = {null};
+        ClientInterface client = new ClientInterface() {
+            @Override
+            public void bind(ServerInterface server) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
+
+
+            }
+
+            @Override
+            public void update(GameInfo o, Game.Event evt) throws RemoteException {
+                gameInfo1[0] = o;
+            }
+
+
+            @Override
+            public void update(LivingRoomInfo o, LivingRoom.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(PersonalGoalInfo o, PersonalGoal.Event evt) throws RemoteException {
+            }
+
+            @Override
+            public void update(PlayerChatInfo o, PlayerChat.Event evt) throws RemoteException {
+            }
+
+            @Override
+            public void update(PlayerInfo o, Player.Event evt) throws RemoteException {
+                playerInfo1[0] = o;
+            }
+
+            @Override
+            public void update(ShelfInfo o, Shelf.Event evt) throws RemoteException {
+            }
+
+            @Override
+            public void update(UserInfo o, User.Event evt) throws RemoteException {
+            }
+        };
+
+            standardGameController.joinPlayer(client, new User(), new LoginInfo("1", "42", 1));
+
+        //now we test a move after before the game starts and player is in the game
+        standardGameController.doPlayerMove(client, playerMoveInfo);
+        //now we add a second player and start the game
+        final GameInfo[] gameInfo = {null};
+        final LivingRoomInfo[] livingRoomInfo = {null};
+        final PlayerInfo[] playerInfo = {null};
+
+        ClientInterface client2 = new ClientInterface() {
+            @Override
+            public void bind(ServerInterface server) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(GameInfo o, Game.Event evt) throws RemoteException {
+                gameInfo[0] = o;
+            }
+
+
+            @Override
+            public void update(LivingRoomInfo o, LivingRoom.Event evt) throws RemoteException {
+                livingRoomInfo[0] = o;
+            }
+
+            @Override
+            public void update(PersonalGoalInfo o, PersonalGoal.Event evt) throws RemoteException {
+            }
+
+            @Override
+            public void update(PlayerChatInfo o, PlayerChat.Event evt) throws RemoteException {
+            }
+
+            @Override
+            public void update(PlayerInfo o, Player.Event evt) throws RemoteException {
+                playerInfo[0] = o;
+            }
+
+            @Override
+            public void update(ShelfInfo o, Shelf.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(UserInfo o, User.Event evt) throws RemoteException {
+            }
+        };
+
+            standardGameController.joinPlayer(client2, new User(), new LoginInfo("2", "42", 1));
+
+
         //column out of bounds
-        pickedTiles.add(new PickedTile(4, 1));
+        pickedTiles.add(new PickedTile(2, 3));
         playerMoveInfo = new PlayerMoveInfo(pickedTiles, -1);
         standardGameController.doPlayerMove(client, playerMoveInfo);
         standardGameController.doPlayerMove(client2, playerMoveInfo);
+        //wait 100ms and check living room at 2,3
+        Thread.sleep(100);
+        assert livingRoomInfo[0] != null && !livingRoomInfo[0].board()[2][3].equals(Tile.EMPTY);
+    }
+
+    @Test
+    void doPlayerMoveNonDifferentTiles() throws PlayerNotExistsException, InterruptedException, GameAccessDeniedException {
+        Game game = GameBuilder.build(new NewGameInfo("gameId", "STANDARD", 2, System.currentTimeMillis()));
+        var standardGameController = new StandardGameController(game, lobbyController -> {
+        });
+        //first we test a move before the game starts and player is not in the game
+        List<PickedTile> pickedTiles = new ArrayList<>();
+        pickedTiles.add(new PickedTile(1, 1));
+
+        var playerMoveInfo = new PlayerMoveInfo(pickedTiles, 1);
+        standardGameController.doPlayerMove(mock(ClientInterface.class), playerMoveInfo);
+
+        final GameInfo[] gameInfo1 = {null};
+        final PlayerInfo[] playerInfo1 = {null};
+        ClientInterface client = new ClientInterface() {
+            @Override
+            public void bind(ServerInterface server) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
+
+
+            }
+
+            @Override
+            public void update(GameInfo o, Game.Event evt) throws RemoteException {
+                gameInfo1[0] = o;
+            }
+
+
+            @Override
+            public void update(LivingRoomInfo o, LivingRoom.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(PersonalGoalInfo o, PersonalGoal.Event evt) throws RemoteException {
+            }
+
+            @Override
+            public void update(PlayerChatInfo o, PlayerChat.Event evt) throws RemoteException {
+            }
+
+            @Override
+            public void update(PlayerInfo o, Player.Event evt) throws RemoteException {
+                playerInfo1[0] = o;
+            }
+
+            @Override
+            public void update(ShelfInfo o, Shelf.Event evt) throws RemoteException {
+            }
+
+            @Override
+            public void update(UserInfo o, User.Event evt) throws RemoteException {
+            }
+        };
+
+            standardGameController.joinPlayer(client, new User(), new LoginInfo("1", "42", 1));
+
+        //now we test a move after before the game starts and player is in the game
+        standardGameController.doPlayerMove(client, playerMoveInfo);
+        //now we add a second player and start the game
+        final GameInfo[] gameInfo = {null};
+        final LivingRoomInfo[] livingRoomInfo = {null};
+        final PlayerInfo[] playerInfo = {null};
+
+        ClientInterface client2 = new ClientInterface() {
+            @Override
+            public void bind(ServerInterface server) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(GameInfo o, Game.Event evt) throws RemoteException {
+                gameInfo[0] = o;
+            }
+
+
+            @Override
+            public void update(LivingRoomInfo o, LivingRoom.Event evt) throws RemoteException {
+                livingRoomInfo[0] = o;
+            }
+
+            @Override
+            public void update(PersonalGoalInfo o, PersonalGoal.Event evt) throws RemoteException {
+            }
+
+            @Override
+            public void update(PlayerChatInfo o, PlayerChat.Event evt) throws RemoteException {
+            }
+
+            @Override
+            public void update(PlayerInfo o, Player.Event evt) throws RemoteException {
+                playerInfo[0] = o;
+            }
+
+            @Override
+            public void update(ShelfInfo o, Shelf.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(UserInfo o, User.Event evt) throws RemoteException {
+            }
+        };
+            standardGameController.joinPlayer(client2, new User(), new LoginInfo("2", "42", 1));
+
+
 
         //tile are not different
         pickedTiles.add(new PickedTile(4, 1));
@@ -843,57 +997,422 @@ class StandardGameControllerTest {
         standardGameController.doPlayerMove(client, playerMoveInfo);
         standardGameController.doPlayerMove(client2, playerMoveInfo);
         Tile[][] tiles = new Tile[6][5];
-        //fill with Tile.EMPTY
+        //fill with Tile.TROPHIES_1
         Arrays.stream(tiles).forEach(a -> Arrays.fill(a, Tile.TROPHIES_1));
-        try {
+
             game.getPlayer("2").getShelf().setTiles(tiles);
-        } catch (PlayerNotExistsException e) {
-            throw new RuntimeException(e);
-        }
+            game.getPlayer("1").getShelf().setTiles(tiles);
+
         pickedTiles = new ArrayList<>();
         pickedTiles.add(new PickedTile(1, 3));
         playerMoveInfo = new PlayerMoveInfo(pickedTiles, 1);
         standardGameController.doPlayerMove(client, playerMoveInfo);
         standardGameController.doPlayerMove(client2, playerMoveInfo);
+        //wait 100ms and check playerInfos, one of them should have Malformed move: Not enough space to insert tiles in shelf error
+        Thread.sleep(100);
+        assert playerInfo[0] != null && playerInfo1[0] != null && (playerInfo[0].errorMessage().equals("Malformed move: Not enough space to insert tiles in shelf") || playerInfo1[0].errorMessage().equals("Malformed move: Not enough space to insert tiles in shelf"));
+    }
+    @Test
+    void doPlayerMoveLegal() throws PlayerNotExistsException, InterruptedException, GameAccessDeniedException {
+        Game game = GameBuilder.build(new NewGameInfo("gameId", "STANDARD", 2, System.currentTimeMillis()));
+        var standardGameController = new StandardGameController(game, lobbyController -> {
+        });
+        //first we test a move before the game starts and player is not in the game
+        List<PickedTile> pickedTiles = new ArrayList<>();
+        pickedTiles.add(new PickedTile(1, 1));
+
+        var playerMoveInfo = new PlayerMoveInfo(pickedTiles, 1);
+        standardGameController.doPlayerMove(mock(ClientInterface.class), playerMoveInfo);
+
+        final GameInfo[] gameInfo1 = {null};
+        final PlayerInfo[] playerInfo1 = {null};
+        ClientInterface client = new ClientInterface() {
+            @Override
+            public void bind(ServerInterface server) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
+
+
+            }
+
+            @Override
+            public void update(GameInfo o, Game.Event evt) throws RemoteException {
+                gameInfo1[0] = o;
+            }
+
+
+            @Override
+            public void update(LivingRoomInfo o, LivingRoom.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(PersonalGoalInfo o, PersonalGoal.Event evt) throws RemoteException {
+            }
+
+            @Override
+            public void update(PlayerChatInfo o, PlayerChat.Event evt) throws RemoteException {
+            }
+
+            @Override
+            public void update(PlayerInfo o, Player.Event evt) throws RemoteException {
+                playerInfo1[0] = o;
+            }
+
+            @Override
+            public void update(ShelfInfo o, Shelf.Event evt) throws RemoteException {
+            }
+
+            @Override
+            public void update(UserInfo o, User.Event evt) throws RemoteException {
+            }
+        };
+
+            standardGameController.joinPlayer(client, new User(), new LoginInfo("1", "42", 1));
+
+        //now we test a move after before the game starts and player is in the game
+        standardGameController.doPlayerMove(client, playerMoveInfo);
+        //now we add a second player and start the game
+        final GameInfo[] gameInfo = {null};
+        final LivingRoomInfo[] livingRoomInfo = {null};
+        final PlayerInfo[] playerInfo = {null};
+
+        ClientInterface client2 = new ClientInterface() {
+            @Override
+            public void bind(ServerInterface server) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(GameInfo o, Game.Event evt) throws RemoteException {
+                gameInfo[0] = o;
+            }
+
+
+            @Override
+            public void update(LivingRoomInfo o, LivingRoom.Event evt) throws RemoteException {
+                livingRoomInfo[0] = o;
+            }
+
+            @Override
+            public void update(PersonalGoalInfo o, PersonalGoal.Event evt) throws RemoteException {
+            }
+
+            @Override
+            public void update(PlayerChatInfo o, PlayerChat.Event evt) throws RemoteException {
+            }
+
+            @Override
+            public void update(PlayerInfo o, Player.Event evt) throws RemoteException {
+                playerInfo[0] = o;
+            }
+
+            @Override
+            public void update(ShelfInfo o, Shelf.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(UserInfo o, User.Event evt) throws RemoteException {
+            }
+        };
+
+            standardGameController.joinPlayer(client2, new User(), new LoginInfo("2", "42", 1));
+
+        Tile[][] tiles = new Tile[6][5];
+
+        //fill with Tile.EMPTY
+        Arrays.stream(tiles).forEach(a -> Arrays.fill(a, Tile.EMPTY));
+
+            game.getPlayer("2").getShelf().setTiles(tiles);
+            game.getPlayer("1").getShelf().setTiles(tiles);
+
         pickedTiles = new ArrayList<>();
         pickedTiles.add(new PickedTile(1, 4));
         playerMoveInfo = new PlayerMoveInfo(pickedTiles, 1);
         standardGameController.doPlayerMove(client, playerMoveInfo);
         standardGameController.doPlayerMove(client2, playerMoveInfo);
-         game = GameBuilder.build(new NewGameInfo("32", "STANDARD", 2, System.currentTimeMillis()));
-        standardGameController = new StandardGameController(game, lobbyController -> {});
-        try {
-            standardGameController.joinPlayer(client, new User(), new LoginInfo("1", "32", 1));
-        } catch (GameAccessDeniedException e) {
-            fail("Exception thrown" + e.getMessage());
-        }
-        try {
-            standardGameController.joinPlayer(client2, new User(), new LoginInfo("2", "32", 1));
-        } catch (GameAccessDeniedException e) {
-            fail("Exception thrown" + e.getMessage());
-        }
-        tiles[0][0] = Tile.EMPTY;
 
-        game.getPlayer("1").getShelf().setTiles(tiles);
-        game.getPlayer("2").getShelf().setTiles(tiles);
-        pickedTiles = new ArrayList<>();
-        pickedTiles.add(new PickedTile(1, 3));
-        playerMoveInfo = new PlayerMoveInfo(pickedTiles, 0);
+        //wait 100ms and check living room at 1,4
+        Thread.sleep(100);
+        assert livingRoomInfo[0] != null && livingRoomInfo[0].board()[1][4].equals(Tile.EMPTY);
+
+
+    }
+
+        @Test
+        void doPlayerMoveLegal3() throws PlayerNotExistsException, InterruptedException, GameAccessDeniedException {
+            Game game = GameBuilder.build(new NewGameInfo("gameId", "STANDARD", 2, System.currentTimeMillis()));
+            var standardGameController = new StandardGameController(game, lobbyController -> {
+            });
+            //first we test a move before the game starts and player is not in the game
+            List<PickedTile> pickedTiles = new ArrayList<>();
+            pickedTiles.add(new PickedTile(1, 1));
+
+            var playerMoveInfo = new PlayerMoveInfo(pickedTiles, 1);
+            standardGameController.doPlayerMove(mock(ClientInterface.class), playerMoveInfo);
+
+            final GameInfo[] gameInfo1 = {null};
+            final PlayerInfo[] playerInfo1 = {null};
+            ClientInterface client = new ClientInterface() {
+                @Override
+                public void bind(ServerInterface server) throws RemoteException {
+
+                }
+
+                @Override
+                public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
+
+
+                }
+
+                @Override
+                public void update(GameInfo o, Game.Event evt) throws RemoteException {
+                    gameInfo1[0] = o;
+                }
+
+
+                @Override
+                public void update(LivingRoomInfo o, LivingRoom.Event evt) throws RemoteException {
+
+                }
+
+                @Override
+                public void update(PersonalGoalInfo o, PersonalGoal.Event evt) throws RemoteException {
+                }
+
+                @Override
+                public void update(PlayerChatInfo o, PlayerChat.Event evt) throws RemoteException {
+                }
+
+                @Override
+                public void update(PlayerInfo o, Player.Event evt) throws RemoteException {
+                    playerInfo1[0] = o;
+                }
+
+                @Override
+                public void update(ShelfInfo o, Shelf.Event evt) throws RemoteException {
+                }
+
+                @Override
+                public void update(UserInfo o, User.Event evt) throws RemoteException {
+                }
+            };
+
+                standardGameController.joinPlayer(client, new User(), new LoginInfo("1", "42", 1));
+
+            //now we test a move after before the game starts and player is in the game
+            standardGameController.doPlayerMove(client, playerMoveInfo);
+            //now we add a second player and start the game
+            final GameInfo[] gameInfo = {null};
+            final LivingRoomInfo[] livingRoomInfo = {null};
+            final PlayerInfo[] playerInfo = {null};
+
+            ClientInterface client2 = new ClientInterface() {
+                @Override
+                public void bind(ServerInterface server) throws RemoteException {
+
+                }
+
+                @Override
+                public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
+
+                }
+
+                @Override
+                public void update(GameInfo o, Game.Event evt) throws RemoteException {
+                    gameInfo[0] = o;
+                }
+
+
+                @Override
+                public void update(LivingRoomInfo o, LivingRoom.Event evt) throws RemoteException {
+                    livingRoomInfo[0] = o;
+                }
+
+                @Override
+                public void update(PersonalGoalInfo o, PersonalGoal.Event evt) throws RemoteException {
+                }
+
+                @Override
+                public void update(PlayerChatInfo o, PlayerChat.Event evt) throws RemoteException {
+                }
+
+                @Override
+                public void update(PlayerInfo o, Player.Event evt) throws RemoteException {
+                    playerInfo[0] = o;
+                }
+
+                @Override
+                public void update(ShelfInfo o, Shelf.Event evt) throws RemoteException {
+
+                }
+
+                @Override
+                public void update(UserInfo o, User.Event evt) throws RemoteException {
+                }
+            };
+
+                standardGameController.joinPlayer(client2, new User(), new LoginInfo("2", "42", 1));
+
+
+            game = GameBuilder.build(new NewGameInfo("32", "STANDARD", 2, System.currentTimeMillis()));
+            standardGameController = new StandardGameController(game, lobbyController -> {
+            });
+
+            standardGameController.joinPlayer(client, new User(), new LoginInfo("1", "32", 1));
+
+            standardGameController.joinPlayer(client2, new User(), new LoginInfo("2", "32", 1));
+            Tile[][] tiles = new Tile[6][5];
+            Arrays.stream(tiles).forEach(a -> Arrays.fill(a, Tile.TROPHIES_1));
+
+            tiles[0][0] = Tile.EMPTY;
+            //normal move
+            game.getPlayer("1").getShelf().setTiles(tiles);
+            game.getPlayer("2").getShelf().setTiles(tiles);
+            pickedTiles = new ArrayList<>();
+            pickedTiles.add(new PickedTile(1, 3));
+            playerMoveInfo = new PlayerMoveInfo(pickedTiles, 0);
+            standardGameController.doPlayerMove(client, playerMoveInfo);
+            standardGameController.doPlayerMove(client2, playerMoveInfo);
+            //wait 100ms and check living room at 1,3
+            Thread.sleep(100);
+            assert livingRoomInfo[0] != null && livingRoomInfo[0].board()[1][3].equals(Tile.EMPTY);
+
+
+        }
+
+
+    @Test
+    void doPlayerMoveNonAllignedTiles() throws InterruptedException, GameAccessDeniedException {
+        Game game = GameBuilder.build(new NewGameInfo("gameId", "STANDARD", 2, System.currentTimeMillis()));
+        var standardGameController = new StandardGameController(game, lobbyController -> {
+        });
+        //first we test a move before the game starts and player is not in the game
+        List<PickedTile> pickedTiles = new ArrayList<>();
+        pickedTiles.add(new PickedTile(1, 1));
+
+        var playerMoveInfo = new PlayerMoveInfo(pickedTiles, 1);
+        standardGameController.doPlayerMove(mock(ClientInterface.class), playerMoveInfo);
+
+        final GameInfo[] gameInfo1 = {null};
+        final PlayerInfo[] playerInfo1 = {null};
+        ClientInterface client = new ClientInterface() {
+            @Override
+            public void bind(ServerInterface server) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
+
+
+            }
+
+            @Override
+            public void update(GameInfo o, Game.Event evt) throws RemoteException {
+                gameInfo1[0] = o;
+            }
+
+
+            @Override
+            public void update(LivingRoomInfo o, LivingRoom.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(PersonalGoalInfo o, PersonalGoal.Event evt) throws RemoteException {
+            }
+
+            @Override
+            public void update(PlayerChatInfo o, PlayerChat.Event evt) throws RemoteException {
+            }
+
+            @Override
+            public void update(PlayerInfo o, Player.Event evt) throws RemoteException {
+                playerInfo1[0] = o;
+            }
+
+            @Override
+            public void update(ShelfInfo o, Shelf.Event evt) throws RemoteException {
+            }
+
+            @Override
+            public void update(UserInfo o, User.Event evt) throws RemoteException {
+            }
+        };
+
+            standardGameController.joinPlayer(client, new User(), new LoginInfo("1", "42", 1));
+
+        //now we test a move after before the game starts and player is in the game
         standardGameController.doPlayerMove(client, playerMoveInfo);
-        standardGameController.doPlayerMove(client2, playerMoveInfo);
+        //now we add a second player and start the game
+        final GameInfo[] gameInfo = {null};
+        final LivingRoomInfo[] livingRoomInfo = {null};
+        final PlayerInfo[] playerInfo = {null};
+
+        ClientInterface client2 = new ClientInterface() {
+            @Override
+            public void bind(ServerInterface server) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(GameInfo o, Game.Event evt) throws RemoteException {
+                gameInfo[0] = o;
+            }
+
+
+            @Override
+            public void update(LivingRoomInfo o, LivingRoom.Event evt) throws RemoteException {
+                livingRoomInfo[0] = o;
+            }
+
+            @Override
+            public void update(PersonalGoalInfo o, PersonalGoal.Event evt) throws RemoteException {
+            }
+
+            @Override
+            public void update(PlayerChatInfo o, PlayerChat.Event evt) throws RemoteException {
+            }
+
+            @Override
+            public void update(PlayerInfo o, Player.Event evt) throws RemoteException {
+                playerInfo[0] = o;
+            }
+
+            @Override
+            public void update(ShelfInfo o, Shelf.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(UserInfo o, User.Event evt) throws RemoteException {
+            }
+        };
+
+            standardGameController.joinPlayer(client2, new User(), new LoginInfo("2", "42", 1));
+
 
         game = GameBuilder.build(new NewGameInfo("32", "STANDARD", 2, System.currentTimeMillis()));
-        standardGameController = new StandardGameController(game, lobbyController -> {});
-        try {
-            standardGameController.joinPlayer(client, new User(), new LoginInfo("1", "32", 1));
-        } catch (GameAccessDeniedException e) {
-            fail("Exception thrown" + e.getMessage());
-        }
-        try {
-            standardGameController.joinPlayer(client2, new User(), new LoginInfo("2", "32", 1));
-        } catch (GameAccessDeniedException e) {
-            fail("Exception thrown" + e.getMessage());
-        }
+        standardGameController = new StandardGameController(game, lobbyController -> {
+        });
+        standardGameController.joinPlayer(client, new User(), new LoginInfo("1", "32", 1));
+        standardGameController.joinPlayer(client2, new User(), new LoginInfo("2", "32", 1));
+
         //non aligned tiles
         pickedTiles = new ArrayList<>();
         pickedTiles.add(new PickedTile(1, 3));
@@ -901,6 +1420,144 @@ class StandardGameControllerTest {
         playerMoveInfo = new PlayerMoveInfo(pickedTiles, 0);
         standardGameController.doPlayerMove(client, playerMoveInfo);
         standardGameController.doPlayerMove(client2, playerMoveInfo);
+        //wait 100ms and check playerInfos, one of them should have Malformed move: Tiles are not aligned error
+
+        Thread.sleep(100);
+        assert playerInfo[0] != null && playerInfo1[0] != null && (playerInfo[0].errorMessage().equals("Malformed move: Tiles are not aligned") || playerInfo1[0].errorMessage().equals("Malformed move: Tiles are not aligned"));
+        //check that living room at 1,3 and 4,1 are not empty
+        assert livingRoomInfo[0] != null && !livingRoomInfo[0].board()[1][3].equals(Tile.EMPTY) && !livingRoomInfo[0].board()[4][1].equals(Tile.EMPTY);
+
+    }
+
+
+
+
+
+
+
+
+    @Test
+    void doPlayerMoveEndGame() throws InterruptedException, GameAccessDeniedException {
+        Game game = GameBuilder.build(new NewGameInfo("gameId", "STANDARD", 2, System.currentTimeMillis()));
+        var standardGameController = new StandardGameController(game, lobbyController -> {
+        });
+        //first we test a move before the game starts and player is not in the game
+        List<PickedTile> pickedTiles = new ArrayList<>();
+        pickedTiles.add(new PickedTile(1, 1));
+
+        var playerMoveInfo = new PlayerMoveInfo(pickedTiles, 1);
+        standardGameController.doPlayerMove(mock(ClientInterface.class), playerMoveInfo);
+
+        final GameInfo[] gameInfo1 = {null};
+        final PlayerInfo[] playerInfo1 = {null};
+        ClientInterface client = new ClientInterface() {
+            @Override
+            public void bind(ServerInterface server) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
+
+
+            }
+
+            @Override
+            public void update(GameInfo o, Game.Event evt) throws RemoteException {
+                gameInfo1[0] = o;
+            }
+
+
+            @Override
+            public void update(LivingRoomInfo o, LivingRoom.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(PersonalGoalInfo o, PersonalGoal.Event evt) throws RemoteException {
+            }
+
+            @Override
+            public void update(PlayerChatInfo o, PlayerChat.Event evt) throws RemoteException {
+            }
+
+            @Override
+            public void update(PlayerInfo o, Player.Event evt) throws RemoteException {
+                playerInfo1[0] = o;
+            }
+
+            @Override
+            public void update(ShelfInfo o, Shelf.Event evt) throws RemoteException {
+            }
+
+            @Override
+            public void update(UserInfo o, User.Event evt) throws RemoteException {
+            }
+        };
+
+            standardGameController.joinPlayer(client, new User(), new LoginInfo("1", "42", 1));
+
+        //now we test a move after before the game starts and player is in the game
+        standardGameController.doPlayerMove(client, playerMoveInfo);
+        //now we add a second player and start the game
+        final GameInfo[] gameInfo = {null};
+        final LivingRoomInfo[] livingRoomInfo = {null};
+        final PlayerInfo[] playerInfo = {null};
+
+        ClientInterface client2 = new ClientInterface() {
+            @Override
+            public void bind(ServerInterface server) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(GameInfo o, Game.Event evt) throws RemoteException {
+                gameInfo[0] = o;
+            }
+
+
+            @Override
+            public void update(LivingRoomInfo o, LivingRoom.Event evt) throws RemoteException {
+                livingRoomInfo[0] = o;
+            }
+
+            @Override
+            public void update(PersonalGoalInfo o, PersonalGoal.Event evt) throws RemoteException {
+            }
+
+            @Override
+            public void update(PlayerChatInfo o, PlayerChat.Event evt) throws RemoteException {
+            }
+
+            @Override
+            public void update(PlayerInfo o, Player.Event evt) throws RemoteException {
+                playerInfo[0] = o;
+            }
+
+            @Override
+            public void update(ShelfInfo o, Shelf.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(UserInfo o, User.Event evt) throws RemoteException {
+            }
+        };
+
+            standardGameController.joinPlayer(client2, new User(), new LoginInfo("2", "42", 1));
+
+
+        game = GameBuilder.build(new NewGameInfo("32", "STANDARD", 2, System.currentTimeMillis()));
+        standardGameController = new StandardGameController(game, lobbyController -> {
+        });
+        standardGameController.joinPlayer(client, new User(), new LoginInfo("1", "32", 1));
+        standardGameController.joinPlayer(client2, new User(), new LoginInfo("2", "32", 1));
+
         //game ended exception
         game.setLastTurn();
         pickedTiles = new ArrayList<>();
@@ -908,12 +1565,164 @@ class StandardGameControllerTest {
         playerMoveInfo = new PlayerMoveInfo(pickedTiles, 0);
         standardGameController.doPlayerMove(client, playerMoveInfo);
         standardGameController.doPlayerMove(client2, playerMoveInfo);
+        //wait 100ms and check playerInfos, one of them should have Game ended error
+
+
         pickedTiles = new ArrayList<>();
         pickedTiles.add(new PickedTile(1, 4));
+
         playerMoveInfo = new PlayerMoveInfo(pickedTiles, 0);
         standardGameController.doPlayerMove(client, playerMoveInfo);
         standardGameController.doPlayerMove(client2, playerMoveInfo);
         pickedTiles = new ArrayList<>();
+        pickedTiles.add(new PickedTile(4, 1));
+        playerMoveInfo = new PlayerMoveInfo(pickedTiles, 0);
+        standardGameController.doPlayerMove(client, playerMoveInfo);
+        standardGameController.doPlayerMove(client2, playerMoveInfo);
+        //wait 100ms and check gameInfi, status should be ENDED
+        Thread.sleep(100);
+        assert gameInfo[0] != null && gameInfo[0].status().equals(Game.GameStatus.ENDED);
+        assert gameInfo1[0] != null && gameInfo1[0].status().equals(Game.GameStatus.ENDED);
+
+
+    }
+
+
+    @Test
+    void doPlayerMoveLegal4() throws InterruptedException, GameAccessDeniedException {
+        Game game = GameBuilder.build(new NewGameInfo("gameId", "STANDARD", 2, System.currentTimeMillis()));
+        var standardGameController = new StandardGameController(game, lobbyController -> {
+        });
+        //first we test a move before the game starts and player is not in the game
+        List<PickedTile> pickedTiles = new ArrayList<>();
+        pickedTiles.add(new PickedTile(1, 1));
+
+        var playerMoveInfo = new PlayerMoveInfo(pickedTiles, 1);
+        standardGameController.doPlayerMove(mock(ClientInterface.class), playerMoveInfo);
+
+        final GameInfo[] gameInfo1 = {null};
+        final PlayerInfo[] playerInfo1 = {null};
+        ClientInterface client = new ClientInterface() {
+            @Override
+            public void bind(ServerInterface server) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
+
+
+            }
+
+            @Override
+            public void update(GameInfo o, Game.Event evt) throws RemoteException {
+                gameInfo1[0] = o;
+            }
+
+
+            @Override
+            public void update(LivingRoomInfo o, LivingRoom.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(PersonalGoalInfo o, PersonalGoal.Event evt) throws RemoteException {
+            }
+
+            @Override
+            public void update(PlayerChatInfo o, PlayerChat.Event evt) throws RemoteException {
+            }
+
+            @Override
+            public void update(PlayerInfo o, Player.Event evt) throws RemoteException {
+                playerInfo1[0] = o;
+            }
+
+            @Override
+            public void update(ShelfInfo o, Shelf.Event evt) throws RemoteException {
+            }
+
+            @Override
+            public void update(UserInfo o, User.Event evt) throws RemoteException {
+            }
+        };
+
+            standardGameController.joinPlayer(client, new User(), new LoginInfo("1", "42", 1));
+
+        //now we test a move after before the game starts and player is in the game
+        standardGameController.doPlayerMove(client, playerMoveInfo);
+        //now we add a second player and start the game
+        final GameInfo[] gameInfo = {null};
+        final LivingRoomInfo[] livingRoomInfo = {null};
+        final PlayerInfo[] playerInfo = {null};
+
+        ClientInterface client2 = new ClientInterface() {
+            @Override
+            public void bind(ServerInterface server) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(GameInfo o, Game.Event evt) throws RemoteException {
+                gameInfo[0] = o;
+            }
+
+
+            @Override
+            public void update(LivingRoomInfo o, LivingRoom.Event evt) throws RemoteException {
+                livingRoomInfo[0] = o;
+            }
+
+            @Override
+            public void update(PersonalGoalInfo o, PersonalGoal.Event evt) throws RemoteException {
+            }
+
+            @Override
+            public void update(PlayerChatInfo o, PlayerChat.Event evt) throws RemoteException {
+            }
+
+            @Override
+            public void update(PlayerInfo o, Player.Event evt) throws RemoteException {
+                playerInfo[0] = o;
+            }
+
+            @Override
+            public void update(ShelfInfo o, Shelf.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(UserInfo o, User.Event evt) throws RemoteException {
+            }
+        };
+
+            standardGameController.joinPlayer(client2, new User(), new LoginInfo("2", "42", 1));
+
+
+
+        game = GameBuilder.build(new NewGameInfo("32", "STANDARD", 2, System.currentTimeMillis()));
+        standardGameController = new StandardGameController(game, lobbyController -> {
+        });
+        standardGameController.joinPlayer(client, new User(), new LoginInfo("1", "32", 1));
+        standardGameController.joinPlayer(client2, new User(), new LoginInfo("2", "32", 1));
+
+
+        game = GameBuilder.build(new NewGameInfo("32", "STANDARD", 2, System.currentTimeMillis()));
+        standardGameController = new StandardGameController(game, lobbyController -> {
+        });
+
+        standardGameController.joinPlayer(client, new User(), new LoginInfo("1", "32", 1));
+
+        standardGameController.joinPlayer(client2, new User(), new LoginInfo("2", "32", 1));
+
+
+        pickedTiles = new ArrayList<>();
+
         pickedTiles.add(new PickedTile(0, 0));
         var board = game.getLivingRoom().getBoard();
         board[0][0] = Tile.TROPHIES_1;
@@ -921,11 +1730,139 @@ class StandardGameControllerTest {
         playerMoveInfo = new PlayerMoveInfo(pickedTiles, 0);
         standardGameController.doPlayerMove(client, playerMoveInfo);
         standardGameController.doPlayerMove(client2, playerMoveInfo);
+
+        Thread.sleep(100);
+        assert game.getLivingRoom().getBoard()[0][0].equals(Tile.EMPTY);
+
+    }
+    @Test
+    void doPlayerMoveNonAdjacentTilesRow() throws InterruptedException, GameAccessDeniedException {
+        Game game = GameBuilder.build(new NewGameInfo("gameId", "STANDARD", 2, System.currentTimeMillis()));
+        var standardGameController = new StandardGameController(game, lobbyController -> {
+        });
+        //first we test a move before the game starts and player is not in the game
+        List<PickedTile> pickedTiles = new ArrayList<>();
+        pickedTiles.add(new PickedTile(1, 1));
+
+        var playerMoveInfo = new PlayerMoveInfo(pickedTiles, 1);
+        standardGameController.doPlayerMove(mock(ClientInterface.class), playerMoveInfo);
+
+        final GameInfo[] gameInfo1 = {null};
+        final PlayerInfo[] playerInfo1 = {null};
+        ClientInterface client = new ClientInterface() {
+            @Override
+            public void bind(ServerInterface server) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
+
+
+            }
+
+            @Override
+            public void update(GameInfo o, Game.Event evt) throws RemoteException {
+                gameInfo1[0] = o;
+            }
+
+
+            @Override
+            public void update(LivingRoomInfo o, LivingRoom.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(PersonalGoalInfo o, PersonalGoal.Event evt) throws RemoteException {
+            }
+
+            @Override
+            public void update(PlayerChatInfo o, PlayerChat.Event evt) throws RemoteException {
+            }
+
+            @Override
+            public void update(PlayerInfo o, Player.Event evt) throws RemoteException {
+                playerInfo1[0] = o;
+            }
+
+            @Override
+            public void update(ShelfInfo o, Shelf.Event evt) throws RemoteException {
+            }
+
+            @Override
+            public void update(UserInfo o, User.Event evt) throws RemoteException {
+            }
+        };
+
+            standardGameController.joinPlayer(client, new User(), new LoginInfo("1", "42", 1));
+
+        //now we test a move after before the game starts and player is in the game
+        standardGameController.doPlayerMove(client, playerMoveInfo);
+        //now we add a second player and start the game
+        final GameInfo[] gameInfo = {null};
+        final LivingRoomInfo[] livingRoomInfo = {null};
+        final PlayerInfo[] playerInfo = {null};
+
+        ClientInterface client2 = new ClientInterface() {
+            @Override
+            public void bind(ServerInterface server) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(GameInfo o, Game.Event evt) throws RemoteException {
+                gameInfo[0] = o;
+            }
+
+
+            @Override
+            public void update(LivingRoomInfo o, LivingRoom.Event evt) throws RemoteException {
+                livingRoomInfo[0] = o;
+            }
+
+            @Override
+            public void update(PersonalGoalInfo o, PersonalGoal.Event evt) throws RemoteException {
+            }
+
+            @Override
+            public void update(PlayerChatInfo o, PlayerChat.Event evt) throws RemoteException {
+            }
+
+            @Override
+            public void update(PlayerInfo o, Player.Event evt) throws RemoteException {
+                playerInfo[0] = o;
+            }
+
+            @Override
+            public void update(ShelfInfo o, Shelf.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(UserInfo o, User.Event evt) throws RemoteException {
+            }
+        };
+
+            standardGameController.joinPlayer(client2, new User(), new LoginInfo("2", "42", 1));
+
+
+        game = GameBuilder.build(new NewGameInfo("32", "STANDARD", 2, System.currentTimeMillis()));
+        standardGameController = new StandardGameController(game, lobbyController -> {
+        });
+        standardGameController.joinPlayer(client, new User(), new LoginInfo("1", "32", 1));
+        standardGameController.joinPlayer(client2, new User(), new LoginInfo("2", "32", 1));
+
         //non adjacent tiles
         pickedTiles = new ArrayList<>();
         pickedTiles.add(new PickedTile(1, 3));
         pickedTiles.add(new PickedTile(1, 5));
         //fill a board with empty tiles except for 1,3 and 1,5
+        Tile[][] board;
         board = new Tile[9][9];
         Arrays.stream(board).forEach(a -> Arrays.fill(a, Tile.EMPTY));
         board[1][3] = Tile.TROPHIES_1;
@@ -934,6 +1871,139 @@ class StandardGameControllerTest {
         playerMoveInfo = new PlayerMoveInfo(pickedTiles, 0);
         standardGameController.doPlayerMove(client, playerMoveInfo);
         standardGameController.doPlayerMove(client2, playerMoveInfo);
+        //wait 100ms and check living room at 1,3 and 1,5, and check playerInfos, one of them should have Malformed move: Tiles are not aligned error
+        Thread.sleep(500);
+        assert livingRoomInfo[0] != null && !game.getLivingRoom().getBoard()[1][3].equals(Tile.EMPTY) && !game.getLivingRoom().getBoard()[1][5].equals(Tile.EMPTY);
+        assert playerInfo[0] != null && playerInfo1[0] != null && (playerInfo[0].errorMessage().equals("Malformed move: Tiles are not aligned") || playerInfo1[0].errorMessage().equals("Malformed move: Tiles are not aligned"));
+    }
+
+
+
+
+    @Test
+    void doPlayerMoveNonAdjacentTilesColumn() throws InterruptedException, GameAccessDeniedException {
+        Game game = GameBuilder.build(new NewGameInfo("gameId", "STANDARD", 2, System.currentTimeMillis()));
+        var standardGameController = new StandardGameController(game, lobbyController -> {
+        });
+        //first we test a move before the game starts and player is not in the game
+        List<PickedTile> pickedTiles = new ArrayList<>();
+        pickedTiles.add(new PickedTile(1, 1));
+
+        var playerMoveInfo = new PlayerMoveInfo(pickedTiles, 1);
+        standardGameController.doPlayerMove(mock(ClientInterface.class), playerMoveInfo);
+
+        final GameInfo[] gameInfo1 = {null};
+        final PlayerInfo[] playerInfo1 = {null};
+        ClientInterface client = new ClientInterface() {
+            @Override
+            public void bind(ServerInterface server) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
+
+
+            }
+
+            @Override
+            public void update(GameInfo o, Game.Event evt) throws RemoteException {
+                gameInfo1[0] = o;
+            }
+
+
+            @Override
+            public void update(LivingRoomInfo o, LivingRoom.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(PersonalGoalInfo o, PersonalGoal.Event evt) throws RemoteException {
+            }
+
+            @Override
+            public void update(PlayerChatInfo o, PlayerChat.Event evt) throws RemoteException {
+            }
+
+            @Override
+            public void update(PlayerInfo o, Player.Event evt) throws RemoteException {
+                playerInfo1[0] = o;
+            }
+
+            @Override
+            public void update(ShelfInfo o, Shelf.Event evt) throws RemoteException {
+            }
+
+            @Override
+            public void update(UserInfo o, User.Event evt) throws RemoteException {
+            }
+        };
+
+            standardGameController.joinPlayer(client, new User(), new LoginInfo("1", "42", 1));
+
+        //now we test a move after before the game starts and player is in the game
+        standardGameController.doPlayerMove(client, playerMoveInfo);
+        //now we add a second player and start the game
+        final GameInfo[] gameInfo = {null};
+        final LivingRoomInfo[] livingRoomInfo = {null};
+        final PlayerInfo[] playerInfo = {null};
+
+        ClientInterface client2 = new ClientInterface() {
+            @Override
+            public void bind(ServerInterface server) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(GameInfo o, Game.Event evt) throws RemoteException {
+                gameInfo[0] = o;
+            }
+
+
+            @Override
+            public void update(LivingRoomInfo o, LivingRoom.Event evt) throws RemoteException {
+                livingRoomInfo[0] = o;
+            }
+
+            @Override
+            public void update(PersonalGoalInfo o, PersonalGoal.Event evt) throws RemoteException {
+            }
+
+            @Override
+            public void update(PlayerChatInfo o, PlayerChat.Event evt) throws RemoteException {
+            }
+
+            @Override
+            public void update(PlayerInfo o, Player.Event evt) throws RemoteException {
+                playerInfo[0] = o;
+            }
+
+            @Override
+            public void update(ShelfInfo o, Shelf.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(UserInfo o, User.Event evt) throws RemoteException {
+            }
+        };
+
+            standardGameController.joinPlayer(client2, new User(), new LoginInfo("2", "42", 1));
+
+
+        game = GameBuilder.build(new NewGameInfo("32", "STANDARD", 2, System.currentTimeMillis()));
+        standardGameController = new StandardGameController(game, lobbyController -> {
+        });
+        standardGameController.joinPlayer(client, new User(), new LoginInfo("1", "32", 1));
+        standardGameController.joinPlayer(client2, new User(), new LoginInfo("2", "32", 1));
+
+
+        Tile[][] board;
 
         //non adjacent tiles but same column
         board = new Tile[9][9];
@@ -947,12 +2017,172 @@ class StandardGameControllerTest {
         playerMoveInfo = new PlayerMoveInfo(pickedTiles, 0);
         standardGameController.doPlayerMove(client, playerMoveInfo);
         standardGameController.doPlayerMove(client2, playerMoveInfo);
+        //wait
+        Thread.sleep(100);
+        assert livingRoomInfo[0] != null && !game.getLivingRoom().getBoard()[1][3].equals(Tile.EMPTY) && !game.getLivingRoom().getBoard()[3][3].equals(Tile.EMPTY);
+        assert playerInfo[0] != null && playerInfo1[0] != null && (playerInfo[0].errorMessage().equals("Malformed move: Tiles are not aligned") || playerInfo1[0].errorMessage().equals("Malformed move: Tiles are not aligned"));
+    }
+    @Test
+    void doPlayerMoveLastTurn() throws PlayerNotExistsException, InterruptedException, GameAccessDeniedException {
+        Game game = GameBuilder.build(new NewGameInfo("gameId", "STANDARD", 2, System.currentTimeMillis()));
+        var standardGameController = new StandardGameController(game, lobbyController -> {
+        });
+        //first we test a move before the game starts and player is not in the game
+        List<PickedTile> pickedTiles = new ArrayList<>();
+        pickedTiles.add(new PickedTile(1, 1));
+
+        var playerMoveInfo = new PlayerMoveInfo(pickedTiles, 1);
+        standardGameController.doPlayerMove(mock(ClientInterface.class), playerMoveInfo);
+
+        final GameInfo[] gameInfo1 = {null};
+        final PlayerInfo[] playerInfo1 = {null};
+        ClientInterface client = new ClientInterface() {
+            @Override
+            public void bind(ServerInterface server) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
 
 
+            }
+
+            @Override
+            public void update(GameInfo o, Game.Event evt) throws RemoteException {
+                gameInfo1[0] = o;
+            }
+
+
+            @Override
+            public void update(LivingRoomInfo o, LivingRoom.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(PersonalGoalInfo o, PersonalGoal.Event evt) throws RemoteException {
+            }
+
+            @Override
+            public void update(PlayerChatInfo o, PlayerChat.Event evt) throws RemoteException {
+            }
+
+            @Override
+            public void update(PlayerInfo o, Player.Event evt) throws RemoteException {
+                playerInfo1[0] = o;
+            }
+
+            @Override
+            public void update(ShelfInfo o, Shelf.Event evt) throws RemoteException {
+            }
+
+            @Override
+            public void update(UserInfo o, User.Event evt) throws RemoteException {
+            }
+        };
+
+            standardGameController.joinPlayer(client, new User(), new LoginInfo("1", "42", 1));
+
+        //now we test a move after before the game starts and player is in the game
+        standardGameController.doPlayerMove(client, playerMoveInfo);
+        //now we add a second player and start the game
+        final GameInfo[] gameInfo = {null};
+        final LivingRoomInfo[] livingRoomInfo = {null};
+        final PlayerInfo[] playerInfo = {null};
+        TimedLock<Boolean> lock = new TimedLock<>(false);
+        ClientInterface client2 = new ClientInterface() {
+            @Override
+            public void bind(ServerInterface server) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(GameInfo o, Game.Event evt) throws RemoteException {
+                gameInfo[0] = o;
+                synchronized (lock) {
+                    lock.setValue(true);
+                    lock.notifyAll();
+                }
+            }
+
+
+            @Override
+            public void update(LivingRoomInfo o, LivingRoom.Event evt) throws RemoteException {
+                livingRoomInfo[0] = o;
+            }
+
+            @Override
+            public void update(PersonalGoalInfo o, PersonalGoal.Event evt) throws RemoteException {
+            }
+
+            @Override
+            public void update(PlayerChatInfo o, PlayerChat.Event evt) throws RemoteException {
+            }
+
+            @Override
+            public void update(PlayerInfo o, Player.Event evt) throws RemoteException {
+                playerInfo[0] = o;
+            }
+
+            @Override
+            public void update(ShelfInfo o, Shelf.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(UserInfo o, User.Event evt) throws RemoteException {
+            }
+        };
+
+            standardGameController.joinPlayer(client2, new User(), new LoginInfo("2", "42", 1));
+
+
+
+        game = GameBuilder.build(new NewGameInfo("32", "STANDARD", 2, System.currentTimeMillis()));
+        standardGameController = new StandardGameController(game, lobbyController -> {
+        });
+        standardGameController.joinPlayer(client, new User(), new LoginInfo("1", "32", 1));
+        standardGameController.joinPlayer(client2, new User(), new LoginInfo("2", "32", 1));
+
+
+
+
+        Tile[][] tiles = new Tile[6][5];
+
+
+        //fill with Tile.EMPTY
+        Arrays.stream(tiles).forEach(a -> Arrays.fill(a, Tile.EMPTY));
+        //now we fill the shelves with TROPHIES_1
+        Arrays.stream(tiles).forEach(a -> Arrays.fill(a, Tile.TROPHIES_1));
+        //set one space in the shelf to EMPTY, column 0
+        tiles[0][0] = Tile.EMPTY;
+        game.getPlayer("2").getShelf().setTiles(tiles);
+        game.getPlayer("1").getShelf().setTiles(tiles);
+        //now we do one move and check if lastTurn is set
+        pickedTiles = new ArrayList<>();
+        pickedTiles.add(new PickedTile(1, 3));
+        playerMoveInfo = new PlayerMoveInfo(pickedTiles, 0);
+        standardGameController.doPlayerMove(client, playerMoveInfo);
+        standardGameController.doPlayerMove(client2, playerMoveInfo);
+        //wait until the move is done, gameinfo is updated
+        synchronized(lock) {
+            lock.wait(1000);
+        }
+        if (!lock.getValue()) {
+            fail("GameInfo not updated");
+        }
+        assert gameInfo[0] != null && gameInfo[0].lastTurn();
     }
 
+
+
     @Test
-    void sendMessage() throws PlayerNotExistsException {
+    void sendMessage() throws PlayerNotExistsException, GameAccessDeniedException {
 
         var client2 = new ClientInterface() {
             @Override
@@ -1048,21 +2278,18 @@ class StandardGameControllerTest {
             }
         };
 
-        var         game = GameBuilder.build(new NewGameInfo("42", "STANDARD", 2, System.currentTimeMillis()));
+        var game = GameBuilder.build(new NewGameInfo("42", "STANDARD", 2, System.currentTimeMillis()));
 
 
-        var standardGameController = new StandardGameController(game, lobbyController -> {});
+        var standardGameController = new StandardGameController(game, lobbyController -> {
+        });
 
-        try {
+
             standardGameController.joinPlayer(client, new User(), new LoginInfo("1", "42", 1));
-        } catch (GameAccessDeniedException e) {
-            fail("Exception thrown" + e.getMessage());
-        }
-        try {
+
+
             standardGameController.joinPlayer(client2, new User(), new LoginInfo("2", "42", 1));
-        } catch (GameAccessDeniedException e) {
-            fail("Exception thrown" + e.getMessage());
-        }
+
         standardGameController.sendMessage(client, new StandardMessage("1", "2", "test"));
         assertEquals(game.getPlayer("1").getPlayerChat().getMessages().get(0).getText(), "test");
         assertEquals(game.getPlayer("2").getPlayerChat().getMessages().get(0).getText(), "test");
@@ -1122,6 +2349,67 @@ class StandardGameControllerTest {
 
         //subject non-existing
         standardGameController.sendMessage(client, new StandardMessage("1", "3", "test"));
+
+
+    }
+
+
+    @Test
+    void disconectObserver() throws GameAccessDeniedException {
+        var client2 = new ClientInterface() {
+            @Override
+            public void update(UserInfo o, User.Event evt) throws RemoteException {
+                throw new RemoteException();
+            }
+
+            @Override
+            public void update(ShelfInfo o, Shelf.Event evt) throws RemoteException {
+                throw new RemoteException();
+            }
+
+            @Override
+            public void update(PlayerInfo o, Player.Event evt) throws RemoteException {
+                throw new RemoteException();
+            }
+
+            @Override
+            public void update(PlayerChatInfo o, PlayerChat.Event evt) throws RemoteException {
+                throw new RemoteException();
+            }
+
+            @Override
+            public void update(PersonalGoalInfo o, PersonalGoal.Event evt) throws RemoteException {
+                throw new RemoteException();
+            }
+
+            @Override
+            public void update(LivingRoomInfo o, LivingRoom.Event evt) throws RemoteException {
+                throw new RemoteException();
+            }
+
+            @Override
+            public void update(GameInfo o, Game.Event evt) throws RemoteException {
+                throw new RemoteException();
+            }
+
+            @Override
+            public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
+                throw new RemoteException();
+            }
+
+            @Override
+            public void bind(ServerInterface server) throws RemoteException {
+                throw new RemoteException();
+            }
+        };
+        var game = GameBuilder.build(new NewGameInfo("42", "STANDARD", 2, System.currentTimeMillis()));
+
+
+        var standardGameController = new StandardGameController(game, lobbyController -> {
+        });
+
+
+            standardGameController.joinPlayer(client2, new User(), new LoginInfo("2", "42", 1));
 
 
     }
