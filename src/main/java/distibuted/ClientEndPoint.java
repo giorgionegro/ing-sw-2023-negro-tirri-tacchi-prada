@@ -12,7 +12,8 @@ import java.rmi.server.UnicastRemoteObject;
 
 public class ClientEndPoint extends UnicastRemoteObject implements ClientInterface {
 
-    ViewCollection views;
+    private final ViewCollection views;
+
     public ClientEndPoint(ViewCollection ui) throws RemoteException {
         super();
         this.views = ui;
@@ -23,7 +24,7 @@ public class ClientEndPoint extends UnicastRemoteObject implements ClientInterfa
         try {
             views.update(o,evt);
         } catch (RemoteException e) {
-            //TODO
+            printError("Update LivingRoomInfo",e.getMessage());
         }
     }
 
@@ -32,7 +33,7 @@ public class ClientEndPoint extends UnicastRemoteObject implements ClientInterfa
         try {
             views.update(o,evt);
         } catch (RemoteException e) {
-            //TODO
+            printError("Update PersonalGoalInfo",e.getMessage());
         }
     }
 
@@ -41,7 +42,7 @@ public class ClientEndPoint extends UnicastRemoteObject implements ClientInterfa
         try {
             views.update(o,evt);
         } catch (RemoteException e) {
-            //TODO
+            printError("Update PlayerChatInfo",e.getMessage());
         }
     }
 
@@ -50,7 +51,7 @@ public class ClientEndPoint extends UnicastRemoteObject implements ClientInterfa
         try {
             views.update(o,evt);
         } catch (RemoteException e) {
-            //TODO
+            printError("Update PlayerInfo",e.getMessage());
         }
     }
 
@@ -59,7 +60,7 @@ public class ClientEndPoint extends UnicastRemoteObject implements ClientInterfa
         try {
             views.update(o,evt);
         } catch (RemoteException e) {
-            //TODO
+            printError("Update ShelfInfo",e.getMessage());
         }
     }
 
@@ -68,7 +69,7 @@ public class ClientEndPoint extends UnicastRemoteObject implements ClientInterfa
         try {
             views.update(o,evt);
         } catch (RemoteException e) {
-            //TODO
+            printError("Update GameInfo",e.getMessage());
         }
     }
 
@@ -77,7 +78,7 @@ public class ClientEndPoint extends UnicastRemoteObject implements ClientInterfa
         try {
             views.update(o,evt);
         } catch (RemoteException e) {
-            //TODO
+            printError("Update CommonGoalInfo",e.getMessage());
         }
     }
 
@@ -86,7 +87,7 @@ public class ClientEndPoint extends UnicastRemoteObject implements ClientInterfa
         try {
             views.update(o,evt);
         } catch (RemoteException e) {
-            //TODO
+            printError("Update UserInfo",e.getMessage());
         }
     }
 
@@ -97,7 +98,7 @@ public class ClientEndPoint extends UnicastRemoteObject implements ClientInterfa
                 try {
                     this.wait();
                 } catch (InterruptedException e) {
-                    //TODO
+                    System.err.println("Error on connection binder");
                 }
             }
         });
@@ -107,7 +108,13 @@ public class ClientEndPoint extends UnicastRemoteObject implements ClientInterfa
         try {
             binder.join();
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);//TODO
+            System.err.println("Error on connection binder");
         }
+    }
+
+    private void printError(String from, String message){
+        if(!message.isBlank())
+            message = " : "+message;
+        System.err.print("ClientEndpoint: exception from " + from + message);
     }
 }
