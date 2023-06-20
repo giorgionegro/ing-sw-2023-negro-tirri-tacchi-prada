@@ -17,7 +17,8 @@ import java.rmi.RemoteException;
 import java.util.Objects;
 
 public class JoinGamePanel extends JPanel implements ActionListener, UserView {
-    private final Image CreateGame = new ImageIcon(Objects.requireNonNull(getClass().getResource("/desktop.png"))).getImage();
+    private final Image CreateGame = new ImageIcon(getClass().getResource("/desktop.png")).getImage();
+    private final ImageIcon filter = new ImageIcon(getClass().getResource("/filterError.png"));
     private final ActionListener listener;
     private final JButton PlayButton;
     private final JButton exitButton;
@@ -73,6 +74,14 @@ public class JoinGamePanel extends JPanel implements ActionListener, UserView {
 
         GameIdField.setPreferredSize(new Dimension(165,41));
 
+        JPanel ErrorPanel = new JPanel(){
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                g.drawImage(filter.getImage(), 0, 0, getWidth(), getHeight(), null);
+            }
+        };
+        ErrorPanel.setPreferredSize(new Dimension(224,60));
+        ErrorPanel.setOpaque(false);
 
 
         PlayButton = new JButton();
@@ -99,6 +108,9 @@ public class JoinGamePanel extends JPanel implements ActionListener, UserView {
         ButtonsJoinPanel.add(PlayButton,c);
         c.gridx--;
         ButtonsJoinPanel.add(exitButton,c);
+        c.gridy++;
+        c.gridwidth = 2;
+        ButtonsJoinPanel.add(ErrorPanel, c);
 
         PlayButton.addActionListener(this);
         exitButton.addActionListener(this);
