@@ -7,6 +7,7 @@ import modelView.NewGameInfo;
 import modelView.UserInfo;
 
 import util.TimedLock;
+import view.GUI.AspectRatioLayout;
 import view.interfaces.UserView;
 
 import javax.swing.*;
@@ -17,6 +18,7 @@ import java.rmi.RemoteException;
 
 public class CreateGamePanel extends JPanel implements ActionListener, UserView {
     private final Image CreateGame = new ImageIcon (getClass().getResource("/desktop.png")).getImage();
+    private final ImageIcon filter = new ImageIcon(getClass().getResource("/filterError.png"));
     private final JButton createButton;
 
     private final JButton exitButton;
@@ -76,6 +78,7 @@ public class CreateGamePanel extends JPanel implements ActionListener, UserView 
         NumberIdField.setPreferredSize(new Dimension(190,41));
 
 
+
         createButton = new JButton();
         createButton.setIcon(button);
         JLabel PlayButtonLabel = new JLabel("CREATE");
@@ -87,6 +90,18 @@ public class CreateGamePanel extends JPanel implements ActionListener, UserView 
         JLabel exitButtonLabel = new JLabel("BACK");
         exitButtonLabel.setFont(font1);
         exitButton.add(exitButtonLabel);
+
+
+        //Creazione del pannello per visuallizzare gli errori;
+        JPanel ErrorPanel = new JPanel(){
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                g.drawImage(filter.getImage(), 0, 0, getWidth(), getHeight(), null);
+            }
+        };
+        ErrorPanel.setPreferredSize(new Dimension(224,60));
+        ErrorPanel.setOpaque(false);
+
 
         ButtonsCreatePanel.add(GameIdField,c);
         c.gridx++;
@@ -100,6 +115,10 @@ public class CreateGamePanel extends JPanel implements ActionListener, UserView 
         ButtonsCreatePanel.add(createButton,c);
         c.gridx--;
         ButtonsCreatePanel.add(exitButton,c);
+        c.gridy++;
+        c.gridwidth = 2;
+        ButtonsCreatePanel.add(ErrorPanel, c);
+
 
         createButton.addActionListener(this);
         exitButton.addActionListener(this);
@@ -152,6 +171,7 @@ public class CreateGamePanel extends JPanel implements ActionListener, UserView 
                     listener.actionPerformed(new ActionEvent(this,e.getID(),"CREATED"));
                 else {
                     //TODO show errore
+
                     if(user!=null){
                         System.err.println(user.eventMessage());
                     }
