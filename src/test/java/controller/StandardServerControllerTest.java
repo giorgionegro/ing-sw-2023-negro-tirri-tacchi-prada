@@ -32,6 +32,11 @@ class StandardServerControllerTest {
             }
 
             @Override
+            public void ping() throws RemoteException {
+
+            }
+
+            @Override
             public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
 
             }
@@ -82,6 +87,11 @@ class StandardServerControllerTest {
             @Override
             public void bind(ServerInterface server) throws RemoteException {
                 throw new RemoteException("This method must be called.");
+
+            }
+
+            @Override
+            public void ping() throws RemoteException {
 
             }
 
@@ -141,6 +151,11 @@ class StandardServerControllerTest {
         ClientInterface client = new ClientInterface() {
             @Override
             public void bind(ServerInterface server) throws RemoteException {
+            }
+
+            @Override
+            public void ping() throws RemoteException {
+
             }
 
             @Override
@@ -211,6 +226,11 @@ class StandardServerControllerTest {
             }
 
             @Override
+            public void ping() throws RemoteException {
+
+            }
+
+            @Override
             public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
 
             }
@@ -276,6 +296,11 @@ class StandardServerControllerTest {
             }
 
             @Override
+            public void ping() throws RemoteException {
+
+            }
+
+            @Override
             public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
 
             }
@@ -333,6 +358,11 @@ class StandardServerControllerTest {
         ClientInterface client = new ClientInterface() {
             @Override
             public void bind(ServerInterface server) throws RemoteException {
+
+            }
+
+            @Override
+            public void ping() throws RemoteException {
 
             }
 
@@ -399,6 +429,11 @@ class StandardServerControllerTest {
         ClientInterface client = new ClientInterface() {
             @Override
             public void bind(ServerInterface server) throws RemoteException {
+
+            }
+
+            @Override
+            public void ping() throws RemoteException {
 
             }
 
@@ -471,6 +506,11 @@ class StandardServerControllerTest {
         ClientInterface client = new ClientInterface() {
             @Override
             public void bind(ServerInterface server) throws RemoteException {
+            }
+
+            @Override
+            public void ping() throws RemoteException {
+
             }
 
             @Override
