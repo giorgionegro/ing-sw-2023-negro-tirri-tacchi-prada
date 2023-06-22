@@ -81,20 +81,16 @@ class StandardGameControllerTest {
         };
 
         assertDoesNotThrow(() -> {
-            standardGameController.joinPlayer(client, user, loginInfo);
+            standardGameController.joinPlayer(client, user, loginInfo.playerId());
             Thread.sleep(100);
-
-
         });
-
-
     }
 
 
     // tesat join completing the lobby
 
     /**
-     * Method under test: {@link StandardGameController#joinPlayer(ClientInterface, User, LoginInfo)}
+     * Method under test: {@link StandardGameController#joinPlayer(ClientInterface, User, String)}
      */
     @Test
     void joinPlayerCompleteLobby() {
@@ -153,7 +149,7 @@ class StandardGameControllerTest {
 
         User finalUser = user;
         LoginInfo finalLoginInfo = loginInfo;
-        assertDoesNotThrow(() -> standardGameController.joinPlayer(client, finalUser, finalLoginInfo));
+        assertDoesNotThrow(() -> standardGameController.joinPlayer(client, finalUser, finalLoginInfo.playerId()));
 
         //join the second player
         user = new User();
@@ -161,7 +157,7 @@ class StandardGameControllerTest {
 
         User finalUser1 = user;
         LoginInfo finalLoginInfo1 = loginInfo;
-        assertDoesNotThrow(() -> standardGameController.joinPlayer(client, finalUser1, finalLoginInfo1));
+        assertDoesNotThrow(() -> standardGameController.joinPlayer(client, finalUser1, finalLoginInfo1.playerId()));
 
 
     }
@@ -223,7 +219,7 @@ class StandardGameControllerTest {
             }
         };
 
-        standardGameController.joinPlayer(clientInterface, new User(), new LoginInfo("1", "42", 1));
+        standardGameController.joinPlayer(clientInterface, new User(),"1");
         // Act
         standardGameController.leavePlayer(clientInterface);
     }
@@ -244,7 +240,7 @@ class StandardGameControllerTest {
      * Methods under test:
      *
      * <ul>
-     *     <li>{@link StandardGameController#joinPlayer(ClientInterface, User, LoginInfo)}</li>
+     *     <li>{@link StandardGameController#joinPlayer(ClientInterface, User, String)}</li>
      *     <li>{@link StandardGameController#leavePlayer(ClientInterface)}</li>
      * </ul>
      */
@@ -261,7 +257,7 @@ class StandardGameControllerTest {
         User finalUser1 = user;
         LoginInfo finalLoginInfo1 = loginInfo;
 
-            standardGameController.joinPlayer(client, user, finalLoginInfo1);
+            standardGameController.joinPlayer(client, user, finalLoginInfo1.playerId());
 
 
         //join the second player
@@ -271,7 +267,7 @@ class StandardGameControllerTest {
 
         LoginInfo finalLoginInfo2 = loginInfo;
 
-            standardGameController.joinPlayer(fclient, user, finalLoginInfo2);
+            standardGameController.joinPlayer(fclient, user, finalLoginInfo2.playerId());
 
 
         //leave the game
@@ -290,12 +286,12 @@ class StandardGameControllerTest {
 
 
         User finalUser = user;
-        assertDoesNotThrow(() -> standardGameController.joinPlayer(fclient, finalUser, finalLoginInfo2));
+        assertDoesNotThrow(() -> standardGameController.joinPlayer(fclient, finalUser, finalLoginInfo2.playerId()));
 
 
         //now try to leave again and join after 6 seconds
         assertDoesNotThrow(() -> standardGameController.leavePlayer(fclient));
-        assertDoesNotThrow(() -> standardGameController.joinPlayer(fclient, finalUser1, finalLoginInfo2));
+        assertDoesNotThrow(() -> standardGameController.joinPlayer(fclient, finalUser1, finalLoginInfo2.playerId()));
         //network test can really check result without using a real network
 
 
@@ -305,7 +301,7 @@ class StandardGameControllerTest {
     //join game with same id
 
     /**
-     * Method under test: {@link StandardGameController#joinPlayer(ClientInterface, User, LoginInfo)}
+     * Method under test: {@link StandardGameController#joinPlayer(ClientInterface, User, String)}
      */
 
     @Test
@@ -364,7 +360,7 @@ class StandardGameControllerTest {
             }
         };
 
-            standardGameController.joinPlayer(client, user, loginInfo);
+            standardGameController.joinPlayer(client, user, loginInfo.playerId());
 
         //join the second player
         user = new User();
@@ -372,9 +368,7 @@ class StandardGameControllerTest {
 
         User finalUser = user;
         LoginInfo finalLoginInfo = loginInfo;
-        assertThrows(GameAccessDeniedException.class, () -> standardGameController.joinPlayer(client, finalUser, finalLoginInfo));
-
-
+        assertThrows(GameAccessDeniedException.class, () -> standardGameController.joinPlayer(client, finalUser, finalLoginInfo.playerId()));
     }
 
     //leave with non-existing client
@@ -438,7 +432,7 @@ class StandardGameControllerTest {
             }
         };
 
-            standardGameController.joinPlayer(client, user, loginInfo);
+            standardGameController.joinPlayer(client, user, loginInfo.playerId());
 
 
         //join the second player
@@ -451,7 +445,7 @@ class StandardGameControllerTest {
 
     /**
      * Methods under test:
-     * {@link StandardGameController#joinPlayer(ClientInterface, User, LoginInfo)}
+     * {@link StandardGameController#joinPlayer(ClientInterface, User, String)}
      */
     @Test
     void observersErrorTest() throws GameAccessDeniedException {
@@ -463,7 +457,7 @@ class StandardGameControllerTest {
         LoginInfo loginInfo = new LoginInfo("1", "42", 1);
         ClientInterface client = mock(ClientInterface.class);
 
-            standardGameController.joinPlayer(client, user, loginInfo);
+            standardGameController.joinPlayer(client, user, loginInfo.playerId());
 
         //join the second player
         user = new User();
@@ -474,7 +468,7 @@ class StandardGameControllerTest {
         client = mock(ClientInterface.class);
         ClientInterface finalClient = client;
 
-            standardGameController.joinPlayer(finalClient, finalUser, finalLoginInfo);
+            standardGameController.joinPlayer(finalClient, finalUser, finalLoginInfo.playerId());
 
     }
 
@@ -545,7 +539,7 @@ class StandardGameControllerTest {
             }
         };
 
-            standardGameController.joinPlayer(client, new User(), new LoginInfo("1", "42", 1));
+            standardGameController.joinPlayer(client, new User(),"1");
 
         //now we test a move after before the game starts and player is in the game
         standardGameController.doPlayerMove(client, playerMoveInfo);
@@ -599,7 +593,7 @@ class StandardGameControllerTest {
             }
         };
 
-            standardGameController.joinPlayer(client2, new User(), new LoginInfo("2", "42", 1));
+            standardGameController.joinPlayer(client2, new User(),"2");
 
 
 
@@ -677,7 +671,7 @@ class StandardGameControllerTest {
             }
         };
 
-            standardGameController.joinPlayer(client, new User(), new LoginInfo("1", "42", 1));
+            standardGameController.joinPlayer(client, new User(), "1");
 
         //now we test a move after before the game starts and player is in the game
         standardGameController.doPlayerMove(client, playerMoveInfo);
@@ -730,7 +724,7 @@ class StandardGameControllerTest {
             public void update(UserInfo o, User.Event evt) throws RemoteException {
             }
         };
-        standardGameController.joinPlayer(client2, new User(), new LoginInfo("2", "42", 1));
+        standardGameController.joinPlayer(client2, new User(),"2");
 
 
         //malformed move
@@ -808,7 +802,7 @@ class StandardGameControllerTest {
             }
         };
 
-            standardGameController.joinPlayer(client, new User(), new LoginInfo("1", "42", 1));
+            standardGameController.joinPlayer(client, new User(),"1");
 
         //now we test a move after before the game starts and player is in the game
         standardGameController.doPlayerMove(client, playerMoveInfo);
@@ -862,7 +856,7 @@ class StandardGameControllerTest {
             }
         };
 
-            standardGameController.joinPlayer(client2, new User(), new LoginInfo("2", "42", 1));
+            standardGameController.joinPlayer(client2, new User(), "2");
 
 
         //column out of bounds
@@ -934,7 +928,7 @@ class StandardGameControllerTest {
             }
         };
 
-            standardGameController.joinPlayer(client, new User(), new LoginInfo("1", "42", 1));
+            standardGameController.joinPlayer(client, new User(),"1");
 
         //now we test a move after before the game starts and player is in the game
         standardGameController.doPlayerMove(client, playerMoveInfo);
@@ -987,7 +981,7 @@ class StandardGameControllerTest {
             public void update(UserInfo o, User.Event evt) throws RemoteException {
             }
         };
-            standardGameController.joinPlayer(client2, new User(), new LoginInfo("2", "42", 1));
+            standardGameController.joinPlayer(client2, new User(),"2");
 
 
 
@@ -1071,7 +1065,7 @@ class StandardGameControllerTest {
             }
         };
 
-            standardGameController.joinPlayer(client, new User(), new LoginInfo("1", "42", 1));
+            standardGameController.joinPlayer(client, new User(), "1");
 
         //now we test a move after before the game starts and player is in the game
         standardGameController.doPlayerMove(client, playerMoveInfo);
@@ -1125,7 +1119,7 @@ class StandardGameControllerTest {
             }
         };
 
-            standardGameController.joinPlayer(client2, new User(), new LoginInfo("2", "42", 1));
+            standardGameController.joinPlayer(client2, new User(), "2");
 
         Tile[][] tiles = new Tile[6][5];
 
@@ -1207,7 +1201,7 @@ class StandardGameControllerTest {
                 }
             };
 
-                standardGameController.joinPlayer(client, new User(), new LoginInfo("1", "42", 1));
+                standardGameController.joinPlayer(client, new User(), "1");
 
             //now we test a move after before the game starts and player is in the game
             standardGameController.doPlayerMove(client, playerMoveInfo);
@@ -1261,16 +1255,16 @@ class StandardGameControllerTest {
                 }
             };
 
-                standardGameController.joinPlayer(client2, new User(), new LoginInfo("2", "42", 1));
+                standardGameController.joinPlayer(client2, new User(), "2");
 
 
             game = GameBuilder.build(new NewGameInfo("32", "STANDARD", 2, System.currentTimeMillis()));
             standardGameController = new StandardGameController(game, lobbyController -> {
             });
 
-            standardGameController.joinPlayer(client, new User(), new LoginInfo("1", "32", 1));
+            standardGameController.joinPlayer(client, new User(), "1");
 
-            standardGameController.joinPlayer(client2, new User(), new LoginInfo("2", "32", 1));
+            standardGameController.joinPlayer(client2, new User(),"2");
             Tile[][] tiles = new Tile[6][5];
             Arrays.stream(tiles).forEach(a -> Arrays.fill(a, Tile.TROPHIES_1));
 
@@ -1294,8 +1288,7 @@ class StandardGameControllerTest {
     @Test
     void doPlayerMoveNonAllignedTiles() throws InterruptedException, GameAccessDeniedException {
         Game game = GameBuilder.build(new NewGameInfo("gameId", "STANDARD", 2, System.currentTimeMillis()));
-        var standardGameController = new StandardGameController(game, lobbyController -> {
-        });
+        var standardGameController = new StandardGameController(game, lobbyController -> {});
         //first we test a move before the game starts and player is not in the game
         List<PickedTile> pickedTiles = new ArrayList<>();
         pickedTiles.add(new PickedTile(1, 1));
@@ -1350,7 +1343,7 @@ class StandardGameControllerTest {
             }
         };
 
-            standardGameController.joinPlayer(client, new User(), new LoginInfo("1", "42", 1));
+            standardGameController.joinPlayer(client, new User(), "1");
 
         //now we test a move after before the game starts and player is in the game
         standardGameController.doPlayerMove(client, playerMoveInfo);
@@ -1404,14 +1397,14 @@ class StandardGameControllerTest {
             }
         };
 
-            standardGameController.joinPlayer(client2, new User(), new LoginInfo("2", "42", 1));
+            standardGameController.joinPlayer(client2, new User(), "2");
 
 
         game = GameBuilder.build(new NewGameInfo("32", "STANDARD", 2, System.currentTimeMillis()));
         standardGameController = new StandardGameController(game, lobbyController -> {
         });
-        standardGameController.joinPlayer(client, new User(), new LoginInfo("1", "32", 1));
-        standardGameController.joinPlayer(client2, new User(), new LoginInfo("2", "32", 1));
+        standardGameController.joinPlayer(client, new User(), "1");
+        standardGameController.joinPlayer(client2, new User(), "2");
 
         //non aligned tiles
         pickedTiles = new ArrayList<>();
@@ -1495,7 +1488,7 @@ class StandardGameControllerTest {
             }
         };
 
-            standardGameController.joinPlayer(client, new User(), new LoginInfo("1", "42", 1));
+            standardGameController.joinPlayer(client, new User(), "1");
 
         //now we test a move after before the game starts and player is in the game
         standardGameController.doPlayerMove(client, playerMoveInfo);
@@ -1549,14 +1542,14 @@ class StandardGameControllerTest {
             }
         };
 
-            standardGameController.joinPlayer(client2, new User(), new LoginInfo("2", "42", 1));
+            standardGameController.joinPlayer(client2, new User(), "2");
 
 
         game = GameBuilder.build(new NewGameInfo("32", "STANDARD", 2, System.currentTimeMillis()));
         standardGameController = new StandardGameController(game, lobbyController -> {
         });
-        standardGameController.joinPlayer(client, new User(), new LoginInfo("1", "32", 1));
-        standardGameController.joinPlayer(client2, new User(), new LoginInfo("2", "32", 1));
+        standardGameController.joinPlayer(client, new User(), "1");
+        standardGameController.joinPlayer(client2, new User(),"2");
 
         //game ended exception
         game.setLastTurn();
@@ -1647,7 +1640,7 @@ class StandardGameControllerTest {
             }
         };
 
-            standardGameController.joinPlayer(client, new User(), new LoginInfo("1", "42", 1));
+            standardGameController.joinPlayer(client, new User(), "1");
 
         //now we test a move after before the game starts and player is in the game
         standardGameController.doPlayerMove(client, playerMoveInfo);
@@ -1701,24 +1694,24 @@ class StandardGameControllerTest {
             }
         };
 
-            standardGameController.joinPlayer(client2, new User(), new LoginInfo("2", "42", 1));
+            standardGameController.joinPlayer(client2, new User(), "2");
 
 
 
         game = GameBuilder.build(new NewGameInfo("32", "STANDARD", 2, System.currentTimeMillis()));
         standardGameController = new StandardGameController(game, lobbyController -> {
         });
-        standardGameController.joinPlayer(client, new User(), new LoginInfo("1", "32", 1));
-        standardGameController.joinPlayer(client2, new User(), new LoginInfo("2", "32", 1));
+        standardGameController.joinPlayer(client, new User(), "1");
+        standardGameController.joinPlayer(client2, new User(), "2");
 
 
         game = GameBuilder.build(new NewGameInfo("32", "STANDARD", 2, System.currentTimeMillis()));
         standardGameController = new StandardGameController(game, lobbyController -> {
         });
 
-        standardGameController.joinPlayer(client, new User(), new LoginInfo("1", "32", 1));
+        standardGameController.joinPlayer(client, new User(), "1");
 
-        standardGameController.joinPlayer(client2, new User(), new LoginInfo("2", "32", 1));
+        standardGameController.joinPlayer(client2, new User(), "2");
 
 
         pickedTiles = new ArrayList<>();
@@ -1794,7 +1787,7 @@ class StandardGameControllerTest {
             }
         };
 
-            standardGameController.joinPlayer(client, new User(), new LoginInfo("1", "42", 1));
+            standardGameController.joinPlayer(client, new User(), "1");
 
         //now we test a move after before the game starts and player is in the game
         standardGameController.doPlayerMove(client, playerMoveInfo);
@@ -1848,14 +1841,14 @@ class StandardGameControllerTest {
             }
         };
 
-            standardGameController.joinPlayer(client2, new User(), new LoginInfo("2", "42", 1));
+            standardGameController.joinPlayer(client2, new User(), "2");
 
 
         game = GameBuilder.build(new NewGameInfo("32", "STANDARD", 2, System.currentTimeMillis()));
         standardGameController = new StandardGameController(game, lobbyController -> {
         });
-        standardGameController.joinPlayer(client, new User(), new LoginInfo("1", "32", 1));
-        standardGameController.joinPlayer(client2, new User(), new LoginInfo("2", "32", 1));
+        standardGameController.joinPlayer(client, new User(), "1");
+        standardGameController.joinPlayer(client2, new User(), "2");
 
         //non adjacent tiles
         pickedTiles = new ArrayList<>();
@@ -1939,7 +1932,7 @@ class StandardGameControllerTest {
             }
         };
 
-            standardGameController.joinPlayer(client, new User(), new LoginInfo("1", "42", 1));
+            standardGameController.joinPlayer(client, new User(), "1");
 
         //now we test a move after before the game starts and player is in the game
         standardGameController.doPlayerMove(client, playerMoveInfo);
@@ -1993,14 +1986,14 @@ class StandardGameControllerTest {
             }
         };
 
-            standardGameController.joinPlayer(client2, new User(), new LoginInfo("2", "42", 1));
+            standardGameController.joinPlayer(client2, new User(), "2");
 
 
         game = GameBuilder.build(new NewGameInfo("32", "STANDARD", 2, System.currentTimeMillis()));
         standardGameController = new StandardGameController(game, lobbyController -> {
         });
-        standardGameController.joinPlayer(client, new User(), new LoginInfo("1", "32", 1));
-        standardGameController.joinPlayer(client2, new User(), new LoginInfo("2", "32", 1));
+        standardGameController.joinPlayer(client, new User(), "1");
+        standardGameController.joinPlayer(client2, new User(), "2");
 
 
         Tile[][] board;
@@ -2081,7 +2074,7 @@ class StandardGameControllerTest {
             }
         };
 
-            standardGameController.joinPlayer(client, new User(), new LoginInfo("1", "42", 1));
+            standardGameController.joinPlayer(client, new User(), "1");
 
         //now we test a move after before the game starts and player is in the game
         standardGameController.doPlayerMove(client, playerMoveInfo);
@@ -2139,15 +2132,15 @@ class StandardGameControllerTest {
             }
         };
 
-            standardGameController.joinPlayer(client2, new User(), new LoginInfo("2", "42", 1));
+            standardGameController.joinPlayer(client2, new User(), "2");
 
 
 
         game = GameBuilder.build(new NewGameInfo("32", "STANDARD", 2, System.currentTimeMillis()));
         standardGameController = new StandardGameController(game, lobbyController -> {
         });
-        standardGameController.joinPlayer(client, new User(), new LoginInfo("1", "32", 1));
-        standardGameController.joinPlayer(client2, new User(), new LoginInfo("2", "32", 1));
+        standardGameController.joinPlayer(client, new User(), "1");
+        standardGameController.joinPlayer(client2, new User(), "2");
 
 
 
@@ -2285,10 +2278,10 @@ class StandardGameControllerTest {
         });
 
 
-            standardGameController.joinPlayer(client, new User(), new LoginInfo("1", "42", 1));
+            standardGameController.joinPlayer(client, new User(), "1");
 
 
-            standardGameController.joinPlayer(client2, new User(), new LoginInfo("2", "42", 1));
+            standardGameController.joinPlayer(client2, new User(), "2");
 
         standardGameController.sendMessage(client, new StandardMessage("1", "2", "test"));
         assertEquals(game.getPlayer("1").getPlayerChat().getMessages().get(0).getText(), "test");
@@ -2349,8 +2342,6 @@ class StandardGameControllerTest {
 
         //subject non-existing
         standardGameController.sendMessage(client, new StandardMessage("1", "3", "test"));
-
-
     }
 
 
@@ -2409,7 +2400,7 @@ class StandardGameControllerTest {
         });
 
 
-            standardGameController.joinPlayer(client2, new User(), new LoginInfo("2", "42", 1));
+            standardGameController.joinPlayer(client2, new User(), "2");
 
 
     }

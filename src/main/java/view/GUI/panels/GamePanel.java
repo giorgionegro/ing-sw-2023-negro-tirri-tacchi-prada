@@ -1,7 +1,7 @@
 package view.GUI.panels;
 
-import distibuted.interfaces.ClientInterface;
-import distibuted.interfaces.ServerInterface;
+import model.Tile;
+import model.Token;
 import model.abstractModel.*;
 import modelView.*;
 
@@ -11,24 +11,24 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.rmi.RemoteException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import javax.swing.JComponent;
+import javax.swing.text.View;
 
 
 import view.GUI.*;
-import view.interfaces.*;
+import view.ViewLogic;
+import view.graphicInterfaces.GameGraphics;
 
-public class GamePanel extends JComponent implements ActionListener, ShelfView, PlayerChatView, CommonGoalView, PlayerView, GameView, LivingRoomView, PersonalGoalView {
+public class GamePanel extends JComponent implements ActionListener, GameGraphics{
     private final Image parquet = new ImageIcon(Objects.requireNonNull(getClass().getResource("/parquet.jpg"))).getImage();
-
     private LivingRoomPanel livingRoomBoard;
     private Map<String, ShelfPanel> opponentShelfBoards;
     private Map<String,JLabel> opponentLabels;
     private PlayerShelfPanel playerShelf;
     private JLabel playerLabel;
-    private final ServerInterface serverInterface;
-    private final ClientInterface clientInterface;
     private TilesOrderingPanel tilesOrderingPanel;
     private PersonalGoalPanel personalGoalPanel;
     private CommonGoalsPanel commonGoalsPanel;
@@ -42,10 +42,7 @@ public class GamePanel extends JComponent implements ActionListener, ShelfView, 
 
     private final ActionListener listener;
 
-    public GamePanel(ActionListener listener, ServerInterface serverInterface, ClientInterface clientInterface){
-        this.serverInterface = serverInterface;
-        this.clientInterface = clientInterface;
-
+    public GamePanel(ActionListener listener){
         this.listener = listener;
 
         this.setLayout(new GridBagLayout());
@@ -149,7 +146,7 @@ public class GamePanel extends JComponent implements ActionListener, ShelfView, 
                 1,2,
                 16,6,
                 GridBagConstraints.NORTHWEST, GridBagConstraints.BOTH,
-                new Insets(0,0,0,0),
+                new Insets(10,10,10,10),
                 0,0
         );
         this.add(chatContainer, chatConstraints);
@@ -198,7 +195,8 @@ public class GamePanel extends JComponent implements ActionListener, ShelfView, 
         this.add(interactionContainer,interactionConstraints);
     }
 
-    public void resetGameLayout(){
+    public void resetGameLayout(String newPlayerId){
+        thisPlayerId = newPlayerId;
         opponentShelfBoards = new HashMap<>();
         opponentLabels = new HashMap<>();
         initializeGameLayout();
@@ -224,7 +222,7 @@ public class GamePanel extends JComponent implements ActionListener, ShelfView, 
         livingRoomBoard = new LivingRoomPanel(tilesOrderingPanel);
         livingRoomContainer.add(livingRoomBoard);
 
-        chatPanel = new ChatPanel(serverInterface, clientInterface);
+        chatPanel = new ChatPanel(this,newPlayerId);
         chatContainer.add(chatPanel);
 
         personalGoalPanel = new PersonalGoalPanel();
@@ -247,7 +245,9 @@ public class GamePanel extends JComponent implements ActionListener, ShelfView, 
         interactionContainer.add(errorLabel,errorLabelConstraints);
 
         exitButton = new JButton("EXIT");
-        exitButton.addActionListener(this);
+        exitButton.addActionListener(e ->{
+            listener.actionPerformed(new ActionEvent(this,ViewLogic.LEAVE_GAME,""));
+        });
         exitButton.setPreferredSize(new Dimension(0,0));
         GridBagConstraints exitButtonConstraint = new GridBagConstraints(
                 1,0,
@@ -262,12 +262,6 @@ public class GamePanel extends JComponent implements ActionListener, ShelfView, 
     }
 
     /*------------------------------------------------------------*/
-
-    public void setPlayerId(String playerId){
-        this.thisPlayerId = playerId;
-        chatPanel.setPlayerId(playerId);
-    }
-
     private void addPlayerShelf(JPanel shelfPanel, String playerId){
         Container shelfContainer = new Container();
         shelfContainer.setLayout(new AspectRatioLayout((float)1218/1218));
@@ -312,52 +306,37 @@ public class GamePanel extends JComponent implements ActionListener, ShelfView, 
         g.drawImage(parquet, 0, 0, width, height, null);
     }
 
-        @Override
+    @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource() instanceof PlayerMoveInfo) {
-            try {
-                serverInterface.doPlayerMove(clientInterface, (PlayerMoveInfo) e.getSource());
-            } catch (RemoteException ex) {
-                throw new RuntimeException(ex);
-            }
-        } else if (e.getSource() instanceof Message) {
-            try {
-                serverInterface.sendMessage(clientInterface, (Message) e.getSource());
-            } catch (RemoteException ex) {
-                throw new RuntimeException(ex);
-            }
-        } else if (e.getSource() == exitButton) {
-            try {
-                serverInterface.leaveGame(clientInterface);
-            } catch (RemoteException ex) {
-                throw new RuntimeException(ex);//TODO
-            }
-            listener.actionPerformed(new ActionEvent(this,e.getID(),"EXIT"));
-        } else if (e.getSource() == winnerPanel) {
-
-            listener.actionPerformed(new ActionEvent(this,e.getID(),"EXIT"));
-        }
+        listener.actionPerformed(new ActionEvent(this, e.getID(),e.getActionCommand()));
     }
 
     @Override
-    public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
-        commonGoalsPanel.update(o,evt);
+    public void updateCommonGoalGraphics(String id, String description, Token tokenState) {
+        commonGoalsPanel.updateCommonGoalGraphics(id,description,tokenState);
+        this.revalidate();
+        this.repaint();
     }
 
     @Override
-    public void update(GameInfo o, Game.Event evt) throws RemoteException {
-        if(evt == Game.Event.NEXT_TURN){
-            playerLabel.setOpaque(false);
-            for(JLabel label : opponentLabels.values())
-                label.setOpaque(false);
+    public void resetGameGraphics(String playerId) {
+        resetGameLayout(playerId);
+    }
 
-            if(o.playerOnTurn().equals(thisPlayerId))
-                playerLabel.setOpaque(true);
-            else
-                opponentLabels.get(o.playerOnTurn()).setOpaque(true);
-        }else if (o.status() == Game.GameStatus.ENDED) {
+    @Override
+    public void updateGameInfoGraphics(Game.GameStatus status, String playerOnTurn, boolean isLastTurn, Map<String, Integer> pointsValues) {
+        playerLabel.setOpaque(false);
+        for(JLabel label : opponentLabels.values())
+            label.setOpaque(false);
+
+        if(playerOnTurn.equals(thisPlayerId))
+            playerLabel.setOpaque(true);
+        else
+            opponentLabels.get(playerOnTurn).setOpaque(true);
+
+        if (status == Game.GameStatus.ENDED) {
             this.removeAll();
-            winnerPanel = new WinnerGamePanel(this,o.points());
+            winnerPanel = new WinnerGamePanel(this,pointsValues,thisPlayerId);
             GridBagConstraints winnerConstraints = new GridBagConstraints(
                     0,0,
                     10,10,
@@ -368,9 +347,9 @@ public class GamePanel extends JComponent implements ActionListener, ShelfView, 
                     0,0
             );
             this.add(winnerPanel,winnerConstraints);
-        } else if (o.status() == Game.GameStatus.STARTED) {
-           //TODO
-        }else if (o.status() == Game.GameStatus.MATCHMAKING) {
+        } else if (status == Game.GameStatus.STARTED) {
+            //TODO
+        }else if (status == Game.GameStatus.MATCHMAKING) {
             //TODO
         }
         this.revalidate();
@@ -378,46 +357,61 @@ public class GamePanel extends JComponent implements ActionListener, ShelfView, 
     }
 
     @Override
-    public void update(LivingRoomInfo o, LivingRoom.Event evt) throws RemoteException {
-        livingRoomBoard.update(o,evt);
+    public void updateBoardGraphics(Tile[][] board) {
+        livingRoomBoard.updateBoardGraphics(board);
         tilesOrderingPanel.actionPerformed(new ActionEvent(this, 0, "CLEAR SELECTION"));
-    }
-
-    @Override
-    public void update(PersonalGoalInfo o, PersonalGoal.Event evt) throws RemoteException {
-        personalGoalPanel.update(o,evt);
-    }
-
-    @Override
-    public void update(PlayerChatInfo o, PlayerChat.Event evt) throws RemoteException {
-        chatPanel.update(o,evt);
-    }
-
-    @Override
-    public void update(PlayerInfo o, Player.Event evt) throws RemoteException {
-        commonGoalsPanel.update(o,evt);
-        errorLabel.setText(o.errorMessage());
         this.revalidate();
         this.repaint();
     }
 
     @Override
-    public void update(ShelfInfo o, Shelf.Event evt) throws RemoteException {
-        chatPanel.update(o,evt);
+    public void updatePersonalGoalGraphics(int id, boolean hasBeenAchieved, Tile[][] description) {
+        personalGoalPanel.updatePersonalGoalGraphics(id,hasBeenAchieved,description);
+        this.revalidate();
+        this.repaint();
+    }
 
-        if(o.playerId().equals(thisPlayerId)){
-            playerShelf.update(o,evt);
+    @Override
+    public void updatePlayerChatGraphics(List<Message> chat) {
+        chatPanel.updatePlayerChatGraphics(chat);
+        this.revalidate();
+        this.repaint();
+    }
+
+    @Override
+    public void updateAchievedCommonGoals(Map<String, Token> achievedCommonGoals) {
+        commonGoalsPanel.setAchievedCommonGoals(achievedCommonGoals);
+        this.revalidate();
+        this.repaint();
+    }
+
+    @Override
+    public void updateErrorState(String reportedError) {
+        errorLabel.setText(reportedError);
+        this.revalidate();
+        this.repaint();
+    }
+
+    @Override
+    public void updatePlayerShelfGraphics(String playerId, Tile[][] shelf) {
+        chatPanel.addSubject(playerId);
+
+        if(playerId.equals(thisPlayerId)){
+            playerShelf.updatePlayerShelfGraphics(playerId,shelf);
         }else{
             ShelfPanel shelfPanel;
-            if(!opponentShelfBoards.containsKey(o.playerId())) {
+            if(!opponentShelfBoards.containsKey(playerId)) {
                 shelfPanel = new ShelfPanel();
-                addPlayerShelf(shelfPanel,o.playerId());
-                opponentShelfBoards.put(o.playerId(),shelfPanel);
+                addPlayerShelf(shelfPanel,playerId);
+                opponentShelfBoards.put(playerId,shelfPanel);
             }
             else{
-                shelfPanel = opponentShelfBoards.get(o.playerId());
+                shelfPanel = opponentShelfBoards.get(playerId);
             }
-            shelfPanel.update(o,evt);
+            shelfPanel.updatePlayerShelfGraphics(playerId,shelf);
         }
+        this.revalidate();
+        this.repaint();
     }
+
 }

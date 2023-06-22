@@ -106,7 +106,7 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
             }
         });
 
-        System.out.println("CLIENT CONNECTED");
+        System.out.println("CLIENT CONNECTED, connected users: "+users.size());
 
         return server;
     }
@@ -118,16 +118,21 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
      */
     @Override
     public void disconnect(ClientInterface client) throws RemoteException {
-        try{
-            this.leaveGame(client);
-        }catch(RemoteException e){
-            System.err.println("ServerController: Failed to detach client from game, continuing disconnection...");
+        // Checks if the client has been authenticated
+        if(!this.users.containsKey(client))
+            System.err.println("ServerController: Command from unauthenticated client");
+        else {
+            try {
+                this.leaveGame(client);
+            } catch (RemoteException e) {
+                System.err.println("ServerController: Failed to detach client from game, continuing disconnection...");
+            }
+
+            User user = this.users.remove(client);
+            user.deleteObservers();
+
+            System.out.println("CLIENT DISCONNECTED, connected user: " + users.size());
         }
-
-        User user = this.users.remove(client);
-        user.deleteObservers();
-
-        System.err.println("CLIENT DISCONNECTED");
     }
 
     ///SERVER CONTROLLER//////////////////
@@ -156,16 +161,18 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
                     throw new GameAccessDeniedException("User already joined");
 
                 // .... else add the Client to the requested lobby
-                LobbyController gameController = this.lobbies.get(info.gameId());
+                LobbyController lobbyController = this.lobbies.get(info.gameId());
 
-                gameController.joinPlayer(client, user, info);
+                lobbyController.joinPlayer(client, user, info.playerId());
 
-                this.activeUsers.put(user, gameController);
+                this.activeUsers.put(user, lobbyController);
 
-                System.err.println("PLAYER: " + info.playerId() + " JOINED: " + info.gameId());
+                user.reportEvent(User.Status.JOINED, "Joined game you are:" + info.playerId(), User.Event.GAME_JOINED, info.sessionID());
+
+                System.out.println("PLAYER: " + info.playerId() + " JOINED: " + info.gameId());
 
             } catch (GameAccessDeniedException e) {
-                user.reportEvent(User.Status.NOT_JOINED, e.getMessage(), info.time(), User.Event.ERROR_REPORTED);
+                user.reportEvent(User.Status.NOT_JOINED, e.getMessage(), User.Event.ERROR_REPORTED, info.sessionID());
             }
         }
     }
@@ -184,9 +191,9 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
             User user = users.get(client);
             try {
                 // Try lo let client leave the game is it into
-                activeUsers.get(user).leavePlayer(client);
+                activeUsers.remove(user).leavePlayer(client);
             } catch (NullPointerException | GameAccessDeniedException e) {
-                user.reportEvent(User.Status.NOT_JOINED,"Client is not connected to any game",System.currentTimeMillis(), User.Event.ERROR_REPORTED);
+                user.reportEvent(User.Status.NOT_JOINED,"Client is not connected to any game", User.Event.GAME_LEAVED);
             }
         }
     }
@@ -205,11 +212,11 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
             try {
                 createGame(gameInfo);
 
-                users.get(client).reportEvent(User.Status.NOT_JOINED, "Game created", gameInfo.time(), User.Event.GAME_CREATED);
+                users.get(client).reportEvent(User.Status.NOT_JOINED, "Game created",  User.Event.GAME_CREATED, gameInfo.sessionID());
 
                 System.out.println("GAME CREATED: "+gameInfo.gameId());
             } catch (GameAlreadyExistsException | IllegalArgumentException e) {
-                users.get(client).reportEvent(User.Status.NOT_JOINED, e.getMessage(), gameInfo.time(), User.Event.ERROR_REPORTED);
+                users.get(client).reportEvent(User.Status.NOT_JOINED, e.getMessage(), User.Event.ERROR_REPORTED, gameInfo.sessionID());
             }
     }
 
@@ -247,7 +254,7 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
                 lobbyController -> {
                         lobbies.remove(newGameInfo.gameId());
                         gameControllers.remove(lobbyController);
-                        System.err.println("GAME DELETED : "+newGameInfo.gameId());
+                        System.out.println("GAME DELETED : "+newGameInfo.gameId());
                 }
         );
 

@@ -264,9 +264,11 @@ class StandardServerControllerTest {
      * Method under test: {@link StandardServerController#leaveGame(ClientInterface)}
      */
     @Test
-    void testLeaveGame() throws RemoteException {
+    void testLeaveGame() throws RemoteException, InterruptedException {
         // Arrange
         StandardServerController standardServerController = new StandardServerController();
+
+        UserInfo[] userInfos = new UserInfo[]{null};
         ClientInterface client = new ClientInterface() {
             @Override
             public void bind(ServerInterface server) throws RemoteException {
@@ -311,15 +313,16 @@ class StandardServerControllerTest {
 
             @Override
             public void update(UserInfo o, User.Event evt) throws RemoteException {
-
+                userInfos[0]=o;
             }
         };
 
         // Act
         standardServerController.connect(client);
         // Assert
-        assertThrows(RemoteException.class, () -> standardServerController.leaveGame(client));
-
+        standardServerController.leaveGame(client);
+        Thread.sleep(100);
+        assert userInfos[0]!=null && userInfos[0].status() == User.Status.NOT_JOINED && userInfos[0].eventMessage().equals("Client is not connected to any game");
     }
 
     /**
@@ -382,8 +385,8 @@ class StandardServerControllerTest {
         standardServerController.createGame(client, new NewGameInfo("test", "STANDARD", 2, 2));
         //wait 100ms
         Thread.sleep(100);
-assert userInfo[0] != null;
-assert userInfo[0].eventMessage().equals("Game created");
+        assert userInfo[0] != null;
+        assert userInfo[0].eventMessage().equals("Game created");
 
 
 

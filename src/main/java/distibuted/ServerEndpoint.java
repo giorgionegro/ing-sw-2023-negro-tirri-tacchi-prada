@@ -54,10 +54,9 @@ public class ServerEndpoint extends UnicastRemoteObject implements ServerInterfa
     public void leaveGame(ClientInterface client){
         try {
             serverController.leaveGame(client);
+            gameController = null;
         } catch (RemoteException e) {
             printError("LeaveGame", e.getMessage());
-        } finally {
-            gameController = null;
         }
     }
 

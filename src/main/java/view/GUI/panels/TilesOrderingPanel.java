@@ -5,6 +5,7 @@ import modelView.PlayerMoveInfo;
 
 import view.GUI.components.SwapButton;
 import view.GUI.components.TileButton;
+import view.ViewLogic;
 
 import javax.swing.*;
 import java.awt.*;
@@ -129,18 +130,17 @@ public class TilesOrderingPanel extends JPanel implements ActionListener{
         } else if (e.getSource()==columnChoser) {
 
             if(pickedTiles.size()>0){
-                int column = Integer.parseInt(e.getActionCommand());
-
-                List<PickedTile> picked = new ArrayList<>();
+                String columnInShelf = e.getActionCommand();
+                StringBuilder picked = new StringBuilder();
                 for(TileButton t : pickedTiles) {
-                    picked.add(new PickedTile(t.getTileY(), t.getTileX()));
+                    picked.append(t.getTileY()).append(",").append(t.getTileX()).append(" ");
                     t.setSelected(false);
                 }
 
                 pickedTiles.clear();
 
-                PlayerMoveInfo move = new PlayerMoveInfo(picked, column);
-                moveSender.actionPerformed(new ActionEvent(move, 0, "SEND MOVE"));
+                String move = picked+"\n"+columnInShelf;
+                moveSender.actionPerformed(new ActionEvent(this, ViewLogic.SEND_MOVE, move));
             }
 
         } else if(e.getSource() instanceof TileButton button){

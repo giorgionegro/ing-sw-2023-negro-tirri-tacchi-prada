@@ -4,6 +4,7 @@ import model.Tile;
 import model.abstractModel.PersonalGoal;
 import modelView.PersonalGoalInfo;
 
+import view.graphicInterfaces.PersonalGoalGraphics;
 import view.interfaces.PersonalGoalView;
 
 import javax.swing.*;
@@ -14,10 +15,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public class PersonalGoalPanel extends JPanel implements PersonalGoalView {
+public class PersonalGoalPanel extends JPanel implements PersonalGoalGraphics {
     private final Image personalGoalImage = new ImageIcon(Objects.requireNonNull(getClass().getResource("/PersonalGoalBackground.jpg"))).getImage();
 
-    private final Map<Tile[][],Boolean> personalGoals = new HashMap<>();
+    private final Map<Integer,Boolean> personalGoals = new HashMap<>();
 
     private final Tile[][] merged = new Tile[6][5];
 
@@ -57,38 +58,19 @@ public class PersonalGoalPanel extends JPanel implements PersonalGoalView {
         }
     }
 
+
     @Override
-    public void update(PersonalGoalInfo o, PersonalGoal.Event evt) throws RemoteException {
-        boolean found = false;
-        for(Tile[][] k : personalGoals.keySet())
-            if(isTheSame(k,o.description())){
-                personalGoals.put(k,o.achieved());
-                found = true;
-                break;
-            }
-
-        if(!found)
-            personalGoals.put(o.description(),o.achieved());
-
-        for(Tile[] row : merged)
-            Arrays.fill(row, Tile.EMPTY);
-
-        for(Tile[][] k : personalGoals.keySet()){
-            for(int i = 0; i<k.length; i++)
-                for(int j=0; j<k[i].length; j++)
-                    if(k[i][j]!=Tile.EMPTY)
-                        merged[i][j]=k[i][j];
+    public void updatePersonalGoalGraphics(int id, boolean hasBeenAchieved, Tile[][] description) {
+        if(!personalGoals.containsKey(id)){
+            for(int i=0;i<description.length; i++)
+                for(int j=0;j<description[i].length;j++) {
+                    if (description[i][j] != Tile.EMPTY) {
+                        merged[i][j] = description[i][j];
+                    }
+                }
         }
-
+        personalGoals.put(id,hasBeenAchieved);
         this.revalidate();
         this.repaint();
-    }
-
-    private boolean isTheSame(Tile[][] o1, Tile[][] o2){
-        for(int i=0;i<o1.length; i++)
-            for(int j=0;j<o1[i].length;j++)
-                if(o1[i][j]!=o2[i][j])
-                    return false;
-        return true;
     }
 }

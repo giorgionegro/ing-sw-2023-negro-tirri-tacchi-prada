@@ -80,22 +80,20 @@ public class StandardGameController implements GameController, LobbyController {
      * @throws GameAccessDeniedException if the game is already ended or the player id already exists or the matchmaking is closed
      */
     @Override
-    public void joinPlayer(@NotNull ClientInterface newClient, @NotNull User newUser, @NotNull LoginInfo info) throws GameAccessDeniedException {
+    public void joinPlayer(@NotNull ClientInterface newClient, @NotNull User newUser, @NotNull String playerId) throws GameAccessDeniedException {
         synchronized (lobbyLock) {
             try {
                 Game.GameStatus previousStatus = game.getGameStatus();
 
-                game.addPlayer(info.playerId());
+                game.addPlayer(playerId);
 
                 userAssociation.put(newClient, newUser);
 
-                /* Put newClient into known client */
-                playerAssociation.put(newUser, info.playerId());
-
-                newUser.reportEvent(User.Status.JOINED, "Joined game: " + info.gameId() + ", you are:" + info.playerId(), info.time(), User.Event.GAME_JOINED);
+                /* Put newUser into known users */
+                playerAssociation.put(newUser, playerId);
 
                 try {
-                    addObservers(newClient, newUser, info.playerId());
+                    addObservers(newClient, playerId);
                 } catch (PlayerNotExistsException e) {
                     printModelError("Player that should exists does not exists, warning due to possible malfunctions");
                 }
@@ -111,9 +109,9 @@ public class StandardGameController implements GameController, LobbyController {
                     game.updatePlayersTurn();
                 }
             } catch (PlayerAlreadyExistsException e) {
-                throw new GameAccessDeniedException("Player id already exists");//Same as above
+                throw new GameAccessDeniedException("Player id already exists");
             } catch (MatchmakingClosedException | GameEndedException e) {
-                throw new GameAccessDeniedException("Game matchmaking closed"); //Same as above
+                throw new GameAccessDeniedException("Game matchmaking closed");
             }
         }
     }
@@ -124,7 +122,7 @@ public class StandardGameController implements GameController, LobbyController {
      * @param newClient new player's ClientInterface
      * @param newPlayerId new player's id
      */
-    private void addObservers(@NotNull ClientInterface newClient, User newUser, @NotNull String newPlayerId) throws PlayerNotExistsException {
+    private void addObservers(@NotNull ClientInterface newClient, @NotNull String newPlayerId) throws PlayerNotExistsException {
         Map<Observable,Observer> newObserverAssociation = new HashMap<>();
 
         Player newPlayer = game.getPlayer(newPlayerId);
@@ -339,25 +337,27 @@ public class StandardGameController implements GameController, LobbyController {
             User leavedUser = userAssociation.remove(client);
 
             /* remove all observer associated with this user */
-            Map<Observable,Observer> playerObserverAssociation = observerAssociation.get(leavedUser);
+            Map<Observable,Observer> playerObserverAssociation = observerAssociation.get(client);
             for(Map.Entry<Observable,Observer> association : playerObserverAssociation.entrySet()){
                 association.getKey().deleteObserver(association.getValue());
             }
 
-            String leavedPlayer = playerAssociation.remove(leavedUser);
+            leavedUser.reportEvent(User.Status.NOT_JOINED,"Player leaved", User.Event.GAME_LEAVED);
 
             /* If the game is MatchMaking directly close the game */
             if(game.getGameStatus()== Game.GameStatus.MATCHMAKING)
                 closeTheGame("Game closed due to disconnection while matchmaking");
-            else{
-                try {
+            else if(game.getGameStatus() == Game.GameStatus.SUSPENDED) {
+                lobbyLock.notify(false);
+            } else if (game.getGameStatus() == Game.GameStatus.STARTED){
+                 try {
+                    String leavedPlayer = playerAssociation.remove(leavedUser);
+
                     /* Else evaluate if game needs a turn-skip (is player who leaved has the turn) */
                     boolean skipNeeded = game.getTurnPlayerId().equals(leavedPlayer);
 
                     /* Remove player on model side */
                     game.removePlayer(leavedPlayer);
-
-                    System.err.println("PLAYER HAS LEFT");
 
                     /* If model signal SUSPENDED status then wait 6 second for a player to rejoin */
                     if(game.getGameStatus() == Game.GameStatus.SUSPENDED){
@@ -372,25 +372,18 @@ public class StandardGameController implements GameController, LobbyController {
                             /* If nobody has rejoined then close the game */
                             if (!lobbyLock.getValue())
                                 closeTheGame("Game closed due to reconnection timeout");
-                            if(skipNeeded)
-                                try {
-                                    game.updatePlayersTurn();
-                                } catch (GameEndedException e) {
-                                    /* If skipping the turn game is ended then close the game */
-                                    closeTheGame("Game Ended");
-                                }
                         }).start();
                     }
 
                     /* If a skip was needed then skip the turn */
-                    else if(skipNeeded)
+                    else if(skipNeeded) {
                         try {
                             game.updatePlayersTurn();
                         } catch (GameEndedException e) {
                             /* If skipping the turn game is ended then close the game */
                             closeTheGame("Game Ended");
                         }
-
+                    }
                 } catch (PlayerNotExistsException e) {
                     printModelError("Player should exists but does not exists, skipping player deletion...");
                 }
@@ -403,10 +396,9 @@ public class StandardGameController implements GameController, LobbyController {
      * @param message The message that needs to be sent to the connected user
      */
     private void closeTheGame(String message){
-        long eventTime = System.currentTimeMillis();
 
         for(User u : userAssociation.values()){
-            u.reportEvent(User.Status.NOT_JOINED,message,eventTime, User.Event.GAME_LEAVED);
+            u.reportEvent(User.Status.NOT_JOINED,message, User.Event.GAME_LEAVED);
         }
 
         userAssociation.clear();
@@ -566,7 +558,7 @@ public class StandardGameController implements GameController, LobbyController {
             throw new IllegalArgumentException("Tiles are not different");
 
         if (!areTilesAligned(new ArrayList<>(playerMove.pickedTiles())))
-            throw new IllegalArgumentException("Tile are not aligned");
+            throw new IllegalArgumentException("Tiles are not aligned");
 
         for (PickedTile tile : playerMove.pickedTiles())
             if (!isTilePickable(tile.row(), tile.col(), board))

@@ -5,6 +5,7 @@ import model.abstractModel.Shelf;
 import modelView.ShelfInfo;
 
 import view.GUI.components.ColumnChoserButton;
+import view.graphicInterfaces.PlayerShelfGraphics;
 import view.interfaces.ShelfView;
 
 import javax.swing.*;
@@ -17,7 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-public class PlayerShelfPanel extends JPanel implements ShelfView, ActionListener {
+public class PlayerShelfPanel extends JPanel implements PlayerShelfGraphics, ActionListener {
 
     private final Image foreground = new ImageIcon(Objects.requireNonNull(getClass().getResource("/BookshelfForeground.png"))).getImage();
     private final Image background = new ImageIcon(Objects.requireNonNull(getClass().getResource("/BookshelfBackground.png"))).getImage();
@@ -130,14 +131,6 @@ public class PlayerShelfPanel extends JPanel implements ShelfView, ActionListene
 
         g.drawImage(foreground,0,buttonPadding,getWidth(),getHeight()-buttonPadding,null);
     }
-
-    @Override
-    public void update(ShelfInfo o, Shelf.Event evt) throws RemoteException {
-        shelfState = o.shelf();
-        this.revalidate();
-        this.repaint();
-    }
-
     @Override
     public void actionPerformed(ActionEvent e) {
         if(e.getSource()==orderingTable){
@@ -157,5 +150,12 @@ public class PlayerShelfPanel extends JPanel implements ShelfView, ActionListene
                 count++;
         }
         return count;
+    }
+
+    @Override
+    public void updatePlayerShelfGraphics(String playerId, Tile[][] shelf) {
+        shelfState = shelf;
+        this.revalidate();
+        this.repaint();
     }
 }

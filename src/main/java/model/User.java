@@ -39,9 +39,9 @@ public class User extends Observable<User.Event> {
     private String eventMessage;
 
     /**
-     * The last timeStamp of a user interaction with server
+     * ID of the last user interaction with server
      */
-    private long interactionTime;
+    private long sessionID;
 
     /**
      * Construct a User instance with no error reported and {@link #status} = NOT_JOINED
@@ -49,7 +49,7 @@ public class User extends Observable<User.Event> {
     public User(){
         this.status = Status.NOT_JOINED;
         this.eventMessage = "";
-        this.interactionTime = -1;
+        this.sessionID = -1;
     }
 
     /**
@@ -61,26 +61,28 @@ public class User extends Observable<User.Event> {
     }
 
     /**
-     * This method reports an event to the user, all events modify the status of the user
+     * This method reports an event to the user, not modifying the sessionID
      * @param status the new status of the user
      * @param eventMessage the description of the event
-     * @param eventTimeStamp the timestamp of the event
      * @param eventType the type of the event
      */
-    public void reportEvent(Status status, String eventMessage, long eventTimeStamp, User.Event eventType){
-        this.status = status;
-        this.interactionTime = eventTimeStamp;
-        this.eventMessage = eventMessage;
-        setChanged();
-        notifyObservers(eventType);
+    public void reportEvent(Status status, String eventMessage, User.Event eventType){
+        reportEvent(status,eventMessage,eventType,sessionID);
     }
 
     /**
-     * This method returns the last error that user encountered during server interaction
-     * @return {@link #eventMessage}
-     * */
-    public String getEventMessage(){
-        return eventMessage;
+     * This method reports an event to the user, modifying the sessionID
+     * @param status the new status of the user
+     * @param eventMessage the description of the event
+     * @param sessionID the new sessionID
+     * @param eventType the type of the event
+     */
+    public void reportEvent(Status status, String eventMessage, User.Event eventType, long sessionID){
+        this.status = status;
+        this.sessionID = sessionID;
+        this.eventMessage = eventMessage;
+        setChanged();
+        notifyObservers(eventType);
     }
 
     /**
@@ -88,6 +90,6 @@ public class User extends Observable<User.Event> {
      * @return A {@link UserInfo} representing this object instance
      */
     public @NotNull UserInfo getInfo(){
-        return new UserInfo(status,eventMessage,interactionTime);
+        return new UserInfo(status,eventMessage, sessionID);
     }
 }

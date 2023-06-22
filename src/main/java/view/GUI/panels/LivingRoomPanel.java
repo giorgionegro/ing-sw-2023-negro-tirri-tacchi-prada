@@ -7,6 +7,7 @@ import modelView.LivingRoomInfo;
 
 import view.GUI.AspectRatioLayout;
 import view.GUI.components.TileButton;
+import view.graphicInterfaces.LivingRoomGraphics;
 import view.interfaces.LivingRoomView;
 
 import javax.swing.*;
@@ -15,7 +16,7 @@ import java.awt.event.ActionListener;
 import java.rmi.RemoteException;
 import java.util.Objects;
 
-public class LivingRoomPanel extends JPanel implements LivingRoomView {
+public class LivingRoomPanel extends JPanel implements LivingRoomGraphics {
     private final Image background = new ImageIcon(Objects.requireNonNull(getClass().getResource("/LivingRoomBackground.png"))).getImage();
     private final Image endGameToken = new ImageIcon(Objects.requireNonNull(getClass().getResource("/Token/" + Token.TOKEN_GAME_END.name() + ".png"))).getImage();
 
@@ -82,9 +83,8 @@ public class LivingRoomPanel extends JPanel implements LivingRoomView {
         g.drawImage(background, 0, 0, getWidth(), getHeight(), null);
         g.drawImage(endGameToken,0,0,getWidth(),getHeight(),null);
     }
-
     @Override
-    public void update(LivingRoomInfo o, LivingRoom.Event evt) throws RemoteException {
+    public void updateBoardGraphics(Tile[][] board) {
         this.removeAll();
 
         this.add(topSpacer,topSpacerConstraints);
@@ -92,20 +92,18 @@ public class LivingRoomPanel extends JPanel implements LivingRoomView {
         this.add(leftSpacer,leftSpacerConstraints);
         this.add(rightSpacer,rightSpacerConstraints);
 
-        Tile[][] tiles = o.board();
-
-        for(int i=0;i< tiles.length;i++){
-            for(int j=0; j<tiles[i].length; j++){
+        for(int i=0;i< board.length;i++){
+            for(int j=0; j<board[i].length; j++){
                 tileConstraints.gridx = 1+j;
                 tileConstraints.gridy = 1+i;
 
                 Container imagetileContainer = new Container();
                 imagetileContainer.setLayout(new AspectRatioLayout(1));
 
-                if (tiles[i][j]==Tile.EMPTY) {
+                if (board[i][j]==Tile.EMPTY) {
                     imagetileContainer.add(new Container(),tileConstraints);
                 } else {
-                    TileButton tileButton = new TileButton(j,i,tiles[i][j]);
+                    TileButton tileButton = new TileButton(j,i,board[i][j]);
                     tileButton.addActionListener(orderingTable);
                     imagetileContainer.add(tileButton);
                 }

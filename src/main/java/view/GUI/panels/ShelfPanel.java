@@ -2,17 +2,14 @@ package view.GUI.panels;
 
 import javax.swing.*;
 import java.awt.*;
-import java.rmi.RemoteException;
 import java.util.Arrays;
 import java.util.Objects;
 
 import model.Tile;
-import model.abstractModel.Shelf;
-import modelView.ShelfInfo;
 
-import view.interfaces.ShelfView;
+import view.graphicInterfaces.PlayerShelfGraphics;
 
-public class ShelfPanel extends JPanel implements ShelfView {
+public class ShelfPanel extends JPanel implements PlayerShelfGraphics {
 
     private final Image foreground = new ImageIcon(Objects.requireNonNull(getClass().getResource("/BookshelfForeground.png"))).getImage();
     private final Image background = new ImageIcon(Objects.requireNonNull(getClass().getResource("/BookshelfBackground.png"))).getImage();
@@ -57,8 +54,8 @@ public class ShelfPanel extends JPanel implements ShelfView {
     }
 
     @Override
-    public void update(ShelfInfo o, Shelf.Event evt) throws RemoteException {
-        shelfState = o.shelf();
+    public void updatePlayerShelfGraphics(String playerId, Tile[][] shelf) {
+        shelfState = shelf;
         this.revalidate();
         this.repaint();
     }

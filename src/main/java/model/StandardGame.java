@@ -130,9 +130,9 @@ public class StandardGame extends Game{
             setChanged();
             notifyObservers(Event.PLAYER_JOINED);
 
-            setChanged();
             if(status==GameStatus.SUSPENDED){
                 status = GameStatus.STARTED;
+                setChanged();
                 notifyObservers(Event.GAME_RESUMED);
             }
 
@@ -165,14 +165,13 @@ public class StandardGame extends Game{
 
         int online = players.size()-availablePlayers.size();
 
-        setChanged();
         if(online==1) {
+            setChanged();
             this.status = GameStatus.SUSPENDED;
             notifyObservers(Event.GAME_SUSPENDED);
         }
         else if (online==0) {
-            this.status = GameStatus.ENDED;
-            notifyObservers(Event.GAME_ENDED);
+            close();
         }
     }
 

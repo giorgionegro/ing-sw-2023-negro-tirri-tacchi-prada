@@ -18,7 +18,7 @@ public interface LobbyController {
      * @param info the login info
      * @throws GameAccessDeniedException if the client cannot join the specified game
      */
-    void joinPlayer(ClientInterface newClient, User user, LoginInfo info) throws GameAccessDeniedException;
+    void joinPlayer(ClientInterface newClient, User user, String playerId) throws GameAccessDeniedException;
 
     /**
      * This method allow a client to leave the lobby and to be detached to the game it is attached to
