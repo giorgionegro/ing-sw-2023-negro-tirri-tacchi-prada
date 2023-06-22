@@ -25,6 +25,21 @@ public class PersonalGoalPanel extends JPanel implements PersonalGoalGraphics {
     }
 
     @Override
+    public void updatePersonalGoalGraphics(int id, boolean hasBeenAchieved, Tile[][] description) {
+        if(!personalGoals.containsKey(id)){
+            for(int i=0;i<description.length; i++)
+                for(int j=0;j<description[i].length;j++) {
+                    if (description[i][j] != Tile.EMPTY) {
+                        merged[i][j] = description[i][j];
+                    }
+                }
+        }
+        personalGoals.put(id,hasBeenAchieved);
+        this.revalidate();
+        this.repaint();
+    }
+
+    @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
@@ -52,21 +67,5 @@ public class PersonalGoalPanel extends JPanel implements PersonalGoalGraphics {
             }
             y+=verticalSkip;
         }
-    }
-
-
-    @Override
-    public void updatePersonalGoalGraphics(int id, boolean hasBeenAchieved, Tile[][] description) {
-        if(!personalGoals.containsKey(id)){
-            for(int i=0;i<description.length; i++)
-                for(int j=0;j<description[i].length;j++) {
-                    if (description[i][j] != Tile.EMPTY) {
-                        merged[i][j] = description[i][j];
-                    }
-                }
-        }
-        personalGoals.put(id,hasBeenAchieved);
-        this.revalidate();
-        this.repaint();
     }
 }

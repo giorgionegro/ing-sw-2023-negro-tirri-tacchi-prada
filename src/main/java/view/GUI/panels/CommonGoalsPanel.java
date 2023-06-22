@@ -11,28 +11,6 @@ import java.util.Map;
 import java.util.Objects;
 
 public class CommonGoalsPanel extends JPanel implements CommonGoalGraphics {
-
-    private final GridBagConstraints cardConstraints = new GridBagConstraints(
-            -1,-1,
-            1,1,
-            4,1,
-            GridBagConstraints.NORTHWEST,
-            GridBagConstraints.BOTH,
-            new Insets(0,0,0,0),
-            0,0
-    );
-
-    private final GridBagConstraints spacerConstraints = new GridBagConstraints(
-            -1,-1,
-            1,1,
-            1,1,
-            GridBagConstraints.NORTHWEST,
-            GridBagConstraints.BOTH,
-            new Insets(0,0,0,0),
-            0,0
-    );
-
-
     private final Map<String, Token> commonGoals = new HashMap<>();
     private final Map<String, Token> achieved = new HashMap<>();
 
@@ -47,6 +25,27 @@ public class CommonGoalsPanel extends JPanel implements CommonGoalGraphics {
 
     private void refreshCommonGoalState(){
         this.removeAll();
+
+        GridBagConstraints cardConstraints = new GridBagConstraints(
+                -1,-1,
+                1,1,
+                4,1,
+                GridBagConstraints.NORTHWEST,
+                GridBagConstraints.BOTH,
+                new Insets(0,0,0,0),
+                0,0
+        );
+
+        GridBagConstraints spacerConstraints = new GridBagConstraints(
+                -1,-1,
+                1,1,
+                1,1,
+                GridBagConstraints.NORTHWEST,
+                GridBagConstraints.BOTH,
+                new Insets(0,0,0,0),
+                0,0
+        );
+
         this.add(new Container(),spacerConstraints);
 
         for(String id : commonGoals.keySet()){

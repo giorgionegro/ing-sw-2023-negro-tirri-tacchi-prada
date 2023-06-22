@@ -47,7 +47,7 @@ import java.util.concurrent.Executors;
 public class Observable<Event extends Enum<Event>> {
 
     //TODO
-    ExecutorService executorService = Executors.newFixedThreadPool(1);
+    private final ExecutorService executorService = Executors.newFixedThreadPool(1);
     private boolean changed = false;
     private final @NotNull Vector<Observer<? extends Observable<Event>, Event>> obs;
 

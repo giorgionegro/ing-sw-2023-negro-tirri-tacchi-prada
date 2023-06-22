@@ -66,6 +66,7 @@ public class GamePanel extends JComponent implements ActionListener, GameGraphic
         playerLabel.setBackground(new Color(255,127,39));
     }
 
+    private final Image buttonBackground = new ImageIcon(Objects.requireNonNull(getClass().getResource("/img.png"))).getImage();
     private final Image parquet = new ImageIcon(Objects.requireNonNull(getClass().getResource("/parquet.jpg"))).getImage();
     private LivingRoomPanel livingRoomBoard;
     private Map<String, ShelfPanel> opponentShelfBoards;
@@ -208,7 +209,7 @@ public class GamePanel extends JComponent implements ActionListener, GameGraphic
         tableContainer.add(tilesOrderingPanel);
 
         playerShelf = new PlayerShelfPanel(tilesOrderingPanel);
-        tilesOrderingPanel.setColumnChoser(playerShelf);
+        tilesOrderingPanel.setColumnChooser(playerShelf);
         playerShelfContainer.add(playerShelf);
 
         livingRoomBoard = new LivingRoomPanel(tilesOrderingPanel);
@@ -236,7 +237,13 @@ public class GamePanel extends JComponent implements ActionListener, GameGraphic
         );
         interactionContainer.add(errorLabel,errorLabelConstraints);
 
-        JButton exitButton = new JButton("EXIT");
+        JButton exitButton = new JButton("EXIT"){
+            protected void paintComponent(Graphics g) {
+                g.drawImage(buttonBackground, 0, 0, getWidth(), getHeight(), null);
+                super.paintComponent(g);
+            }
+        };
+        exitButton.setBackground(new Color(0,0,0,0));
         exitButton.addActionListener(e ->
             listener.actionPerformed(new ActionEvent(this,ViewLogic.LEAVE_GAME,""))
         );
@@ -263,7 +270,7 @@ public class GamePanel extends JComponent implements ActionListener, GameGraphic
         JLabel playerLabel = new JLabel(playerId);
         playerLabel.setHorizontalAlignment(SwingConstants.CENTER);
         playerLabel.setFont(font);
-        playerLabel.setBackground(new Color(255,127,39));
+        //playerLabel.setBackground(new Color(255,127,39));
 
 
         GridBagConstraints shelfConstraints = new GridBagConstraints(
@@ -315,16 +322,18 @@ public class GamePanel extends JComponent implements ActionListener, GameGraphic
         resetGameLayout(playerId);
     }
 
+    private final Color accent = Color.red;
+    private final Color normal = new Color(0,0,0);
     @Override
     public void updateGameInfoGraphics(Game.GameStatus status, String playerOnTurn, boolean isLastTurn, Map<String, Integer> pointsValues) {
-        playerLabel.setOpaque(false);
+        playerLabel.setForeground(normal);
         for(JLabel label : opponentLabels.values())
-            label.setOpaque(false);
+            label.setForeground(normal);
 
         if(playerOnTurn.equals(thisPlayerId))
-            playerLabel.setOpaque(true);
+            playerLabel.setForeground(accent);
         else
-            opponentLabels.get(playerOnTurn).setOpaque(true);
+            opponentLabels.get(playerOnTurn).setForeground(accent);
 
         if (status == Game.GameStatus.ENDED) {
             this.removeAll();
@@ -340,7 +349,7 @@ public class GamePanel extends JComponent implements ActionListener, GameGraphic
             );
             this.add(winnerPanel,winnerConstraints);
         } else if (status == Game.GameStatus.STARTED) {
-            //TODO
+            //TODO show points on playerShelf
         }else if (status == Game.GameStatus.MATCHMAKING) {
             //TODO
         }

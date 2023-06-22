@@ -12,12 +12,28 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class WinnerGamePanel extends JPanel {
+
+    public WinnerGamePanel(ActionListener exitListener, Map<String,Integer> points, String playerId) {
+        initializeLayout(points, playerId);
+
+        exitButton.addActionListener(e ->
+                exitListener.actionPerformed(new ActionEvent(this,ViewLogic.LEAVE_GAME,""))
+        );
+    }
+
+    /*-------------------- GRAPHIC LAYOUT ------------------*/
     private final Image createGame = new ImageIcon(Objects.requireNonNull(getClass().getResource("/leaderboardBackground.png"))).getImage();
     private final Image firstCup = new ImageIcon(Objects.requireNonNull(getClass().getResource("/firstCup.png"))).getImage();
     private final Image secondCup = new ImageIcon(Objects.requireNonNull(getClass().getResource("/secondCup.png"))).getImage();
     private final Image thirdCup = new ImageIcon(Objects.requireNonNull(getClass().getResource("/thirdCup.png"))).getImage();
     private final Image filter = new ImageIcon(Objects.requireNonNull(getClass().getResource("/filterWinnerPanel.png"))).getImage();
-    private final JButton exitButton;
+    private final Image buttonBackground = new ImageIcon(Objects.requireNonNull(getClass().getResource("/img.png"))).getImage();
+    private final JButton exitButton = new JButton(){
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            g.drawImage(buttonBackground, 0, 0, getWidth(), getHeight(), null);
+        }
+    };
 
     private final GridBagConstraints topSpacerConstraints = new GridBagConstraints(
             0,0,
@@ -75,27 +91,14 @@ public class WinnerGamePanel extends JPanel {
             0,0
     );
 
-
-    public WinnerGamePanel(ActionListener exitListener, Map<String,Integer> points, String playerId) {
+    private void initializeLayout(Map<String,Integer> points, String playerId){
         Font font = new Font("Century", Font.BOLD, 20);
-        Image button = new ImageIcon(Objects.requireNonNull(getClass().getResource("/img.png"))).getImage();
-
-
-
-        exitButton = new JButton(){
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                g.drawImage(button, 0, 0, getWidth(), getHeight(), null);
-            }
-        };
 
         JLabel exitLabel = new JLabel("EXIT",SwingConstants.CENTER);
         exitLabel.setFont(font);
         exitButton.setLayout(new BorderLayout());
         exitButton.add(exitLabel);
-        exitButton.addActionListener(e ->
-            exitListener.actionPerformed(new ActionEvent(this,ViewLogic.LEAVE_GAME,""))
-        );
+
 
         //Title
         ImageIcon titleImage = new ImageIcon(Objects.requireNonNull(getClass().getResource("/title.png")));
@@ -218,7 +221,6 @@ public class WinnerGamePanel extends JPanel {
                 classificaWinnerPanel.add(playerIdTextContainer,c);
                 classificaWinnerPanel.add(playerIdPointsContainer,c);
                 c.gridy++;
-
 
                 position++;
             }

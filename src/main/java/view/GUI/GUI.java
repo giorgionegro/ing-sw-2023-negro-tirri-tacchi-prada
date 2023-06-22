@@ -34,33 +34,6 @@ public class  GUI implements AppGraphics, ActionListener {
             viewLogic.actionPerformed(e);
         else
             viewLogic.actionPerformed(new ActionEvent(this,e.getID(),e.getActionCommand()));
-//        if (e.getSource() == networkChoise) {
-//            switch (e.getActionCommand()) {
-//                case "RMI" -> askRMISOCKET.notify("r");
-//                case "SOCKET" -> askRMISOCKET.notify("s");
-//                case "EXIT" -> askRMISOCKET.notify("");
-//            }
-//        } else if (e.getSource() == homePanel) {
-//            switch (e.getActionCommand()) {
-//                case "CREATE" -> createGame();
-//                case "JOIN" -> joinGame();
-//            }
-//        } else if (e.getSource() == join) {
-//            String[] parts = e.getActionCommand().split("\n");
-//            switch (parts[0]){
-//               case "ID" -> game.setPlayerId(parts[1]);
-//               case "JOINED" -> playGame();
-//               case "EXIT" -> home();
-//            }
-//        } else if (e.getSource() == create) {
-//            switch (e.getActionCommand()){
-//                case "CREATED" -> joinGame();
-//                case "EXIT" -> home();
-//            }
-//        } else if (e.getSource() == game) {
-//            // Redirect action
-//            viewLogic.actionPerformed(e);
-//        }
     }
 
     @Override
