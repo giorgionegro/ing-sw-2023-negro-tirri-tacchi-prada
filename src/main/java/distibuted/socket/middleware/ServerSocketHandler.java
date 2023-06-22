@@ -1,5 +1,6 @@
 package distibuted.socket.middleware;
 
+import distibuted.ClientEndPoint;
 import distibuted.interfaces.ClientInterface;
 import distibuted.interfaces.ServerInterface;
 import distibuted.socket.middleware.interfaces.SocketObject;
@@ -135,4 +136,22 @@ public class ServerSocketHandler extends SocketHandler<ServerInterface> implemen
             waitForReceive(server);
         }
     }
+
+    @Override
+    public void ping() throws RemoteException {
+        try {
+            send((SocketObject) (sender, receiver) -> {
+                try {
+                    ((ClientEndPoint) receiver).ping();
+                } catch (ClassCastException e) {
+                    throw new RemoteException("Socket object not usable");
+                }
+            });
+        } catch (IOException e) {
+            throw new RemoteException("Unable to send the socket object");
+        }
+
+    }
+
+
 }

@@ -75,6 +75,24 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
     public @NotNull ServerInterface connect(@NotNull ClientInterface client) throws RemoteException {
         // Generate a User for the client
         User user = new User();
+        // start ping thread
+        new Thread(() -> {
+            while (true) {
+                try {
+                    client.ping();
+                    System.out.println("ping");
+                    Thread.sleep(1000);
+                } catch (InterruptedException | RemoteException e) {
+                    System.err.println("ping failed");
+                    try {
+                        disconnect(client);
+                    } catch (RemoteException ex) {
+                        System.err.println("Error while disconnecting client");
+                    }
+                    break;
+                }
+            }
+        }).start();
         user.addObserver(new Observer<User, User.Event>() {
             @Override
             public void update(@NotNull User o, User.Event arg) {
@@ -86,6 +104,13 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
                 }
             }
         });
+
+
+
+
+
+
+
 
         // Authorize the client
         this.users.put(client, user);
@@ -214,7 +239,7 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
 
                 users.get(client).reportEvent(User.Status.NOT_JOINED, "Game created",  User.Event.GAME_CREATED, gameInfo.sessionID());
 
-                System.out.println("GAME CREATED: "+gameInfo.gameId());
+                System.out.println("GAME CREATED: " + gameInfo.gameId());
             } catch (GameAlreadyExistsException | IllegalArgumentException e) {
                 users.get(client).reportEvent(User.Status.NOT_JOINED, e.getMessage(), User.Event.ERROR_REPORTED, gameInfo.sessionID());
             }
