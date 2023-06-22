@@ -62,7 +62,7 @@ public class NetworkChoicePanel extends JPanel implements ActionListener {
             g.drawImage(buttonBackground, 0, 0, getWidth(), getHeight(), null);
             super.paintComponent(g);
         }
-    };;
+    };
 
     private final JButton socketButton = new JButton() {
         protected void paintComponent(Graphics g) {

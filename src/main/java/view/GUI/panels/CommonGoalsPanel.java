@@ -1,19 +1,11 @@
 package view.GUI.panels;
 
 import model.Token;
-import model.abstractModel.CommonGoal;
-import model.abstractModel.Player;
-import modelView.CommonGoalInfo;
-import modelView.PlayerInfo;
 
 import view.GUI.AspectRatioLayout;
 import view.graphicInterfaces.CommonGoalGraphics;
-import view.interfaces.CommonGoalView;
-import view.interfaces.PlayerView;
-
 import javax.swing.*;
 import java.awt.*;
-import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;

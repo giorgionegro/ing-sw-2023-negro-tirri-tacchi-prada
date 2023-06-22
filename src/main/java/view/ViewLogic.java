@@ -323,37 +323,37 @@ public class ViewLogic implements Remote, ViewCollection, ActionListener {
 
     @Override
     public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
-        updateService.submit(() -> {
-            gameGraphics.updateCommonGoalGraphics(o.id(), o.description(), o.tokenState());
-        });
+        updateService.submit(() ->
+            gameGraphics.updateCommonGoalGraphics(o.id(), o.description(), o.tokenState())
+        );
     }
 
     @Override
     public void update(GameInfo o, Game.Event evt) throws RemoteException {
-        updateService.submit(()-> {
-            gameGraphics.updateGameInfoGraphics(o.status(),o.playerOnTurn(),o.lastTurn(),o.points());
-        });
+        updateService.submit(()->
+            gameGraphics.updateGameInfoGraphics(o.status(),o.playerOnTurn(),o.lastTurn(),o.points())
+        );
     }
 
     @Override
     public void update(LivingRoomInfo o, LivingRoom.Event evt) throws RemoteException {
-        updateService.submit(() -> {
-            gameGraphics.updateBoardGraphics(o.board());
-        });
+        updateService.submit(() ->
+            gameGraphics.updateBoardGraphics(o.board())
+        );
     }
 
     @Override
     public void update(PersonalGoalInfo o, PersonalGoal.Event evt) throws RemoteException {
-        updateService.submit(() -> {
-           gameGraphics.updatePersonalGoalGraphics(o.id(),o.achieved(),o.description());
-        });
+        updateService.submit(() ->
+           gameGraphics.updatePersonalGoalGraphics(o.id(),o.achieved(),o.description())
+        );
     }
 
     @Override
     public void update(PlayerChatInfo o, PlayerChat.Event evt) throws RemoteException {
-        updateService.submit(() -> {
-            gameGraphics.updatePlayerChatGraphics(o.messages());
-        });
+        updateService.submit(() ->
+            gameGraphics.updatePlayerChatGraphics(o.messages())
+        );
     }
 
     @Override
@@ -363,9 +363,7 @@ public class ViewLogic implements Remote, ViewCollection, ActionListener {
                 return;
             }
             switch (evt) {
-                case ERROR_REPORTED -> {
-                    gameGraphics.updateErrorState(o.errorMessage());
-                }
+                case ERROR_REPORTED -> gameGraphics.updateErrorState(o.errorMessage());
                 case COMMONGOAL_ACHIEVED -> gameGraphics.updateAchievedCommonGoals(o.achievedCommonGoals());
             }
         });
@@ -373,9 +371,9 @@ public class ViewLogic implements Remote, ViewCollection, ActionListener {
 
     @Override
     public void update(ShelfInfo o, Shelf.Event evt) throws RemoteException {
-        updateService.submit(() -> {
-            gameGraphics.updatePlayerShelfGraphics(o.playerId(),o.shelf());
-        });
+        updateService.submit(() ->
+            gameGraphics.updatePlayerShelfGraphics(o.playerId(),o.shelf())
+        );
     }
 
 

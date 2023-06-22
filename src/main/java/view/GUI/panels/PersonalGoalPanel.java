@@ -1,15 +1,11 @@
 package view.GUI.panels;
 
 import model.Tile;
-import model.abstractModel.PersonalGoal;
-import modelView.PersonalGoalInfo;
 
 import view.graphicInterfaces.PersonalGoalGraphics;
-import view.interfaces.PersonalGoalView;
 
 import javax.swing.*;
 import java.awt.*;
-import java.rmi.RemoteException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;

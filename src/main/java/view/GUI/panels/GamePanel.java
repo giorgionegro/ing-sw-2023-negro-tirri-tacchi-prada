@@ -3,19 +3,16 @@ package view.GUI.panels;
 import model.Tile;
 import model.Token;
 import model.abstractModel.*;
-import modelView.*;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import javax.swing.JComponent;
-import javax.swing.text.View;
 
 
 import view.GUI.*;
@@ -23,25 +20,7 @@ import view.ViewLogic;
 import view.graphicInterfaces.GameGraphics;
 
 public class GamePanel extends JComponent implements ActionListener, GameGraphics{
-    private final Image parquet = new ImageIcon(Objects.requireNonNull(getClass().getResource("/parquet.jpg"))).getImage();
-    private LivingRoomPanel livingRoomBoard;
-    private Map<String, ShelfPanel> opponentShelfBoards;
-    private Map<String,JLabel> opponentLabels;
-    private PlayerShelfPanel playerShelf;
-    private JLabel playerLabel;
-    private TilesOrderingPanel tilesOrderingPanel;
-    private PersonalGoalPanel personalGoalPanel;
-    private CommonGoalsPanel commonGoalsPanel;
-    private String thisPlayerId;
-    private WinnerGamePanel winnerPanel;
-
-    private JButton exitButton;
-
-    private JLabel errorLabel;
-    private ChatPanel chatPanel;
-
     private final ActionListener listener;
-
     public GamePanel(ActionListener listener){
         this.listener = listener;
 
@@ -86,6 +65,19 @@ public class GamePanel extends JComponent implements ActionListener, GameGraphic
         playerLabel.setHorizontalAlignment(SwingConstants.CENTER);
         playerLabel.setBackground(new Color(255,127,39));
     }
+
+    private final Image parquet = new ImageIcon(Objects.requireNonNull(getClass().getResource("/parquet.jpg"))).getImage();
+    private LivingRoomPanel livingRoomBoard;
+    private Map<String, ShelfPanel> opponentShelfBoards;
+    private Map<String,JLabel> opponentLabels;
+    private PlayerShelfPanel playerShelf;
+    private JLabel playerLabel;
+    private TilesOrderingPanel tilesOrderingPanel;
+    private PersonalGoalPanel personalGoalPanel;
+    private CommonGoalsPanel commonGoalsPanel;
+    private String thisPlayerId;
+    private JLabel errorLabel;
+    private ChatPanel chatPanel;
 
     private void initializeGameLayout(){
         this.removeAll();
@@ -244,10 +236,10 @@ public class GamePanel extends JComponent implements ActionListener, GameGraphic
         );
         interactionContainer.add(errorLabel,errorLabelConstraints);
 
-        exitButton = new JButton("EXIT");
-        exitButton.addActionListener(e ->{
-            listener.actionPerformed(new ActionEvent(this,ViewLogic.LEAVE_GAME,""));
-        });
+        JButton exitButton = new JButton("EXIT");
+        exitButton.addActionListener(e ->
+            listener.actionPerformed(new ActionEvent(this,ViewLogic.LEAVE_GAME,""))
+        );
         exitButton.setPreferredSize(new Dimension(0,0));
         GridBagConstraints exitButtonConstraint = new GridBagConstraints(
                 1,0,
@@ -336,7 +328,7 @@ public class GamePanel extends JComponent implements ActionListener, GameGraphic
 
         if (status == Game.GameStatus.ENDED) {
             this.removeAll();
-            winnerPanel = new WinnerGamePanel(this,pointsValues,thisPlayerId);
+            WinnerGamePanel winnerPanel = new WinnerGamePanel(this,pointsValues,thisPlayerId);
             GridBagConstraints winnerConstraints = new GridBagConstraints(
                     0,0,
                     10,10,

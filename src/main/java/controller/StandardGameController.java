@@ -76,7 +76,7 @@ public class StandardGameController implements GameController, LobbyController {
      * {@inheritDoc}
      * @param newClient The client that needs to be attached to the game
      * @param newUser The user reference of the client into the server
-     * @param info The login info
+     * @param playerId The new player ID
      * @throws GameAccessDeniedException if the game is already ended or the player id already exists or the matchmaking is closed
      */
     @Override

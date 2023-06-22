@@ -2,18 +2,14 @@ package view.GUI.panels;
 
 import model.Tile;
 import model.Token;
-import model.abstractModel.LivingRoom;
-import modelView.LivingRoomInfo;
 
 import view.GUI.AspectRatioLayout;
 import view.GUI.components.TileButton;
 import view.graphicInterfaces.LivingRoomGraphics;
-import view.interfaces.LivingRoomView;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
-import java.rmi.RemoteException;
 import java.util.Objects;
 
 public class LivingRoomPanel extends JPanel implements LivingRoomGraphics {

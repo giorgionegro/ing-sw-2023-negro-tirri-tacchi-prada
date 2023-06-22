@@ -1,11 +1,8 @@
 package view.GUI.panels;
 
-
-
 import view.ViewLogic;
 
 import javax.swing.*;
-import javax.swing.text.View;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -16,15 +13,15 @@ public class HomePanel extends JPanel {
 
         initializeLayout();
 
-        joinButton.addActionListener(e -> {
-            listener.actionPerformed(new ActionEvent(this, ViewLogic.ROUTE_JOIN,""));
-        });
-        createButton.addActionListener(e -> {
-            listener.actionPerformed(new ActionEvent(this, ViewLogic.ROUTE_CREATE,""));
-        });
-        exitButton.addActionListener(e -> {
-            listener.actionPerformed(new ActionEvent(this, ViewLogic.EXIT,""));
-        });
+        joinButton.addActionListener(e ->
+            listener.actionPerformed(new ActionEvent(this, ViewLogic.ROUTE_JOIN,""))
+        );
+        createButton.addActionListener(e ->
+            listener.actionPerformed(new ActionEvent(this, ViewLogic.ROUTE_CREATE,""))
+        );
+        exitButton.addActionListener(e ->
+            listener.actionPerformed(new ActionEvent(this, ViewLogic.EXIT,""))
+        );
     }
 
     public void setMessage(String message){
@@ -67,7 +64,7 @@ public class HomePanel extends JPanel {
             g.drawImage(buttonBackground, 0, 0, getWidth(), getHeight(), null);
             super.paintComponent(g);
         }
-    };;
+    };
 
     private final JButton createButton = new JButton() {
         protected void paintComponent(Graphics g) {

@@ -1,18 +1,14 @@
 package view.GUI.panels;
 
 import model.Tile;
-import model.abstractModel.Shelf;
-import modelView.ShelfInfo;
 
 import view.GUI.components.ColumnChoserButton;
 import view.graphicInterfaces.PlayerShelfGraphics;
-import view.interfaces.ShelfView;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

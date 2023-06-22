@@ -93,9 +93,9 @@ public class WinnerGamePanel extends JPanel {
         exitLabel.setFont(font);
         exitButton.setLayout(new BorderLayout());
         exitButton.add(exitLabel);
-        exitButton.addActionListener(e -> {
-            exitListener.actionPerformed(new ActionEvent(this,ViewLogic.LEAVE_GAME,""));
-        });
+        exitButton.addActionListener(e ->
+            exitListener.actionPerformed(new ActionEvent(this,ViewLogic.LEAVE_GAME,""))
+        );
 
         //Title
         ImageIcon titleImage = new ImageIcon(Objects.requireNonNull(getClass().getResource("/title.png")));

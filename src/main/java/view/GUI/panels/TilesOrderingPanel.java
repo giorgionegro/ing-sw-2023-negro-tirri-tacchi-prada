@@ -1,8 +1,5 @@
 package view.GUI.panels;
 
-import modelView.PickedTile;
-import modelView.PlayerMoveInfo;
-
 import view.GUI.components.SwapButton;
 import view.GUI.components.TileButton;
 import view.ViewLogic;
