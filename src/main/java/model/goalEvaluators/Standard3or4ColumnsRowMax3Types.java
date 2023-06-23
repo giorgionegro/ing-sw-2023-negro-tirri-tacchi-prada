@@ -7,8 +7,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Arrays;
 
 /**
- * This class is the goal evaluator for the standard game mode
- * It checks if the player has at least 3 columns , or 4 rows, of at most 3 different tiles
+ * This class is the goal evaluator for the standard game mode.
+ * It checks if the player has at least 3 columns , or 4 rows, of at most 3 different tiles.
  */
 public class Standard3or4ColumnsRowMax3Types extends GoalEvaluator {
 

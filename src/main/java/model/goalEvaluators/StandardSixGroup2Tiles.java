@@ -7,9 +7,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Arrays;
 
 /**
- * This class is the goal evaluator for the StandardSixGroup2Tiles goal
- * It implements the GoalEvaluator abstract class
- * It is used by the CommonGoal class
+ * This class is the goal evaluator for the StandardSixGroup2Tiles goal.
+ * It implements the GoalEvaluator abstract class.
+ * It is used by the CommonGoal class.
  **/
 public class StandardSixGroup2Tiles extends GoalEvaluator {
 

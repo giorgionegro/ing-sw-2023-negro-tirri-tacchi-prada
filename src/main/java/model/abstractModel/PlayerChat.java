@@ -23,7 +23,7 @@ public abstract class PlayerChat extends Observable<PlayerChat.Event>{
     }
 
     /**
-     * This method add the new message to the chat
+     * This method adds the new message to the chat
      * @param newMessage new message that has to be added to chat
      */
     public abstract void addMessage(Message newMessage);

@@ -21,21 +21,21 @@ public abstract class LivingRoom extends Observable<LivingRoom.Event>{
     }
 
     /**
-     * This method return a copy of the current representation of living room board
+     * This method returns a copy of the current representation of living room board
      *
      * @return a copy of the representation of living room board
      */
     public abstract Tile[][] getBoard();
 
     /**
-     * this method update the current representation of living room board
+     * this method updates the current representation of living room board
      *
      * @param modifiedBoard the new representation of living room board
      */
     public abstract void setBoard(Tile[][] modifiedBoard);
 
     /**
-     * This method modify the current representation of living room board on the base of subclass implementation defined pattern
+     * This method modifies the current representation of living room board on the base of subclass implementation defined pattern
      */
     public abstract void refillBoard();
 

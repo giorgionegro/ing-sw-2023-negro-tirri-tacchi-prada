@@ -43,7 +43,7 @@ public abstract class CommonGoal extends Observable<CommonGoal.Event>{
     private final GoalEvaluator evaluator;
 
     /**
-     * This method initialize {@link #tokenStack}
+     * This method initializes {@link #tokenStack}
      * @param nToken number of token to add to tokenStack
      */
     protected abstract void fillStack(int nToken);
