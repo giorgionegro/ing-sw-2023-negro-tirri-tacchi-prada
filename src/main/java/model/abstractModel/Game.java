@@ -91,13 +91,13 @@ public abstract class Game extends Observable<Game.Event>{
     public abstract String getTurnPlayerId();
 
     /**
-     * This method give the turn to the next player
+     * This method gives the turn to the next player
      * @throws GameEndedException if turn can't be given to the next player because game is ended
      */
     public abstract void updatePlayersTurn() throws GameEndedException;
 
     /**
-     * This method add a new Player to game, the new Player is referenced by playerId. After this method has been
+     * This method adds a new Player to game, the new Player is referenced by playerId. After this method has been
      * invoked with success the same Player can be obtained via {@code getPlayer(playerId)}
      * @param playerId the new id that has to be associated to the new Player
      * @throws PlayerAlreadyExistsException when there is already a Player associated to {@code playerId}
@@ -106,7 +106,7 @@ public abstract class Game extends Observable<Game.Event>{
     public abstract void addPlayer(String playerId) throws PlayerAlreadyExistsException, MatchmakingClosedException;
 
     /**
-     * This method remove a Player from the game, the Player is referenced by playerId. After this method has been
+     * This method removes a Player from the game, the Player is referenced by playerId. After this method has been
      * invoked with success then {@code getPlayer(playerId)} will throw {@link PlayerNotExistsException}
      * @param playerId the id of the player that needs to be removed
      * @throws PlayerNotExistsException if there is no Player associated to {@code playerId}
@@ -128,7 +128,7 @@ public abstract class Game extends Observable<Game.Event>{
     public abstract List<CommonGoal> getCommonGoals();
 
     /**
-     * This method return the living room of the game
+     * This method returns the living room of the game
      * @return the living room of the game
      */
     public abstract LivingRoom getLivingRoom();

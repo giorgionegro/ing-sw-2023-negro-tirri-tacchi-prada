@@ -3,15 +3,26 @@ package model;
 import model.abstractModel.*;
 import model.goalEvaluators.*;
 import modelView.NewGameInfo;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
 
-public enum GameBuilder {
-    ;
-
+public class GameBuilder {
+    /**
+     * //TODO controllare
+     * Class constructor of GameBuilder
+     */
+    private GameBuilder(){}
+    /**
+     * //TODO controllare
+     * This method creates a new Game instance based on the type of game the user wants to create.
+     * @param newGameInfo record containing information of a {@link model.abstractModel.Game} creation request
+     * @return a new Game instance
+     * @throws IllegalArgumentException if newGameInfo type is not supported
+     */
     public static Game build(NewGameInfo newGameInfo) throws IllegalArgumentException {
         //noinspection SwitchStatementWithTooFewBranches
         switch (newGameInfo.type()) {
@@ -29,6 +40,11 @@ public enum GameBuilder {
         }
     }
 
+    /**
+     * This method initializes the common goals of a StandardGames
+     * @param nPlayers number of players in the game
+     * @return an ArrayList containing two common goals
+     */
     private static ArrayList<CommonGoal> setCommonGoals(int nPlayers) {
         Stack<StandardCommonGoal> allGoals = new Stack<>();
 
