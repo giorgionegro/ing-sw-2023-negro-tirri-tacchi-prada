@@ -2,7 +2,6 @@ package model;
 
 import model.abstractModel.GoalEvaluator;
 import model.goalEvaluators.*;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -16,8 +15,8 @@ class GoalsEvaluatorsTest {
      *     <li>{@link Standard2ColumnsRowOfDifferentTiles#evaluate(Tile[][])}
      *     <li>{@link Standard2ColumnsRowOfDifferentTiles#getDescription()}
      *     <li>{@link Standard2ColumnsRowOfDifferentTiles#Standard2ColumnsRowOfDifferentTiles(boolean)}
- *     </ul>
-     *     <p>
+     *     </ul>
+     * <p>
      *         Reasons:
      *         <ul>
      *               <li>test with true constructor parameter(Columns)</li>
@@ -44,7 +43,7 @@ class GoalsEvaluatorsTest {
      *     <li>{@link Standard2ColumnsRowOfDifferentTiles#getDescription()}
      *     <li>{@link Standard2ColumnsRowOfDifferentTiles#Standard2ColumnsRowOfDifferentTiles(boolean)}
      *     </ul>
-     *     <p>
+     * <p>
      *         Reasons:
      *         <ul>
      *                             <li>test with false constructor parameter(Rows)</li>
@@ -71,7 +70,7 @@ class GoalsEvaluatorsTest {
      *     <li>{@link Standard3or4ColumnsRowMax3Types#getDescription()}
      *     <li>{@link Standard3or4ColumnsRowMax3Types#Standard3or4ColumnsRowMax3Types(boolean)}
      *     </ul>
-     *     <p>
+     * <p>
      *         Reasons:
      *         <ul>
      *             <li>test with true constructor parameter(Columns)</li>
@@ -110,7 +109,7 @@ class GoalsEvaluatorsTest {
      *     <li>{@link Standard4Groups4Tiles#getDescription()}
      *     <li>{@link Standard4Groups4Tiles)} default constructor
      *     </ul>
-     *     <p>
+     * <p>
      *         Reasons:
      *         <ul>
      *             <li>test with a correct configuration</li>
@@ -137,7 +136,7 @@ class GoalsEvaluatorsTest {
      *     <li>{@link Standard5TileDiagonal#getDescription()}
      *     <li>{@link Standard5TileDiagonal)} default constructor
      *     </ul>
-     *     <p>
+     * <p>
      *         Reasons:
      *         <ul>
      *             <li>test with a correct configuration</li>
@@ -252,7 +251,8 @@ class GoalsEvaluatorsTest {
         // Arrange, Act and Assert
         assertEquals("Standard4Groups4Tiles", (new Standard4Groups4Tiles()).getId());
     }
-    private Tile[] @NotNull [] StringToTileArray(String @NotNull [] input) {
+
+    private Tile[][] StringToTileArray(String[] input) {
         //String will be in the form of {"RRRRRR", "GGGGGG", "YYYYYY", "BBBBBB", "LLLLLL", "MMMMMM"}
         Tile[][] output = new Tile[input.length][input[0].length()];
         for (int i = 0; i < input.length; i++) {

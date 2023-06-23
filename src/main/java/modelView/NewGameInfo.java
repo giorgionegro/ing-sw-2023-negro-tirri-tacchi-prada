@@ -7,5 +7,6 @@ import java.io.Serializable;
  * @param gameId the game id
  * @param type the type of the game
  * @param playerNumber number of players of the game
+ * @param sessionID the new sessionID
  */
-public record NewGameInfo(String gameId, String type, int playerNumber, long time) implements Serializable {}
+public record NewGameInfo(String gameId, String type, int playerNumber, long sessionID) implements Serializable {}

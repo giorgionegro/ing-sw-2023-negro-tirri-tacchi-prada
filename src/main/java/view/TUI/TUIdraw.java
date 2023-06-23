@@ -3,11 +3,10 @@ package view.TUI;
 import model.Tile;
 import model.Token;
 import model.abstractModel.Message;
-import modelView.*;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -25,11 +24,6 @@ public final class TUIdraw {
     static final int commandLineX = 1;
     static int commandLineY = 41;
     static int commandLineHeight = 10;
-
-    /**
-     * Map containing CommonGoal description and array of String that represents common goal image
-     */
-    private static final Map<String, String[]> commonGoalRes = getCommonGoalRes();
 
     /**
      * This method is used to draw grids of different shape and size based on its parameters
@@ -218,9 +212,6 @@ public final class TUIdraw {
                 } else if (j == width - 1) {
                     cliPixel[row + i][col + j] = '│';
                     cliPixelColor[row + i][col + j] = colour;
-                } else {
-                    cliPixel[row + i][col + j] = ' ';
-                    cliPixelColor[row + i][col + j] = DEFAULT;
                 }
             }
         }
@@ -232,14 +223,13 @@ public final class TUIdraw {
      * @param cliPixel 2d array of characters representing the pixels
      * @param cliPixelColor 2d array of integers representing the color of the pixels
      */
-    static void drawChat(PlayerChatInfo currentPlayerChat, char[][] cliPixel, int[][] cliPixelColor) {
+    static void drawChat(String thisPlayerId, List<Message> currentPlayerChat, char[][] cliPixel, int[][] cliPixelColor) {
         final int chatX = 80;
         final int chatY = 23;
         final int chatBoxWidth = 58;
         final int chatBoxHeight = 28;
         if (currentPlayerChat != null) {
-            List<Message> messages = currentPlayerChat.messages();
-            Collections.reverse(messages);
+            Collections.reverse(currentPlayerChat);
             drawBox(chatY + 1, chatX, chatBoxHeight, chatBoxWidth, DEFAULT, cliPixel, cliPixelColor);
             int chatContentsX = chatX + 1;
             int chatContentsY = chatY + 2;
@@ -248,8 +238,10 @@ public final class TUIdraw {
             String[] chatBuffer = new String[chatContentsHeight];
             Arrays.fill(chatBuffer, "");
             int pointer = chatContentsHeight - 1;
-            for (Message m : messages) {
-                String text = m.getSender() + " to " + ((m.getReceiver().isBlank()) ? "Everyone" : m.getReceiver()) + ": " + m.getText();
+            for (Message m : currentPlayerChat) {
+                String sender = m.getSender();
+                String receiver = m.getReceiver();
+                String text = (sender.equals(thisPlayerId) ? "YOU" : sender) + " to " + (receiver.isBlank() ? "Everyone" : receiver.equals(thisPlayerId) ? "YOU" : receiver) + ": " + m.getText();
                 List<String> temp = new ArrayList<>();
                 do {
                     int size = Math.min(text.length(), chatContentsWidth);
@@ -282,16 +274,15 @@ public final class TUIdraw {
      * @param cliPixel 2d array of characters representing the pixels
      * @param cliPixelColor 2d array of integers representing the color of the pixels
      */
-    static void drawLivingRoom(LivingRoomInfo currentLivingRoom, char[][] cliPixel, int[][] cliPixelColor) {
+    static void drawLivingRoom(Tile[][] currentLivingRoom, char[][] cliPixel, int[][] cliPixelColor) {
         final int livingRoomX = 1;
         final int livingRoomY = 1;
         if (currentLivingRoom != null) {
-            Tile[][] board = currentLivingRoom.board();
-            drawGrid(livingRoomX + 2, livingRoomY + 2, board[0].length, board.length, cliPixel, cliPixelColor);
-            drawGridContents(livingRoomX + 2, livingRoomY + 2, board, cliPixel, cliPixelColor);
+            drawGrid(livingRoomX + 2, livingRoomY + 2, currentLivingRoom[0].length, currentLivingRoom.length, cliPixel, cliPixelColor);
+            drawGridContents(livingRoomX + 2, livingRoomY + 2, currentLivingRoom, cliPixel, cliPixelColor);
 
             //draw numbers on the top
-            for (int i = 0; i < board.length; i++) {
+            for (int i = 0; i < currentLivingRoom.length; i++) {
                 String number = String.valueOf(i);
                 if (i < 10) {
                     number = "  " + number + " ";
@@ -304,7 +295,7 @@ public final class TUIdraw {
                 }
             }
             //draw numbers on the side
-            for (int i = 0; i < board.length; i++) {
+            for (int i = 0; i < currentLivingRoom.length; i++) {
                 String number = String.valueOf(i);
                 if (i < 10) {
                     number = "0" + number;
@@ -315,7 +306,7 @@ public final class TUIdraw {
                 }
             }
 
-            drawCenteredString("LIVING ROOM BOARD", livingRoomX + 2, livingRoomY, board[0].length * 4 + 1, DEFAULT, cliPixel, cliPixelColor);
+            drawCenteredString("LIVING ROOM BOARD", livingRoomX + 2, livingRoomY, currentLivingRoom[0].length * 4 + 1, DEFAULT, cliPixel, cliPixelColor);
         }
     }
 
@@ -360,7 +351,7 @@ public final class TUIdraw {
      * @param cliPixel 2d array of characters representing the pixels
      * @param cliPixelColor 2d array of integers representing the color of the pixels
      */
-    static void drawShelves(Map<String, ShelfInfo> currentShelves, String thisPlayerId, GameInfo currentGameState, char[][] cliPixel, int[][] cliPixelColor) {
+    static void drawShelves(Map<String, Tile[][]> currentShelves, String thisPlayerId, String playerOnTurn, Map<String,Integer> pointsValue, char[][] cliPixel, int[][] cliPixelColor) {
         final int shelvesX = 43;
 
         final int shelvesY = 4;
@@ -377,7 +368,7 @@ public final class TUIdraw {
             StringBuilder playersPoints = new StringBuilder();
 
             for (String playerId : currentShelves.keySet()) {
-                Tile[][] shelf = currentShelves.get(playerId).shelf();
+                Tile[][] shelf = currentShelves.get(playerId);
 
                 shelvesHeight = shelf.length;
                 shelvesWidth = shelf[0].length * 4 + 1;
@@ -395,7 +386,7 @@ public final class TUIdraw {
                     tempPlayerId = tempPlayerId.substring(0, shelvesWidth - 4);
 
 
-                if (playerId.equals(currentGameState.playerOnTurn()))
+                if (playerId.equals(playerOnTurn))
                     tempPlayerId = '>' + tempPlayerId + '<';
 
                 int spaceBefore = (shelvesWidth - tempPlayerId.length()) / 2;
@@ -405,7 +396,7 @@ public final class TUIdraw {
                 playersName.append(" ".repeat(spaceAfter));
                 playersName.append(" ".repeat(shelvesPadding));
 
-                String points = "Points: " + currentGameState.points().getOrDefault(playerId, 0);
+                String points = "Points: " + pointsValue.getOrDefault(playerId, 0);
                 spaceBefore = (shelvesWidth - points.length()) / 2;
                 spaceAfter = shelvesWidth - spaceBefore - points.length();
                 playersPoints.append(" ".repeat(spaceBefore));
@@ -431,7 +422,7 @@ public final class TUIdraw {
      * @param cliPixel 2d array of characters representing the pixels
      * @param cliPixelColor 2d array of integers representing the color of the pixels
      */
-    static void drawCommonGoals(Map<String, CommonGoalInfo> commonGoals, Map<String, Token> achievedCommonGoals, char[][] cliPixel, int[][] cliPixelColor) {
+    static void drawCommonGoals(Map<String, Token> commonGoals, Map<String, Token> achievedCommonGoals, char[][] cliPixel, int[][] cliPixelColor) {
         final int commonGoalsY = 23;
         final int commonGoalsX = 3;
 
@@ -447,7 +438,7 @@ public final class TUIdraw {
                 int boxStartX = commonGoalsX + drewedCommonGoals * (commonGoalBoxWidth + commonGoalsPadding);
                 drawBox(boxesStartY, boxStartX, commonGoalBoxHeight, commonGoalBoxWidth, DEFAULT, cliPixel, cliPixelColor);
 
-                String[] res = commonGoalRes.getOrDefault(id, new String[0]);
+                String[] res = getCommonGoalRes(id);
                 for (int j = 0; j < res.length; j++) {
                     drawString(res[j], boxesStartY + 1 + j, boxStartX + 1, DEFAULT, 60, cliPixel, cliPixelColor);
                 }
@@ -456,7 +447,7 @@ public final class TUIdraw {
                 if (achievedCommonGoals.containsKey(id))
                     temp = "ACHIEVED: " + achievedCommonGoals.get(id).getPoints();
                 else
-                    temp = "Points: " + commonGoals.get(id).tokenState().getPoints();
+                    temp = "Points: " + commonGoals.get(id).getPoints();
 
                 int spaceBefore = (commonGoalBoxWidth - temp.length()) / 2;
                 int spaceAfter = commonGoalBoxWidth - spaceBefore - temp.length();
@@ -475,30 +466,18 @@ public final class TUIdraw {
     }
 
     /**
+     *
      * //TODO javadoc getCommonGoalRes
      * @return
      */
-    private static Map<String, String[]> getCommonGoalRes() {
-        Map<String, String[]> ris = new HashMap<>();
-        File dir = new File(Objects.requireNonNull(TUIdraw.class.getResource("/commonGoals/CLI")).getPath());
-        if (dir.isDirectory()) {
-            File[] res;
-            if (dir.listFiles() != null)
-                res = dir.listFiles();
-            else
-                res = new File[0];
-
-            for (File f : Objects.requireNonNull(res)) {
-                if (!f.isDirectory() && f.getName().contains(".txt")) {
-                    try (FileInputStream fr = new FileInputStream(f)) {
-                        String img = new String(fr.readAllBytes(), StandardCharsets.UTF_8);
-                        ris.put(f.getName().replace(".txt", ""), img.split("\r\n"));
-                    } catch (IOException e) {
-                        System.err.println("error while reading resources");
-                    }
-                }
-            }
-
+    private static String[] getCommonGoalRes(String id){
+        String[] ris = new String[0];
+        URL p =Objects.requireNonNull(Objects.requireNonNull(TUIdraw.class).getResource("/CommonGoals/CLI/"+id+".txt"));
+        try (InputStream stream = p.openStream()){
+            String img = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
+            ris = img.split("\r\n");
+        } catch (IOException e) {
+            System.err.println("error while reading resources");
         }
         return ris;
     }
@@ -509,11 +488,9 @@ public final class TUIdraw {
      * @param cliPixel 2d array of characters representing the pixels
      * @param cliPixelColor 2d array of integers representing the color of the pixels
      */
-    static void drawGameState(GameInfo currentGameState, char[][] cliPixel, int[][] cliPixelColor) {
-        if (currentGameState != null) {
-            //draw is last turn if it is
-            if (currentGameState.lastTurn())
-                drawString("Last Turn", renderHeight - 10, 30, DEFAULT, 50 - 2, cliPixel, cliPixelColor);
+    static void drawLastTurn(boolean isLastTurn, char[][] cliPixel, int[][] cliPixelColor) {
+        if (isLastTurn){
+            drawString("Last Turn", renderHeight - 10, 30, DEFAULT, 50 - 2, cliPixel, cliPixelColor);
         }
     }
 
@@ -524,23 +501,11 @@ public final class TUIdraw {
      * @param cliPixel 2d array of characters representing the pixels
      * @param cliPixelColor 2d array of integers representing the color of the pixels
      */
-    static void drawPersonalGoal(List<PersonalGoalInfo> currentPersonalGoals, char[][] cliPixel, int[][] cliPixelColor) {
+    static void drawPersonalGoal(Tile[][] currentPersonalGoals, char[][] cliPixel, int[][] cliPixelColor) {
         final int personalGoalsX = 55;
         final int personalGoalsY = 24;
-        if (currentPersonalGoals.size() == 6) {
-            Tile[][] shelf = new Tile[6][5];
-            Arrays.stream(shelf).forEach(tiles -> Arrays.fill(tiles, Tile.EMPTY));
-            for (PersonalGoalInfo c : currentPersonalGoals) {
-                for (int i = 0; i < c.description().length; i++) {
-                    for (int j = 0; j < c.description()[0].length; j++) {
-                        if (c.description()[i][j] != Tile.EMPTY)
-                            shelf[i][j] = c.description()[i][j];
-                    }
-                }
-            }
-            drawGrid(personalGoalsX, personalGoalsY + 1, shelf[0].length, shelf.length, cliPixel, cliPixelColor);
-            drawGridContents(personalGoalsX, personalGoalsY + 1, shelf, cliPixel, cliPixelColor);
-            drawCenteredString("PERSONAL GOAL", personalGoalsX, personalGoalsY, shelf[0].length * 4 + 1, DEFAULT, cliPixel, cliPixelColor);
-        }
+        drawGrid(personalGoalsX, personalGoalsY + 1, currentPersonalGoals[0].length, currentPersonalGoals.length, cliPixel, cliPixelColor);
+        drawGridContents(personalGoalsX, personalGoalsY + 1, currentPersonalGoals, cliPixel, cliPixelColor);
+        drawCenteredString("PERSONAL GOAL", personalGoalsX, personalGoalsY, currentPersonalGoals[0].length * 4 + 1, DEFAULT, cliPixel, cliPixelColor);
     }
 }

@@ -6,6 +6,6 @@ import java.io.Serializable;
  * This record contains information about a Login request
  * @param playerId player id
  * @param gameId game id
- * @param time timeStamp of login request
+ * @param sessionID the new sessionID
  */
-public record LoginInfo(String playerId, String gameId, long time) implements Serializable {}
+public record LoginInfo(String playerId, String gameId, long sessionID) implements Serializable {}

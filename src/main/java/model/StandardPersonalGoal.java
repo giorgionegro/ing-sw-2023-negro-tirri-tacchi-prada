@@ -2,7 +2,6 @@ package model;
 
 import model.abstractModel.PersonalGoal;
 import modelView.PersonalGoalInfo;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 
@@ -11,7 +10,7 @@ import java.util.Arrays;
  * <p>
  * In order to achieve this personal goal there must be a particular {@link #tile} in a particular position in the shelf, defined as {@link #row} and {@link #column}
  */
-public  class StandardPersonalGoal extends PersonalGoal {
+public class StandardPersonalGoal extends PersonalGoal {
     /**
      * Tile type target of the goal
      */
@@ -25,22 +24,24 @@ public  class StandardPersonalGoal extends PersonalGoal {
      */
     private final int column;
     /**
-     * Signal of achieved goal
-     */
-    private boolean achieved;
-    /**
      * ID of the goal
      */
     private final int id;
+    /**
+     * Signal of achieved goal
+     */
+    private boolean achieved;
 
     /**
      * Constructor of StandardPersonalGoal not achieved and parameterized with given tile, row and column
-     * @param id id of the goal
-     * @param tile tile type target of the goal
-     * @param row row target of the goal
+     *
+     * @param id     id of the goal
+     * @param tile   tile type target of the goal
+     * @param row    row target of the goal
      * @param column column target of the goal
      */
     public StandardPersonalGoal(int id, model.Tile tile, int row, int column) {
+        super();
         this.id = id;
         this.tile = tile;
         this.row = row;
@@ -54,7 +55,7 @@ public  class StandardPersonalGoal extends PersonalGoal {
      * @return a Matrix with the description of the personal Goal
      */
     @Override
-    public Tile[] @NotNull [] getDescription() {
+    public Tile[][] getDescription() {
         //shelf dimension 6x5
         Tile[][] ShelfPersonalGoal = new Tile[6][5];
         //fill the shelf with empty tiles
@@ -65,11 +66,12 @@ public  class StandardPersonalGoal extends PersonalGoal {
 
     /**
      * {@inheritDoc}
+     *
      * @return {@link #achieved}
      */
     @Override
     public boolean isAchieved() {
-        return achieved;
+        return this.achieved;
     }
 
     /**
@@ -77,9 +79,9 @@ public  class StandardPersonalGoal extends PersonalGoal {
      */
     @Override
     public void setAchieved() {
-        achieved = true;
-        setChanged();
-        notifyObservers(Event.GOAL_ACHIEVED);
+        this.achieved = true;
+        this.setChanged();
+        this.notifyObservers(Event.GOAL_ACHIEVED);
     }
 
     /**
@@ -87,26 +89,28 @@ public  class StandardPersonalGoal extends PersonalGoal {
      * <p>
      * The implementation tests if there is a {@link Tile} equivalent to {@link #tile} in given shelf representation at
      * the position defined by {@link #row} and {@link #column}
-     * @param playerShelf  matrix of Tiles representing player shelf
+     *
+     * @param playerShelf matrix of Tiles representing player shelf
      * @return true if the player achieved the goal, false otherwise.
      */
     @Override
-    public boolean evaluate(model.Tile[] @NotNull [] playerShelf) {
-        if(playerShelf.length < this.row && playerShelf[0].length < this.column){
+    public boolean evaluate(model.Tile[][] playerShelf) {
+        if (playerShelf.length < this.row && playerShelf[0].length < this.column) {
             throw new IndexOutOfBoundsException("Shelf not big enough, cannot achieved the goal");
         }
-        if(playerShelf[row][column] == Tile.EMPTY){
+        if (playerShelf[this.row][this.column] == Tile.EMPTY) {
             return false;
         }
-        return (this.tile.getColor()).equals(playerShelf[row][column].getColor());
+        return (this.tile.getColor()).equals(playerShelf[this.row][this.column].getColor());
     }
 
     /**
      * {@inheritDoc}
+     *
      * @return A {@link PersonalGoalInfo} representing this object instance
      */
     @Override
-    public @NotNull PersonalGoalInfo getInfo() {
-        return new PersonalGoalInfo(id,achieved, getDescription());
+    public PersonalGoalInfo getInfo() {
+        return new PersonalGoalInfo(this.id, this.achieved, this.getDescription());
     }
 }

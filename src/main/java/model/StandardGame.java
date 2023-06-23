@@ -6,7 +6,6 @@ import model.exceptions.MatchmakingClosedException;
 import model.exceptions.PlayerAlreadyExistsException;
 import model.exceptions.PlayerNotExistsException;
 import modelView.GameInfo;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -14,20 +13,20 @@ import java.util.*;
 /**
  * This class is an implementation of {@link Game}
  */
-public class StandardGame extends Game{
+public class StandardGame extends Game {
 
     /**
      * Players that are playing in this game (map of playerId -> Player)
      */
-    private final @NotNull Map<String, Player> players;
+    private final Map<String, Player> players;
     /**
      * Common goals associated to this game (list of CommonGoal)
      */
-    private final @NotNull List<CommonGoal> commonGoals;
+    private final List<CommonGoal> commonGoals;
     /**
      * Living room associated to this game
      */
-    private final @NotNull LivingRoom livingRoom;
+    private final LivingRoom livingRoom;
 
     /**
      * Round player turn sequence of the game
@@ -37,8 +36,13 @@ public class StandardGame extends Game{
      * <p>
      * Top Player of the list (last element) is assumed to be the player that currently has the turn
      */
-    private final @NotNull List<String> playerTurnQueue;
-
+    private final List<String> playerTurnQueue;
+    /**
+     * List of player objects that aren't associated with a connected player
+     * <p>
+     * It is used as available player on Matchmaking and as list of disconnected player when a player exit game during Gameplay
+     */
+    private final List<Player> availablePlayers;
     /**
      * First player that ever had the turn, it is assumed to be also the first player of every round
      */
@@ -53,19 +57,14 @@ public class StandardGame extends Game{
     private GameStatus status;
 
     /**
-     * List of player objects that aren't associated with a connected player
-     * <p>
-     * It is used as available player on Matchmaking and as list of disconnected player when a player exit game during Gameplay
-     */
-    private final List<Player> availablePlayers;
-
-    /**
      * Construct an {@link StandardGame} instance with given players information, living room information and common goals information
-     * @param players players information
-     * @param livingRoom living room information
+     *
+     * @param players     players information
+     * @param livingRoom  living room information
      * @param commonGoals common goals information
      */
-    protected StandardGame(List<Player> players, @NotNull LivingRoom livingRoom, List<CommonGoal> commonGoals){
+    protected StandardGame(List<Player> players, LivingRoom livingRoom, List<CommonGoal> commonGoals) {
+        super();
         this.availablePlayers = new ArrayList<>(players);
         this.livingRoom = livingRoom;
         this.players = new HashMap<>();
@@ -83,96 +82,95 @@ public class StandardGame extends Game{
      */
     @Override
     public void addPlayer(String playerId) throws PlayerAlreadyExistsException, MatchmakingClosedException {
-        if(status == GameStatus.MATCHMAKING){
-            if (players.containsKey(playerId))
+        if (this.status == GameStatus.MATCHMAKING) {
+            if (this.players.containsKey(playerId))
                 throw new PlayerAlreadyExistsException();
 
             /* Get Player model */
-            Player newPlayer = availablePlayers.remove(0);
+            Player newPlayer = this.availablePlayers.remove(0);
 
             /* Associate Player with playerId */
-            players.put(playerId, newPlayer);
+            this.players.put(playerId, newPlayer);
 
             /* Add Player to turnQueue */
-            playerTurnQueue.add(playerId);
+            this.playerTurnQueue.add(playerId);
 
             /* Notify that a new player has joined the game*/
-            setChanged();
-            notifyObservers(Event.PLAYER_JOINED);
+            this.setChanged();
+            this.notifyObservers(Event.PLAYER_JOINED);
 
             /* If we have now reached the max playerNumber we set game ready to be started */
-            if (availablePlayers.isEmpty()) {
+            if (this.availablePlayers.isEmpty()) {
                 /* Update turn sequence and firstPlayer */
-                Collections.shuffle(playerTurnQueue);
-                firstPlayer = playerTurnQueue.get(0);
+                Collections.shuffle(this.playerTurnQueue);
+                this.firstPlayer = this.playerTurnQueue.get(0);
 
                 this.status = GameStatus.STARTED;
-                setChanged();
-                notifyObservers(Event.GAME_STARTED);
+                this.setChanged();
+                this.notifyObservers(Event.GAME_STARTED);
             }
-        }else if(status == GameStatus.STARTED || status == GameStatus.SUSPENDED){
+        } else if (this.status == GameStatus.STARTED || this.status == GameStatus.SUSPENDED) {
             /*If a player is trying to reconnect then...*/
 
             /* If it's trying to reconnect with a different player id then discard request */
-            if(!players.containsKey(playerId))
+            if (!this.players.containsKey(playerId))
                 throw new MatchmakingClosedException();
 
-            Player requestedPlayer = players.get(playerId);
+            Player requestedPlayer = this.players.get(playerId);
 
             /* If player referred by playerId is available for reconnection */
-            if(availablePlayers.contains(requestedPlayer)){
+            if (this.availablePlayers.contains(requestedPlayer)) {
                 /* Remove player from available */
-                availablePlayers.remove(requestedPlayer);
-            }else{
+                this.availablePlayers.remove(requestedPlayer);
+            } else {
                 throw new PlayerAlreadyExistsException();
             }
 
-            setChanged();
-            notifyObservers(Event.PLAYER_JOINED);
+            this.setChanged();
+            this.notifyObservers(Event.PLAYER_JOINED);
 
-            setChanged();
-            if(status==GameStatus.SUSPENDED){
-                status = GameStatus.STARTED;
-                notifyObservers(Event.GAME_RESUMED);
+            if (this.status == GameStatus.SUSPENDED) {
+                this.status = GameStatus.STARTED;
+                this.setChanged();
+                this.notifyObservers(Event.GAME_RESUMED);
             }
 
-        } else if (status == GameStatus.ENDED) {
+        } else if (this.status == GameStatus.ENDED) {
             throw new MatchmakingClosedException();
         }
     }
 
     /**
      * {@inheritDoc}
+     *
      * @param playerId the id of the player that needs to be removed
      * @throws PlayerNotExistsException when no player is associated with playerId
      */
     @Override
     public void removePlayer(String playerId) throws PlayerNotExistsException {
-        if(!players.containsKey(playerId))
+        if (!this.players.containsKey(playerId))
             throw new PlayerNotExistsException();
 
-        availablePlayers.add(players.get(playerId));
+        this.availablePlayers.add(this.players.get(playerId));
 
         /* If firstPlayer then the next one player became the new firstPlayer */
-        if(firstPlayer.equals(playerId)) {
-            int playerTurnCurrentIndex = playerTurnQueue.indexOf(playerId);
+        if (this.firstPlayer.equals(playerId)) {
+            int playerTurnCurrentIndex = this.playerTurnQueue.indexOf(playerId);
 
-            if(playerTurnCurrentIndex == playerTurnQueue.size()-1)
+            if (playerTurnCurrentIndex == this.playerTurnQueue.size() - 1)
                 playerTurnCurrentIndex = -1;
 
-            firstPlayer = playerTurnQueue.get(playerTurnCurrentIndex+1);
+            this.firstPlayer = this.playerTurnQueue.get(playerTurnCurrentIndex + 1);
         }
 
-        int online = players.size()-availablePlayers.size();
+        int online = this.players.size() - this.availablePlayers.size();
 
-        setChanged();
-        if(online==1) {
+        if (online == 1) {
+            this.setChanged();
             this.status = GameStatus.SUSPENDED;
-            notifyObservers(Event.GAME_SUSPENDED);
-        }
-        else if (online==0) {
-            this.status = GameStatus.ENDED;
-            notifyObservers(Event.GAME_ENDED);
+            this.notifyObservers(Event.GAME_SUSPENDED);
+        } else if (online == 0) {
+            this.close();
         }
     }
 
@@ -197,7 +195,7 @@ public class StandardGame extends Game{
      * @return a copy of {@link #commonGoals}
      */
     @Override
-    public @NotNull List<CommonGoal> getCommonGoals() {
+    public List<CommonGoal> getCommonGoals() {
         return new ArrayList<>(this.commonGoals);
     }
 
@@ -207,7 +205,7 @@ public class StandardGame extends Game{
      * @return {@link #livingRoom}
      */
     @Override
-    public @NotNull LivingRoom getLivingRoom() {
+    public LivingRoom getLivingRoom() {
         return this.livingRoom;
     }
 
@@ -240,7 +238,7 @@ public class StandardGame extends Game{
      */
     @Override
     public String getTurnPlayerId() {
-        return playerTurnQueue.get(playerTurnQueue.size() - 1);
+        return this.playerTurnQueue.get(this.playerTurnQueue.size() - 1);
     }
 
     /**
@@ -268,18 +266,18 @@ public class StandardGame extends Game{
      */
     @Override
     public void updatePlayersTurn() throws GameEndedException {
-        if(status == GameStatus.ENDED)
+        if (this.status == GameStatus.ENDED)
             throw new GameEndedException();
 
-        String p = playerTurnQueue.remove(0);
-        playerTurnQueue.add(p);
-        while(availablePlayers.contains(players.get(p))){
-            p = playerTurnQueue.remove(0);
-            playerTurnQueue.add(p);
+        String p = this.playerTurnQueue.remove(0);
+        this.playerTurnQueue.add(p);
+        while (this.availablePlayers.contains(this.players.get(p))) {
+            p = this.playerTurnQueue.remove(0);
+            this.playerTurnQueue.add(p);
         }
 
-        setChanged();
-        notifyObservers(Event.NEXT_TURN);
+        this.setChanged();
+        this.notifyObservers(Event.NEXT_TURN);
 
         if (p.equals(this.firstPlayer) && this.lastTurn)
             throw new GameEndedException();
@@ -291,7 +289,7 @@ public class StandardGame extends Game{
      * @return An {@link GameInfo} representing this object instance
      */
     @Override
-    public @NotNull GameInfo getInfo() {
+    public GameInfo getInfo() {
         Map<String, Integer> points = new HashMap<>();
         this.players.forEach((s, player) -> {
             /*  Points earned by each player are the sum of points earned by
@@ -311,10 +309,11 @@ public class StandardGame extends Game{
 
     /**
      * This method returns an amount of points based on the number of personalGoals achieved
+     *
      * @param personalGoals list of all personal goals
      * @return the amount of points earned by personal goals
      */
-    private int getPersonalGoalPoints(@NotNull List<PersonalGoal> personalGoals) {
+    private int getPersonalGoalPoints(List<PersonalGoal> personalGoals) {
         int achieved = 0;
         for (PersonalGoal p : personalGoals)
             if (p.isAchieved())
@@ -334,10 +333,11 @@ public class StandardGame extends Game{
 
     /**
      * This method returns an amount of points equivalent to the sum of provided tokens
+     *
      * @param tokens the list of earned tokens
      * @return the amount of points equivalent to the sum of provided tokens
      */
-    private int getCommonGoalPoints(@NotNull List<Token> tokens) {
+    private int getCommonGoalPoints(List<Token> tokens) {
         int ris = 0;
 
         for (Token t : tokens)
@@ -348,10 +348,11 @@ public class StandardGame extends Game{
 
     /**
      * This method returns an amount of points based on evaluation of how many and how big are groups of tiles in a shelf
+     *
      * @param shelf the shelf to be evaluated
      * @return the amount of points the shelf is worth
      */
-    private int getShelfTilesGroupsPoints(Tile[] @NotNull [] shelf) {
+    private int getShelfTilesGroupsPoints(Tile[][] shelf) {
         int ris = 0;
 
         boolean[][] checked = new boolean[shelf.length][shelf[0].length];
@@ -381,7 +382,7 @@ public class StandardGame extends Game{
     /**
      * This function provides support for {@code getShelfTilesGroupPoints()} and provide a recursive depth search on tile groups
      */
-    private int depthSearch(int i, int j, Tile[][] shelf, boolean[] @NotNull [] checked, String tileColor) {
+    private int depthSearch(int i, int j, Tile[][] shelf, boolean[][] checked, String tileColor) {
         if (i < 0 || i >= checked.length || j < 0 || j >= checked[0].length)
             return 0;
 

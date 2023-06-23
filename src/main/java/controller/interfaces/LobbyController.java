@@ -3,7 +3,6 @@ package controller.interfaces;
 import controller.exceptions.GameAccessDeniedException;
 import distibuted.interfaces.ClientInterface;
 import model.User;
-import modelView.LoginInfo;
 
 /**
  * This is the interface of a game lobby controller
@@ -15,10 +14,10 @@ public interface LobbyController {
      * This method allow a client to join the lobby and to be attached to the game
      * @param newClient the client interface that needs to be attached to the game
      * @param user the user reference of the client into the server
-     * @param info the login info
+     * @param playerId the new player ID
      * @throws GameAccessDeniedException if the client cannot join the specified game
      */
-    void joinPlayer(ClientInterface newClient, User user, LoginInfo info) throws GameAccessDeniedException;
+    void joinPlayer(ClientInterface newClient, User user, String playerId) throws GameAccessDeniedException;
 
     /**
      * This method allow a client to leave the lobby and to be detached to the game it is attached to

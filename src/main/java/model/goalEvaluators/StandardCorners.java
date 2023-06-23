@@ -2,7 +2,6 @@ package model.goalEvaluators;
 
 import model.Tile;
 import model.abstractModel.GoalEvaluator;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * This class is the goal evaluator for the StandardCorners goal.
@@ -23,20 +22,22 @@ public class StandardCorners extends GoalEvaluator {
 
     /**
      * {@inheritDoc}
+     *
      * @return {@link #standardCornersDescription}
      */
     @Override
-    public @NotNull String getDescription() {
-        return standardCornersDescription;
+    public String getDescription() {
+        return this.standardCornersDescription;
     }
 
     /**
      * {@inheritDoc}
+     *
      * @return {@link #standardCornersId}
      */
     @Override
-    public @NotNull String getId(){
-        return standardCornersId;
+    public String getId() {
+        return this.standardCornersId;
     }
 
     /**
@@ -46,7 +47,7 @@ public class StandardCorners extends GoalEvaluator {
      * @return true if the 4 corners of the library are of the same type
      */
     @Override
-    public boolean evaluate(Tile[] @NotNull [] playerShelf) {
+    public boolean evaluate(Tile[][] playerShelf) {
         Tile topLeft = playerShelf[0][0];
         Tile topRight = playerShelf[0][playerShelf[0].length - 1];
         Tile bottomLeft = playerShelf[playerShelf.length - 1][0];

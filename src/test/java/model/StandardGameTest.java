@@ -1,9 +1,5 @@
 package model;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
 import model.abstractModel.Game;
 import model.abstractModel.LivingRoom;
 import model.abstractModel.Player;
@@ -13,8 +9,11 @@ import model.exceptions.PlayerAlreadyExistsException;
 import model.exceptions.PlayerNotExistsException;
 import modelView.GameInfo;
 import modelView.NewGameInfo;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -45,7 +44,6 @@ class StandardGameTest {
         assertThrows(PlayerAlreadyExistsException.class, () -> game.addPlayer("42"));
         assertDoesNotThrow(() -> game.addPlayer("43"));
         assertThrows(MatchmakingClosedException.class, () -> game.addPlayer("44"));
-
 
 
         //test for reconnections
@@ -127,7 +125,6 @@ class StandardGameTest {
     }
 
 
-
     /**
      * Method under test: {@link StandardGame#close()}
      */
@@ -139,7 +136,6 @@ class StandardGameTest {
         assertEquals(Game.GameStatus.ENDED, game.getGameStatus());
         assertThrows(MatchmakingClosedException.class, () -> game.addPlayer("42"));
     }
-
 
 
     /**
@@ -168,12 +164,13 @@ class StandardGameTest {
         game.addPlayer("43");
         game.addPlayer("44");
         game.removePlayer("42");
-        assertDoesNotThrow( () -> {
+        assertDoesNotThrow(() -> {
             game.updatePlayersTurn();
             game.updatePlayersTurn();
             game.updatePlayersTurn();
         });
     }
+
 
     /**
      * Method under test: {@link StandardGame#getInfo()}
@@ -193,7 +190,7 @@ class StandardGameTest {
 
     @Test
     void depthSearchTest() {
-      Game test = GameBuilder.build(new NewGameInfo("gameId", "STANDARD", 3, System.currentTimeMillis()));
+        Game test = GameBuilder.build(new NewGameInfo("gameId", "STANDARD", 3, System.currentTimeMillis()));
         try {
             test.addPlayer("p1");
         } catch (PlayerAlreadyExistsException | MatchmakingClosedException e) {
@@ -249,7 +246,6 @@ class StandardGameTest {
     }
 
 
-
     @Test
     void goalTest() {
         Game test = GameBuilder.build(new NewGameInfo("gameId", "STANDARD", 3, System.currentTimeMillis()));
@@ -288,33 +284,6 @@ class StandardGameTest {
         }
 
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }

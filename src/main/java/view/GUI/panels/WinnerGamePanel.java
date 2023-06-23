@@ -1,6 +1,7 @@
 package view.GUI.panels;
 
 import view.GUI.AspectRatioLayout;
+import view.ViewLogic;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,15 +11,29 @@ import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class WinnerGamePanel extends JPanel implements ActionListener {
+public class WinnerGamePanel extends JPanel {
+
+    public WinnerGamePanel(ActionListener exitListener, Map<String,Integer> points, String playerId) {
+        initializeLayout(points, playerId);
+
+        exitButton.addActionListener(e ->
+                exitListener.actionPerformed(new ActionEvent(this,ViewLogic.LEAVE_GAME,""))
+        );
+    }
+
+    /*-------------------- GRAPHIC LAYOUT ------------------*/
     private final Image createGame = new ImageIcon(Objects.requireNonNull(getClass().getResource("/leaderboardBackground.png"))).getImage();
-    private final ImageIcon firstCup = new ImageIcon(Objects.requireNonNull(getClass().getResource("/firstCup.png")));
-    private final ImageIcon secondCup = new ImageIcon(Objects.requireNonNull(getClass().getResource("/secondCup.png")));
-    private final ImageIcon thirdCup = new ImageIcon(Objects.requireNonNull(getClass().getResource("/thirdCup.png")));
-    private final ImageIcon filter = new ImageIcon(Objects.requireNonNull(getClass().getResource("/filterWinnerPanel.png")));
-    private final ActionListener listener;
-    private final Map<String, Integer> points;
-    private final JButton exitButton;
+    private final Image firstCup = new ImageIcon(Objects.requireNonNull(getClass().getResource("/firstCup.png"))).getImage();
+    private final Image secondCup = new ImageIcon(Objects.requireNonNull(getClass().getResource("/secondCup.png"))).getImage();
+    private final Image thirdCup = new ImageIcon(Objects.requireNonNull(getClass().getResource("/thirdCup.png"))).getImage();
+    private final Image filter = new ImageIcon(Objects.requireNonNull(getClass().getResource("/filterWinnerPanel.png"))).getImage();
+    private final Image buttonBackground = new ImageIcon(Objects.requireNonNull(getClass().getResource("/img.png"))).getImage();
+    private final JButton exitButton = new JButton(){
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            g.drawImage(buttonBackground, 0, 0, getWidth(), getHeight(), null);
+        }
+    };
 
     private final GridBagConstraints topSpacerConstraints = new GridBagConstraints(
             0,0,
@@ -76,27 +91,14 @@ public class WinnerGamePanel extends JPanel implements ActionListener {
             0,0
     );
 
-
-    public WinnerGamePanel(ActionListener listener, Map<String,Integer> points) {
-        this.points = points;
-        this.listener = listener;
+    private void initializeLayout(Map<String,Integer> points, String playerId){
         Font font = new Font("Century", Font.BOLD, 20);
-        Image button = new ImageIcon(Objects.requireNonNull(getClass().getResource("/img.png"))).getImage();
-
-
-
-        exitButton = new JButton(){
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                g.drawImage(button, 0, 0, getWidth(), getHeight(), null);
-            }
-        };
 
         JLabel exitLabel = new JLabel("EXIT",SwingConstants.CENTER);
         exitLabel.setFont(font);
         exitButton.setLayout(new BorderLayout());
         exitButton.add(exitLabel);
-        exitButton.addActionListener(this);
+
 
         //Title
         ImageIcon titleImage = new ImageIcon(Objects.requireNonNull(getClass().getResource("/title.png")));
@@ -143,13 +145,12 @@ public class WinnerGamePanel extends JPanel implements ActionListener {
         this.add(new Container(),bottomSpacerConstraints);
 
 
-
         Map<Integer, List<Map.Entry<String, Integer>>> grouped = points.entrySet().stream().collect(Collectors.groupingBy(Map.Entry::getValue));
         List<Map.Entry<Integer, List<Map.Entry<String, Integer>>>> sorted = new ArrayList<>(grouped.entrySet().stream().sorted(Map.Entry.comparingByKey()).toList());
         Collections.reverse(sorted);
         int position = 1;
         for (Map.Entry<Integer, List<Map.Entry<String, Integer>>> group : sorted) {
-            ImageIcon cupImage = switch (position) {
+            Image cupImage = switch (position) {
                 case 1 -> firstCup;
                 case 2 -> secondCup;
                 case 3 -> thirdCup;
@@ -163,7 +164,7 @@ public class WinnerGamePanel extends JPanel implements ActionListener {
                     cup = new JLabel() {
                         protected void paintComponent(Graphics g) {
                             super.paintComponent(g);
-                            g.drawImage(cupImage.getImage(), 0, 0, getWidth(), getHeight(), null);
+                            g.drawImage(cupImage, 0, 0, getWidth(), getHeight(), null);
                         }
                     };
                 }else {
@@ -177,13 +178,17 @@ public class WinnerGamePanel extends JPanel implements ActionListener {
                 JPanel playerIdTextContainer = new JPanel(){
                     protected void paintComponent(Graphics g) {
                         super.paintComponent(g);
-                        g.drawImage(filter.getImage(), 0, 0, getWidth(), getHeight(), null);
+                        g.drawImage(filter, 0, 0, getWidth(), getHeight(), null);
                     }
                 };
 
                 playerIdTextContainer.setOpaque(false);
                 playerIdTextContainer.setLayout(new AspectRatioLayout(2));
-                JLabel playerIdText = new JLabel(player.getKey(),SwingConstants.CENTER);
+
+                String idText = player.getKey();
+                if(idText.equals(playerId))
+                    idText = "YOU";
+                JLabel playerIdText = new JLabel(idText,SwingConstants.CENTER);
 
                 playerIdText.setFont(font);
                 playerIdText.setForeground(Color.WHITE);
@@ -194,7 +199,7 @@ public class WinnerGamePanel extends JPanel implements ActionListener {
                 JPanel playerIdPointsContainer = new JPanel(){
                     protected void paintComponent(Graphics g) {
                         super.paintComponent(g);
-                        g.drawImage(filter.getImage(), 0, 0, getWidth(), getHeight(), null);
+                        g.drawImage(filter, 0, 0, getWidth(), getHeight(), null);
                     }
                 };
 
@@ -217,15 +222,9 @@ public class WinnerGamePanel extends JPanel implements ActionListener {
                 classificaWinnerPanel.add(playerIdPointsContainer,c);
                 c.gridy++;
 
-
                 position++;
             }
         }
-    }
-
-    public void setPlayerId(String playerId){
-        //this.thisPlayerId = playerId;
-        //this.thisPoints = points;
     }
 
     @Override
@@ -244,17 +243,8 @@ public class WinnerGamePanel extends JPanel implements ActionListener {
                 width = (int) (getHeight()*ratio);
             }
             g.drawImage(createGame, 0, 0, width, height, null);
-
         }
     }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        if(e.getSource()==exitButton){
-            listener.actionPerformed(new ActionEvent(this,e.getID(), "EXIT"));
-        }
-    }
-
 }
 
 

@@ -9,7 +9,6 @@ import model.abstractModel.Message;
 import modelView.LoginInfo;
 import modelView.NewGameInfo;
 import modelView.PlayerMoveInfo;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
@@ -19,42 +18,34 @@ public class ClientSocketHandler extends SocketHandler<ClientInterface> implemen
     private Thread receiverLoop;
 
     public ClientSocketHandler(String ip, int port) {
-        super(ip,port);
+        super(ip, port);
     }
 
     ////APP SERVER//////////////////
 
     @Override
-    public synchronized @NotNull ServerInterface connect(ClientInterface client) throws RemoteException {
+    public synchronized ServerInterface connect(ClientInterface client) throws RemoteException {
         super.open();
 
-        receiverLoop = new Thread(()->{
-            try{
-                while(true){
-                    waitForReceive(client);
+        this.receiverLoop = new Thread(() -> {
+            try {
+                while (true) {
+                    this.waitForReceive(client);
                 }
-            }catch (RemoteException e) {
-                System.err.println("Cannot receive from client: "+e.getMessage()+".\n-> Closing this connection...");
-            } finally {
-                //TODO
-//                try {
-//                    socket.close();
-//                } catch (IOException e) {
-//                    System.err.println("Cannot close socket");
-//                }
+            } catch (RemoteException e) {
+                System.err.println("Cannot receive from server: " + e.getMessage() + ".\n-> Closing this connection...");
             }
         });
 
-        receiverLoop.start();
+        this.receiverLoop.start();
 
         return this;
     }
 
     @Override
     public synchronized void disconnect(ClientInterface client) throws RemoteException {
-        //TODO Manda segnale di disconnessione
         try {
-            receiverLoop.interrupt();
+            this.receiverLoop.interrupt();
             super.close();
         } catch (IOException e) {
             throw new RemoteException("Cannot close socket", e);
@@ -68,10 +59,10 @@ public class ClientSocketHandler extends SocketHandler<ClientInterface> implemen
     @Override
     public void doPlayerMove(ClientInterface client, PlayerMoveInfo info) throws RemoteException {
         try {
-            send((SocketObject) (sender,receiver) -> {
-                try{
+            this.send((SocketObject) (sender, receiver) -> {
+                try {
                     ((GameController) receiver).doPlayerMove((ClientInterface) sender, info);
-                }catch (ClassCastException e){
+                } catch (ClassCastException e) {
                     throw new RemoteException("Socket object not usable");
                 }
             });
@@ -83,10 +74,10 @@ public class ClientSocketHandler extends SocketHandler<ClientInterface> implemen
     @Override
     public void sendMessage(ClientInterface client, Message newMessage) throws RemoteException {
         try {
-            send((SocketObject) (sender,receiver) -> {
+            this.send((SocketObject) (sender, receiver) -> {
                 try {
                     ((GameController) receiver).sendMessage((ClientInterface) sender, newMessage);
-                }catch (ClassCastException e){
+                } catch (ClassCastException e) {
                     throw new RemoteException("Socket object not usable");
                 }
             });
@@ -98,10 +89,10 @@ public class ClientSocketHandler extends SocketHandler<ClientInterface> implemen
     @Override
     public void joinGame(ClientInterface client, LoginInfo info) {
         try {
-            send((SocketObject) (sender,receiver) -> {
+            this.send((SocketObject) (sender, receiver) -> {
                 try {
                     ((ServerInterface) receiver).joinGame((ClientInterface) sender, info);
-                }catch (ClassCastException e){
+                } catch (ClassCastException e) {
                     throw new RemoteException("Socket object not usable");
                 }
             });
@@ -114,10 +105,10 @@ public class ClientSocketHandler extends SocketHandler<ClientInterface> implemen
     @Override
     public void leaveGame(ClientInterface client) throws RemoteException {
         try {
-            send((SocketObject) (sender,receiver) -> {
+            this.send((SocketObject) (sender, receiver) -> {
                 try {
                     ((ServerInterface) receiver).leaveGame((ClientInterface) sender);
-                }catch (ClassCastException e){
+                } catch (ClassCastException e) {
                     throw new RemoteException("Socket object not usable");
                 }
             });
@@ -130,10 +121,10 @@ public class ClientSocketHandler extends SocketHandler<ClientInterface> implemen
     @Override
     public void createGame(ClientInterface client, NewGameInfo info) {
         try {
-            send((SocketObject) (sender,receiver) -> {
-                try{
+            this.send((SocketObject) (sender, receiver) -> {
+                try {
                     ((ServerInterface) receiver).createGame((ClientInterface) sender, info);
-                }catch (ClassCastException e){
+                } catch (ClassCastException e) {
                     throw new RemoteException("Socket object not usable");
                 }
             });

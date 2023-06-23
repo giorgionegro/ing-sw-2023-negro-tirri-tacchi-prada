@@ -2,7 +2,6 @@ package model.goalEvaluators;
 
 import model.Tile;
 import model.abstractModel.GoalEvaluator;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 
@@ -25,20 +24,22 @@ public class StandardSixGroup2Tiles extends GoalEvaluator {
 
     /**
      * {@inheritDoc}
+     *
      * @return {@link #standardSixGroup2TilesDescription}
      */
     @Override
-    public @NotNull String getDescription() {
-        return standardSixGroup2TilesDescription;
+    public String getDescription() {
+        return this.standardSixGroup2TilesDescription;
     }
 
     /**
      * {@inheritDoc}
+     *
      * @return {@link #standardSixGroup2TilesId}
      */
     @Override
-    public @NotNull String getId(){
-        return standardSixGroup2TilesId;
+    public String getId() {
+        return this.standardSixGroup2TilesId;
     }
 
     /**
@@ -48,7 +49,7 @@ public class StandardSixGroup2Tiles extends GoalEvaluator {
      * @return true if the player has at least 6 groups of 2 tiles of the same type
      */
     @Override
-    public boolean evaluate(Tile[] @NotNull [] playerShelf) {
+    public boolean evaluate(Tile[][] playerShelf) {
 
         int counter = 0; // counts the number of groups of 2 tiles of the same type
         //clone

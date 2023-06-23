@@ -2,27 +2,60 @@ package view.GUI.panels;
 
 import model.Tile;
 import model.Token;
-import model.abstractModel.LivingRoom;
-import modelView.LivingRoomInfo;
 
 import view.GUI.AspectRatioLayout;
 import view.GUI.components.TileButton;
-import view.interfaces.LivingRoomView;
+import view.graphicInterfaces.LivingRoomGraphics;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
-import java.rmi.RemoteException;
 import java.util.Objects;
 
-public class LivingRoomPanel extends JPanel implements LivingRoomView {
+public class LivingRoomPanel extends JPanel implements LivingRoomGraphics {
+    private final ActionListener orderingTable;
+
+    public LivingRoomPanel(ActionListener orderingTable) {
+        this.orderingTable = orderingTable;
+
+        this.setLayout(new GridBagLayout());
+    }
+    @Override
+    public void updateBoardGraphics(Tile[][] board) {
+        this.removeAll();
+
+        this.add(new Container(),topSpacerConstraints);
+        this.add(new Container(),bottomSpacerConstraints);
+        this.add(new Container(),leftSpacerConstraints);
+        this.add(new Container(),rightSpacerConstraints);
+
+        for(int i=0;i< board.length;i++){
+            for(int j=0; j<board[i].length; j++){
+                tileConstraints.gridx = 1+j;
+                tileConstraints.gridy = 1+i;
+
+                Container imagetileContainer = new Container();
+                imagetileContainer.setLayout(new AspectRatioLayout(1));
+
+                if (board[i][j]==Tile.EMPTY) {
+                    imagetileContainer.add(new Container(),tileConstraints);
+                } else {
+                    TileButton tileButton = new TileButton(j,i,board[i][j]);
+                    tileButton.addActionListener(orderingTable);
+                    imagetileContainer.add(tileButton);
+                }
+
+                this.add(imagetileContainer,tileConstraints);
+            }
+        }
+        this.revalidate();
+        this.repaint();
+    }
+
+    /*------------------------ GRAPHIC LAYOUT -------------------*/
+
     private final Image background = new ImageIcon(Objects.requireNonNull(getClass().getResource("/LivingRoomBackground.png"))).getImage();
     private final Image endGameToken = new ImageIcon(Objects.requireNonNull(getClass().getResource("/Token/" + Token.TOKEN_GAME_END.name() + ".png"))).getImage();
-
-    private final Container topSpacer = new Container();
-    private final Container leftSpacer = new Container();
-    private final Container rightSpacer = new Container();
-    private final Container bottomSpacer = new Container();
     private final GridBagConstraints topSpacerConstraints = new GridBagConstraints(
             0,0,
             11,1,
@@ -69,52 +102,12 @@ public class LivingRoomPanel extends JPanel implements LivingRoomView {
             0,0
     );
 
-    private final ActionListener orderingTable;
-    public LivingRoomPanel(ActionListener orderingTable) {
-        this.orderingTable = orderingTable;
-
-        this.setLayout(new GridBagLayout());
-    }
-
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         g.drawImage(background, 0, 0, getWidth(), getHeight(), null);
+        //TODO show endGame only if present (lastTurn == false)
         g.drawImage(endGameToken,0,0,getWidth(),getHeight(),null);
-    }
-
-    @Override
-    public void update(LivingRoomInfo o, LivingRoom.Event evt) throws RemoteException {
-        this.removeAll();
-
-        this.add(topSpacer,topSpacerConstraints);
-        this.add(bottomSpacer,bottomSpacerConstraints);
-        this.add(leftSpacer,leftSpacerConstraints);
-        this.add(rightSpacer,rightSpacerConstraints);
-
-        Tile[][] tiles = o.board();
-
-        for(int i=0;i< tiles.length;i++){
-            for(int j=0; j<tiles[i].length; j++){
-                tileConstraints.gridx = 1+j;
-                tileConstraints.gridy = 1+i;
-
-                Container imagetileContainer = new Container();
-                imagetileContainer.setLayout(new AspectRatioLayout(1));
-
-                if (tiles[i][j]==Tile.EMPTY) {
-                    imagetileContainer.add(new Container(),tileConstraints);
-                } else {
-                    TileButton tileButton = new TileButton(j,i,tiles[i][j]);
-                    tileButton.addActionListener(orderingTable);
-                    imagetileContainer.add(tileButton);
-                }
-
-                this.add(imagetileContainer,tileConstraints);
-            }
-        }
-        this.revalidate();
-        this.repaint();
     }
 }
 

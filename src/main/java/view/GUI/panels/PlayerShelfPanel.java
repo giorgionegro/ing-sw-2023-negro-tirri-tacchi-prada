@@ -1,31 +1,22 @@
 package view.GUI.panels;
 
 import model.Tile;
-import model.abstractModel.Shelf;
-import modelView.ShelfInfo;
 
 import view.GUI.components.ColumnChoserButton;
-import view.interfaces.ShelfView;
+import view.graphicInterfaces.PlayerShelfGraphics;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-public class PlayerShelfPanel extends JPanel implements ShelfView, ActionListener {
-
-    private final Image foreground = new ImageIcon(Objects.requireNonNull(getClass().getResource("/BookshelfForeground.png"))).getImage();
-    private final Image background = new ImageIcon(Objects.requireNonNull(getClass().getResource("/BookshelfBackground.png"))).getImage();
-
+public class PlayerShelfPanel extends JPanel implements PlayerShelfGraphics, ActionListener {
     private Tile[][] shelfState = new Tile[6][5];
-
     private final List<JButton> columnSelectorList = new ArrayList<>();
-
     private final ActionListener orderingTable;
 
     public PlayerShelfPanel(ActionListener orderingTable) {
@@ -38,6 +29,39 @@ public class PlayerShelfPanel extends JPanel implements ShelfView, ActionListene
 
         initializeLayout();
     }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if(e.getSource()==orderingTable){
+            int n_picked = Integer.parseInt(e.getActionCommand());
+            for(int i = 0; i<columnSelectorList.size();i++){
+                columnSelectorList.get(i).setEnabled(countEmpty(i) >= n_picked);
+            }
+        }else{
+            orderingTable.actionPerformed(new ActionEvent(this,0,e.getActionCommand()));
+        }
+    }
+
+    public int countEmpty(int column){
+        int count = 0;
+        for (Tile[] tiles : shelfState) {
+            if (tiles[column] == Tile.EMPTY)
+                count++;
+        }
+        return count;
+    }
+
+    @Override
+    public void updatePlayerShelfGraphics(String playerId, Tile[][] shelf) {
+        shelfState = shelf;
+        this.revalidate();
+        this.repaint();
+    }
+
+    /* ------------------ GRAPHIC LAYOUT ---------------------*/
+
+    private final Image foreground = new ImageIcon(Objects.requireNonNull(getClass().getResource("/BookshelfForeground.png"))).getImage();
+    private final Image background = new ImageIcon(Objects.requireNonNull(getClass().getResource("/BookshelfBackground.png"))).getImage();
 
     private void initializeLayout(){
         GridBagConstraints leftSpacerConstraints = new GridBagConstraints(
@@ -129,33 +153,5 @@ public class PlayerShelfPanel extends JPanel implements ShelfView, ActionListene
         }
 
         g.drawImage(foreground,0,buttonPadding,getWidth(),getHeight()-buttonPadding,null);
-    }
-
-    @Override
-    public void update(ShelfInfo o, Shelf.Event evt) throws RemoteException {
-        shelfState = o.shelf();
-        this.revalidate();
-        this.repaint();
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        if(e.getSource()==orderingTable){
-            int n_picked = Integer.parseInt(e.getActionCommand());
-            for(int i = 0; i<columnSelectorList.size();i++){
-                columnSelectorList.get(i).setEnabled(countEmpty(i) >= n_picked);
-            }
-        }else{
-            orderingTable.actionPerformed(new ActionEvent(this,0,e.getActionCommand()));
-        }
-    }
-
-    public int countEmpty(int column){
-        int count = 0;
-        for (Tile[] tiles : shelfState) {
-            if (tiles[column] == Tile.EMPTY)
-                count++;
-        }
-        return count;
     }
 }

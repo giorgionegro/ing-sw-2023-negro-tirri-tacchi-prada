@@ -1,45 +1,16 @@
 package view.GUI.panels;
 
 import model.Token;
-import model.abstractModel.CommonGoal;
-import model.abstractModel.Player;
-import modelView.CommonGoalInfo;
-import modelView.PlayerInfo;
 
 import view.GUI.AspectRatioLayout;
-import view.interfaces.CommonGoalView;
-import view.interfaces.PlayerView;
-
+import view.graphicInterfaces.CommonGoalGraphics;
 import javax.swing.*;
 import java.awt.*;
-import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public class CommonGoalsPanel extends JPanel implements PlayerView, CommonGoalView {
-
-    private final GridBagConstraints cardConstraints = new GridBagConstraints(
-            -1,-1,
-            1,1,
-            4,1,
-            GridBagConstraints.NORTHWEST,
-            GridBagConstraints.BOTH,
-            new Insets(0,0,0,0),
-            0,0
-    );
-
-    private final GridBagConstraints spacerConstraints = new GridBagConstraints(
-            -1,-1,
-            1,1,
-            1,1,
-            GridBagConstraints.NORTHWEST,
-            GridBagConstraints.BOTH,
-            new Insets(0,0,0,0),
-            0,0
-    );
-
-
+public class CommonGoalsPanel extends JPanel implements CommonGoalGraphics {
     private final Map<String, Token> commonGoals = new HashMap<>();
     private final Map<String, Token> achieved = new HashMap<>();
 
@@ -48,20 +19,33 @@ public class CommonGoalsPanel extends JPanel implements PlayerView, CommonGoalVi
         this.setLayout(new GridBagLayout());
     }
 
-    @Override
-    public void update(PlayerInfo o, Player.Event evt) throws RemoteException {
-        achieved.putAll(o.achievedCommonGoals());
-        refreshCommonGoalState();
-    }
-
-    @Override
-    public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
-        commonGoals.put(o.id(),o.tokenState());
-        refreshCommonGoalState();
+    public void setAchievedCommonGoals(Map<String,Token> achieved){
+        this.achieved.putAll(achieved);
     }
 
     private void refreshCommonGoalState(){
         this.removeAll();
+
+        GridBagConstraints cardConstraints = new GridBagConstraints(
+                -1,-1,
+                1,1,
+                4,1,
+                GridBagConstraints.NORTHWEST,
+                GridBagConstraints.BOTH,
+                new Insets(0,0,0,0),
+                0,0
+        );
+
+        GridBagConstraints spacerConstraints = new GridBagConstraints(
+                -1,-1,
+                1,1,
+                1,1,
+                GridBagConstraints.NORTHWEST,
+                GridBagConstraints.BOTH,
+                new Insets(0,0,0,0),
+                0,0
+        );
+
         this.add(new Container(),spacerConstraints);
 
         for(String id : commonGoals.keySet()){
@@ -88,5 +72,11 @@ public class CommonGoalsPanel extends JPanel implements PlayerView, CommonGoalVi
         }
         this.revalidate();
         this.repaint();
+    }
+
+    @Override
+    public void updateCommonGoalGraphics(String id, String description, Token tokenState) {
+        commonGoals.put(id,tokenState);
+        refreshCommonGoalState();
     }
 }

@@ -12,11 +12,4 @@ public class GameAccessDeniedException extends Exception{
     public GameAccessDeniedException(String message){
         super("Cannot join the game: "+message);
     }
-
-    /**
-     * This constructor build an instance of this class with a standard message
-     */
-    public GameAccessDeniedException(){
-        super("Cannot join the game");
-    }
 }

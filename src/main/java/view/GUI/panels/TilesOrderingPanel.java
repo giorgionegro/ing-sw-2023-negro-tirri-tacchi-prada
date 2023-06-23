@@ -1,10 +1,8 @@
 package view.GUI.panels;
 
-import modelView.PickedTile;
-import modelView.PlayerMoveInfo;
-
 import view.GUI.components.SwapButton;
 import view.GUI.components.TileButton;
+import view.ViewLogic;
 
 import javax.swing.*;
 import java.awt.*;
@@ -15,77 +13,154 @@ import java.util.List;
 import java.util.Objects;
 
 public class TilesOrderingPanel extends JPanel implements ActionListener{
-    private final Image background = new ImageIcon(Objects.requireNonNull(getClass().getResource("/TilesOrderingTableBackground.png"))).getImage();
-    private final GridBagConstraints tileSpacer = new GridBagConstraints(
-            1,1,
-            1,1,
-            30,170,
-            GridBagConstraints.NORTHWEST,
-            GridBagConstraints.BOTH,
-            new Insets(0,0,0,0),
-            0,0
-    );
-
-    private final GridBagConstraints horizontalSpacerContraints = new GridBagConstraints(
-            0,0,
-            1,7,
-            80,1,
-            GridBagConstraints.NORTHWEST,
-            GridBagConstraints.BOTH,
-            new Insets(0,0,0,0),
-            0,0
-    );
-
-    private final GridBagConstraints verticalSpacerContraints = new GridBagConstraints(
-            1,0,
-            1,1,
-            30,30,
-            GridBagConstraints.NORTHWEST,
-            GridBagConstraints.BOTH,
-            new Insets(0,0,0,0),
-            0,0
-    );
-
-    private final GridBagConstraints swapConstraints = new GridBagConstraints(
-            1,2,
-            1,1,
-            30,60,
-            GridBagConstraints.NORTHWEST,
-            GridBagConstraints.BOTH,
-            new Insets(0,0,0,0),
-            0,0
-    );
-
     private final List<TileButton> pickedTiles = new ArrayList<>();
-
-    SwapButton swapButton1,swapButton2;
-
     private final ActionListener moveSender;
-    private ActionListener columnChoser;
+    private ActionListener columnChooser;
 
     public TilesOrderingPanel(ActionListener moveSender){
         this.moveSender = moveSender;
 
-        swapButton1 = new SwapButton();
-        swapButton1.addActionListener(this);
-        swapButton2 = new SwapButton();
-        swapButton2.addActionListener(this);
+        initializeLayout();
 
+        swapButton1.addActionListener(this);
+        swapButton2.addActionListener(this);
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if(e.getSource()==moveSender){
+            //Resets the selection if there is an update of livingRoom
+            for(TileButton t : pickedTiles) {
+                t.setSelected(false);
+            }
+            pickedTiles.clear();
+        }else if(e.getSource()==swapButton1){
+            if(pickedTiles.size()==3){
+                pickedTiles.add(pickedTiles.remove(1));
+            }
+        } else if (e.getSource()==swapButton2) {
+            if(pickedTiles.size()>1){
+                pickedTiles.add(0,pickedTiles.remove(1));
+            }
+        } else if (e.getSource()== columnChooser) {
+
+            if(pickedTiles.size()>0){
+                String columnInShelf = e.getActionCommand();
+                StringBuilder picked = new StringBuilder();
+                for(TileButton t : pickedTiles) {
+                    picked.append(t.getTileY()).append(",").append(t.getTileX()).append(" ");
+                    t.setSelected(false);
+                }
+
+                pickedTiles.clear();
+
+                String move = picked+"\n"+columnInShelf;
+                moveSender.actionPerformed(new ActionEvent(this, ViewLogic.SEND_MOVE, move));
+            }
+
+        } else if(e.getSource() instanceof TileButton button){
+            boolean selected = button.isSelected();
+            if (selected) {
+                button.setSelected(false);
+                pickedTiles.remove(button);
+            } else {
+                if (pickedTiles.size() < 3 && isPickable(button)) {
+                    button.setSelected(true);
+                    pickedTiles.add(button);
+                }
+            }
+        }
+
+        this.revalidate();
+        this.repaint();
+
+        columnChooser.actionPerformed(new ActionEvent(this,0,String.valueOf(pickedTiles.size())));
+    }
+
+    public void setColumnChooser(ActionListener columnChooser){
+        this.columnChooser = columnChooser;
+    }
+
+    private boolean isPickable(TileButton button){
+        //TODO implementa algoritmo
+        return true;
+    }
+
+    /*------------------ GRAPHIC LAYOUT ---------------------*/
+    private final Image background = new ImageIcon(Objects.requireNonNull(getClass().getResource("/TilesOrderingTableBackground.png"))).getImage();
+
+    private final SwapButton swapButton1 = new SwapButton();
+    private final SwapButton swapButton2 = new SwapButton();
+
+    private final GridBagConstraints constraints = new GridBagConstraints(
+            0,0,
+            1,1,
+            1,1,
+            GridBagConstraints.NORTHWEST,
+            GridBagConstraints.BOTH,
+            new Insets(0,0,0,0),
+            0,0
+    );
+
+    private final Dimension zeroDimension = new Dimension(0,0);
+
+    private void initializeLayout(){
         this.setLayout(new GridBagLayout());
-        this.add(new Container(), verticalSpacerContraints);
-        this.add(new Container(), tileSpacer);
-        this.add(swapButton1, swapConstraints);
-        tileSpacer.gridy+=2;
-        this.add(new Container(), tileSpacer);
-        swapConstraints.gridy+=2;
-        this.add(swapButton2,swapConstraints);
-        tileSpacer.gridy+=2;
-        this.add(new Container(), tileSpacer);
-        verticalSpacerContraints.gridy+=6;
-        this.add(new Container(),verticalSpacerContraints);
-        this.add(new Container(),horizontalSpacerContraints);
-        horizontalSpacerContraints.gridx+=2;
-        this.add(new Container(),horizontalSpacerContraints);
+
+        /* up space */
+        constraints.gridwidth=3;
+        constraints.weighty=30;
+        this.add(new Container(), constraints);
+
+        /* tile space */
+        constraints.gridy++;
+        constraints.weighty=146;
+        this.add(new Container(), constraints);
+
+        /* swap button 1 */
+        constraints.gridy++;
+        constraints.gridwidth=1;
+        constraints.weighty = 70;
+        this.add(new Container(),constraints);
+
+        constraints.gridx++;
+        swapButton1.setPreferredSize(zeroDimension);
+        this.add(swapButton1,constraints);
+
+        constraints.gridx++;
+        this.add(new Container(), constraints);
+
+        /* tile space */
+        constraints.gridx=0;
+        constraints.gridy++;
+        constraints.gridwidth = 3;
+        constraints.weighty=146;
+        this.add(new Container(),constraints);
+
+        /* swap button 2 */
+        constraints.gridy++;
+        constraints.gridwidth=1;
+        constraints.weighty = 70;
+        this.add(new Container(),constraints);
+
+        constraints.gridx++;
+        swapButton2.setPreferredSize(zeroDimension);
+        this.add(swapButton2,constraints);
+
+        constraints.gridx++;
+        this.add(new Container(), constraints);
+
+        /* tile space */
+        constraints.gridx=0;
+        constraints.gridy++;
+        constraints.gridwidth = 3;
+        constraints.weighty=146;
+        this.add(new Container(),constraints);
+
+        /* bottom space */
+        constraints.gridy++;
+        constraints.weighty=30;
+        this.add(new Container(), constraints);
     }
 
     @Override
@@ -108,66 +183,5 @@ public class TilesOrderingPanel extends JPanel implements ActionListener{
             g.drawImage(tileImage, leftPadding, y, size, size, null);
             y-=verticalSkip;
         }
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        if(e.getSource()==moveSender){
-            //Resets the selection if there is an update of livingRoom
-            for(TileButton t : pickedTiles) {
-                t.setSelected(false);
-            }
-            pickedTiles.clear();
-        }else if(e.getSource()==swapButton1){
-            if(pickedTiles.size()==3){
-                pickedTiles.add(pickedTiles.remove(1));
-            }
-        } else if (e.getSource()==swapButton2) {
-            if(pickedTiles.size()>1){
-                pickedTiles.add(0,pickedTiles.remove(1));
-            }
-        } else if (e.getSource()==columnChoser) {
-
-            if(pickedTiles.size()>0){
-                int column = Integer.parseInt(e.getActionCommand());
-
-                List<PickedTile> picked = new ArrayList<>();
-                for(TileButton t : pickedTiles) {
-                    picked.add(new PickedTile(t.getTileY(), t.getTileX()));
-                    t.setSelected(false);
-                }
-
-                pickedTiles.clear();
-
-                PlayerMoveInfo move = new PlayerMoveInfo(picked, column);
-                moveSender.actionPerformed(new ActionEvent(move, 0, "SEND MOVE"));
-            }
-
-        } else if(e.getSource() instanceof TileButton button){
-            boolean selected = button.isSelected();
-            if (selected) {
-                button.setSelected(false);
-                pickedTiles.remove(button);
-            } else {
-                if (pickedTiles.size() < 3 && isPickable(button)) {
-                    button.setSelected(true);
-                    pickedTiles.add(button);
-                }
-            }
-        }
-
-        this.revalidate();
-        this.repaint();
-
-        columnChoser.actionPerformed(new ActionEvent(this,0,String.valueOf(pickedTiles.size())));
-    }
-
-    public void setColumnChoser(ActionListener columnChoser){
-        this.columnChoser = columnChoser;
-    }
-
-    private boolean isPickable(TileButton button){
-        //TODO implementa algoritmo
-        return true;
     }
 }
