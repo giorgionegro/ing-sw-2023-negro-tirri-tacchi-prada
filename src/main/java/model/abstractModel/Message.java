@@ -3,7 +3,7 @@ package model.abstractModel;
 import java.io.Serializable;
 
 /**
- * This interface define the method to access to message data
+ * This interface defines the methods to access to message data
  */
 public interface Message extends Serializable {
     /**

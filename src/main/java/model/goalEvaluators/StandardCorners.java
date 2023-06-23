@@ -4,9 +4,9 @@ import model.Tile;
 import model.abstractModel.GoalEvaluator;
 
 /**
- * This class is the goal evaluator for the StandardCorners goal
- * It implements the GoalEvaluator abstract class
- * It is used by the CommonGoal class
+ * This class is the goal evaluator for the StandardCorners goal.
+ * It implements the GoalEvaluator abstract class.
+ * It is used by the CommonGoal class.
  **/
 public class StandardCorners extends GoalEvaluator {
 

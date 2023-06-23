@@ -6,9 +6,9 @@ import model.abstractModel.GoalEvaluator;
 import java.util.Arrays;
 
 /**
- * This class is the goal evaluator for the Standard4Groups4Tiles goal
- * It implements the GoalEvaluator abstract class
- * It is used by the CommonGoal class
+ * This class is the goal evaluator for the Standard4Groups4Tiles goal.
+ * It implements the GoalEvaluator abstract class.
+ * It is used by the CommonGoal class.
  **/
 public class Standard4Groups4Tiles extends GoalEvaluator {
 
