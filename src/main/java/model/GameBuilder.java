@@ -11,7 +11,7 @@ import java.util.Stack;
 
 /**
  * //TODO controllare
- * This class is responsible for creating a new game based on its type and initializing the various game components.
+ * This enumeration contains the methods responsible for creating a new game based on its type and initializing the various game components.
  */
 public enum GameBuilder {
     ;
@@ -72,7 +72,7 @@ public enum GameBuilder {
     }
 
     /**
-     * this method return stack containing lists of all the standard personal goals
+     * this method returns a stack containing lists of all the standard personal goals
      *
      * @return stack containing lists of all the standard personal goals
      */
