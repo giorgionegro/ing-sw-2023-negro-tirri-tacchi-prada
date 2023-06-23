@@ -3,34 +3,33 @@ package model;
 import model.abstractModel.*;
 import model.goalEvaluators.*;
 import modelView.NewGameInfo;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
 
-public class GameBuilder {
+public enum GameBuilder {
+    ;
 
-    private GameBuilder(){}
-    public static @NotNull Game build(NewGameInfo newGameInfo) throws IllegalArgumentException{
+    public static Game build(NewGameInfo newGameInfo) throws IllegalArgumentException {
         //noinspection SwitchStatementWithTooFewBranches
-        switch (newGameInfo.type()){
+        switch (newGameInfo.type()) {
             case "STANDARD" -> {
                 List<Player> avaiablePlayers = new ArrayList<>();
                 List<CommonGoal> avaiableCommonGoals = setCommonGoals(newGameInfo.playerNumber());
                 Stack<List<PersonalGoal>> avaiablePersonalGoals = setPersonalGoals();
                 LivingRoom livingRoom = new StandardLivingRoom(newGameInfo.playerNumber());
-                for(int i=0;i< newGameInfo.playerNumber();i++)
-                    avaiablePlayers.add(new StandardPlayer(new StandardShelf(),avaiablePersonalGoals.pop(),new StandardPlayerChat()));
+                for (int i = 0; i < newGameInfo.playerNumber(); i++)
+                    avaiablePlayers.add(new StandardPlayer(new StandardShelf(), avaiablePersonalGoals.pop(), new StandardPlayerChat()));
 
-                return new StandardGame(avaiablePlayers,livingRoom,avaiableCommonGoals);
+                return new StandardGame(avaiablePlayers, livingRoom, avaiableCommonGoals);
             }
             default -> throw new IllegalArgumentException("Unexpected value: " + newGameInfo.type());
         }
     }
 
-    private static @NotNull ArrayList<CommonGoal> setCommonGoals(int nPlayers) {
+    private static ArrayList<CommonGoal> setCommonGoals(int nPlayers) {
         Stack<StandardCommonGoal> allGoals = new Stack<>();
 
         allGoals.add(new StandardCommonGoal(nPlayers, new Standard2ColumnsRowOfDifferentTiles(false)));
@@ -61,7 +60,7 @@ public class GameBuilder {
      *
      * @return stack containing lists of all the standard personal goals
      */
-    private static @NotNull Stack<List<PersonalGoal>> setPersonalGoals() {
+    private static Stack<List<PersonalGoal>> setPersonalGoals() {
         Stack<List<PersonalGoal>> result = new Stack<>();
         result.add(createPersonalGoal(new Tile[]{Tile.PLANTS_1, Tile.FRAMES_1, Tile.CATS_1, Tile.BOOKS_1, Tile.GAMES_1, Tile.TROPHIES_1}, new int[]{0, 0, 1, 2, 3, 5}, new int[]{0, 2, 4, 3, 1, 2}));
         result.add(createPersonalGoal(new Tile[]{Tile.PLANTS_1, Tile.CATS_1, Tile.GAMES_1, Tile.BOOKS_1, Tile.TROPHIES_1, Tile.FRAMES_1}, new int[]{1, 2, 2, 3, 4, 5}, new int[]{1, 0, 2, 4, 3, 4}));
@@ -87,10 +86,10 @@ public class GameBuilder {
      * @param cols  array of column position of each Tile
      * @return ArrayList representing a standard personal goal
      */
-    private static @NotNull ArrayList<PersonalGoal> createPersonalGoal(Tile @NotNull [] tiles, int[] rows, int[] cols) {
+    private static ArrayList<PersonalGoal> createPersonalGoal(Tile[] tiles, int[] rows, int[] cols) {
         ArrayList<PersonalGoal> personalGoal = new ArrayList<>();
         for (int i = 0; i < tiles.length; i++) {
-            personalGoal.add(new StandardPersonalGoal(i,tiles[i], rows[i], cols[i]));
+            personalGoal.add(new StandardPersonalGoal(i, tiles[i], rows[i], cols[i]));
         }
         return personalGoal;
     }

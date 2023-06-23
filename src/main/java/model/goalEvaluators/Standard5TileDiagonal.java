@@ -2,7 +2,6 @@ package model.goalEvaluators;
 
 import model.Tile;
 import model.abstractModel.GoalEvaluator;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * This class is the goal evaluator for the Standard5TileDiagonal goal
@@ -23,20 +22,22 @@ public class Standard5TileDiagonal extends GoalEvaluator {
 
     /**
      * {@inheritDoc}
+     *
      * @return {@link #standard5TileDiagonalDescription}
      */
     @Override
-    public @NotNull String getDescription() {
-        return standard5TileDiagonalDescription;
+    public String getDescription() {
+        return this.standard5TileDiagonalDescription;
     }
 
     /**
      * {@inheritDoc}
+     *
      * @return {@link #standard5TileDiagonalId}
      */
     @Override
-    public @NotNull String getId(){
-        return standard5TileDiagonalId;
+    public String getId() {
+        return this.standard5TileDiagonalId;
     }
 
     /**
@@ -44,8 +45,7 @@ public class Standard5TileDiagonal extends GoalEvaluator {
      * @return true if the player has at least 5 tiles of the same type that form a diagonal
      */
     @Override
-    public boolean evaluate(Tile[] @NotNull [] playerShelf) {
-        int n = playerShelf[0].length;
+    public boolean evaluate(Tile[][] playerShelf) {
         // check diagonal win from top left to bottom right
 
         // first we check the diagonal from top left to bottom righ

@@ -2,12 +2,12 @@ package model;
 
 import model.abstractModel.PersonalGoal;
 import model.abstractModel.Player;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 class StandardPlayerTest {
 
@@ -15,9 +15,8 @@ class StandardPlayerTest {
      * Method under test:{@link StandardPlayer()}
      *
      * <p>
-     *
+     * <p>
      * Test if the constructor correctly creates a player from a player instance
-     *
      */
     @Test
     void testConstructor() {
@@ -27,11 +26,11 @@ class StandardPlayerTest {
 
     @Test
     void testPlayerCreation() {
-        String playerId = getPlayerId();
+        String playerId = this.getPlayerId();
 
-        List<PersonalGoal> personalGoals = getPersonalGoals();
+        List<PersonalGoal> personalGoals = this.getPersonalGoals();
 
-        Player p = new StandardPlayer( new StandardShelf(),personalGoals,new StandardPlayerChat());
+        Player p = new StandardPlayer(new StandardShelf(), personalGoals, new StandardPlayerChat());
 
         p.getPlayerChat();
 
@@ -55,7 +54,7 @@ class StandardPlayerTest {
 
     @Test
     void testPlayerShelfModification() {
-        Player p = new StandardPlayer( new StandardShelf(),new ArrayList<>(),new StandardPlayerChat());
+        Player p = new StandardPlayer(new StandardShelf(), new ArrayList<>(), new StandardPlayerChat());
 
         Tile[][] shelf = new Tile[6][5];
         for (Tile[] tiles : shelf) {
@@ -86,7 +85,7 @@ class StandardPlayerTest {
 
     @Test
     void testPlayerAchievingCommonGoal() {
-        Player p = new StandardPlayer( new StandardShelf(),new ArrayList<>(),new StandardPlayerChat());
+        Player p = new StandardPlayer(new StandardShelf(), new ArrayList<>(), new StandardPlayerChat());
 
         String desc1 = "Goal 1";
         String desc2 = "Goal 2";
@@ -103,12 +102,12 @@ class StandardPlayerTest {
         if (!cGoalsFromPlayer.containsKey(desc1) || !cGoalsFromPlayer.containsKey(desc2))
             fail("Saved wrong goal description");
 
-        if (!cGoalsFromPlayer.get(desc1).equals(token1) || !cGoalsFromPlayer.get(desc2).equals(token2))
+        if (cGoalsFromPlayer.get(desc1) != token1 || cGoalsFromPlayer.get(desc2) != token2)
             fail("Saved wrong token");
     }
 
 
-    private @NotNull String getPlayerId() {
+    private String getPlayerId() {
         StringBuilder playerId = new StringBuilder();
         Random r = new Random();
         for (int j = 0; j < 5; j++)
@@ -116,34 +115,32 @@ class StandardPlayerTest {
         return playerId.toString();
     }
 
-    private @NotNull List<PersonalGoal> getPersonalGoals() {
+    private List<PersonalGoal> getPersonalGoals() {
         List<PersonalGoal> r = new ArrayList<>();
-        r.add(new StandardPersonalGoal(0,Tile.CATS_1, 0, 0));
-        r.add(new StandardPersonalGoal(1,Tile.BOOKS_2, 1, 1));
-        r.add(new StandardPersonalGoal(2,Tile.GAMES_1, 2, 2));
-        r.add(new StandardPersonalGoal(3,Tile.TROPHIES_1, 3, 3));
-        r.add(new StandardPersonalGoal(4,Tile.FRAMES_1, 4, 4));
-        r.add(new StandardPersonalGoal(5,Tile.PLANTS_1, 5, 5));
+        r.add(new StandardPersonalGoal(0, Tile.CATS_1, 0, 0));
+        r.add(new StandardPersonalGoal(1, Tile.BOOKS_2, 1, 1));
+        r.add(new StandardPersonalGoal(2, Tile.GAMES_1, 2, 2));
+        r.add(new StandardPersonalGoal(3, Tile.TROPHIES_1, 3, 3));
+        r.add(new StandardPersonalGoal(4, Tile.FRAMES_1, 4, 4));
+        r.add(new StandardPersonalGoal(5, Tile.PLANTS_1, 5, 5));
         return r;
     }
 
     @Test
     void reportErrorTest() {
-        Player test = new StandardPlayer( new StandardShelf(),new ArrayList<>(),new StandardPlayerChat());
+        Player test = new StandardPlayer(new StandardShelf(), new ArrayList<>(), new StandardPlayerChat());
         test.reportError("Error test");
         assertEquals(test.getReportedError(), "Error test");
     }
 
     @Test
     void getInfoTest() {
-        Player test = new StandardPlayer( new StandardShelf(),new ArrayList<>(),new StandardPlayerChat());
+        Player test = new StandardPlayer(new StandardShelf(), new ArrayList<>(), new StandardPlayerChat());
         test.reportError("Error test");
         test.addAchievedCommonGoal("Test", Token.TOKEN_6_POINTS);
         assertEquals(test.getReportedError(), test.getInfo().errorMessage());
         assertEquals(test.getInfo().achievedCommonGoals(), test.getAchievedCommonGoals());
     }
-
-
 
 
 }

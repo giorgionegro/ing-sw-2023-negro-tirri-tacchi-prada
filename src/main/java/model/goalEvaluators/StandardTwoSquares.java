@@ -2,7 +2,6 @@ package model.goalEvaluators;
 
 import model.Tile;
 import model.abstractModel.GoalEvaluator;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 
@@ -25,20 +24,22 @@ public class StandardTwoSquares extends GoalEvaluator {
 
     /**
      * {@inheritDoc}
+     *
      * @return {@link #standardTwoSquaresDescription}
      */
     @Override
-    public @NotNull String getDescription() {
-        return standardTwoSquaresDescription;
+    public String getDescription() {
+        return this.standardTwoSquaresDescription;
     }
 
     /**
      * {@inheritDoc}
+     *
      * @return {@link #standardTwoSquaresId}
      */
     @Override
-    public @NotNull String getId(){
-        return standardTwoSquaresId;
+    public String getId() {
+        return this.standardTwoSquaresId;
     }
 
     /**
@@ -48,7 +49,7 @@ public class StandardTwoSquares extends GoalEvaluator {
      * @return true if the player has at least 2 groups of 2x2 tiles of the same type
      */
     @Override
-    public boolean evaluate(Tile[] @NotNull [] playerShelf) {
+    public boolean evaluate(Tile[][] playerShelf) {
 
         //clone the array
         int counter = 0;

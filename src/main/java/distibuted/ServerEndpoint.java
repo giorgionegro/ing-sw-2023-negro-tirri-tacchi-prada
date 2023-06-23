@@ -10,17 +10,16 @@ import model.exceptions.GameNotExistsException;
 import modelView.LoginInfo;
 import modelView.NewGameInfo;
 import modelView.PlayerMoveInfo;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
-public class ServerEndpoint extends UnicastRemoteObject implements ServerInterface{
+public class ServerEndpoint extends UnicastRemoteObject implements ServerInterface {
 
     private final ServerController serverController;
     private final GameManagerController gameManagerController;
-    private @Nullable GameController gameController;
+
+    private GameController gameController;
 
     public ServerEndpoint(ServerController serverController, GameManagerController gameManagerController) throws RemoteException {
         super();
@@ -32,59 +31,59 @@ public class ServerEndpoint extends UnicastRemoteObject implements ServerInterfa
     @Override
     public synchronized void createGame(ClientInterface client, NewGameInfo newGameInfo) {
         try {
-            serverController.createGame(client,newGameInfo);
+            this.serverController.createGame(client, newGameInfo);
         } catch (RemoteException e) {
-            printError("CreateGame",e.getMessage());
+            this.printError("CreateGame", e.getMessage());
         }
     }
 
     @Override
-    public void joinGame(@NotNull ClientInterface client, @NotNull LoginInfo loginInfo){
+    public void joinGame(ClientInterface client, LoginInfo loginInfo) {
         try {
-            serverController.joinGame(client, loginInfo);
-            gameController = gameManagerController.getGame(loginInfo.gameId());
+            this.serverController.joinGame(client, loginInfo);
+            this.gameController = this.gameManagerController.getGame(loginInfo.gameId());
         } catch (RemoteException e) {
-            printError("JoinGame", e.getMessage());
-        } catch (GameNotExistsException e){
-            gameController = null;
+            this.printError("JoinGame", e.getMessage());
+        } catch (GameNotExistsException e) {
+            this.gameController = null;
         }
     }
 
     @Override
-    public void leaveGame(ClientInterface client){
+    public void leaveGame(ClientInterface client) {
         try {
-            serverController.leaveGame(client);
-            gameController = null;
+            this.serverController.leaveGame(client);
+            this.gameController = null;
         } catch (RemoteException e) {
-            printError("LeaveGame", e.getMessage());
+            this.printError("LeaveGame", e.getMessage());
         }
     }
 
     @Override
-    public void doPlayerMove(ClientInterface client, PlayerMoveInfo move){
-        if(gameController!=null) {
+    public void doPlayerMove(ClientInterface client, PlayerMoveInfo move) {
+        if (this.gameController != null) {
             try {
-                gameController.doPlayerMove(client, move);
+                this.gameController.doPlayerMove(client, move);
             } catch (RemoteException e) {
-                printError("DoPlayerMove", e.getMessage());
+                this.printError("DoPlayerMove", e.getMessage());
             }
         }
     }
 
     @Override
-    public void sendMessage(ClientInterface client, Message message){
-        if(gameController!=null) {
+    public void sendMessage(ClientInterface client, Message message) {
+        if (this.gameController != null) {
             try {
-                gameController.sendMessage(client, message);
+                this.gameController.sendMessage(client, message);
             } catch (RemoteException e) {
-                printError("SendMessage", e.getMessage());
+                this.printError("SendMessage", e.getMessage());
             }
         }
     }
 
-    private void printError(String from, String message){
-        if(!message.isBlank())
-            message = " : "+message;
+    private void printError(String from, String message) {
+        if (!message.isBlank())
+            message = " : " + message;
         System.err.print("ServerEndpoint: exception from " + from + message);
     }
 }

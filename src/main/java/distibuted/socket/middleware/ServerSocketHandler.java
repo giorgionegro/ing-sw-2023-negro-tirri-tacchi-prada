@@ -8,7 +8,6 @@ import distibuted.socket.middleware.interfaces.SocketObject;
 import model.User;
 import model.abstractModel.*;
 import modelView.*;
-import org.jetbrains.annotations.Nullable;
 import view.interfaces.*;
 
 import java.io.IOException;
@@ -17,17 +16,17 @@ import java.rmi.RemoteException;
 
 public class ServerSocketHandler extends SocketHandler<ServerInterface> implements ClientInterface {
 
-    public ServerSocketHandler(Socket socket){
+    public ServerSocketHandler(Socket socket) {
         super(socket);
     }
 
     @Override
-    public void update(CommonGoalInfo o, @Nullable CommonGoal.Event evt) throws RemoteException {
-        try{
-            send((SocketObject) (sender, receiver) -> {
+    public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
+        try {
+            this.send((SocketObject) (sender, receiver) -> {
                 try {
                     ((CommonGoalView) receiver).update(o, evt);
-                }catch (ClassCastException e){
+                } catch (ClassCastException e) {
                     throw new RemoteException("Socket object not usable");
                 }
             });
@@ -38,11 +37,11 @@ public class ServerSocketHandler extends SocketHandler<ServerInterface> implemen
 
     @Override
     public void update(GameInfo o, Game.Event evt) throws RemoteException {
-        try{
-            send((SocketObject) (sender, receiver) -> {
+        try {
+            this.send((SocketObject) (sender, receiver) -> {
                 try {
                     ((GameView) receiver).update(o, evt);
-                }catch (ClassCastException e){
+                } catch (ClassCastException e) {
                     throw new RemoteException("Socket object not usable");
                 }
             });
@@ -53,11 +52,11 @@ public class ServerSocketHandler extends SocketHandler<ServerInterface> implemen
 
     @Override
     public void update(LivingRoomInfo o, LivingRoom.Event evt) throws RemoteException {
-        try{
-            send((SocketObject) (sender,receiver) -> {
-                try{
-                    ((LivingRoomView)receiver).update(o,evt);
-                }catch (ClassCastException e){
+        try {
+            this.send((SocketObject) (sender, receiver) -> {
+                try {
+                    ((LivingRoomView) receiver).update(o, evt);
+                } catch (ClassCastException e) {
                     throw new RemoteException("Socket object not usable");
                 }
             });
@@ -68,11 +67,11 @@ public class ServerSocketHandler extends SocketHandler<ServerInterface> implemen
 
     @Override
     public void update(PersonalGoalInfo o, PersonalGoal.Event evt) throws RemoteException {
-        try{
-            send((SocketObject) (sender,receiver) -> {
-                try{
+        try {
+            this.send((SocketObject) (sender, receiver) -> {
+                try {
                     ((PersonalGoalView) receiver).update(o, evt);
-                }catch (ClassCastException e){
+                } catch (ClassCastException e) {
                     throw new RemoteException("Socket object not usable");
                 }
             });
@@ -83,11 +82,11 @@ public class ServerSocketHandler extends SocketHandler<ServerInterface> implemen
 
     @Override
     public void update(PlayerChatInfo o, PlayerChat.Event evt) throws RemoteException {
-        try{
-            send((SocketObject) (sender,receiver) -> {
-                try{
+        try {
+            this.send((SocketObject) (sender, receiver) -> {
+                try {
                     ((PlayerChatView) receiver).update(o, evt);
-                }catch (ClassCastException e){
+                } catch (ClassCastException e) {
                     throw new RemoteException("Socket object not usable");
                 }
             });
@@ -98,11 +97,11 @@ public class ServerSocketHandler extends SocketHandler<ServerInterface> implemen
 
     @Override
     public void update(ShelfInfo o, Shelf.Event evt) throws RemoteException {
-        try{
-            send((SocketObject) (sender,receiver) -> {
-                try{
-                    ((ShelfView)receiver).update(o, evt);
-                }catch (ClassCastException e){
+        try {
+            this.send((SocketObject) (sender, receiver) -> {
+                try {
+                    ((ShelfView) receiver).update(o, evt);
+                } catch (ClassCastException e) {
                     throw new RemoteException("Socket object not usable");
                 }
             });
@@ -113,11 +112,11 @@ public class ServerSocketHandler extends SocketHandler<ServerInterface> implemen
 
     @Override
     public void update(UserInfo o, User.Event evt) throws RemoteException {
-        try{
-            send((SocketObject) (sender, receiver) -> {
-                try{
+        try {
+            this.send((SocketObject) (sender, receiver) -> {
+                try {
                     ((UserView) receiver).update(o, evt);
-                }catch (ClassCastException e){
+                } catch (ClassCastException e) {
                     throw new RemoteException("Socket object not usable");
                 }
             });
@@ -128,11 +127,11 @@ public class ServerSocketHandler extends SocketHandler<ServerInterface> implemen
 
     @Override
     public void update(PlayerInfo o, Player.Event evt) throws RemoteException {
-        try{
-            send((SocketObject) (sender, receiver) -> {
-                try{
+        try {
+            this.send((SocketObject) (sender, receiver) -> {
+                try {
                     ((PlayerView) receiver).update(o, evt);
-                }catch (ClassCastException e){
+                } catch (ClassCastException e) {
                     throw new RemoteException("Socket object not usable");
                 }
             });
@@ -143,11 +142,11 @@ public class ServerSocketHandler extends SocketHandler<ServerInterface> implemen
 
     @Override
     public void bind(ServerInterface server) throws RemoteException {
-        try{
-            send((SocketObject) (sender, receiver) -> {
-                try{
+        try {
+            this.send((SocketObject) (sender, receiver) -> {
+                try {
                     ((Binder) receiver).bind(null);
-                }catch (ClassCastException e){
+                } catch (ClassCastException e) {
                     throw new RemoteException("Socket object not usable");
                 }
             });
@@ -155,22 +154,21 @@ public class ServerSocketHandler extends SocketHandler<ServerInterface> implemen
             throw new RemoteException("Unable to send the socket object");
         }
 
-        while(true){
-            waitForReceive(server);
+        while (true) {
+            this.waitForReceive(server);
         }
     }
 
     @Override
     public void ping() throws RemoteException {
         try {
-            send((SocketObject) (sender, receiver) -> {
+            this.send((SocketObject) (sender, receiver) -> {
                 try {
                     ((ClientEndPoint) receiver).ping();
                 } catch (ClassCastException e) {
                     throw new RemoteException("Socket object not usable");
                 }
             });
-            System.out.println("ping");
         } catch (IOException e) {
             throw new RemoteException("Unable to send the socket object");
         }

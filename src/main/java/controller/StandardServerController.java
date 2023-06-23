@@ -16,7 +16,6 @@ import model.exceptions.GameAlreadyExistsException;
 import model.exceptions.GameNotExistsException;
 import modelView.LoginInfo;
 import modelView.NewGameInfo;
-import org.jetbrains.annotations.NotNull;
 import util.Observer;
 
 import java.rmi.RemoteException;
@@ -37,22 +36,23 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
     /**
      * The association between a client and a user on the server, it is assumed that only well authenticated clients has a user association
      */
-    private final @NotNull Map<ClientInterface, User> users;
+    private final Map<ClientInterface, User> users;
     /**
      * The association between a user and the lobby it has joined
      */
-    private final @NotNull Map<User, LobbyController> activeUsers;
+    private final Map<User, LobbyController> activeUsers;
     /**
      * The association between a lobby and his ID
      */
-    private final Map<String,LobbyController> lobbies;
+    private final Map<String, LobbyController> lobbies;
     /**
      * The association between a lobby and the corresponding game controller
      */
-    private final Map<LobbyController,GameController> gameControllers;
+    private final Map<LobbyController, GameController> gameControllers;
 
     /**
      * This constructor build an instance with no lobbies, game controller, users and active users
+     *
      * @throws RemoteException If an error occurred on remote object construction or export
      */
     public StandardServerController() throws RemoteException {
@@ -67,12 +67,13 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
 
     /**
      * {@inheritDoc}
+     *
      * @param client {@inheritDoc}
      * @return a {@link ServerEndpoint} that represents client on the server side
      * @throws RemoteException {@inheritDoc}
      */
     @Override
-    public @NotNull ServerInterface connect(@NotNull ClientInterface client) throws RemoteException {
+    public ServerInterface connect(ClientInterface client) throws RemoteException {
         // Generate a User for the client
         User user = new User();
         // start ping thread
@@ -84,7 +85,7 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
                 } catch (InterruptedException | RemoteException e) {
                     System.err.println("ping failed");
                     try {
-                        disconnect(client);
+                        this.disconnect(client);
                     } catch (RemoteException ex) {
                         System.err.println("Error while disconnecting client");
                     }
@@ -94,7 +95,7 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
         }).start();
         user.addObserver(new Observer<User, User.Event>() {
             @Override
-            public void update(@NotNull User o, User.Event arg) {
+            public void update(User o, User.Event arg) {
                 try {
                     client.update(o.getInfo(), arg);
                 } catch (RemoteException e) {
@@ -119,20 +120,21 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
             }
         });
 
-        System.out.println("CLIENT CONNECTED, connected users: "+users.size());
+        System.out.println("CLIENT CONNECTED, connected users: " + this.users.size());
 
         return server;
     }
 
     /**
      * {@inheritDoc}
+     *
      * @param client {@inheritDoc}
      * @throws RemoteException If an error occurred reaching the remote object
      */
     @Override
     public void disconnect(ClientInterface client) throws RemoteException {
         // Checks if the client has been authenticated
-        if(!this.users.containsKey(client))
+        if (!this.users.containsKey(client))
             System.err.println("ServerController: Command from unauthenticated client");
         else {
             try {
@@ -144,7 +146,7 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
             User user = this.users.remove(client);
             user.deleteObservers();
 
-            System.out.println("CLIENT DISCONNECTED, connected user: " + users.size());
+            System.out.println("CLIENT DISCONNECTED, connected user: " + this.users.size());
         }
     }
 
@@ -152,14 +154,15 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
 
     /**
      * {@inheritDoc}
+     *
      * @param client The client asking to join
-     * @param info The join-info
+     * @param info   The join-info
      * @throws RemoteException {@inheritDoc}
      */
     @Override
-    public void joinGame(@NotNull ClientInterface client, @NotNull LoginInfo info) throws RemoteException {
+    public void joinGame(ClientInterface client, LoginInfo info) throws RemoteException {
         // Checks if the client has been authenticated
-        if(!this.users.containsKey(client))
+        if (!this.users.containsKey(client))
             System.err.println("ServerController: Command from unauthenticated client");
         else {
             // Get User associated with the client
@@ -192,44 +195,46 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
 
     /**
      * {@inheritDoc}
+     *
      * @param client The client asking to leave
      * @throws RemoteException {@inheritDoc}
      */
     @Override
     public void leaveGame(ClientInterface client) throws RemoteException {
         // Check if client has been authenticated
-        if(!this.users.containsKey(client))
+        if (!this.users.containsKey(client))
             System.err.println("ServerController: Command from unauthenticated client");
         else {
-            User user = users.get(client);
+            User user = this.users.get(client);
             try {
                 // Try lo let client leave the game is it into
-                activeUsers.remove(user).leavePlayer(client);
+                this.activeUsers.remove(user).leavePlayer(client);
             } catch (NullPointerException | GameAccessDeniedException e) {
-                user.reportEvent(User.Status.NOT_JOINED,"Client is not connected to any game", User.Event.GAME_LEAVED);
+                user.reportEvent(User.Status.NOT_JOINED, "Client is not connected to any game", User.Event.GAME_LEAVED);
             }
         }
     }
 
     /**
      * {@inheritDoc}
-     * @param client The client asking to create the game
+     *
+     * @param client   The client asking to create the game
      * @param gameInfo The new-game info
      * @throws RemoteException {@inheritDoc}
      */
     @Override
-    public void createGame(ClientInterface client, @NotNull NewGameInfo gameInfo) throws RemoteException {
-        if(!this.users.containsKey(client))
+    public void createGame(ClientInterface client, NewGameInfo gameInfo) throws RemoteException {
+        if (!this.users.containsKey(client))
             System.err.println("ServerController: Command from unauthenticated client");
         else
             try {
-                createGame(gameInfo);
+                this.createGame(gameInfo);
 
-                users.get(client).reportEvent(User.Status.NOT_JOINED, "Game created",  User.Event.GAME_CREATED, gameInfo.sessionID());
+                this.users.get(client).reportEvent(User.Status.NOT_JOINED, "Game created", User.Event.GAME_CREATED, gameInfo.sessionID());
 
                 System.out.println("GAME CREATED: " + gameInfo.gameId());
             } catch (GameAlreadyExistsException | IllegalArgumentException e) {
-                users.get(client).reportEvent(User.Status.NOT_JOINED, e.getMessage(), User.Event.ERROR_REPORTED, gameInfo.sessionID());
+                this.users.get(client).reportEvent(User.Status.NOT_JOINED, e.getMessage(), User.Event.ERROR_REPORTED, gameInfo.sessionID());
             }
     }
 
@@ -237,6 +242,7 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
 
     /**
      * {@inheritDoc}
+     *
      * @param gameId the ID of the game
      * @return the {@link GameController} associated with the {@link LobbyController} associated with the given gameID
      * @throws GameNotExistsException if there is not {@link LobbyController} associated with the given gameID
@@ -251,13 +257,14 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
 
     /**
      * {@inheritDoc}
+     *
      * @param newGameInfo the new-game info that needs to be used
      * @throws GameAlreadyExistsException If there is already a {@link LobbyController} associated with the given gameID
-     * @throws IllegalArgumentException If {@link GameBuilder} couldn't build a game on given new-game info
+     * @throws IllegalArgumentException   If {@link GameBuilder} couldn't build a game on given new-game info
      */
     @Override
     public void createGame(NewGameInfo newGameInfo) throws GameAlreadyExistsException, IllegalArgumentException {
-        if (lobbies.containsKey(newGameInfo.gameId()))
+        if (this.lobbies.containsKey(newGameInfo.gameId()))
             throw new GameAlreadyExistsException();
 
         Game newGame = GameBuilder.build(newGameInfo);
@@ -265,13 +272,13 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
         StandardGameController controller = new StandardGameController(
                 newGame,
                 lobbyController -> {
-                        lobbies.remove(newGameInfo.gameId());
-                        gameControllers.remove(lobbyController);
-                        System.out.println("GAME DELETED : "+newGameInfo.gameId());
+                    this.lobbies.remove(newGameInfo.gameId());
+                    this.gameControllers.remove(lobbyController);
+                    System.out.println("GAME DELETED : " + newGameInfo.gameId());
                 }
         );
 
-        lobbies.put(newGameInfo.gameId(), controller);
-        gameControllers.put(controller,controller);
+        this.lobbies.put(newGameInfo.gameId(), controller);
+        this.gameControllers.put(controller, controller);
     }
 }

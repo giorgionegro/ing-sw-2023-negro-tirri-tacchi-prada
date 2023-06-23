@@ -5,9 +5,11 @@ import model.abstractModel.Player;
 import model.abstractModel.PlayerChat;
 import model.abstractModel.Shelf;
 import modelView.PlayerInfo;
-import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This class is an implementation of Player.
@@ -19,11 +21,11 @@ public class StandardPlayer extends Player {
     /**
      * shelf of the player (2D array of tiles)
      */
-    private final @NotNull Shelf shelf;
+    private final Shelf shelf;
     /**
      * personal goals of the player (list of personal goals)
      */
-    private final @NotNull List<PersonalGoal> personalGoal;
+    private final List<PersonalGoal> personalGoal;
 
     /**
      * common goals of the player (map of common goals descriptions and tokens)
@@ -33,7 +35,7 @@ public class StandardPlayer extends Player {
     /**
      * chat of the player
      */
-    private final @NotNull PlayerChat chat;
+    private final PlayerChat chat;
 
     /**
      * last error the player reported during gameplay
@@ -43,11 +45,13 @@ public class StandardPlayer extends Player {
 
     /**
      * Constructor of a new Player with no achieved common goal and initialized with the given shelf, chat and personal goals,
-     * @param shelf the player shelf
+     *
+     * @param shelf        the player shelf
      * @param personalGoal personal goals of the player
-     * @param chat the player chat
+     * @param chat         the player chat
      */
-    public StandardPlayer(@NotNull Shelf shelf, @NotNull List<PersonalGoal> personalGoal, @NotNull PlayerChat chat){
+    public StandardPlayer(Shelf shelf, List<PersonalGoal> personalGoal, PlayerChat chat) {
+        super();
         this.shelf = shelf;
         this.personalGoal = new ArrayList<>(personalGoal);
         this.achievedCommonGoals = new HashMap<>();
@@ -56,74 +60,84 @@ public class StandardPlayer extends Player {
 
     /**
      * {@inheritDoc}
+     *
      * @return a copy of {@link #shelf}
      */
     @Override
-    public @NotNull Shelf getShelf() {
-        return shelf;
+    public Shelf getShelf() {
+        return this.shelf;
     }
 
     /**
      * {@inheritDoc}
+     *
      * @return a copy of {@link #personalGoal}
      */
     @Override
-    public @NotNull List<PersonalGoal> getPersonalGoals() {
-        return new ArrayList<>(personalGoal);
+    public List<PersonalGoal> getPersonalGoals() {
+        return new ArrayList<>(this.personalGoal);
     }
 
     /**
      * {@inheritDoc}
+     *
      * @return {@link #chat}
      */
     @Override
-    public @NotNull PlayerChat getPlayerChat() {
-        return chat;
+    public PlayerChat getPlayerChat() {
+        return this.chat;
     }
 
     /**
      * {@inheritDoc}
+     *
      * @return a copy of {@link #achievedCommonGoals}
      */
-    public @NotNull Map<String,Token> getAchievedCommonGoals(){ return new HashMap<>(achievedCommonGoals);}
-
-    /**
-     * {@inheritDoc}
-     * @param description the common goal description
-     * @param token the token won by achieving the common goal
-     */
-    public void addAchievedCommonGoal(String description, Token token){
-        achievedCommonGoals.put(description, token);
-        setChanged();
-        notifyObservers(Event.COMMONGOAL_ACHIEVED);
+    public Map<String, Token> getAchievedCommonGoals() {
+        return new HashMap<>(this.achievedCommonGoals);
     }
 
     /**
      * {@inheritDoc}
+     *
+     * @param description the common goal description
+     * @param token       the token won by achieving the common goal
+     */
+    public void addAchievedCommonGoal(String description, Token token) {
+        this.achievedCommonGoals.put(description, token);
+        this.setChanged();
+        this.notifyObservers(Event.COMMONGOAL_ACHIEVED);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
      * @param error the error description
      */
     @Override
-    public void reportError(String error){
+    public void reportError(String error) {
         this.errorReport = error;
-        setChanged();
-        notifyObservers(Event.ERROR_REPORTED);
+        this.setChanged();
+        this.notifyObservers(Event.ERROR_REPORTED);
     }
 
     /**
      * {@inheritDoc}
+     *
      * @return {@link #errorReport}
      */
     @Override
     public String getReportedError() {
-        return errorReport;
+        return this.errorReport;
     }
 
     /**
      * {@inheritDoc}
+     *
      * @return A {@link PlayerInfo} representing this object instance
      */
     @Override
-    public @NotNull PlayerInfo getInfo(){
-        return new PlayerInfo(errorReport, new HashMap<>(achievedCommonGoals));
+    public PlayerInfo getInfo() {
+        return new PlayerInfo(this.errorReport, new HashMap<>(this.achievedCommonGoals));
     }
 }
