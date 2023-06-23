@@ -11,12 +11,14 @@ import java.util.Map;
 public class Client {
     private static final String UItype = "TUI";
     private static final String DEFAULT_hostIp = "localhost";
+    private static final String DEFAULT_clientIp = "localhost";
     private static final int DEFAULT_RMIhostPort = Registry.REGISTRY_PORT;
     private static final int DEFAULT_SOCKEThostPort = 10101;
 
     private static final Map<String, String> parameters = new HashMap<>() {{
         put("-ui", UItype);
-        put("-ip", DEFAULT_hostIp);
+        put("-hip", DEFAULT_hostIp);
+        put("-cip", DEFAULT_clientIp);
         put("-rP", String.valueOf(DEFAULT_RMIhostPort));
         put("-sP", String.valueOf(DEFAULT_SOCKEThostPort));
     }};
@@ -43,7 +45,8 @@ public class Client {
                     "\t(Default = " + UItype + ")\n" +
                     "\t\tTUI for Textual User Interface\n" +
                     "\t\tGUI for Graphical User Interface\n" +
-                    "-ip -> specifies host Ip\n\t(Default = " + DEFAULT_hostIp + ")\n" +
+                    "-hip -> specifies host Ip\n\t(Default = " + DEFAULT_hostIp + ")\n" +
+                    "-cip -> specifies client RMI Ip\n\t(Default = " + DEFAULT_clientIp + ")\n" +
                     "-rP -> specifies host RMI port\n\t(Default = " + DEFAULT_RMIhostPort + ")\n" +
                     "-rP -> specifies host SOCKET port\n\t(Default = " + DEFAULT_SOCKEThostPort + ")\n" +
                     "-h -> show this message");
@@ -76,6 +79,8 @@ public class Client {
             }
         }
 
-        new ViewLogic(appGraphics, parameters.get("-ip"), RMIhostPort, SockethostPort).run();
+        System.setProperty("java.rmi.server.hostname",parameters.get("-cip"));
+
+        new ViewLogic(appGraphics, parameters.get("-hip"), RMIhostPort, SockethostPort).run();
     }
 }
