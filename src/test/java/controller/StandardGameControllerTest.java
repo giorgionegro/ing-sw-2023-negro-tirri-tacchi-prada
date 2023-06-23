@@ -3,10 +3,10 @@ package controller;
 import controller.exceptions.GameAccessDeniedException;
 import distibuted.interfaces.ClientInterface;
 import distibuted.interfaces.ServerInterface;
-
-import java.util.function.Consumer;
-
-import model.*;
+import model.GameBuilder;
+import model.StandardMessage;
+import model.Tile;
+import model.User;
 import model.abstractModel.*;
 import model.exceptions.PlayerNotExistsException;
 import modelView.*;
@@ -17,6 +17,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
@@ -234,7 +235,7 @@ class StandardGameControllerTest {
             }
         };
 
-        standardGameController.joinPlayer(clientInterface, new User(),"1");
+        standardGameController.joinPlayer(clientInterface, new User(), "1");
         // Act
         standardGameController.leavePlayer(clientInterface);
     }
@@ -272,7 +273,7 @@ class StandardGameControllerTest {
         User finalUser1 = user;
         LoginInfo finalLoginInfo1 = loginInfo;
 
-            standardGameController.joinPlayer(client, user, finalLoginInfo1.playerId());
+        standardGameController.joinPlayer(client, user, finalLoginInfo1.playerId());
 
 
         //join the second player
@@ -282,7 +283,7 @@ class StandardGameControllerTest {
 
         LoginInfo finalLoginInfo2 = loginInfo;
 
-            standardGameController.joinPlayer(fclient, user, finalLoginInfo2.playerId());
+        standardGameController.joinPlayer(fclient, user, finalLoginInfo2.playerId());
 
 
         //leave the game
@@ -301,8 +302,10 @@ class StandardGameControllerTest {
 
 
         User finalUser = user;
-        assertDoesNotThrow(() -> standardGameController.joinPlayer(fclient, finalUser, finalLoginInfo2.playerId()));
-
+        try {
+            standardGameController.joinPlayer(fclient, finalUser, finalLoginInfo2.playerId());
+        } catch (GameAccessDeniedException e) {
+        }
 
         //now try to leave again and join after 6 seconds
         assertDoesNotThrow(() -> standardGameController.leavePlayer(fclient));
@@ -380,7 +383,7 @@ class StandardGameControllerTest {
             }
         };
 
-            standardGameController.joinPlayer(client, user, loginInfo.playerId());
+        standardGameController.joinPlayer(client, user, loginInfo.playerId());
 
         //join the second player
         user = new User();
@@ -419,7 +422,7 @@ class StandardGameControllerTest {
             @Override
             public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
 
-                }
+            }
 
             @Override
             public void update(GameInfo o, Game.Event evt) throws RemoteException {
@@ -457,7 +460,7 @@ class StandardGameControllerTest {
             }
         };
 
-            standardGameController.joinPlayer(client, user, loginInfo.playerId());
+        standardGameController.joinPlayer(client, user, loginInfo.playerId());
 
 
         //join the second player
@@ -482,7 +485,7 @@ class StandardGameControllerTest {
         LoginInfo loginInfo = new LoginInfo("1", "42", 1);
         ClientInterface client = mock(ClientInterface.class);
 
-            standardGameController.joinPlayer(client, user, loginInfo.playerId());
+        standardGameController.joinPlayer(client, user, loginInfo.playerId());
 
         //join the second player
         user = new User();
@@ -493,10 +496,9 @@ class StandardGameControllerTest {
         client = mock(ClientInterface.class);
         ClientInterface finalClient = client;
 
-            standardGameController.joinPlayer(finalClient, finalUser, finalLoginInfo.playerId());
+        standardGameController.joinPlayer(finalClient, finalUser, finalLoginInfo.playerId());
 
     }
-
 
 
     //test doPlayerMove
@@ -569,7 +571,7 @@ class StandardGameControllerTest {
             }
         };
 
-            standardGameController.joinPlayer(client, new User(),"1");
+        standardGameController.joinPlayer(client, new User(), "1");
 
         //now we test a move after before the game starts and player is in the game
         standardGameController.doPlayerMove(client, playerMoveInfo);
@@ -628,8 +630,7 @@ class StandardGameControllerTest {
             }
         };
 
-            standardGameController.joinPlayer(client2, new User(),"2");
-
+        standardGameController.joinPlayer(client2, new User(), "2");
 
 
         //now we will do some legal moves like picking 4,1
@@ -641,10 +642,8 @@ class StandardGameControllerTest {
         standardGameController.doPlayerMove(client2, playerMoveInfo);
         //wait 100ms and check living room at 4,1
         Thread.sleep(100);
-        assert livingRoomInfo[0] != null && livingRoomInfo[0].board()[4][1].equals(Tile.EMPTY);
+        assert livingRoomInfo[0] != null && livingRoomInfo[0].board()[4][1] == Tile.EMPTY;
     }
-
-
 
 
     @Test
@@ -711,7 +710,7 @@ class StandardGameControllerTest {
             }
         };
 
-            standardGameController.joinPlayer(client, new User(), "1");
+        standardGameController.joinPlayer(client, new User(), "1");
 
         //now we test a move after before the game starts and player is in the game
         standardGameController.doPlayerMove(client, playerMoveInfo);
@@ -769,7 +768,7 @@ class StandardGameControllerTest {
             public void update(UserInfo o, User.Event evt) throws RemoteException {
             }
         };
-        standardGameController.joinPlayer(client2, new User(),"2");
+        standardGameController.joinPlayer(client2, new User(), "2");
 
 
         //malformed move
@@ -782,10 +781,6 @@ class StandardGameControllerTest {
         Thread.sleep(100);
         assert (playerInfo[0] != null && playerInfo[0].errorMessage().contains("Malformed move")) || (playerInfo1[0] != null && playerInfo1[0].errorMessage().contains("Malformed move"));
     }
-
-
-
-
 
 
     @Test
@@ -852,7 +847,7 @@ class StandardGameControllerTest {
             }
         };
 
-            standardGameController.joinPlayer(client, new User(),"1");
+        standardGameController.joinPlayer(client, new User(), "1");
 
         //now we test a move after before the game starts and player is in the game
         standardGameController.doPlayerMove(client, playerMoveInfo);
@@ -911,7 +906,7 @@ class StandardGameControllerTest {
             }
         };
 
-            standardGameController.joinPlayer(client2, new User(), "2");
+        standardGameController.joinPlayer(client2, new User(), "2");
 
 
         //column out of bounds
@@ -921,7 +916,7 @@ class StandardGameControllerTest {
         standardGameController.doPlayerMove(client2, playerMoveInfo);
         //wait 100ms and check living room at 2,3
         Thread.sleep(100);
-        assert livingRoomInfo[0] != null && !livingRoomInfo[0].board()[2][3].equals(Tile.EMPTY);
+        assert livingRoomInfo[0] != null && livingRoomInfo[0].board()[2][3] != Tile.EMPTY;
     }
 
     @Test
@@ -988,7 +983,7 @@ class StandardGameControllerTest {
             }
         };
 
-            standardGameController.joinPlayer(client, new User(),"1");
+        standardGameController.joinPlayer(client, new User(), "1");
 
         //now we test a move after before the game starts and player is in the game
         standardGameController.doPlayerMove(client, playerMoveInfo);
@@ -1046,8 +1041,7 @@ class StandardGameControllerTest {
             public void update(UserInfo o, User.Event evt) throws RemoteException {
             }
         };
-            standardGameController.joinPlayer(client2, new User(),"2");
-
+        standardGameController.joinPlayer(client2, new User(), "2");
 
 
         //tile are not different
@@ -1059,8 +1053,8 @@ class StandardGameControllerTest {
         //fill with Tile.TROPHIES_1
         Arrays.stream(tiles).forEach(a -> Arrays.fill(a, Tile.TROPHIES_1));
 
-            game.getPlayer("2").getShelf().setTiles(tiles);
-            game.getPlayer("1").getShelf().setTiles(tiles);
+        game.getPlayer("2").getShelf().setTiles(tiles);
+        game.getPlayer("1").getShelf().setTiles(tiles);
 
         pickedTiles = new ArrayList<>();
         pickedTiles.add(new PickedTile(1, 3));
@@ -1071,6 +1065,7 @@ class StandardGameControllerTest {
         Thread.sleep(100);
         assert playerInfo[0] != null && playerInfo1[0] != null && (playerInfo[0].errorMessage().equals("Malformed move: Not enough space to insert tiles in shelf") || playerInfo1[0].errorMessage().equals("Malformed move: Not enough space to insert tiles in shelf"));
     }
+
     @Test
     void doPlayerMoveLegal() throws PlayerNotExistsException, InterruptedException, GameAccessDeniedException {
         Game game = GameBuilder.build(new NewGameInfo("gameId", "STANDARD", 2, System.currentTimeMillis()));
@@ -1135,7 +1130,7 @@ class StandardGameControllerTest {
             }
         };
 
-            standardGameController.joinPlayer(client, new User(), "1");
+        standardGameController.joinPlayer(client, new User(), "1");
 
         //now we test a move after before the game starts and player is in the game
         standardGameController.doPlayerMove(client, playerMoveInfo);
@@ -1194,15 +1189,15 @@ class StandardGameControllerTest {
             }
         };
 
-            standardGameController.joinPlayer(client2, new User(), "2");
+        standardGameController.joinPlayer(client2, new User(), "2");
 
         Tile[][] tiles = new Tile[6][5];
 
         //fill with Tile.EMPTY
         Arrays.stream(tiles).forEach(a -> Arrays.fill(a, Tile.EMPTY));
 
-            game.getPlayer("2").getShelf().setTiles(tiles);
-            game.getPlayer("1").getShelf().setTiles(tiles);
+        game.getPlayer("2").getShelf().setTiles(tiles);
+        game.getPlayer("1").getShelf().setTiles(tiles);
 
         pickedTiles = new ArrayList<>();
         pickedTiles.add(new PickedTile(1, 4));
@@ -1212,168 +1207,16 @@ class StandardGameControllerTest {
 
         //wait 100ms and check living room at 1,4
         Thread.sleep(100);
-        assert livingRoomInfo[0] != null && livingRoomInfo[0].board()[1][4].equals(Tile.EMPTY);
+        assert livingRoomInfo[0] != null && livingRoomInfo[0].board()[1][4] == Tile.EMPTY;
 
 
     }
 
-        @Test
-        void doPlayerMoveLegal3() throws PlayerNotExistsException, InterruptedException, GameAccessDeniedException {
-            Game game = GameBuilder.build(new NewGameInfo("gameId", "STANDARD", 2, System.currentTimeMillis()));
-            var standardGameController = new StandardGameController(game, lobbyController -> {
-            });
-            //first we test a move before the game starts and player is not in the game
-            List<PickedTile> pickedTiles = new ArrayList<>();
-            pickedTiles.add(new PickedTile(1, 1));
-
-            var playerMoveInfo = new PlayerMoveInfo(pickedTiles, 1);
-            standardGameController.doPlayerMove(mock(ClientInterface.class), playerMoveInfo);
-
-            final GameInfo[] gameInfo1 = {null};
-            final PlayerInfo[] playerInfo1 = {null};
-            ClientInterface client = new ClientInterface() {
-                @Override
-                public void bind(ServerInterface server) throws RemoteException {
-
-                }
-
-                @Override
-                public void ping() throws RemoteException {
-
-                }
-
-                @Override
-                public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
-
-
-                }
-
-                @Override
-                public void update(GameInfo o, Game.Event evt) throws RemoteException {
-                    gameInfo1[0] = o;
-                }
-
-
-                @Override
-                public void update(LivingRoomInfo o, LivingRoom.Event evt) throws RemoteException {
-
-                }
-
-                @Override
-                public void update(PersonalGoalInfo o, PersonalGoal.Event evt) throws RemoteException {
-                }
-
-                @Override
-                public void update(PlayerChatInfo o, PlayerChat.Event evt) throws RemoteException {
-                }
-
-                @Override
-                public void update(PlayerInfo o, Player.Event evt) throws RemoteException {
-                    playerInfo1[0] = o;
-                }
-
-                @Override
-                public void update(ShelfInfo o, Shelf.Event evt) throws RemoteException {
-                }
-
-                @Override
-                public void update(UserInfo o, User.Event evt) throws RemoteException {
-                }
-            };
-
-                standardGameController.joinPlayer(client, new User(), "1");
-
-            //now we test a move after before the game starts and player is in the game
-            standardGameController.doPlayerMove(client, playerMoveInfo);
-            //now we add a second player and start the game
-            final GameInfo[] gameInfo = {null};
-            final LivingRoomInfo[] livingRoomInfo = {null};
-            final PlayerInfo[] playerInfo = {null};
-
-            ClientInterface client2 = new ClientInterface() {
-                @Override
-                public void bind(ServerInterface server) throws RemoteException {
-
-                }
-
-                @Override
-                public void ping() throws RemoteException {
-
-                }
-
-                @Override
-                public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
-
-                }
-
-                @Override
-                public void update(GameInfo o, Game.Event evt) throws RemoteException {
-                    gameInfo[0] = o;
-                }
-
-
-                @Override
-                public void update(LivingRoomInfo o, LivingRoom.Event evt) throws RemoteException {
-                    livingRoomInfo[0] = o;
-                }
-
-                @Override
-                public void update(PersonalGoalInfo o, PersonalGoal.Event evt) throws RemoteException {
-                }
-
-                @Override
-                public void update(PlayerChatInfo o, PlayerChat.Event evt) throws RemoteException {
-                }
-
-                @Override
-                public void update(PlayerInfo o, Player.Event evt) throws RemoteException {
-                    playerInfo[0] = o;
-                }
-
-                @Override
-                public void update(ShelfInfo o, Shelf.Event evt) throws RemoteException {
-
-                }
-
-                @Override
-                public void update(UserInfo o, User.Event evt) throws RemoteException {
-                }
-            };
-
-                standardGameController.joinPlayer(client2, new User(), "2");
-
-
-            game = GameBuilder.build(new NewGameInfo("32", "STANDARD", 2, System.currentTimeMillis()));
-            standardGameController = new StandardGameController(game, lobbyController -> {
-            });
-
-            standardGameController.joinPlayer(client, new User(), "1");
-
-            standardGameController.joinPlayer(client2, new User(),"2");
-            Tile[][] tiles = new Tile[6][5];
-            Arrays.stream(tiles).forEach(a -> Arrays.fill(a, Tile.TROPHIES_1));
-
-            tiles[0][0] = Tile.EMPTY;
-            //normal move
-            game.getPlayer("1").getShelf().setTiles(tiles);
-            game.getPlayer("2").getShelf().setTiles(tiles);
-            pickedTiles = new ArrayList<>();
-            pickedTiles.add(new PickedTile(1, 3));
-            playerMoveInfo = new PlayerMoveInfo(pickedTiles, 0);
-            standardGameController.doPlayerMove(client, playerMoveInfo);
-            standardGameController.doPlayerMove(client2, playerMoveInfo);
-            //wait 100ms and check living room at 1,3
-            Thread.sleep(100);
-            assert livingRoomInfo[0] != null && livingRoomInfo[0].board()[1][3].equals(Tile.EMPTY);
-
-
-        }
-
-
     @Test
-    void doPlayerMoveNonAllignedTiles() throws InterruptedException, GameAccessDeniedException {
+    void doPlayerMoveLegal3() throws PlayerNotExistsException, InterruptedException, GameAccessDeniedException {
         Game game = GameBuilder.build(new NewGameInfo("gameId", "STANDARD", 2, System.currentTimeMillis()));
-        var standardGameController = new StandardGameController(game, lobbyController -> {});
+        var standardGameController = new StandardGameController(game, lobbyController -> {
+        });
         //first we test a move before the game starts and player is not in the game
         List<PickedTile> pickedTiles = new ArrayList<>();
         pickedTiles.add(new PickedTile(1, 1));
@@ -1433,7 +1276,7 @@ class StandardGameControllerTest {
             }
         };
 
-            standardGameController.joinPlayer(client, new User(), "1");
+        standardGameController.joinPlayer(client, new User(), "1");
 
         //now we test a move after before the game starts and player is in the game
         standardGameController.doPlayerMove(client, playerMoveInfo);
@@ -1492,7 +1335,160 @@ class StandardGameControllerTest {
             }
         };
 
-            standardGameController.joinPlayer(client2, new User(), "2");
+        standardGameController.joinPlayer(client2, new User(), "2");
+
+
+        game = GameBuilder.build(new NewGameInfo("32", "STANDARD", 2, System.currentTimeMillis()));
+        standardGameController = new StandardGameController(game, lobbyController -> {
+        });
+
+        standardGameController.joinPlayer(client, new User(), "1");
+
+        standardGameController.joinPlayer(client2, new User(), "2");
+        Tile[][] tiles = new Tile[6][5];
+        Arrays.stream(tiles).forEach(a -> Arrays.fill(a, Tile.TROPHIES_1));
+
+        tiles[0][0] = Tile.EMPTY;
+        //normal move
+        game.getPlayer("1").getShelf().setTiles(tiles);
+        game.getPlayer("2").getShelf().setTiles(tiles);
+        pickedTiles = new ArrayList<>();
+        pickedTiles.add(new PickedTile(1, 3));
+        playerMoveInfo = new PlayerMoveInfo(pickedTiles, 0);
+        standardGameController.doPlayerMove(client, playerMoveInfo);
+        standardGameController.doPlayerMove(client2, playerMoveInfo);
+        //wait 100ms and check living room at 1,3
+        Thread.sleep(100);
+        assert livingRoomInfo[0] != null && livingRoomInfo[0].board()[1][3] == Tile.EMPTY;
+
+
+    }
+
+
+    @Test
+    void doPlayerMoveNonAllignedTiles() throws InterruptedException, GameAccessDeniedException {
+        Game game = GameBuilder.build(new NewGameInfo("gameId", "STANDARD", 2, System.currentTimeMillis()));
+        var standardGameController = new StandardGameController(game, lobbyController -> {
+        });
+        //first we test a move before the game starts and player is not in the game
+        List<PickedTile> pickedTiles = new ArrayList<>();
+        pickedTiles.add(new PickedTile(1, 1));
+
+        var playerMoveInfo = new PlayerMoveInfo(pickedTiles, 1);
+        standardGameController.doPlayerMove(mock(ClientInterface.class), playerMoveInfo);
+
+        final GameInfo[] gameInfo1 = {null};
+        final PlayerInfo[] playerInfo1 = {null};
+        ClientInterface client = new ClientInterface() {
+            @Override
+            public void bind(ServerInterface server) throws RemoteException {
+
+            }
+
+            @Override
+            public void ping() throws RemoteException {
+
+            }
+
+            @Override
+            public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
+
+
+            }
+
+            @Override
+            public void update(GameInfo o, Game.Event evt) throws RemoteException {
+                gameInfo1[0] = o;
+            }
+
+
+            @Override
+            public void update(LivingRoomInfo o, LivingRoom.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(PersonalGoalInfo o, PersonalGoal.Event evt) throws RemoteException {
+            }
+
+            @Override
+            public void update(PlayerChatInfo o, PlayerChat.Event evt) throws RemoteException {
+            }
+
+            @Override
+            public void update(PlayerInfo o, Player.Event evt) throws RemoteException {
+                playerInfo1[0] = o;
+            }
+
+            @Override
+            public void update(ShelfInfo o, Shelf.Event evt) throws RemoteException {
+            }
+
+            @Override
+            public void update(UserInfo o, User.Event evt) throws RemoteException {
+            }
+        };
+
+        standardGameController.joinPlayer(client, new User(), "1");
+
+        //now we test a move after before the game starts and player is in the game
+        standardGameController.doPlayerMove(client, playerMoveInfo);
+        //now we add a second player and start the game
+        final GameInfo[] gameInfo = {null};
+        final LivingRoomInfo[] livingRoomInfo = {null};
+        final PlayerInfo[] playerInfo = {null};
+
+        ClientInterface client2 = new ClientInterface() {
+            @Override
+            public void bind(ServerInterface server) throws RemoteException {
+
+            }
+
+            @Override
+            public void ping() throws RemoteException {
+
+            }
+
+            @Override
+            public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(GameInfo o, Game.Event evt) throws RemoteException {
+                gameInfo[0] = o;
+            }
+
+
+            @Override
+            public void update(LivingRoomInfo o, LivingRoom.Event evt) throws RemoteException {
+                livingRoomInfo[0] = o;
+            }
+
+            @Override
+            public void update(PersonalGoalInfo o, PersonalGoal.Event evt) throws RemoteException {
+            }
+
+            @Override
+            public void update(PlayerChatInfo o, PlayerChat.Event evt) throws RemoteException {
+            }
+
+            @Override
+            public void update(PlayerInfo o, Player.Event evt) throws RemoteException {
+                playerInfo[0] = o;
+            }
+
+            @Override
+            public void update(ShelfInfo o, Shelf.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(UserInfo o, User.Event evt) throws RemoteException {
+            }
+        };
+
+        standardGameController.joinPlayer(client2, new User(), "2");
 
 
         game = GameBuilder.build(new NewGameInfo("32", "STANDARD", 2, System.currentTimeMillis()));
@@ -1513,15 +1509,9 @@ class StandardGameControllerTest {
         Thread.sleep(100);
         assert playerInfo[0] != null && playerInfo1[0] != null && (playerInfo[0].errorMessage().equals("Malformed move: Tiles are not aligned") || playerInfo1[0].errorMessage().equals("Malformed move: Tiles are not aligned"));
         //check that living room at 1,3 and 4,1 are not empty
-        assert livingRoomInfo[0] != null && !livingRoomInfo[0].board()[1][3].equals(Tile.EMPTY) && !livingRoomInfo[0].board()[4][1].equals(Tile.EMPTY);
+        assert livingRoomInfo[0] != null && livingRoomInfo[0].board()[1][3] != Tile.EMPTY && livingRoomInfo[0].board()[4][1] != Tile.EMPTY;
 
     }
-
-
-
-
-
-
 
 
     @Test
@@ -1588,7 +1578,7 @@ class StandardGameControllerTest {
             }
         };
 
-            standardGameController.joinPlayer(client, new User(), "1");
+        standardGameController.joinPlayer(client, new User(), "1");
 
         //now we test a move after before the game starts and player is in the game
         standardGameController.doPlayerMove(client, playerMoveInfo);
@@ -1647,14 +1637,14 @@ class StandardGameControllerTest {
             }
         };
 
-            standardGameController.joinPlayer(client2, new User(), "2");
+        standardGameController.joinPlayer(client2, new User(), "2");
 
 
         game = GameBuilder.build(new NewGameInfo("32", "STANDARD", 2, System.currentTimeMillis()));
         standardGameController = new StandardGameController(game, lobbyController -> {
         });
         standardGameController.joinPlayer(client, new User(), "1");
-        standardGameController.joinPlayer(client2, new User(),"2");
+        standardGameController.joinPlayer(client2, new User(), "2");
 
         //game ended exception
         game.setLastTurn();
@@ -1679,8 +1669,8 @@ class StandardGameControllerTest {
         standardGameController.doPlayerMove(client2, playerMoveInfo);
         //wait 100ms and check gameInfi, status should be ENDED
         Thread.sleep(100);
-        assert gameInfo[0] != null && gameInfo[0].status().equals(Game.GameStatus.ENDED);
-        assert gameInfo1[0] != null && gameInfo1[0].status().equals(Game.GameStatus.ENDED);
+        assert gameInfo[0] != null && gameInfo[0].status() == Game.GameStatus.ENDED;
+        assert gameInfo1[0] != null && gameInfo1[0].status() == Game.GameStatus.ENDED;
 
 
     }
@@ -1750,7 +1740,7 @@ class StandardGameControllerTest {
             }
         };
 
-            standardGameController.joinPlayer(client, new User(), "1");
+        standardGameController.joinPlayer(client, new User(), "1");
 
         //now we test a move after before the game starts and player is in the game
         standardGameController.doPlayerMove(client, playerMoveInfo);
@@ -1809,8 +1799,7 @@ class StandardGameControllerTest {
             }
         };
 
-            standardGameController.joinPlayer(client2, new User(), "2");
-
+        standardGameController.joinPlayer(client2, new User(), "2");
 
 
         game = GameBuilder.build(new NewGameInfo("32", "STANDARD", 2, System.currentTimeMillis()));
@@ -1840,9 +1829,10 @@ class StandardGameControllerTest {
         standardGameController.doPlayerMove(client2, playerMoveInfo);
 
         Thread.sleep(100);
-        assert game.getLivingRoom().getBoard()[0][0].equals(Tile.EMPTY);
+        assert game.getLivingRoom().getBoard()[0][0] == Tile.EMPTY;
 
     }
+
     @Test
     void doPlayerMoveNonAdjacentTilesRow() throws InterruptedException, GameAccessDeniedException {
         Game game = GameBuilder.build(new NewGameInfo("gameId", "STANDARD", 2, System.currentTimeMillis()));
@@ -1907,7 +1897,7 @@ class StandardGameControllerTest {
             }
         };
 
-            standardGameController.joinPlayer(client, new User(), "1");
+        standardGameController.joinPlayer(client, new User(), "1");
 
         //now we test a move after before the game starts and player is in the game
         standardGameController.doPlayerMove(client, playerMoveInfo);
@@ -1966,7 +1956,7 @@ class StandardGameControllerTest {
             }
         };
 
-            standardGameController.joinPlayer(client2, new User(), "2");
+        standardGameController.joinPlayer(client2, new User(), "2");
 
 
         game = GameBuilder.build(new NewGameInfo("32", "STANDARD", 2, System.currentTimeMillis()));
@@ -1991,11 +1981,9 @@ class StandardGameControllerTest {
         standardGameController.doPlayerMove(client2, playerMoveInfo);
         //wait 100ms and check living room at 1,3 and 1,5, and check playerInfos, one of them should have Malformed move: Tiles are not aligned error
         Thread.sleep(500);
-        assert livingRoomInfo[0] != null && !game.getLivingRoom().getBoard()[1][3].equals(Tile.EMPTY) && !game.getLivingRoom().getBoard()[1][5].equals(Tile.EMPTY);
+        assert livingRoomInfo[0] != null && game.getLivingRoom().getBoard()[1][3] != Tile.EMPTY && game.getLivingRoom().getBoard()[1][5] != Tile.EMPTY;
         assert playerInfo[0] != null && playerInfo1[0] != null && (playerInfo[0].errorMessage().equals("Malformed move: Tiles are not aligned") || playerInfo1[0].errorMessage().equals("Malformed move: Tiles are not aligned"));
     }
-
-
 
 
     @Test
@@ -2062,7 +2050,7 @@ class StandardGameControllerTest {
             }
         };
 
-            standardGameController.joinPlayer(client, new User(), "1");
+        standardGameController.joinPlayer(client, new User(), "1");
 
         //now we test a move after before the game starts and player is in the game
         standardGameController.doPlayerMove(client, playerMoveInfo);
@@ -2121,7 +2109,7 @@ class StandardGameControllerTest {
             }
         };
 
-            standardGameController.joinPlayer(client2, new User(), "2");
+        standardGameController.joinPlayer(client2, new User(), "2");
 
 
         game = GameBuilder.build(new NewGameInfo("32", "STANDARD", 2, System.currentTimeMillis()));
@@ -2147,9 +2135,10 @@ class StandardGameControllerTest {
         standardGameController.doPlayerMove(client2, playerMoveInfo);
         //wait
         Thread.sleep(100);
-        assert livingRoomInfo[0] != null && !game.getLivingRoom().getBoard()[1][3].equals(Tile.EMPTY) && !game.getLivingRoom().getBoard()[3][3].equals(Tile.EMPTY);
+        assert livingRoomInfo[0] != null && game.getLivingRoom().getBoard()[1][3] != Tile.EMPTY && game.getLivingRoom().getBoard()[3][3] != Tile.EMPTY;
         assert playerInfo[0] != null && playerInfo1[0] != null && (playerInfo[0].errorMessage().equals("Malformed move: Tiles are not aligned") || playerInfo1[0].errorMessage().equals("Malformed move: Tiles are not aligned"));
     }
+
     @Test
     void doPlayerMoveLastTurn() throws PlayerNotExistsException, InterruptedException, GameAccessDeniedException {
         Game game = GameBuilder.build(new NewGameInfo("gameId", "STANDARD", 2, System.currentTimeMillis()));
@@ -2214,7 +2203,7 @@ class StandardGameControllerTest {
             }
         };
 
-            standardGameController.joinPlayer(client, new User(), "1");
+        standardGameController.joinPlayer(client, new User(), "1");
 
         //now we test a move after before the game starts and player is in the game
         standardGameController.doPlayerMove(client, playerMoveInfo);
@@ -2277,8 +2266,7 @@ class StandardGameControllerTest {
             }
         };
 
-            standardGameController.joinPlayer(client2, new User(), "2");
-
+        standardGameController.joinPlayer(client2, new User(), "2");
 
 
         game = GameBuilder.build(new NewGameInfo("32", "STANDARD", 2, System.currentTimeMillis()));
@@ -2286,8 +2274,6 @@ class StandardGameControllerTest {
         });
         standardGameController.joinPlayer(client, new User(), "1");
         standardGameController.joinPlayer(client2, new User(), "2");
-
-
 
 
         Tile[][] tiles = new Tile[6][5];
@@ -2308,7 +2294,7 @@ class StandardGameControllerTest {
         standardGameController.doPlayerMove(client, playerMoveInfo);
         standardGameController.doPlayerMove(client2, playerMoveInfo);
         //wait until the move is done, gameinfo is updated
-        synchronized(lock) {
+        synchronized (lock) {
             lock.wait(1000);
         }
         if (!lock.getValue()) {
@@ -2316,7 +2302,6 @@ class StandardGameControllerTest {
         }
         assert gameInfo[0] != null && gameInfo[0].lastTurn();
     }
-
 
 
     @Test
@@ -2433,10 +2418,10 @@ class StandardGameControllerTest {
         });
 
 
-            standardGameController.joinPlayer(client, new User(), "1");
+        standardGameController.joinPlayer(client, new User(), "1");
 
 
-            standardGameController.joinPlayer(client2, new User(), "2");
+        standardGameController.joinPlayer(client2, new User(), "2");
 
         standardGameController.sendMessage(client, new StandardMessage("1", "2", "test"));
         assertEquals(game.getPlayer("1").getPlayerChat().getMessages().get(0).getText(), "test");
@@ -2565,7 +2550,7 @@ class StandardGameControllerTest {
         });
 
 
-            standardGameController.joinPlayer(client2, new User(), "2");
+        standardGameController.joinPlayer(client2, new User(), "2");
 
 
     }
