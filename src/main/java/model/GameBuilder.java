@@ -14,6 +14,7 @@ public class GameBuilder {
 
     private GameBuilder(){}
     public static @NotNull Game build(NewGameInfo newGameInfo) throws IllegalArgumentException{
+        //noinspection SwitchStatementWithTooFewBranches
         switch (newGameInfo.type()){
             case "STANDARD" -> {
                 List<Player> avaiablePlayers = new ArrayList<>();

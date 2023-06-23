@@ -28,6 +28,11 @@ public class ClientSocketHandler extends SocketHandler<ClientInterface> implemen
     public synchronized @NotNull ServerInterface connect(ClientInterface client) throws RemoteException {
         super.open();
 
+        //new Thread to check for pings
+        new Thread(()->{
+
+
+        }).start();
         receiverLoop = new Thread(()->{
             try{
                 while(true){

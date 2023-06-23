@@ -82,6 +82,8 @@ public class ViewLogic implements Remote, ViewCollection, ActionListener {
     private final ClientInterface clientEndPoint;
     private long currentSessionTime = -1;
 
+    private final TimedLock<Object> pingWaiter = new TimedLock<>(new Object());
+
     private boolean connected;
     public ViewLogic(AppGraphics appGraphics, String hostIp, int RMIHostPort, int SocketHostPort) throws RemoteException {
         this.hostIp = hostIp;
@@ -90,7 +92,7 @@ public class ViewLogic implements Remote, ViewCollection, ActionListener {
         this.appGraphics = appGraphics;
         this.gameGraphics = appGraphics.getGameGraphics();
         this.appGraphics.setActionListener(this);
-        this.clientEndPoint = new ClientEndPoint(this);
+        this.clientEndPoint = new ClientEndPoint(this,pingWaiter);
         this.connected = false;
     }
 
@@ -127,12 +129,42 @@ public class ViewLogic implements Remote, ViewCollection, ActionListener {
                     this.actionPerformed(new ActionEvent(appGraphics, ROUTE_CONNECT, "Unable to connect: connection timeout"));
                 else {
                     this.connected = true;
+                    //new Thread(this::ping).start();
+                    new Thread(()->{
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
+                        while (true)
+                        {
+                            synchronized (this.pingWaiter){
+                                try {
+                                    pingWaiter.reset();
+                                    this.pingWaiter.wait(2000);
+                                    if (!pingWaiter.hasBeenNotified())
+                                    {
+                                        connected = false;
+                                        serverEndpoint = null;
+                                        server = null;
+                                        this.actionPerformed(new ActionEvent(appGraphics,ROUTE_CONNECT,"Connection lost"));
+                                        break;
+                                    }
+
+
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                    }).start();
                     this.actionPerformed(new ActionEvent(appGraphics, ROUTE_HOME, "Successfully connected"));
                 }
             } catch (RemoteException e) {
                 this.actionPerformed(new ActionEvent(appGraphics,ROUTE_CONNECT,e.getMessage()));
             }
         }
+
     }
 
     private void connectRMI(ClientInterface client) throws RemoteException {

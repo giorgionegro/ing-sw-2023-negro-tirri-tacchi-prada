@@ -5,6 +5,7 @@ import distibuted.interfaces.ServerInterface;
 import model.User;
 import model.abstractModel.*;
 import modelView.*;
+import util.TimedLock;
 import view.interfaces.ViewCollection;
 
 import java.rmi.RemoteException;
@@ -14,8 +15,11 @@ public class ClientEndPoint extends UnicastRemoteObject implements ClientInterfa
 
     private final ViewCollection views;
 
-    public ClientEndPoint(ViewCollection ui) throws RemoteException {
+    private final TimedLock lock;
+
+    public ClientEndPoint(ViewCollection ui,TimedLock<Object> lock) throws RemoteException {
         super();
+        this.lock = lock;
         this.views = ui;
     }
 
@@ -110,6 +114,15 @@ public class ClientEndPoint extends UnicastRemoteObject implements ClientInterfa
         } catch (InterruptedException e) {
             System.err.println("Error on connection binder");
         }
+
+    }
+
+    @Override
+    public void ping() throws RemoteException {
+        synchronized (lock)
+        {
+            System.out.println("Ping received");
+        lock.notify(null);}
     }
 
     private void printError(String from, String message){
@@ -117,4 +130,6 @@ public class ClientEndPoint extends UnicastRemoteObject implements ClientInterfa
             message = " : "+message;
         System.err.print("ClientEndpoint: exception from " + from + message);
     }
+
+
 }

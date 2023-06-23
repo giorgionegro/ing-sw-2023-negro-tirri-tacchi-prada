@@ -1,17 +1,18 @@
 package controller;
 
+import controller.exceptions.GameAccessDeniedException;
 import distibuted.interfaces.ClientInterface;
 import distibuted.interfaces.ServerInterface;
 import model.User;
 import model.abstractModel.*;
 import model.exceptions.GameNotExistsException;
 import modelView.*;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.rmi.RemoteException;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SuppressWarnings("BlockingMethodInNonBlockingContext")
 class StandardServerControllerTest {
@@ -28,6 +29,11 @@ class StandardServerControllerTest {
             @Override
             public void bind(ServerInterface server) throws RemoteException {
                 throw new RemoteException("This method must be called.");
+            }
+
+            @Override
+            public void ping() throws RemoteException {
+
             }
 
             @Override
@@ -81,6 +87,11 @@ class StandardServerControllerTest {
             @Override
             public void bind(ServerInterface server) throws RemoteException {
                 throw new RemoteException("This method must be called.");
+
+            }
+
+            @Override
+            public void ping() throws RemoteException {
 
             }
 
@@ -140,6 +151,11 @@ class StandardServerControllerTest {
         ClientInterface client = new ClientInterface() {
             @Override
             public void bind(ServerInterface server) throws RemoteException {
+            }
+
+            @Override
+            public void ping() throws RemoteException {
+
             }
 
             @Override
@@ -210,6 +226,11 @@ class StandardServerControllerTest {
             }
 
             @Override
+            public void ping() throws RemoteException {
+
+            }
+
+            @Override
             public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
 
             }
@@ -255,10 +276,75 @@ class StandardServerControllerTest {
 
         standardServerController.createGame(client, new NewGameInfo("test", "STANDARD", 2, 2));
 
-        standardServerController.joinGame(client, info);
-        standardServerController.joinGame(client, info);
+        assertDoesNotThrow(()->standardServerController.joinGame(client, info));
+        assertDoesNotThrow(()->standardServerController.joinGame(client, info));
 
     }
+
+
+    /**
+     * Method under test: {@link StandardServerController#joinGame(ClientInterface, LoginInfo)}
+     * trying to join a game that does not exist
+     */
+    @Test
+    void testJoinNonExistingGame() throws  RemoteException{
+        StandardServerController standardServerController = new StandardServerController();
+        final UserInfo[] user = {new UserInfo(User.Status.JOINED, "test", 0)};
+        ClientInterface client = new ClientInterface() {
+            @Override
+            public void bind(ServerInterface server) throws RemoteException {
+            }
+
+            @Override
+            public void ping() throws RemoteException {
+
+            }
+
+            @Override
+            public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(GameInfo o, Game.Event evt) throws RemoteException {
+            }
+
+            @Override
+            public void update(LivingRoomInfo o, LivingRoom.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(PersonalGoalInfo o, PersonalGoal.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(PlayerChatInfo o, PlayerChat.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(PlayerInfo o, Player.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(ShelfInfo o, Shelf.Event evt) throws RemoteException {
+
+            }
+
+            @Override
+            public void update(UserInfo o, User.Event evt) throws RemoteException {
+                user[0] =o;
+
+            }
+        };
+        standardServerController.connect(client);
+        standardServerController.joinGame(client, new LoginInfo("1", "test", 2));
+        assertEquals(User.Status.NOT_JOINED, user[0].status());
+    }
+
 
     /**
      * Method under test: {@link StandardServerController#leaveGame(ClientInterface)}
@@ -272,6 +358,11 @@ class StandardServerControllerTest {
         ClientInterface client = new ClientInterface() {
             @Override
             public void bind(ServerInterface server) throws RemoteException {
+
+            }
+
+            @Override
+            public void ping() throws RemoteException {
 
             }
 
@@ -338,6 +429,11 @@ class StandardServerControllerTest {
         ClientInterface client = new ClientInterface() {
             @Override
             public void bind(ServerInterface server) throws RemoteException {
+
+            }
+
+            @Override
+            public void ping() throws RemoteException {
 
             }
 
@@ -410,6 +506,11 @@ class StandardServerControllerTest {
         ClientInterface client = new ClientInterface() {
             @Override
             public void bind(ServerInterface server) throws RemoteException {
+            }
+
+            @Override
+            public void ping() throws RemoteException {
+
             }
 
             @Override
