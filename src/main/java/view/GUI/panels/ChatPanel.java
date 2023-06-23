@@ -47,7 +47,7 @@ public class ChatPanel extends JPanel implements PlayerChatGraphics {
 
     private void updateText(){
         JTextArea textarea = new JTextArea();
-
+        textarea.setPreferredSize(new Dimension(0,0));
         textarea.setBackground(new Color(255,255,200));
         textarea.setEditable(false);
 

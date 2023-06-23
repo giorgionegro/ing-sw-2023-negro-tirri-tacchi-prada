@@ -4,9 +4,9 @@ import model.Tile;
 import model.Token;
 import model.abstractModel.Message;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -24,11 +24,6 @@ public final class TUIdraw {
     static final int commandLineX = 1;
     static int commandLineY = 41;
     static int commandLineHeight = 10;
-
-    /**
-     * Map containing CommonGoal description and array of String that represents common goal image
-     */
-    private static final Map<String, String[]> commonGoalRes = getCommonGoalRes();
 
     /**
      * This method is used to draw grids of different shape and size based on its parameters
@@ -443,7 +438,7 @@ public final class TUIdraw {
                 int boxStartX = commonGoalsX + drewedCommonGoals * (commonGoalBoxWidth + commonGoalsPadding);
                 drawBox(boxesStartY, boxStartX, commonGoalBoxHeight, commonGoalBoxWidth, DEFAULT, cliPixel, cliPixelColor);
 
-                String[] res = commonGoalRes.getOrDefault(id, new String[0]);
+                String[] res = getCommonGoalRes(id);
                 for (int j = 0; j < res.length; j++) {
                     drawString(res[j], boxesStartY + 1 + j, boxStartX + 1, DEFAULT, 60, cliPixel, cliPixelColor);
                 }
@@ -471,30 +466,18 @@ public final class TUIdraw {
     }
 
     /**
+     *
      * //TODO javadoc getCommonGoalRes
      * @return
      */
-    private static Map<String, String[]> getCommonGoalRes() {
-        Map<String, String[]> ris = new HashMap<>();
-        File dir = new File(Objects.requireNonNull(TUIdraw.class.getResource("/commonGoals/CLI")).getPath());
-        if (dir.isDirectory()) {
-            File[] res;
-            if (dir.listFiles() != null)
-                res = dir.listFiles();
-            else
-                res = new File[0];
-
-            for (File f : Objects.requireNonNull(res)) {
-                if (!f.isDirectory() && f.getName().contains(".txt")) {
-                    try (FileInputStream fr = new FileInputStream(f)) {
-                        String img = new String(fr.readAllBytes(), StandardCharsets.UTF_8);
-                        ris.put(f.getName().replace(".txt", ""), img.split("\r\n"));
-                    } catch (IOException e) {
-                        System.err.println("error while reading resources");
-                    }
-                }
-            }
-
+    private static String[] getCommonGoalRes(String id){
+        String[] ris = new String[0];
+        URL p =Objects.requireNonNull(Objects.requireNonNull(TUIdraw.class).getResource("/CommonGoals/CLI/"+id+".txt"));
+        try (InputStream stream = p.openStream()){
+            String img = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
+            ris = img.split("\r\n");
+        } catch (IOException e) {
+            System.err.println("error while reading resources");
         }
         return ris;
     }
