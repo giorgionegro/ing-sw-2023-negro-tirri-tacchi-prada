@@ -80,7 +80,6 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
             while (true) {
                 try {
                     client.ping();
-                    System.out.println("ping");
                     Thread.sleep(1000);
                 } catch (InterruptedException | RemoteException e) {
                     System.err.println("ping failed");
@@ -105,13 +104,6 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
             }
         });
 
-
-
-
-
-
-
-
         // Authorize the client
         this.users.put(client, user);
 
@@ -123,11 +115,7 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
             try {
                 client.bind(server);
             } catch (RemoteException e) {
-                try {
-                    this.disconnect(client);
-                } catch (RemoteException ex) {
-                    System.err.println("Error while disconnecting client");
-                }
+                System.err.println("Client un-bound");
             }
         });
 

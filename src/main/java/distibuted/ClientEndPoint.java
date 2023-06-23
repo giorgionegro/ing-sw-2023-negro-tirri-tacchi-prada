@@ -10,16 +10,17 @@ import view.interfaces.ViewCollection;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.function.Consumer;
 
 public class ClientEndPoint extends UnicastRemoteObject implements ClientInterface {
 
     private final ViewCollection views;
 
-    private final TimedLock lock;
+    private final Consumer<String> disconnectionCallback;
 
-    public ClientEndPoint(ViewCollection ui,TimedLock<Object> lock) throws RemoteException {
+    public ClientEndPoint(ViewCollection ui, Consumer<String> disconnectionCallback) throws RemoteException {
         super();
-        this.lock = lock;
+        this.disconnectionCallback = disconnectionCallback;
         this.views = ui;
     }
 
@@ -94,35 +95,40 @@ public class ClientEndPoint extends UnicastRemoteObject implements ClientInterfa
             printError("Update UserInfo",e.getMessage());
         }
     }
+    private final TimedLock<Boolean> pingWaiter = new TimedLock<>(false);
 
     @Override
     public void bind(ServerInterface server) throws RemoteException {
-        Thread binder = new Thread(() -> {
-            synchronized (this){
+       new Thread(()->{
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            while (true)
+            {
+                pingWaiter.reset();
+                pingWaiter.setValue(false);
+
                 try {
-                    this.wait();
+                        this.pingWaiter.lock(2000);
+
                 } catch (InterruptedException e) {
-                    System.err.println("Error on connection binder");
+                    throw new RuntimeException(e);
+                }
+
+
+                if (!pingWaiter.hasBeenNotified()) {
+                    disconnectionCallback.accept("Connection lost: ping timeout");
+                    break;
                 }
             }
-        });
-
-        binder.start();
-
-        try {
-            binder.join();
-        } catch (InterruptedException e) {
-            System.err.println("Error on connection binder");
-        }
-
+        }).start();
     }
 
     @Override
     public void ping() throws RemoteException {
-        synchronized (lock)
-        {
-            System.out.println("Ping received");
-        lock.notify(null);}
+        pingWaiter.notify(true);
     }
 
     private void printError(String from, String message){

@@ -94,7 +94,6 @@ public class Server{
             throw new RemoteException();
         }
 
-
         registry.rebind("server", serverController);
         System.out.println("RUNNING RMI on ip: "+System.getProperty("java.rmi.server.hostname")+":"+parameters.get("-rP"));
     }

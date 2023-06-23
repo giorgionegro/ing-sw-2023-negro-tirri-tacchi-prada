@@ -1,6 +1,7 @@
 package distibuted.socket.middleware;
 
 import distibuted.ClientEndPoint;
+import distibuted.interfaces.Binder;
 import distibuted.interfaces.ClientInterface;
 import distibuted.interfaces.ServerInterface;
 import distibuted.socket.middleware.interfaces.SocketObject;
@@ -127,11 +128,33 @@ public class ServerSocketHandler extends SocketHandler<ServerInterface> implemen
 
     @Override
     public void update(PlayerInfo o, Player.Event evt) throws RemoteException {
-        //TODO
+        try{
+            send((SocketObject) (sender, receiver) -> {
+                try{
+                    ((PlayerView) receiver).update(o, evt);
+                }catch (ClassCastException e){
+                    throw new RemoteException("Socket object not usable");
+                }
+            });
+        } catch (IOException e) {
+            throw new RemoteException("Unable to send the socket object");
+        }
     }
 
     @Override
     public void bind(ServerInterface server) throws RemoteException {
+        try{
+            send((SocketObject) (sender, receiver) -> {
+                try{
+                    ((Binder) receiver).bind(null);
+                }catch (ClassCastException e){
+                    throw new RemoteException("Socket object not usable");
+                }
+            });
+        } catch (IOException e) {
+            throw new RemoteException("Unable to send the socket object");
+        }
+
         while(true){
             waitForReceive(server);
         }
@@ -147,10 +170,10 @@ public class ServerSocketHandler extends SocketHandler<ServerInterface> implemen
                     throw new RemoteException("Socket object not usable");
                 }
             });
+            System.out.println("ping");
         } catch (IOException e) {
             throw new RemoteException("Unable to send the socket object");
         }
-
     }
 
 

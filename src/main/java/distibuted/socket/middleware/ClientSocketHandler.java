@@ -28,25 +28,13 @@ public class ClientSocketHandler extends SocketHandler<ClientInterface> implemen
     public synchronized @NotNull ServerInterface connect(ClientInterface client) throws RemoteException {
         super.open();
 
-        //new Thread to check for pings
-        new Thread(()->{
-
-
-        }).start();
         receiverLoop = new Thread(()->{
             try{
                 while(true){
                     waitForReceive(client);
                 }
             }catch (RemoteException e) {
-                System.err.println("Cannot receive from client: "+e.getMessage()+".\n-> Closing this connection...");
-            } finally {
-                //TODO
-//                try {
-//                    socket.close();
-//                } catch (IOException e) {
-//                    System.err.println("Cannot close socket");
-//                }
+                System.err.println("Cannot receive from server: "+e.getMessage()+".\n-> Closing this connection...");
             }
         });
 
@@ -57,7 +45,6 @@ public class ClientSocketHandler extends SocketHandler<ClientInterface> implemen
 
     @Override
     public synchronized void disconnect(ClientInterface client) throws RemoteException {
-        //TODO Manda segnale di disconnessione
         try {
             receiverLoop.interrupt();
             super.close();
