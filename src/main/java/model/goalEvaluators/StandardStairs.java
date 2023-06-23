@@ -2,7 +2,6 @@ package model.goalEvaluators;
 
 import model.Tile;
 import model.abstractModel.GoalEvaluator;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
@@ -25,20 +24,22 @@ public class StandardStairs extends GoalEvaluator {
 
     /**
      * {@inheritDoc}
+     *
      * @return {@link #standardStairsDescription}
      */
     @Override
     public String getDescription() {
-        return standardStairsDescription;
+        return this.standardStairsDescription;
     }
 
     /**
      * {@inheritDoc}
+     *
      * @return {@link #standardStairsId}
      */
     @Override
-    public String getId(){
-        return standardStairsId;
+    public String getId() {
+        return this.standardStairsId;
     }
 
     /**
@@ -48,12 +49,11 @@ public class StandardStairs extends GoalEvaluator {
      * @return true if the player has at least 5 columns of increasing height or descending, false otherwise
      */
     @Override
-    public boolean evaluate(Tile[] @NotNull [] playerShelf) {
+    public boolean evaluate(Tile[][] playerShelf) {
         int numColumns = playerShelf[0].length;
-        int numRows = playerShelf.length;
         for (int dir = 0; dir < 2; dir++) {
             // Check if the first column has at least numTiles tiles
-            int counter = countTilesInColumn(playerShelf, (dir == 0) ? 0 : numColumns - 1);
+            int counter = this.countTilesInColumn(playerShelf, (dir == 0) ? 0 : numColumns - 1);
             if (counter < numColumns) continue;
             int jstart = (dir == 0) ? 1 : numColumns - 2;
             int jend = (dir == 0) ? numColumns : -1;
@@ -61,7 +61,7 @@ public class StandardStairs extends GoalEvaluator {
             // Check if each subsequent column has one fewer tile than the previous column
             int prevCounter = counter;
             for (int j = jstart; j != jend; j += (dir == 0) ? 1 : -1) {
-                counter = countTilesInColumn(playerShelf, j);
+                counter = this.countTilesInColumn(playerShelf, j);
                 if (counter != prevCounter - 1) {
                     continueOuterLoop = true;
                     break;
@@ -75,7 +75,7 @@ public class StandardStairs extends GoalEvaluator {
         return false;
     }
 
-    private int countTilesInColumn(Tile[] @NotNull [] playerShelf, int colIndex) {
+    private int countTilesInColumn(Tile[][] playerShelf, int colIndex) {
         int numRows = playerShelf.length;
         int counter = 0;
         for (int i = numRows - 1; i >= 0; i--) {

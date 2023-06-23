@@ -22,20 +22,22 @@ public class StandardCorners extends GoalEvaluator {
 
     /**
      * {@inheritDoc}
+     *
      * @return {@link #standardCornersDescription}
      */
     @Override
     public String getDescription() {
-        return standardCornersDescription;
+        return this.standardCornersDescription;
     }
 
     /**
      * {@inheritDoc}
+     *
      * @return {@link #standardCornersId}
      */
     @Override
-    public String getId(){
-        return standardCornersId;
+    public String getId() {
+        return this.standardCornersId;
     }
 
     /**

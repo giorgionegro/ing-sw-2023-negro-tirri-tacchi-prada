@@ -24,20 +24,22 @@ public class StandardSixGroup2Tiles extends GoalEvaluator {
 
     /**
      * {@inheritDoc}
+     *
      * @return {@link #standardSixGroup2TilesDescription}
      */
     @Override
     public String getDescription() {
-        return standardSixGroup2TilesDescription;
+        return this.standardSixGroup2TilesDescription;
     }
 
     /**
      * {@inheritDoc}
+     *
      * @return {@link #standardSixGroup2TilesId}
      */
     @Override
-    public String getId(){
-        return standardSixGroup2TilesId;
+    public String getId() {
+        return this.standardSixGroup2TilesId;
     }
 
     /**

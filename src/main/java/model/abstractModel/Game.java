@@ -28,6 +28,14 @@ public abstract class Game extends Observable<Game.Event>{
          */
         GAME_STARTED,
         /**
+         * This event is sent whenever game routine has been temporary suspended
+         */
+        GAME_SUSPENDED,
+        /**
+         * This event is sent whenever game routine has been resumed
+         */
+        GAME_RESUMED,
+        /**
          * This event is sent whenever a player takes turn to the next player
          */
         NEXT_TURN,
@@ -48,20 +56,20 @@ public abstract class Game extends Observable<Game.Event>{
     public enum GameStatus{
         MATCHMAKING,
         STARTED,
+        SUSPENDED,
         ENDED
     }
-
-    /**
-     * This method returns the gameId
-     * @return the gameId
-     */
-    public abstract String getGameId();
 
     /**
      * This method returns the current game status
      * @return the current game status
      */
     public abstract GameStatus getGameStatus();
+
+    /**
+     * This method signal the game to end and close
+     */
+    public abstract void close();
 
     /**
      * This method marks the current turn sequence to be the last one.
@@ -98,6 +106,14 @@ public abstract class Game extends Observable<Game.Event>{
     public abstract void addPlayer(String playerId) throws PlayerAlreadyExistsException, MatchmakingClosedException;
 
     /**
+     * This method remove a Player from the game, the Player is referenced by playerId. After this method has been
+     * invoked with success then {@code getPlayer(playerId)} will throw {@link PlayerNotExistsException}
+     * @param playerId the id of the player that needs to be removed
+     * @throws PlayerNotExistsException if there is no Player associated to {@code playerId}
+     */
+    public abstract void removePlayer(String playerId) throws PlayerNotExistsException;
+
+    /**
      * This method returns the Player associated to the playerId
      * @param playerId the id of the Player requested
      * @return the Player associated to the playerId
@@ -118,8 +134,8 @@ public abstract class Game extends Observable<Game.Event>{
     public abstract LivingRoom getLivingRoom();
 
     /**
-     * TODO
-     * @return
+     * This method returns a {@link GameInfo} representing this object instance
+     * @return A {@link GameInfo} representing this object instance
      */
     public abstract GameInfo getInfo();
 }

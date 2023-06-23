@@ -40,25 +40,28 @@ public class Standard3or4ColumnsRowMax3Types extends GoalEvaluator {
      * @param column true if the goal is to have 3 columns of at most 3 different tiles, false if the goal is to have 4 rows of at most 3 different tiles
      */
     public Standard3or4ColumnsRowMax3Types(boolean column) {
+        super();
         this.column = column;
     }
 
     /**
      * {@inheritDoc}
+     *
      * @return {@link #standard3ColumnMax3TypesDescription} or {@link #standard4RowsMax3TypesDescription} based on {@link #column} value
      */
     @Override
     public String getDescription() {
-        return (column) ?  standard3ColumnMax3TypesDescription : standard4RowsMax3TypesDescription;
+        return (this.column) ? this.standard3ColumnMax3TypesDescription : this.standard4RowsMax3TypesDescription;
     }
 
     /**
      * {@inheritDoc}
+     *
      * @return {@link #standard3ColumnMax3TypesId} or {@link #standard4RowsMax3TypesId} based on {@link #column} value
      */
     @Override
-    public String getId(){
-        return (column) ? standard3ColumnMax3TypesId : standard4RowsMax3TypesId;
+    public String getId() {
+        return (this.column) ? this.standard3ColumnMax3TypesId : this.standard4RowsMax3TypesId;
     }
 
     /**
@@ -70,14 +73,14 @@ public class Standard3or4ColumnsRowMax3Types extends GoalEvaluator {
         int counter = 0; // counts the number of columns with at most 3 different tiles colors
         int columnLength = playerShelf[0].length;
         int rowLength = playerShelf.length;
-        int imax = (column) ? columnLength : rowLength;
-        int jmax = (column) ? rowLength : columnLength;
+        int imax = (this.column) ? columnLength : rowLength;
+        int jmax = (this.column) ? rowLength : columnLength;
 
         for (int i = 0; i < imax; i++) {
             //check if every line is different
-            String[] colors = new String[(column) ? rowLength : columnLength];
+            String[] colors = new String[(this.column) ? rowLength : columnLength];
             for (int j = 0; j < jmax; j++) {
-                colors[j] = (column) ? playerShelf[j][i].getColor() : playerShelf[i][j].getColor();
+                colors[j] = (this.column) ? playerShelf[j][i].getColor() : playerShelf[i][j].getColor();
             }
             //if colors contains EMPTY, we skip the line
             if (Arrays.stream(colors).anyMatch(colour -> colour.equals(Tile.EMPTY.getColor()))) {

@@ -22,20 +22,22 @@ public class StandardXOfDifferentTiles extends GoalEvaluator {
 
     /**
      * {@inheritDoc}
+     *
      * @return {@link #standardXOfDifferentTilesDescription}
      */
     @Override
     public String getDescription() {
-        return standardXOfDifferentTilesDescription;
+        return this.standardXOfDifferentTilesDescription;
     }
 
     /**
      * {@inheritDoc}
+     *
      * @return {@link #standardXOfDifferentTilesId}
      */
     @Override
-    public String getId(){
-        return standardXOfDifferentTilesId;
+    public String getId() {
+        return this.standardXOfDifferentTilesId;
     }
 
     /**

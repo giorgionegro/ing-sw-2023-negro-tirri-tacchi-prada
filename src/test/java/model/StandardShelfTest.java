@@ -5,13 +5,16 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class StandardShelfTest {
     @Test
-    void shelfTest(){
+    void shelfTest() {
         Tile[][] modifiedShelf = new Tile[6][5];
-        for(Tile[] a : modifiedShelf)
-            Arrays.fill(a,Tile.EMPTY);
+        for (Tile[] a : modifiedShelf)
+            Arrays.fill(a, Tile.EMPTY);
         StandardShelf test = new StandardShelf();
         assertTrue(Arrays.deepEquals(modifiedShelf, test.getTiles()));
         assertTrue(Arrays.deepEquals(modifiedShelf, test.getInfo("p").shelf()) && test.getInfo("p").playerId().equals("p"));
@@ -22,4 +25,16 @@ class StandardShelfTest {
         assertTrue(Arrays.deepEquals(modifiedShelf, test.getTiles()));
         assertTrue(Arrays.deepEquals(modifiedShelf, test.getInfo("p").shelf()) && test.getInfo("p").playerId().equals("p"));
     }
+
+    /**
+     * test: {@link StandardShelf#StandardShelf()}
+     */
+    @Test
+    void testConstructor() {
+        StandardShelf actualStandardShelf = new StandardShelf();
+        assertFalse(actualStandardShelf.hasChanged());
+        assertEquals(6, actualStandardShelf.getTiles().length);
+        assertEquals(5, actualStandardShelf.getTiles()[0].length);
+    }
+
 }

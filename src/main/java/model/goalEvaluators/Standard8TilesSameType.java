@@ -26,20 +26,22 @@ public class Standard8TilesSameType extends GoalEvaluator {
 
     /**
      * {@inheritDoc}
+     *
      * @return {@link #standard8TilesSameTypeDescription}
      */
     @Override
     public String getDescription() {
-        return standard8TilesSameTypeDescription;
+        return this.standard8TilesSameTypeDescription;
     }
 
     /**
      * {@inheritDoc}
+     *
      * @return {@link #standard8TilesSameTypeId}
      */
     @Override
-    public String getId(){
-        return standard8TilesSameTypeId;
+    public String getId() {
+        return this.standard8TilesSameTypeId;
     }
 
     /**
@@ -53,7 +55,7 @@ public class Standard8TilesSameType extends GoalEvaluator {
         AtomicBoolean flag = new AtomicBoolean(false);
         //get every color and check if there are 8 tiles of that color
         Arrays.stream(Tile.values()).map(Tile::getColor).filter(colour -> !colour.equals(Tile.EMPTY.getColor())).distinct().toList().forEach(color -> {
-            int counter = numberOfTiles;
+            int counter = this.numberOfTiles;
             for (Tile[] tiles : playerShelf) {
                 for (int j = 0; j < playerShelf[0].length; j++) {
                     if (tiles[j].getColor().equals(color)

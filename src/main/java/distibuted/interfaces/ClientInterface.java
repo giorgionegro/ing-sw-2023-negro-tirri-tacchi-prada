@@ -5,5 +5,4 @@ import view.interfaces.*;
 import java.rmi.Remote;
 
 public interface ClientInterface
-        extends Remote, CommonGoalView, GamesManagerView, LivingRoomView, PersonalGoalView,
-                PlayerChatView, PlayerView, ShelfView, GameView, UserView{}
+        extends Remote, ViewCollection, Binder{}

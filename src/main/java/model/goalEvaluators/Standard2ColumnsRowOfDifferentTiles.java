@@ -15,6 +15,7 @@ public class Standard2ColumnsRowOfDifferentTiles extends GoalEvaluator {
 
     /**
      * true if the goal is to have 2 columns of 6 different tiles, false if the goal is to have 2 rows of 6 different tiles
+     *
      * @see #evaluate(Tile[][])
      */
     private final boolean column;
@@ -41,28 +42,32 @@ public class Standard2ColumnsRowOfDifferentTiles extends GoalEvaluator {
 
     /**
      * Constructor for Standard2ColumnsRowOfDifferentTiles
+     *
      * @param column true if the goal is to have 2 columns of 6 different tiles, false if the goal is to have 2 rows of 6 different tiles
      */
     public Standard2ColumnsRowOfDifferentTiles(boolean column) {
+        super();
         this.column = column;
     }
 
     /**
      * {@inheritDoc}
+     *
      * @return {@link #standard2ColumnsOfDifferentTilesDescription} or {@link #standard2RowsOfDifferentTilesDescription} based on {@link #column} value
      */
     @Override
     public String getDescription() {
-        return (column) ? standard2ColumnsOfDifferentTilesDescription : standard2RowsOfDifferentTilesDescription;
+        return (this.column) ? this.standard2ColumnsOfDifferentTilesDescription : this.standard2RowsOfDifferentTilesDescription;
     }
 
     /**
      * {@inheritDoc}
+     *
      * @return {@link #standard2ColumnsOfDifferentTilesId} or {@link #standard2RowsOfDifferentTilesId} based on {@link #column} value
      */
     @Override
-    public String getId(){
-        return (column) ? standard2ColumnsOfDifferentTilesId : standard2RowsOfDifferentTilesId;
+    public String getId() {
+        return (this.column) ? this.standard2ColumnsOfDifferentTilesId : this.standard2RowsOfDifferentTilesId;
     }
 
     /**
@@ -75,14 +80,14 @@ public class Standard2ColumnsRowOfDifferentTiles extends GoalEvaluator {
         int counter = 0;
         int columnLength = playerShelf[0].length;
         int rowLength = playerShelf.length;
-        int imax = (column) ? columnLength : rowLength;
-        int jmax = (column) ? rowLength : columnLength;
+        int imax = (this.column) ? columnLength : rowLength;
+        int jmax = (this.column) ? rowLength : columnLength;
 
         for (int i = 0; i < imax; i++) {
             //check if every line is different
-            String[] colours = new String[(column) ? rowLength : columnLength];
+            String[] colours = new String[(this.column) ? rowLength : columnLength];
             for (int j = 0; j < jmax; j++) {
-                colours[j] = (column) ? playerShelf[j][i].getColor() : playerShelf[i][j].getColor();
+                colours[j] = (this.column) ? playerShelf[j][i].getColor() : playerShelf[i][j].getColor();
             }
             //remove Empty tiles
             if (Arrays.stream(colours).filter(Objects::nonNull).filter(colour -> !colour.equals(Tile.EMPTY.getColor())).distinct().count() == colours.length) {//check if every line is different by comparing the number of distinct colours

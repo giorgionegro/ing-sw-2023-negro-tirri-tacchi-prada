@@ -24,20 +24,22 @@ public class Standard4Groups4Tiles extends GoalEvaluator {
 
     /**
      * {@inheritDoc}
+     *
      * @return {@link #standard4Groups4TilesDescription}
      */
     @Override
     public String getDescription() {
-        return standard4Groups4TilesDescription;
+        return this.standard4Groups4TilesDescription;
     }
 
     /**
      * {@inheritDoc}
+     *
      * @return {@link #standard4Groups4TilesId}
      */
     @Override
-    public String getId(){
-        return standard4Groups4TilesId;
+    public String getId() {
+        return this.standard4Groups4TilesId;
     }
 
     /**

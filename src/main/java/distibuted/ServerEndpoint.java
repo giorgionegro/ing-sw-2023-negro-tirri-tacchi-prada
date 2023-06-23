@@ -14,10 +14,11 @@ import modelView.PlayerMoveInfo;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
-public class ServerEndpoint extends UnicastRemoteObject implements ServerInterface{
+public class ServerEndpoint extends UnicastRemoteObject implements ServerInterface {
 
     private final ServerController serverController;
     private final GameManagerController gameManagerController;
+
     private GameController gameController;
 
     public ServerEndpoint(ServerController serverController, GameManagerController gameManagerController) throws RemoteException {
@@ -30,36 +31,59 @@ public class ServerEndpoint extends UnicastRemoteObject implements ServerInterfa
     @Override
     public synchronized void createGame(ClientInterface client, NewGameInfo newGameInfo) {
         try {
-            serverController.createGame(client,newGameInfo);
+            this.serverController.createGame(client, newGameInfo);
         } catch (RemoteException e) {
-            e.printStackTrace();
-            //throw new RuntimeException(e); //TODO send error to client
+            this.printError("CreateGame", e.getMessage());
         }
     }
 
     @Override
     public void joinGame(ClientInterface client, LoginInfo loginInfo) {
         try {
-            serverController.joinGame(client, loginInfo);
-            gameController = gameManagerController.getGame(loginInfo.gameId());
+            this.serverController.joinGame(client, loginInfo);
+            this.gameController = this.gameManagerController.getGame(loginInfo.gameId());
         } catch (RemoteException e) {
-            e.printStackTrace();
-         //   throw new RuntimeException(e);
+            this.printError("JoinGame", e.getMessage());
         } catch (GameNotExistsException e) {
-            e.printStackTrace();
-          //  throw new RuntimeException(e);
+            this.gameController = null;
         }
     }
 
     @Override
-    public void doPlayerMove(ClientInterface client, PlayerMoveInfo move) throws RemoteException {
-        if(gameController!=null)
-            gameController.doPlayerMove(client, move);
+    public void leaveGame(ClientInterface client) {
+        try {
+            this.serverController.leaveGame(client);
+            this.gameController = null;
+        } catch (RemoteException e) {
+            this.printError("LeaveGame", e.getMessage());
+        }
     }
 
     @Override
-    public void sendMessage(ClientInterface client, Message message) throws RemoteException {
-        if(gameController!=null)
-            gameController.sendMessage(client, message);
+    public void doPlayerMove(ClientInterface client, PlayerMoveInfo move) {
+        if (this.gameController != null) {
+            try {
+                this.gameController.doPlayerMove(client, move);
+            } catch (RemoteException e) {
+                this.printError("DoPlayerMove", e.getMessage());
+            }
+        }
+    }
+
+    @Override
+    public void sendMessage(ClientInterface client, Message message) {
+        if (this.gameController != null) {
+            try {
+                this.gameController.sendMessage(client, message);
+            } catch (RemoteException e) {
+                this.printError("SendMessage", e.getMessage());
+            }
+        }
+    }
+
+    private void printError(String from, String message) {
+        if (!message.isBlank())
+            message = " : " + message;
+        System.err.print("ServerEndpoint: exception from " + from + message);
     }
 }

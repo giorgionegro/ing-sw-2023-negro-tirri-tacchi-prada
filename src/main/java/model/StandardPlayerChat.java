@@ -1,7 +1,7 @@
 package model;
 
-import model.abstractModel.PlayerChat;
 import model.abstractModel.Message;
+import model.abstractModel.PlayerChat;
 import modelView.PlayerChatInfo;
 
 import java.util.ArrayList;
@@ -22,23 +22,25 @@ public class StandardPlayerChat extends PlayerChat {
     /**
      * Constructor of an empty player chat
      */
-    public StandardPlayerChat(){
+    public StandardPlayerChat() {
         this.messages = new ArrayList<>();
     }
 
     /**
      * {@inheritDoc}
+     *
      * @param newMessage new message that has to be added to chat
      */
     @Override
     public void addMessage(Message newMessage) {
         this.messages.add(newMessage);
-        setChanged();
-        notifyObservers(Event.MESSAGE_RECEIVED);
+        this.setChanged();
+        this.notifyObservers(Event.MESSAGE_RECEIVED);
     }
 
     /**
      * {@inheritDoc}
+     *
      * @return a copy of {@link #messages}
      */
     @Override
@@ -47,13 +49,12 @@ public class StandardPlayerChat extends PlayerChat {
     }
 
     /**
-     * TODO
-     * @return
+     * {@inheritDoc}
+     *
+     * @return A {@link PlayerChatInfo} representing this object instance
      */
     @Override
     public PlayerChatInfo getInfo() {
-        return new PlayerChatInfo(getMessages());
+        return new PlayerChatInfo(this.getMessages());
     }
-
-
 }

@@ -6,12 +6,12 @@ import model.abstractModel.GoalEvaluator;
 /**
  * This class is an implementation of {@link CommonGoal}
  * <p>
- * It initializes the {@link #tokenStack} with as much token as player.
+ * It initializes the {@link #tokenStack} with as many tokens as players.
  */
 public class StandardCommonGoal extends CommonGoal {
 
     /**
-     * Construct a StandardCommonGoal with the given evaluator
+     * Construct a {@link StandardCommonGoal} with the given evaluator
      * @param nPlayer the number of player of the game
      * @param evaluator the evaluator of the common goal
      */
@@ -29,14 +29,12 @@ public class StandardCommonGoal extends CommonGoal {
     @Override
     protected void fillStack(int nToken) {
         if(nToken<5){
-            tokenStack.push(Token.TOKEN_2_POINTS);
+            if(nToken>3)
+                tokenStack.push(Token.TOKEN_2_POINTS);
             tokenStack.push(Token.TOKEN_4_POINTS);
-            if(nToken>2){
+            if(nToken>2)
                 tokenStack.push(Token.TOKEN_6_POINTS);
-                if(nToken>3){
-                    tokenStack.push(Token.TOKEN_8_POINTS);
-                }
-            }
+            tokenStack.push(Token.TOKEN_8_POINTS);
         }else{
             throw new UnsupportedOperationException("The number of players is more than the maximum accepted (4max)");
         }

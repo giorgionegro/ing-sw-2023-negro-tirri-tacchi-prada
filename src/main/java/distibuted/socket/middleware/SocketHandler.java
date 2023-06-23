@@ -9,50 +9,60 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.rmi.RemoteException;
 
-public abstract class SocketHandler<Interface>{
+public abstract class SocketHandler<Interface> {
     private ObjectOutputStream oos;
     private ObjectInputStream ois;
 
+
     private String ip = null;
     private int port = 0;
+
     private Socket socket = null;
 
-    public SocketHandler(String ip, int port){
+    public SocketHandler(String ip, int port) {
+        super();
         this.ip = ip;
         this.port = port;
     }
 
-    public SocketHandler(Socket socket){
+    public SocketHandler(Socket socket) {
+        super();
         this.socket = socket;
     }
 
-    public void open() throws RemoteException{
+    public void open() throws RemoteException {
         try {
-            if (socket == null) {
-                socket = new Socket(ip, port);
+            if (this.socket == null) {
+                this.socket = new Socket(this.ip, this.port);
             }
 
-            if(!socket.isConnected())
-                socket.connect(new InetSocketAddress(ip,port),1000);
+            if (!this.socket.isConnected()) {
+                //Could ip be null?
+                this.socket.connect(new InetSocketAddress(this.ip, this.port), 1000);
+            }
 
-            this.oos = new ObjectOutputStream(socket.getOutputStream());
-            this.ois = new ObjectInputStream(socket.getInputStream());
+            this.oos = new ObjectOutputStream(this.socket.getOutputStream());
+            this.ois = new ObjectInputStream(this.socket.getInputStream());
         } catch (IOException e) {
             throw new RemoteException("Unable to open the socket connection");
         }
     }
 
-    public void close() throws RemoteException{
+    public void close() throws RemoteException {
         try {
-            socket.close();
+            if (this.socket != null) {
+                this.socket.close();
+            } else {
+                throw new IOException("Socket is non been initialized");
+            }
         } catch (IOException e) {
             throw new RemoteException("Unable to close the socket connection");
         }
     }
 
-    public void waitForReceive(Interface receiver) throws RemoteException {
+    protected void waitForReceive(Interface receiver) throws RemoteException {
         try {
-            SocketObject no = (SocketObject) ois.readObject();
+            SocketObject no = (SocketObject) this.ois.readObject();
             no.update(this, receiver);
         } catch (IOException e) {
             throw new RemoteException("Unable to communicate with socket");
@@ -62,9 +72,9 @@ public abstract class SocketHandler<Interface>{
     }
 
     protected synchronized void send(SocketObject o) throws IOException {
-        oos.writeObject(o);
-        oos.flush();
-        oos.reset();
+        this.oos.writeObject(o);
+        this.oos.flush();
+        this.oos.reset();
     }
 
 }

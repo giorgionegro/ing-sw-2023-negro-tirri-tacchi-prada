@@ -15,33 +15,22 @@ import java.util.Map;
 public abstract class Player extends Observable<Player.Event> {
 
     /**
-     * This enumeration contains all the events that can be sent to observers
-     */
-    public enum Event {
-        COMMONGOAL_ACHIEVED,
-        ERROR_REPORTED
-    }
-
-    /**
-     * This method returns the player id
-     * @return id of the player
-     */
-    public abstract String getId();
-
-    /**
      * This method returns a copy of the current representation of the player shelf
+     *
      * @return a copy of the current representation of the player shelf
      */
     public abstract Shelf getShelf();
 
     /**
      * This method returns a copy of the list of the personal goals of the player
+     *
      * @return a copy of the list of personal goals of the player
      */
     public abstract List<PersonalGoal> getPersonalGoals();
 
     /**
      * This method returns the current representation of the player chat
+     *
      * @return the current representation of the player chat
      */
     public abstract PlayerChat getPlayerChat();
@@ -49,32 +38,45 @@ public abstract class Player extends Observable<Player.Event> {
     /**
      * This method returns a map containing all the descriptions of common goals achieved by the player, associated
      * to the token that player has won achieving that goal.
+     *
      * @return a map containing {@code achievedCommonGoalDescription -> token}
      */
-    public abstract Map<String,Token> getAchievedCommonGoals();
+    public abstract Map<String, Token> getAchievedCommonGoals();
 
     /**
      * This method add a new achieved common goal
+     *
      * @param description the common goal description
-     * @param token the token won by achieving the common goal
+     * @param token       the token won by achieving the common goal
      */
     public abstract void addAchievedCommonGoal(String description, Token token);
 
     /**
      * This method report a new error that player encountered during gameplay
+     *
      * @param error the encountered error description
      */
     public abstract void reportError(String error);
 
     /**
      * This method return the last error that player encountered during gameplay
+     *
      * @return the last error that player encountered during gameplay
      */
     public abstract String getReportedError();
 
     /**
-     * TODO
-     * @return
+     * This method returns a {@link PlayerInfo} representing this object instance
+     *
+     * @return A {@link PlayerInfo} representing this object instance
      */
     public abstract PlayerInfo getInfo();
+
+    /**
+     * This enumeration contains all the events that can be sent to observers
+     */
+    public enum Event {
+        COMMONGOAL_ACHIEVED,
+        ERROR_REPORTED
+    }
 }

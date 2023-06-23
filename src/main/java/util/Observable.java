@@ -1,6 +1,8 @@
 package util;
 
 import java.util.Vector;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * This class represents an observable object, or "data"
@@ -29,25 +31,28 @@ import java.util.Vector;
  * empty. Two observers are considered the same if and only if the
  * {@code equals} method returns true for them.
  *
- * @see     #notifyObservers()
- * @see     #notifyObservers(Enum) 
- * @see     Observer
- * @see     Observer#update(Observable, Enum)
- *
  * @param <Event> the enumeration of the event that this observable is emitting
- *
- * @implNote
- * This class is a Generic Implementation of the deprecated {@link java.util.Observable}.
+ * @implNote This class is a Generic Implementation of the deprecated {@link java.util.Observable}.
+ * @see #notifyObservers()
+ * @see #notifyObservers(Enum)
+ * @see Observer
+ * @see Observer#update(Observable, Enum)
  */
 @SuppressWarnings("deprecation")
 public class Observable<Event extends Enum<Event>> {
-    private boolean changed = false;
-    private final Vector<Observer<? extends Observable<Event>, Event>> obs;
 
-    /** Construct an Observable with zero Observers. */
+    //TODO
+    private final ExecutorService executorService = Executors.newFixedThreadPool(1);
+    private final Vector<Observer<? extends Observable<Event>, Event>> obs;
+    private boolean changed = false;
+
+    /**
+     * Construct an Observable with zero Observers.
+     */
 
     public Observable() {
-        obs = new Vector<>();
+        super();
+        this.obs = new Vector<>();
     }
 
     /**
@@ -56,25 +61,26 @@ public class Observable<Event extends Enum<Event>> {
      * The order in which notifications will be delivered to multiple
      * observers is not specified. See the class comment.
      *
-     * @param   o   an observer to be added.
-     * @throws NullPointerException   if the parameter o is null.
+     * @param o an observer to be added.
+     * @throws NullPointerException if the parameter o is null.
      */
     public synchronized void addObserver(Observer<? extends Observable<Event>, Event> o) {
         if (o == null)
             throw new NullPointerException();
-        if (!obs.contains(o)) {
-            obs.addElement(o);
-            ((Observer<Observable<Event>, Event>)o).update(this, null);
+        if (!this.obs.contains(o)) {
+            this.obs.addElement(o);
+            ((Observer<Observable<Event>, Event>) o).update(this, null);
         }
     }
 
     /**
      * Deletes an observer from the set of observers of this object.
      * Passing {@code null} to this method will have no effect.
-     * @param   o   the observer to be deleted.
+     *
+     * @param o the observer to be deleted.
      */
     public synchronized void deleteObserver(Observer<? extends Observable<Event>, Event> o) {
-        obs.removeElement(o);
+        this.obs.removeElement(o);
     }
 
     /**
@@ -89,12 +95,12 @@ public class Observable<Event extends Enum<Event>> {
      * <blockquote>{@code
      * notifyObservers(null)}</blockquote>
      *
-     * @see     #clearChanged()
-     * @see     #hasChanged()
-     * @see     Observer#update(Observable, Enum) 
+     * @see #clearChanged()
+     * @see #hasChanged()
+     * @see Observer#update(Observable, Enum)
      */
     public void notifyObservers() {
-        notifyObservers(null);
+        this.notifyObservers(null);
     }
 
     /**
@@ -106,10 +112,10 @@ public class Observable<Event extends Enum<Event>> {
      * Each observer has its {@code update} method called with two
      * arguments: this observable object and the {@code arg} argument.
      *
-     * @param   arg   any object.
-     * @see     #clearChanged()
-     * @see     #hasChanged()
-     * @see     Observer#update(Observable, Enum) 
+     * @param arg any object.
+     * @see #clearChanged()
+     * @see #hasChanged()
+     * @see Observer#update(Observable, Enum)
      */
     public void notifyObservers(Event arg) {
         /*
@@ -131,21 +137,23 @@ public class Observable<Event extends Enum<Event>> {
              * 2) a recently unregistered Observer will be
              *   wrongly notified when it doesn't care
              */
-            if (!changed)
+            if (!this.changed)
                 return;
-            arrLocal = obs.toArray();
-            clearChanged();
+            arrLocal = this.obs.toArray();
+            this.clearChanged();
         }
 
-        for (int i = arrLocal.length-1; i>=0; i--)
-            ((Observer<Observable<Event>, Event>)arrLocal[i]).update(this, arg);
+        this.executorService.submit(() -> {
+            for (int i = arrLocal.length - 1; i >= 0; i--)
+                ((Observer<Observable<Event>, Event>) arrLocal[i]).update(this, arg);
+        });
     }
 
     /**
      * Clears the observer list so that this object no longer has any observers.
      */
     public synchronized void deleteObservers() {
-        obs.removeAllElements();
+        this.obs.removeAllElements();
     }
 
     /**
@@ -153,7 +161,7 @@ public class Observable<Event extends Enum<Event>> {
      * {@code hasChanged} method will now return {@code true}.
      */
     protected synchronized void setChanged() {
-        changed = true;
+        this.changed = true;
     }
 
     /**
@@ -163,33 +171,33 @@ public class Observable<Event extends Enum<Event>> {
      * This method is called automatically by the
      * {@code notifyObservers} methods.
      *
-     * @see     #notifyObservers()
-     * @see     #notifyObservers(Enum)
+     * @see #notifyObservers()
+     * @see #notifyObservers(Enum)
      */
     protected synchronized void clearChanged() {
-        changed = false;
+        this.changed = false;
     }
 
     /**
      * Tests if this object has changed.
      *
-     * @return  {@code true} if and only if the {@code setChanged}
-     *          method has been called more recently than the
-     *          {@code clearChanged} method on this object;
-     *          {@code false} otherwise.
-     * @see     #clearChanged()
-     * @see     #setChanged()
+     * @return {@code true} if and only if the {@code setChanged}
+     * method has been called more recently than the
+     * {@code clearChanged} method on this object;
+     * {@code false} otherwise.
+     * @see #clearChanged()
+     * @see #setChanged()
      */
     public synchronized boolean hasChanged() {
-        return changed;
+        return this.changed;
     }
 
     /**
      * Returns the number of observers of this {@code Observable} object.
      *
-     * @return  the number of observers of this object.
+     * @return the number of observers of this object.
      */
     public synchronized int countObservers() {
-        return obs.size();
+        return this.obs.size();
     }
 }

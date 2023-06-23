@@ -6,7 +6,10 @@ import model.abstractModel.PlayerChat;
 import model.abstractModel.Shelf;
 import modelView.PlayerInfo;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This class is an implementation of Player.
@@ -15,10 +18,6 @@ import java.util.*;
  */
 public class StandardPlayer extends Player {
 
-    /**
-     * id of the player
-     */
-    private final String idPlayer;
     /**
      * shelf of the player (2D array of tiles)
      */
@@ -45,98 +44,100 @@ public class StandardPlayer extends Player {
     private String errorReport;
 
     /**
-     * Constructor of a new Player with no achieved common goal and an empty chat, but initialized with the given shelf,
-     * personal goals and playerId.
-     * @param idPlayer id of the player
+     * Constructor of a new Player with no achieved common goal and initialized with the given shelf, chat and personal goals,
+     *
+     * @param shelf        the player shelf
      * @param personalGoal personal goals of the player
+     * @param chat         the player chat
      */
-    public StandardPlayer(String idPlayer, List<PersonalGoal> personalGoal){
-        this.idPlayer = idPlayer;
-        this.shelf = new StandardShelf();
+    public StandardPlayer(Shelf shelf, List<PersonalGoal> personalGoal, PlayerChat chat) {
+        super();
+        this.shelf = shelf;
         this.personalGoal = new ArrayList<>(personalGoal);
         this.achievedCommonGoals = new HashMap<>();
-        this.chat = new StandardPlayerChat();
+        this.chat = chat;
     }
 
     /**
      * {@inheritDoc}
-     * @return {@link #idPlayer}
-     */
-    @Override
-    public String getId(){
-        return idPlayer;
-    }
-
-    /**
-     * {@inheritDoc}
+     *
      * @return a copy of {@link #shelf}
      */
     @Override
     public Shelf getShelf() {
-        return shelf;
+        return this.shelf;
     }
 
     /**
      * {@inheritDoc}
+     *
      * @return a copy of {@link #personalGoal}
      */
     @Override
     public List<PersonalGoal> getPersonalGoals() {
-        return new ArrayList<>(personalGoal);
+        return new ArrayList<>(this.personalGoal);
     }
 
     /**
      * {@inheritDoc}
+     *
      * @return {@link #chat}
      */
     @Override
     public PlayerChat getPlayerChat() {
-        return chat;
+        return this.chat;
     }
 
     /**
      * {@inheritDoc}
+     *
      * @return a copy of {@link #achievedCommonGoals}
      */
-    public Map<String,Token> getAchievedCommonGoals(){ return new HashMap<>(achievedCommonGoals);}
-
-    /**
-     * {@inheritDoc}
-     * @param description the common goal description
-     * @param token the token won by achieving the common goal
-     */
-    public void addAchievedCommonGoal(String description, Token token){
-        achievedCommonGoals.put(description, token);
-        setChanged();
-        notifyObservers(Event.COMMONGOAL_ACHIEVED);
+    public Map<String, Token> getAchievedCommonGoals() {
+        return new HashMap<>(this.achievedCommonGoals);
     }
 
     /**
      * {@inheritDoc}
+     *
+     * @param description the common goal description
+     * @param token       the token won by achieving the common goal
+     */
+    public void addAchievedCommonGoal(String description, Token token) {
+        this.achievedCommonGoals.put(description, token);
+        this.setChanged();
+        this.notifyObservers(Event.COMMONGOAL_ACHIEVED);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
      * @param error the error description
      */
     @Override
-    public void reportError(String error){
+    public void reportError(String error) {
         this.errorReport = error;
-        setChanged();
-        notifyObservers(Event.ERROR_REPORTED);
+        this.setChanged();
+        this.notifyObservers(Event.ERROR_REPORTED);
     }
 
     /**
      * {@inheritDoc}
+     *
      * @return {@link #errorReport}
      */
     @Override
     public String getReportedError() {
-        return errorReport;
+        return this.errorReport;
     }
 
     /**
-     * TODO
-     * @return
+     * {@inheritDoc}
+     *
+     * @return A {@link PlayerInfo} representing this object instance
      */
     @Override
-    public PlayerInfo getInfo(){
-        return new PlayerInfo(errorReport, new HashMap<>(achievedCommonGoals));
+    public PlayerInfo getInfo() {
+        return new PlayerInfo(this.errorReport, new HashMap<>(this.achievedCommonGoals));
     }
 }

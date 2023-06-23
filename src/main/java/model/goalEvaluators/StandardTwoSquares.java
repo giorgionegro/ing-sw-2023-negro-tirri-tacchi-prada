@@ -24,20 +24,22 @@ public class StandardTwoSquares extends GoalEvaluator {
 
     /**
      * {@inheritDoc}
+     *
      * @return {@link #standardTwoSquaresDescription}
      */
     @Override
     public String getDescription() {
-        return standardTwoSquaresDescription;
+        return this.standardTwoSquaresDescription;
     }
 
     /**
      * {@inheritDoc}
+     *
      * @return {@link #standardTwoSquaresId}
      */
     @Override
-    public String getId(){
-        return standardTwoSquaresId;
+    public String getId() {
+        return this.standardTwoSquaresId;
     }
 
     /**
