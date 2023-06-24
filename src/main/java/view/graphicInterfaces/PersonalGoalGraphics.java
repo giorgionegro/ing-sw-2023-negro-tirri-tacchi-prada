@@ -6,7 +6,8 @@ import model.Tile;
  * It provides a method to update the information of the personal goal.
  */
 public interface PersonalGoalGraphics {
-    /** This method updates the information of the personal goal with the specified parameters:
+    /**
+     * This method updates the information of the personal goal with the specified parameters:
      * @param id the id of this goal, unique among others player personal goal
      * @param hasBeenAchieved true if the goal is achieved
      * @param description matrix representation of the goal

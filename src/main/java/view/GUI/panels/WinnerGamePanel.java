@@ -12,10 +12,16 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- *
+ * This class extends JPanel and represents a graphical component that shows the leaderboard at the end of the game
  */
 public class WinnerGamePanel extends JPanel {
 
+    /**
+     * Construct an {@link WinnerGamePanel} instance that uses the given {@link ActionListener} as listener for buttons events
+     * @param exitListener the ActionListener to be notified when the Exit button is pressed
+     * @param points player's points
+     * @param playerId id of the player
+     */
     public WinnerGamePanel(ActionListener exitListener, Map<String,Integer> points, String playerId) {
         initializeLayout(points, playerId);
 
@@ -24,10 +30,24 @@ public class WinnerGamePanel extends JPanel {
         );
     }
 
+
     /*-------------------- GRAPHIC LAYOUT ------------------*/
+    /**
+     * This is the background image of this component, it is used into {@link #paintComponent(Graphics)}
+     */
+
     private final Image createGame = new ImageIcon(Objects.requireNonNull(getClass().getResource("/leaderboardBackground.png"))).getImage();
+    /**
+     * This is the background image of components generated into {@link #createPointsContainer(String)} and {@link #createPlayerIdContainer(String, String)}
+     */
     private final Image filter = new ImageIcon(Objects.requireNonNull(getClass().getResource("/filterWinnerPanel.png"))).getImage();
+    /**
+     * This is the background image of {@link #exitButton}
+     */
     private final Image buttonBackground = new ImageIcon(Objects.requireNonNull(getClass().getResource("/img.png"))).getImage();
+    /**
+     *This is the main font used in this panel
+     */
     private final Font font = new Font("Century", Font.BOLD, 20);
     private final JButton exitButton = new JButton("EXIT"){
         protected void paintComponent(Graphics g) {
@@ -36,6 +56,10 @@ public class WinnerGamePanel extends JPanel {
         }
     };
 
+    /**This method initialize the layout of the Panel
+     * @param points player's points
+     * @param playerId id of the player
+     */
     private void initializeLayout(Map<String,Integer> points, String playerId){
         this.setLayout(new GridBagLayout());
         ImageIcon titleImage = new ImageIcon(Objects.requireNonNull(getClass().getResource("/title.png")));
@@ -109,6 +133,11 @@ public class WinnerGamePanel extends JPanel {
         this.add(new Container(), panelConstraints);
     }
 
+    /** This method creates the leaderboard Panel when the game ends
+     * @param points player's points
+     * @param thisPlayerId id of the player
+     * @return final leaderboard
+     */
     private Container createLeaderboardPanel(Map<String, Integer> points, String thisPlayerId) {
         Image firstCup = new ImageIcon(Objects.requireNonNull(getClass().getResource("/firstCup.png"))).getImage();
         Image secondCup = new ImageIcon(Objects.requireNonNull(getClass().getResource("/secondCup.png"))).getImage();
@@ -170,6 +199,11 @@ public class WinnerGamePanel extends JPanel {
     }
 
 
+    /**
+     * This method creates a Panel that shows all the final players' score
+     * @param points player's points
+     * @return Panel that contains players' points
+     */
     private JPanel createPointsContainer(String points) {
         //Create a label that displays player points ...
         JLabel playerPoints = new JLabel(points,SwingConstants.CENTER);
@@ -188,6 +222,12 @@ public class WinnerGamePanel extends JPanel {
         return playerIdPointsContainer;
     }
 
+    /**
+     * This method creates a Panel where to place the names of the players in order of score
+     * @param thisPlayerId id of the player that is using the ui
+     * @param playerId id of generic player
+     * @return Panel that contains players' IDs
+     */
     private JPanel createPlayerIdContainer(String thisPlayerId, String playerId) {
         //Create a label that displays the playerId ....
         JLabel playerIdText = new JLabel(playerId.equals(thisPlayerId) ? "YOU" : playerId, SwingConstants.CENTER);
@@ -206,6 +246,11 @@ public class WinnerGamePanel extends JPanel {
         return playerIdTextContainer;
     }
 
+    /**
+     * This method creates a Panel where to place the images of the cups in order of score
+     * @param cupImage image of a cup
+     * @return Container that contains the cup's image
+     */
     private Container createCupContainer(Image cupImage) {
         //Create a Label that displays the cup image if needed ...
         JLabel cup = new JLabel();
@@ -226,6 +271,10 @@ public class WinnerGamePanel extends JPanel {
         return cupContainer;
     }
 
+    /**
+     * This method overrides {@link  JComponent#paintComponent(Graphics)} drawing an image as background
+     * @param g the <code>Graphics</code> object to protect
+     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);

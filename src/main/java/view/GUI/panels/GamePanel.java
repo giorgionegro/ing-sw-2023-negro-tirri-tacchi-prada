@@ -48,6 +48,9 @@ public class GamePanel extends JComponent implements ActionListener, GameGraphic
 
     private final Container interactionContainer = new Container();
 
+    /**
+     * This method initializes the containers for the Game Panel allowing you to make the page resizable.
+     */
     private void initializeGameContainers(){
         livingRoomContainer.setLayout(new AspectRatioLayout(1));
         opponentsShelvesContainer.setLayout(new GridBagLayout());
@@ -80,6 +83,9 @@ public class GamePanel extends JComponent implements ActionListener, GameGraphic
     private JLabel errorLabel;
     private ChatPanel chatPanel;
 
+    /**
+     *
+     */
     private void initializeGameLayout(){
         this.removeAll();
 

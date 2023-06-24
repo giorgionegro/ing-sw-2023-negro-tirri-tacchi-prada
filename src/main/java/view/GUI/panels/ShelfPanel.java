@@ -11,11 +11,16 @@ import view.graphicInterfaces.PlayerShelfGraphics;
 
 public class ShelfPanel extends JPanel implements PlayerShelfGraphics {
     private Tile[][] shelfState = new Tile[6][5];
+    private boolean isFirstPlayer;
 
     public ShelfPanel() {
         this.setOpaque(false);
         for(Tile[] r : shelfState)
             Arrays.fill(r, Tile.EMPTY);
+    }
+
+    public void setIsFirstPlayer(boolean isFirstPlayer){
+        this.isFirstPlayer = isFirstPlayer;
     }
 
     @Override
@@ -29,7 +34,7 @@ public class ShelfPanel extends JPanel implements PlayerShelfGraphics {
 
     private final Image foreground = new ImageIcon(Objects.requireNonNull(getClass().getResource("/BookshelfForeground.png"))).getImage();
     private final Image background = new ImageIcon(Objects.requireNonNull(getClass().getResource("/BookshelfBackground.png"))).getImage();
-
+    private final Image firstPlayerOverlay = new ImageIcon(Objects.requireNonNull(getClass().getResource("/FirstPlayerOverlay.png"))).getImage();
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -60,5 +65,9 @@ public class ShelfPanel extends JPanel implements PlayerShelfGraphics {
         }
 
         g.drawImage(foreground,0,0,getWidth(),getHeight(),null);
+
+        if(isFirstPlayer){
+            g.drawImage(firstPlayerOverlay,0,0,getWidth(),getHeight(),null);
+        }
     }
 }
