@@ -81,6 +81,7 @@ class GoalsEvaluatorsTest {
      *             <li>test with a correct configuration</li>
      *             <li>test with an incorrect configuration</li>
      *             <li>test get description</li>
+     *             </ul>
      */
     @Test
     void testStandard34ColumnsRowMax3Types() {

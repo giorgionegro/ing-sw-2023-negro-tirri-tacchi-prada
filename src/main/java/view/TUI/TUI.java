@@ -1,157 +1,160 @@
 package view.TUI;
 
+import model.Tile;
+import model.Token;
+import model.abstractModel.Game.GameStatus;
 import model.abstractModel.Message;
 import view.ViewLogic;
-import view.graphicInterfaces.GameGraphics;
 import view.graphicInterfaces.AppGraphics;
+import view.graphicInterfaces.GameGraphics;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.PrintStream;
 import java.util.*;
-import model.abstractModel.Game.GameStatus;
-
-import model.Tile;
-import model.Token;
 
 import static view.TUI.TUIdraw.*;
 import static view.TUI.TUIutils.*;
 
 public class TUI implements AppGraphics, GameGraphics {
 
-    record Pair(String string, int colour) {}
-    private enum Scene{
-        CONNECTION,
-        INTERACTION,
-        JOIN,
-        CREATE,
-        GAME,
-        LEADERBOARD,
-    }
-    private String cursor = "";
-
     static final int renderHeight = 53;
     static final int renderWidth = 140;
-
     static final int cursorX = 3;
     static final int cursorY = 51;
-
     private final PrintStream out = System.out;
-
     private final Scanner scanner = new Scanner(System.in);
-
     private final List<Pair> oldCmds = new ArrayList<>();
-
     private final char[][] canvas = new char[renderHeight][renderWidth];
-
     private final int[][] canvasColors = new int[renderHeight][renderWidth];
-
     private final Object renderLock = new Object();
     private final Object updateLock = new Object();
-
+    private String cursor = "";
     private Scene scene;
+    private ActionListener actionListener;
+    private String playerId;
+    private Tile[][] boardState;
+    private Map<String, Tile[][]> playerShelves;
+    private String playerOnTurn;
+    private String firstTurnPlayer;
+    private Map<String, Integer> pointsValues;
 
-    private int updated = 0; //TODO to remove
+    /*-----------------  GRAPHIC UTILITY --------------------*/
+    private boolean isLastTurn;
+    private GameStatus status;
+    private List<Message> chat;
+    private Map<String, Token> commonGoals;
 
+    /*----------------- CONSTRUCTOR ------------------------*/
+    private Map<String, Token> achievedCommonGoals;
+
+    /*----------------- APP GRAPHICS ------------------------*/
+    private Tile[][] personalGoalsDescription;
     /*------------------ INPUT UTILITY --------------------*/
     private final Thread inputThread = new Thread(() -> {
-        while(true) {
+        while (true) {
             String cmd = this.scanner.nextLine();
-            printCommandLine(this.cursor + " " + cmd);
-            dispatchInput(cmd);
+            this.printCommandLine(this.cursor + " " + cmd);
+            this.dispatchInput(cmd);
         }
     });
+    private Map<Integer, Boolean> personalGoals;
 
-    private void dispatchInput(String cmd){
-        switch (scene){
+    public TUI() {
+        this.inputThread.start();
+        this.resetGameGraphics("");
+    }
+
+    private void dispatchInput(String cmd) {
+        switch (this.scene) {
             case CONNECTION -> {
-                if(cmd.isBlank())
-                    actionListener.actionPerformed(new ActionEvent(this,ViewLogic.EXIT,""));
+                if (cmd.isBlank())
+                    this.actionListener.actionPerformed(new ActionEvent(this, ViewLogic.EXIT, ""));
                 else {
                     if (cmd.equals("rmi") || cmd.equals("r"))
                         cmd = ViewLogic.CONNECT_RMI;
                     else if (cmd.equals("socket") || cmd.equals("s")) {
                         cmd = ViewLogic.CONNECT_SOCKET;
                     }
-                    actionListener.actionPerformed(new ActionEvent(this, ViewLogic.CONNECT,cmd));
+                    this.actionListener.actionPerformed(new ActionEvent(this, ViewLogic.CONNECT, cmd));
                 }
             }
             case INTERACTION -> {
-                switch (cmd){
+                switch (cmd) {
                     case "h" -> {
-                        showHints();
-                        render();
+                        this.showHints();
+                        this.render();
                     }
-                    case "c" -> actionListener.actionPerformed(new ActionEvent(this, ViewLogic.ROUTE_CREATE,""));
-                    case "j" -> actionListener.actionPerformed(new ActionEvent(this,ViewLogic.ROUTE_JOIN,""));
-                    case "e" -> actionListener.actionPerformed(new ActionEvent(this,ViewLogic.EXIT,""));
-                    default -> render();
+                    case "c" -> this.actionListener.actionPerformed(new ActionEvent(this, ViewLogic.ROUTE_CREATE, ""));
+                    case "j" -> this.actionListener.actionPerformed(new ActionEvent(this, ViewLogic.ROUTE_JOIN, ""));
+                    case "e" -> this.actionListener.actionPerformed(new ActionEvent(this, ViewLogic.EXIT, ""));
+                    default -> this.render();
                 }
             }
             case CREATE -> {
-                if(cmd.isBlank()){
-                    actionListener.actionPerformed(new ActionEvent(this,ViewLogic.ROUTE_HOME,""));
-                }else{
-                    if(cmd.split(" ").length!=2){
-                        actionListener.actionPerformed(new ActionEvent(this, ViewLogic.ROUTE_CREATE, "Wrong number of parameter (2 required)"));
-                    }else {
-                        actionListener.actionPerformed(new ActionEvent(this, ViewLogic.CREATE, "STANDARD " + cmd));
+                if (cmd.isBlank()) {
+                    this.actionListener.actionPerformed(new ActionEvent(this, ViewLogic.ROUTE_HOME, ""));
+                } else {
+                    if (cmd.split(" ").length != 2) {
+                        this.actionListener.actionPerformed(new ActionEvent(this, ViewLogic.ROUTE_CREATE, "Wrong number of parameter (2 required)"));
+                    } else {
+                        this.actionListener.actionPerformed(new ActionEvent(this, ViewLogic.CREATE, "STANDARD " + cmd));
                     }
                 }
             }
             case JOIN -> {
-                if(cmd.isBlank()){
-                    actionListener.actionPerformed(new ActionEvent(this, ViewLogic.ROUTE_HOME, ""));
-                }else {
-                    actionListener.actionPerformed(new ActionEvent(this, ViewLogic.JOIN,cmd));
+                if (cmd.isBlank()) {
+                    this.actionListener.actionPerformed(new ActionEvent(this, ViewLogic.ROUTE_HOME, ""));
+                } else {
+                    this.actionListener.actionPerformed(new ActionEvent(this, ViewLogic.JOIN, cmd));
                 }
             }
-            case GAME ->{
-                switch (cmd){
+            case GAME -> {
+                switch (cmd) {
                     case "h" -> {
-                        showHints();
-                        render();
+                        this.showHints();
+                        this.render();
                     }
-                    case "p" -> doMoveRoutine();
-                    case "s" -> sendMessageRoutine();
-                    case "e" -> actionListener.actionPerformed(new ActionEvent(this,ViewLogic.LEAVE_GAME,""));
-                    default -> render();
+                    case "p" -> this.doMoveRoutine();
+                    case "s" -> this.sendMessageRoutine();
+                    case "e" -> this.actionListener.actionPerformed(new ActionEvent(this, ViewLogic.LEAVE_GAME, ""));
+                    default -> this.render();
                 }
             }
-            case LEADERBOARD -> actionListener.actionPerformed(new ActionEvent(this,ViewLogic.ROUTE_HOME,""));
+            case LEADERBOARD -> this.actionListener.actionPerformed(new ActionEvent(this, ViewLogic.ROUTE_HOME, ""));
         }
     }
 
-    private void sendMessageRoutine(){
+    private void sendMessageRoutine() {
         String subject;
         String content;
-        synchronized (renderLock){
+        synchronized (this.renderLock) {
             this.cursor = "To (empty for everyone): ";
-            render();
+            this.render();
             subject = this.scanner.nextLine();
-            printCommandLine(this.cursor+" "+subject);
+            this.printCommandLine(this.cursor + " " + subject);
             this.cursor = "Message content (empty to abort): ";
-            render();
+            this.render();
             content = this.scanner.nextLine();
             this.cursor = "(h for commands) ->";
-            render();
+            this.render();
         }
-        if(!content.isBlank())
-            actionListener.actionPerformed(new ActionEvent(this, ViewLogic.SEND_MESSAGE,
-                    playerId+"\n"+subject+"\n"+content
+        if (!content.isBlank())
+            this.actionListener.actionPerformed(new ActionEvent(this, ViewLogic.SEND_MESSAGE,
+                    this.playerId + "\n" + subject + "\n" + content
             ));
     }
 
-    private void doMoveRoutine(){
+    private void doMoveRoutine() {
         String pickedTiles;
         String sCol = "";
         boolean choosing = true;
         boolean exit = false;
-        synchronized (renderLock) {
+        synchronized (this.renderLock) {
             do {
-                printCommandLine("Write row,col r2,c2 ... to pick up to three tiles (empty to abort)");
+                this.printCommandLine("Write row,col r2,c2 ... to pick up to three tiles (empty to abort)");
                 this.cursor = "->";
-                render();
+                this.render();
                 pickedTiles = this.scanner.nextLine();
 
                 if (pickedTiles.isBlank()) {
@@ -170,17 +173,17 @@ public class TUI implements AppGraphics, GameGraphics {
                     }
                     choosing = false;
                 } catch (NumberFormatException e) {
-                    printCommandLine("Illegal character in the sequence", RED);
+                    this.printCommandLine("Illegal character in the sequence", RED);
                 }
             } while (choosing);
         }
-        if(!exit) {
-            synchronized (renderLock) {
+        if (!exit) {
+            synchronized (this.renderLock) {
                 choosing = true;
                 do {
                     try {
-                        printCommandLine("Write the column of the shelf (right-starts from 0) (empty to abort)");
-                        render();
+                        this.printCommandLine("Write the column of the shelf (right-starts from 0) (empty to abort)");
+                        this.render();
                         sCol = this.scanner.nextLine();
 
                         if (sCol.isBlank()) {
@@ -192,110 +195,108 @@ public class TUI implements AppGraphics, GameGraphics {
 
                         choosing = false;
                     } catch (NumberFormatException e) {
-                        printCommandLine("Shelf chosen column is not a number", RED);
+                        this.printCommandLine("Shelf chosen column is not a number", RED);
                     }
                 } while (choosing);
             }
         }
 
-        if(!exit){
-            actionListener.actionPerformed(new ActionEvent(this,ViewLogic.SEND_MOVE,pickedTiles+"\n"+sCol));
+        if (!exit) {
+            this.actionListener.actionPerformed(new ActionEvent(this, ViewLogic.SEND_MOVE, pickedTiles + "\n" + sCol));
         }
 
-        synchronized (renderLock){
+        synchronized (this.renderLock) {
             this.cursor = "(h for commands)->";
-            render();
+            this.render();
         }
     }
 
-    private void showHints(){
-        synchronized (updateLock) {
-            switch (scene) {
+    private void showHints() {
+        synchronized (this.updateLock) {
+            switch (this.scene) {
                 case INTERACTION -> this.printCommandLine("c: Create a game\nj: Join a game\ne: Exit\nu: Update view");
                 case GAME -> this.printCommandLine("p: Pick tiles\ns: Send message\ne: Leave game\nu: Update view");
             }
         }
     }
 
-    /*-----------------  GRAPHIC UTILITY --------------------*/
-
-    private void render(){
+    private void render() {
         /* Current values of gameplay info */
         Tile[][] currentBoardState;
         List<Pair> currentOldCmd;
-        Map<String,Tile[][]> currentPlayerShelves;
+        Map<String, Tile[][]> currentPlayerShelves;
         String currentPlayerId;
         String currentFirstPlayer;
         String currentPlayerOnTurn;
-        Map<String,Integer> currentPointsValues;
+        Map<String, Integer> currentPointsValues;
         String currentCursor;
         boolean currentIsLastTurn;
         List<Message> currentChat;
-        Map<String,Token> currentCommonGoals;
-        Map<String,Token> currentAchievedCommonGoals;
+        Map<String, Token> currentCommonGoals;
+        Map<String, Token> currentAchievedCommonGoals;
         Tile[][] currentPersonalGoals;
         GameStatus currentGameStatus;
 
         /* Retrieve current values of gameplay info */
-        synchronized (updateLock){
-            currentCursor = cursor;
-            currentOldCmd = new ArrayList<>(oldCmds);
-            currentPlayerId = playerId;
-            currentBoardState = boardState;
-            currentPlayerShelves = new HashMap<>(playerShelves);
-            currentPlayerOnTurn = playerOnTurn;
-            currentFirstPlayer = firstTurnPlayer;
-            currentPointsValues = new HashMap<>(pointsValues);
-            currentIsLastTurn = isLastTurn;
-            currentChat = new ArrayList<>(chat);
-            currentCommonGoals = new HashMap<>(commonGoals);
-            currentAchievedCommonGoals = new HashMap<>(achievedCommonGoals);
-            currentPersonalGoals = personalGoalsDescription;
-            currentGameStatus = status;
+        synchronized (this.updateLock) {
+            currentCursor = this.cursor;
+            currentOldCmd = new ArrayList<>(this.oldCmds);
+            currentPlayerId = this.playerId;
+            currentBoardState = this.boardState;
+            currentPlayerShelves = new HashMap<>(this.playerShelves);
+            currentPlayerOnTurn = this.playerOnTurn;
+            currentFirstPlayer = this.firstTurnPlayer;
+            currentPointsValues = new HashMap<>(this.pointsValues);
+            currentIsLastTurn = this.isLastTurn;
+            currentChat = new ArrayList<>(this.chat);
+            currentCommonGoals = new HashMap<>(this.commonGoals);
+            currentAchievedCommonGoals = new HashMap<>(this.achievedCommonGoals);
+            currentPersonalGoals = this.personalGoalsDescription;
+            currentGameStatus = this.status;
         }
 
         /* Then update graphics on retrieved values */
-        synchronized (renderLock) {
+        synchronized (this.renderLock) {
 
             Arrays.stream(this.canvas).forEach(a -> Arrays.fill(a, ' '));
             Arrays.stream(this.canvasColors).forEach(a -> Arrays.fill(a, DEFAULT));
 
-            if(scene == Scene.GAME){
-                if(currentGameStatus == GameStatus.MATCHMAKING || currentGameStatus == GameStatus.STARTED || currentGameStatus == GameStatus.SUSPENDED){
-                    drawChat(playerId,currentChat, this.canvas, this.canvasColors);
+            if (this.scene == Scene.GAME) {
+                if (currentGameStatus == GameStatus.MATCHMAKING || currentGameStatus == GameStatus.STARTED || currentGameStatus == GameStatus.SUSPENDED) {
+                    drawChat(this.playerId, currentChat, this.canvas, this.canvasColors);
                     drawShelves(currentPlayerShelves, currentFirstPlayer, currentPlayerId, currentPlayerOnTurn, currentPointsValues, this.canvas, this.canvasColors);
                 }
-                if(currentGameStatus == GameStatus.MATCHMAKING || currentGameStatus == GameStatus.SUSPENDED){
-                    drawCenteredString("WAITING FOR OTHER PLAYERS TO JOIN",0,32,80,GREEN,canvas,canvasColors);
+                if (currentGameStatus == GameStatus.MATCHMAKING || currentGameStatus == GameStatus.SUSPENDED) {
+                    drawCenteredString("WAITING FOR OTHER PLAYERS TO JOIN", 0, 32, 80, GREEN, this.canvas, this.canvasColors);
                 }
-                if(currentGameStatus== GameStatus.STARTED){
+                if (currentGameStatus == GameStatus.STARTED) {
                     drawLastTurn(currentIsLastTurn, this.canvas, this.canvasColors);
                     drawLivingRoom(currentBoardState, this.canvas, this.canvasColors);
                     drawCommonGoals(currentCommonGoals, currentAchievedCommonGoals, this.canvas, this.canvasColors);
                     drawPersonalGoal(currentPersonalGoals, this.canvas, this.canvasColors);
                 }
-            } else if (scene == Scene.LEADERBOARD) {
+            } else if (this.scene == Scene.LEADERBOARD) {
                 drawGameEnd(currentPointsValues, this.canvas, this.canvasColors);
             }
 
             drawBox(0, 0, renderHeight, renderWidth, DEFAULT, this.canvas, this.canvasColors);
             drawCommandLine(currentCursor, currentOldCmd, this.canvas, this.canvasColors);
 
-            this.updated++;
-            drawString(this.updated + " ", 0, 0, GREEN, 20, this.canvas, this.canvasColors);
-
-            ClearScreen(s -> printCommandLine(s,RED));
+            ClearScreen(s -> this.printCommandLine(s, RED));
 
             for (int i = 0; i < this.canvas.length; i++) {
                 for (int j = 0; j < this.canvas[0].length; j++) {
-                    out.print(this.renderPixel(i, j));
+                    this.out.print(this.renderPixel(i, j));
                 }
-                out.println();
+                this.out.println();
             }
 
-            out.print("\033[" + (cursorY) + ";" + (cursorX + this.cursor.length() + 2) + "H");
+            this.out.print("\033[" + (cursorY) + ";" + (cursorX + this.cursor.length() + 2) + "H");
         }
     }
+
+
+    /*------------------- OTHER GRAPHICS ----------------------*/
 
     private String renderPixel(int x, int y) {
         return "\u001B[" + this.canvasColors[x][y] + "m" + this.canvas[x][y] + "\u001B[0m";
@@ -308,7 +309,7 @@ public class TUI implements AppGraphics, GameGraphics {
     private void printCommandLine(String toPrint, int colour) {
         String[] lines = toPrint.split("\n");
 
-        synchronized (updateLock) {
+        synchronized (this.updateLock) {
             for (String s : lines)
                 this.oldCmds.add(new Pair(s, colour));
 
@@ -317,225 +318,201 @@ public class TUI implements AppGraphics, GameGraphics {
         }
     }
 
-    /*----------------- CONSTRUCTOR ------------------------*/
-
-    public TUI(){
-        inputThread.start();
-        resetGameGraphics("");
-    }
-
-    /*----------------- APP GRAPHICS ------------------------*/
-
-    private ActionListener actionListener;
     @Override
     public void setActionListener(ActionListener actionListener) {
         this.actionListener = actionListener;
     }
 
     @Override
-    public GameGraphics getGameGraphics(){
+    public GameGraphics getGameGraphics() {
         return this;
     }
 
     @Override
     public void showConnection(String error) {
-        synchronized (renderLock) {
-            scene = Scene.CONNECTION;
+        synchronized (this.renderLock) {
+            this.scene = Scene.CONNECTION;
             this.cursor = "Connect with RMI (r) or SOCKET (s)?, empty to exit:";
 
             if (!error.isBlank())
-                printCommandLine(error, RED);
+                this.printCommandLine(error, RED);
         }
-        render();
+        this.render();
     }
 
     @Override
-    public void showServerInteraction(String message){
-        synchronized (renderLock) {
+    public void showServerInteraction(String message) {
+        synchronized (this.renderLock) {
             this.scene = Scene.INTERACTION;
             this.cursor = "(h for commands)->";
 
-            if(!message.isBlank())
-                printCommandLine(message);
+            if (!message.isBlank())
+                this.printCommandLine(message);
         }
-        render();
+        this.render();
     }
 
     @Override
     public void showJoin(String error) {
-        synchronized (renderLock) {
+        synchronized (this.renderLock) {
             this.scene = Scene.JOIN;
             this.cursor = "Write playerId and gameId (empty to exit):";
 
-            if(!error.isBlank())
-                printCommandLine(error,RED);
+            if (!error.isBlank())
+                this.printCommandLine(error, RED);
         }
-        render();
+        this.render();
     }
 
     @Override
     public void showCreate(String error) {
-        synchronized (renderLock){
+        synchronized (this.renderLock) {
             this.scene = Scene.CREATE;
             this.cursor = "Write gameId and playerNumber (empty to exit):";
 
-            if(!error.isBlank())
-                printCommandLine(error,RED);
+            if (!error.isBlank())
+                this.printCommandLine(error, RED);
         }
-        render();
+        this.render();
     }
 
     @Override
-    public void showGame(String message){
-        synchronized (updateLock) {
+    public void showGame(String message) {
+        synchronized (this.updateLock) {
             this.scene = Scene.GAME;
             this.cursor = "(h for commands)->";
         }
 
-        if(!message.isBlank())
-            printCommandLine(message);
+        if (!message.isBlank())
+            this.printCommandLine(message);
 
-        render();
+        this.render();
     }
 
     @Override
-    public void exit(){
-        inputThread.interrupt();
+    public void exit() {
+        this.inputThread.interrupt();
         System.exit(0);
     }
 
-
-    /*------------------- OTHER GRAPHICS ----------------------*/
-
-    private String playerId;
     @Override
-    public void resetGameGraphics(String playerId){
-        synchronized (updateLock) {
+    public void resetGameGraphics(String playerId) {
+        synchronized (this.updateLock) {
             this.playerId = playerId;
             this.playerOnTurn = "";
-            boardState = new Tile[9][9];
-            for (Tile[] row : boardState)
+            this.boardState = new Tile[9][9];
+            for (Tile[] row : this.boardState)
                 Arrays.fill(row, Tile.EMPTY);
-            personalGoalsDescription = new Tile[6][5];
-            for (Tile[] row : personalGoalsDescription)
+            this.personalGoalsDescription = new Tile[6][5];
+            for (Tile[] row : this.personalGoalsDescription)
                 Arrays.fill(row, Tile.EMPTY);
-            playerShelves = new HashMap<>();
-            pointsValues = new HashMap<>();
-            isLastTurn = false;
-            chat = new ArrayList<>();
-            commonGoals = new HashMap<>();
-            achievedCommonGoals = new HashMap<>();
-            personalGoals = new HashMap<>();
-            status = GameStatus.MATCHMAKING;
+            this.playerShelves = new HashMap<>();
+            this.pointsValues = new HashMap<>();
+            this.isLastTurn = false;
+            this.chat = new ArrayList<>();
+            this.commonGoals = new HashMap<>();
+            this.achievedCommonGoals = new HashMap<>();
+            this.personalGoals = new HashMap<>();
+            this.status = GameStatus.MATCHMAKING;
         }
     }
 
-    private Tile[][] boardState;
     @Override
-    public void updateBoardGraphics(Tile[][] board){
-        synchronized (updateLock){
-            boardState = Arrays.stream(board).map(Tile[]::clone).toArray(Tile[][]::new);
+    public void updateBoardGraphics(Tile[][] board) {
+        synchronized (this.updateLock) {
+            this.boardState = Arrays.stream(board).map(Tile[]::clone).toArray(Tile[][]::new);
         }
-        render();
+        this.render();
     }
 
-    private Map<String,Tile[][]> playerShelves;
-
     @Override
-    public void updatePlayerShelfGraphics(String playerId, Tile[][] shelf){
-        synchronized (updateLock){
-            playerShelves.put(playerId, Arrays.stream(shelf).map(Tile[]::clone).toArray(Tile[][]::new));
+    public void updatePlayerShelfGraphics(String playerId, Tile[][] shelf) {
+        synchronized (this.updateLock) {
+            this.playerShelves.put(playerId, Arrays.stream(shelf).map(Tile[]::clone).toArray(Tile[][]::new));
         }
-        render();
+        this.render();
     }
 
-    private String playerOnTurn;
-
-    private String firstTurnPlayer;
-
-    private Map<String,Integer> pointsValues;
-
-    private boolean isLastTurn;
-
-    private GameStatus status;
-
     @Override
-    public void updateGameInfoGraphics(GameStatus status, String firstTurnPlayer, String playerOnTurn, boolean isLastTurn, Map<String,Integer> pointsValues){
-        synchronized (updateLock){
+    public void updateGameInfoGraphics(GameStatus status, String firstTurnPlayer, String playerOnTurn, boolean isLastTurn, Map<String, Integer> pointsValues) {
+        synchronized (this.updateLock) {
             this.status = status;
             this.firstTurnPlayer = firstTurnPlayer;
             this.playerOnTurn = playerOnTurn;
             this.pointsValues = new HashMap<>(pointsValues);
             this.isLastTurn = isLastTurn;
 
-            if(status == GameStatus.ENDED){
+            if (status == GameStatus.ENDED) {
                 this.cursor = "Press enter to go back to the home page";
-                scene = Scene.LEADERBOARD;
+                this.scene = Scene.LEADERBOARD;
             }
         }
-        render();
+        this.render();
     }
 
-    private List<Message> chat;
-
     @Override
-    public void updatePlayerChatGraphics(List<Message> chat){
-        synchronized (updateLock){
+    public void updatePlayerChatGraphics(List<Message> chat) {
+        synchronized (this.updateLock) {
             this.chat = chat;
         }
-        render();
+        this.render();
     }
 
-    private Map<String,Token> commonGoals;
-
     @Override
-    public void updateCommonGoalGraphics(String id, String description, Token tokenState){
-        synchronized (updateLock){
-            commonGoals.put(id,tokenState);
+    public void updateCommonGoalGraphics(String id, String description, Token tokenState) {
+        synchronized (this.updateLock) {
+            this.commonGoals.put(id, tokenState);
         }
-        render();
+        this.render();
     }
 
-    private Map<String,Token> achievedCommonGoals;
-
     @Override
-    public void updateAchievedCommonGoals(Map<String,Token> achievedCommonGoals){
-        synchronized (updateLock){
+    public void updateAchievedCommonGoals(Map<String, Token> achievedCommonGoals) {
+        synchronized (this.updateLock) {
             this.achievedCommonGoals = achievedCommonGoals;
         }
-        render();
+        this.render();
     }
 
     @Override
-    public void updateErrorState(String reportedError){
-        synchronized (updateLock){
-            if(!reportedError.isBlank())
-                printCommandLine(reportedError,RED);
+    public void updateErrorState(String reportedError) {
+        synchronized (this.updateLock) {
+            if (!reportedError.isBlank())
+                this.printCommandLine(reportedError, RED);
         }
-        render();
+        this.render();
     }
 
-    private Tile[][] personalGoalsDescription;
-
-    private Map<Integer,Boolean> personalGoals;
     @Override
-    public void updatePersonalGoalGraphics(int id, boolean hasBeenAchieved, Tile[][] description){
-        synchronized (updateLock){
-            if(!personalGoals.containsKey(id)){
+    public void updatePersonalGoalGraphics(int id, boolean hasBeenAchieved, Tile[][] description) {
+        synchronized (this.updateLock) {
+            if (!this.personalGoals.containsKey(id)) {
                 Tile[][] temp = new Tile[6][5];
-                for(int i=0;i<description.length; i++)
-                    for(int j=0;j<description[i].length;j++) {
+                for (int i = 0; i < description.length; i++)
+                    for (int j = 0; j < description[i].length; j++) {
                         if (description[i][j] != Tile.EMPTY) {
                             temp[i][j] = description[i][j];
                         } else {
-                            temp[i][j] = personalGoalsDescription[i][j];
+                            temp[i][j] = this.personalGoalsDescription[i][j];
                         }
                     }
-                personalGoalsDescription = temp;
+                this.personalGoalsDescription = temp;
             }
 
-            personalGoals.put(id,hasBeenAchieved);
+            this.personalGoals.put(id, hasBeenAchieved);
         }
-        render();
+        this.render();
+    }
+
+    private enum Scene {
+        CONNECTION,
+        INTERACTION,
+        JOIN,
+        CREATE,
+        GAME,
+        LEADERBOARD,
+    }
+
+    record Pair(String string, int colour) {
     }
 }

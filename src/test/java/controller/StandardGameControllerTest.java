@@ -22,7 +22,7 @@ import java.util.function.Consumer;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
-@SuppressWarnings({"MismatchedReadAndWriteOfArray", "BlockingMethodInNonBlockingContext", "unchecked"})
+@SuppressWarnings({"MismatchedReadAndWriteOfArray", "unchecked"})
 class StandardGameControllerTest {
 
 

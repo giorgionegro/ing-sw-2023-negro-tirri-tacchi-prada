@@ -11,18 +11,6 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 class StandardPlayerTest {
 
-    /**
-     * Method under test:{@link StandardPlayer()}
-     *
-     * <p>
-     * <p>
-     * Test if the constructor correctly creates a player from a player instance
-     */
-    @Test
-    void testConstructor() {
-        //TODO
-    }
-
 
     @Test
     void testPlayerCreation() {

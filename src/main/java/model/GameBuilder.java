@@ -13,9 +13,10 @@ import java.util.Stack;
  * //TODO controllare
  * This class is responsible for creating a new game based on its type and initializing the various game components.
  */
-@SuppressWarnings("UseOfObsoleteCollectionType")
-public enum GameBuilder {
-    ;
+@SuppressWarnings({"UseOfObsoleteCollectionType", "UtilityClass"})
+public final class GameBuilder {
+    private GameBuilder() {
+    }
 
     /**
      * //TODO controllare

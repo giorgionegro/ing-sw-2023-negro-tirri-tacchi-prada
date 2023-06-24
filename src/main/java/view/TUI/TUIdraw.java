@@ -14,15 +14,17 @@ import java.util.stream.Collectors;
 import static view.TUI.TUI.*;
 import static view.TUI.TUIutils.*;
 
-public final class TUIdraw {
-    private TUIdraw(){}
+final class TUIdraw {
+
     /**
      * width of command line
      */
     static final int commandLineWidth = 75;
     static final int commandLineX = 1;
-    static int commandLineY = 41;
-    static int commandLineHeight = 10;
+    static final int commandLineY = 41;
+    static final int commandLineHeight = 10;
+    private TUIdraw() {
+    }
 
     /**
      * This method is used to draw grids of different shape and size based on its parameters
@@ -360,7 +362,7 @@ public final class TUIdraw {
      * @param cliPixel       2d array of characters representing the pixels
      * @param cliPixelColor  2d array of integers representing the color of the pixels
      */
-    static void drawShelves(Map<String, Tile[][]> currentShelves, String firstPlayerId,  String thisPlayerId, String playerOnTurn, Map<String,Integer> pointsValue, char[][] cliPixel, int[][] cliPixelColor) {
+    static void drawShelves(Map<String, Tile[][]> currentShelves, String firstPlayerId, String thisPlayerId, String playerOnTurn, Map<String, Integer> pointsValue, char[][] cliPixel, int[][] cliPixelColor) {
         final int shelvesX = 43;
 
         final int shelvesY = 3;
@@ -390,7 +392,7 @@ public final class TUIdraw {
 
                 if (playerId.equals(thisPlayerId)) {
                     tempPlayerId = "YOU";
-                    drawString("  0   1   2   3   4  ",shelvesY+1,shelfX,DEFAULT,21,cliPixel,cliPixelColor);
+                    drawString("  0   1   2   3   4  ", shelvesY + 1, shelfX, DEFAULT, 21, cliPixel, cliPixelColor);
                 }
 
                 if (tempPlayerId.length() > shelvesWidth - 4)
@@ -403,8 +405,8 @@ public final class TUIdraw {
                 int spaceBefore = (shelvesWidth - tempPlayerId.length()) / 2;
                 int spaceAfter = shelvesWidth - spaceBefore - tempPlayerId.length();
 
-                if(playerId.equals(firstPlayerId)) {
-                    spaceBefore-=2;
+                if (playerId.equals(firstPlayerId)) {
+                    spaceBefore -= 2;
                     playersName.append(" ■");
                 }
                 playersName.append(" ".repeat(spaceBefore));
@@ -507,7 +509,7 @@ public final class TUIdraw {
      * @param cliPixelColor 2d array of integers representing the color of the pixels
      */
     static void drawLastTurn(boolean isLastTurn, char[][] cliPixel, int[][] cliPixelColor) {
-        if (isLastTurn){
+        if (isLastTurn) {
             drawString("LAST TURN", 21, 43, GREEN, 50 - 2, cliPixel, cliPixelColor);
         }
     }

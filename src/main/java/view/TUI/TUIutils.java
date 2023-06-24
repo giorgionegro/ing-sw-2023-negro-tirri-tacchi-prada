@@ -3,8 +3,8 @@ package view.TUI;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
-enum TUIutils {
-    ;
+final class TUIutils {
+
     public static final int WHITE = 37;
     public static final int GREEN = 32;
     public static final int YELLOW = 33;
@@ -13,6 +13,8 @@ enum TUIutils {
     public static final int CYAN = 36;
     public static final int RED = 31;
     public static final int DEFAULT = 39;
+    private TUIutils() {
+    }
 
     /**
      * This method returns the numeric value of a String that represents a color
