@@ -46,7 +46,7 @@ public abstract class Player extends Observable<Player.Event> {
     /**
      * This method adds a new achieved common goal
      * @param description the common goal description
-     * @param token the token won by achieving the common goal
+     * @param token       the token won by achieving the common goal
      */
     public abstract void addAchievedCommonGoal(String description, Token token);
 

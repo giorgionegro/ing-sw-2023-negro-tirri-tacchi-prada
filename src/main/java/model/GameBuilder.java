@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
 
+<<<<<<<<< Temporary merge branch 1
 /**
  * //TODO controllare
  * This class is responsible for creating a new game based on its type and initializing the various game components.
@@ -28,8 +29,7 @@ public class GameBuilder {
      * @return a new Game instance
      * @throws IllegalArgumentException if newGameInfo type is not supported
      */
-    public static Game build(NewGameInfo newGameInfo) throws IllegalArgumentException {
-        //noinspection SwitchStatementWithTooFewBranches
+    public static Game build(NewGameInfo newGameInfo) throws IllegalArgumentException{
         switch (newGameInfo.type()){
             case "STANDARD" -> {
                 List<Player> avaiablePlayers = new ArrayList<>();
