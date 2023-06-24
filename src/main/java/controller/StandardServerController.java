@@ -84,11 +84,8 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
                     Thread.sleep(1000);
                 } catch (InterruptedException | RemoteException e) {
                     System.err.println("ping failed");
-                    try {
-                        this.disconnect(client);
-                    } catch (RemoteException ex) {
-                        System.err.println("Error while disconnecting client");
-                    }
+                    this.disconnect(client);
+
                     break;
                 }
             }
@@ -129,10 +126,9 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
      * {@inheritDoc}
      *
      * @param client {@inheritDoc}
-     * @throws RemoteException If an error occurred reaching the remote object
      */
     @Override
-    public void disconnect(ClientInterface client) throws RemoteException {
+    public void disconnect(ClientInterface client) {
         // Checks if the client has been authenticated
         if (!this.users.containsKey(client))
             System.err.println("ServerController: Command from unauthenticated client");
@@ -160,7 +156,7 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
      * @throws RemoteException {@inheritDoc}
      */
     @Override
-    public void joinGame(ClientInterface client, LoginInfo info) throws RemoteException {
+    public void joinGame(ClientInterface client, LoginInfo info) {
         // Checks if the client has been authenticated
         if (!this.users.containsKey(client))
             System.err.println("ServerController: Command from unauthenticated client");
