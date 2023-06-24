@@ -146,7 +146,7 @@ class StandardServerControllerTest {
      * Testing normal behaviour
      */
     @Test
-    void testDisconnect() throws RemoteException {
+    void testDisconnect() {
         assertDoesNotThrow(() -> {
             StandardServerController standardServerController = new StandardServerController();
             ClientInterface client = new ClientInterface() {

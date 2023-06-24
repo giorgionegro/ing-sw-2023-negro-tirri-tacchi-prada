@@ -15,5 +15,5 @@ public interface PlayerChatGraphics {
      *
      * @param chat list of messages sent to a player
      */
-    void updatePlayerChatGraphics(List<Message> chat);
+    void updatePlayerChatGraphics(List<? extends Message> chat);
 }

@@ -4,6 +4,7 @@ import model.Tile;
 import model.Token;
 import model.abstractModel.Game.GameStatus;
 import model.abstractModel.Message;
+import modelView.PickedTile;
 import view.ViewLogic;
 import view.graphicInterfaces.AppGraphics;
 import view.graphicInterfaces.GameGraphics;
@@ -42,7 +43,7 @@ public class TUI implements AppGraphics, GameGraphics {
     /*-----------------  GRAPHIC UTILITY --------------------*/
     private boolean isLastTurn;
     private GameStatus status;
-    private List<Message> chat;
+    private List<? extends Message> chat;
     private Map<String, Token> commonGoals;
 
     /*----------------- CONSTRUCTOR ------------------------*/
@@ -61,6 +62,7 @@ public class TUI implements AppGraphics, GameGraphics {
     private Map<Integer, Boolean> personalGoals;
 
     public TUI() {
+        super();
         this.inputThread.start();
         this.resetGameGraphics("");
     }
@@ -150,8 +152,11 @@ public class TUI implements AppGraphics, GameGraphics {
         String sCol = "";
         boolean choosing = true;
         boolean exit = false;
+        List<PickedTile> tTiles = new ArrayList<>();
+
         synchronized (this.renderLock) {
             do {
+                tTiles.clear();
                 this.printCommandLine("Write row,col r2,c2 ... to pick up to three tiles (empty to abort)");
                 this.cursor = "->";
                 this.render();
@@ -168,13 +173,18 @@ public class TUI implements AppGraphics, GameGraphics {
                 try {
                     for (int i = 0; i < split.length && i < 3; i++) {
                         String[] split1 = split[i].split(",");
-                        Integer.parseInt(split1[0]);
-                        Integer.parseInt(split1[1]);
+                        var x = Integer.parseInt(split1[0]);
+                        var y = Integer.parseInt(split1[1]);
+                        tTiles.add(new PickedTile(x, y));
                     }
-                    choosing = false;
+                    if (this.pickable(tTiles, this.boardState)) {
+                        choosing = false;
+                    }
+
                 } catch (NumberFormatException e) {
                     this.printCommandLine("Illegal character in the sequence", RED);
                 }
+
             } while (choosing);
         }
         if (!exit) {
@@ -182,7 +192,7 @@ public class TUI implements AppGraphics, GameGraphics {
                 choosing = true;
                 do {
                     try {
-                        this.printCommandLine("Write the column of the shelf (right-starts from 0) (empty to abort)");
+                        this.printCommandLine("Write the column of the shelf (left-starts from 0) (empty to abort)");
                         this.render();
                         sCol = this.scanner.nextLine();
 
@@ -191,7 +201,12 @@ public class TUI implements AppGraphics, GameGraphics {
                             break;
                         }
 
-                        Integer.parseInt(sCol);
+                        var sC = Integer.parseInt(sCol);
+                        int emptyTiles = Arrays.stream(this.playerShelves.get(this.playerId)).mapToInt(row -> row[sC] == Tile.EMPTY ? 1 : 0).sum();//TODO test this
+                        if (emptyTiles < tTiles.size()) {
+                            this.printCommandLine("Not enough space in the shelf", RED);
+                            continue;
+                        }
 
                         choosing = false;
                     } catch (NumberFormatException e) {
@@ -451,7 +466,7 @@ public class TUI implements AppGraphics, GameGraphics {
     }
 
     @Override
-    public void updatePlayerChatGraphics(List<Message> chat) {
+    public void updatePlayerChatGraphics(List<? extends Message> chat) {
         synchronized (this.updateLock) {
             this.chat = chat;
         }
@@ -504,6 +519,86 @@ public class TUI implements AppGraphics, GameGraphics {
         this.render();
     }
 
+    public boolean pickable(List<PickedTile> pickedTiles, Tile[][] board) {
+        if (!this.areTilesDifferent(new ArrayList<>(pickedTiles))) {
+            this.printCommandLine("Tiles are not different", RED);
+            return false;
+        }
+        if (!this.areTilesAligned(new ArrayList<>(pickedTiles))) {
+            this.printCommandLine("Tiles are not aligned", RED);
+            return false;
+        }
+        for (PickedTile tile : pickedTiles)
+            if (!this.isTilePickable(tile.row(), tile.col(), board)) {
+                this.printCommandLine("Tile not pickable", RED);
+                return false;
+            }
+        return true;
+    }
+
+    private boolean areTilesAligned(List<PickedTile> pickedTiles) {
+
+        boolean rowAligned = true;
+        boolean colAligned = true;
+
+        for (int i = 1; i < pickedTiles.size(); i++) {
+            rowAligned = rowAligned && (pickedTiles.get(i - 1).row() == pickedTiles.get(i).row());
+            colAligned = colAligned && (pickedTiles.get(i - 1).col() == pickedTiles.get(i).col());
+        }
+
+        if (rowAligned) {
+            pickedTiles.sort(Comparator.comparingInt(PickedTile::col));
+            for (int i = 0; i < pickedTiles.size() - 1; i++)
+                if (pickedTiles.get(i).col() + 1 != pickedTiles.get(i + 1).col())
+                    return false;
+        }
+
+        if (colAligned) {
+            pickedTiles.sort(Comparator.comparingInt(PickedTile::row));
+            for (int i = 0; i < pickedTiles.size() - 1; i++)
+                if (pickedTiles.get(i).row() + 1 != pickedTiles.get(i + 1).row())
+                    return false;
+        }
+
+
+        return rowAligned || colAligned;
+    }
+
+    /**
+     * @param pickedTiles list of picked tiles
+     * @return true if tiles are different, false otherwise
+     */
+    private boolean areTilesDifferent(List<PickedTile> pickedTiles) {
+        for (int i = 0; i < pickedTiles.size() - 1; i++) {
+            for (int j = i + 1; j < pickedTiles.size(); j++) {
+                if (pickedTiles.get(i).row() == pickedTiles.get(j).row())
+                    if (pickedTiles.get(i).col() == pickedTiles.get(j).col())
+                        return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * @param row    row of the tile
+     * @param column column of the tile
+     * @param board  board to check
+     * @return true if tile is pickable, false otherwise
+     */
+    private boolean isTilePickable(int row, int column, Tile[][] board) {
+        if (row < 0 || column < 0 || row > board.length - 1 || column > board[row].length - 1 || board[row][column] == Tile.EMPTY || board[row][column] == null)
+            return false;
+
+        if (row == 0 || column == 0 || row == board.length - 1 || column == board[0].length - 1)
+            return true;
+
+        return board[row - 1][column] == Tile.EMPTY
+                || board[row + 1][column] == Tile.EMPTY
+                || board[row][column - 1] == Tile.EMPTY
+                || board[row][column + 1] == Tile.EMPTY;
+    }
+
+
     private enum Scene {
         CONNECTION,
         INTERACTION,
@@ -515,4 +610,6 @@ public class TUI implements AppGraphics, GameGraphics {
 
     record Pair(String string, int colour) {
     }
+
+
 }

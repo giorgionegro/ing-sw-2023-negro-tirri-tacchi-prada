@@ -37,7 +37,7 @@ class StandardGameTest {
      * Method under test: {@link StandardGame#addPlayer(String)}
      */
     @Test
-    void testAddPlayer() throws IllegalArgumentException, MatchmakingClosedException, PlayerAlreadyExistsException, PlayerNotExistsException {
+    void testAddPlayer() throws IllegalArgumentException, PlayerNotExistsException {
 
         Game game = GameBuilder.build(new NewGameInfo("gameId", "STANDARD", 2, System.currentTimeMillis()));
         assertDoesNotThrow(() -> game.addPlayer("42"));
@@ -142,7 +142,7 @@ class StandardGameTest {
      * Method under test: {@link StandardGame#updatePlayersTurn()}
      */
     @Test
-    void testUpdatePlayersTurn() throws IllegalArgumentException, GameEndedException, MatchmakingClosedException, PlayerAlreadyExistsException {
+    void testUpdatePlayersTurn() throws IllegalArgumentException, MatchmakingClosedException, PlayerAlreadyExistsException {
         Game game = GameBuilder.build(new NewGameInfo("gameId", "STANDARD", 2, System.currentTimeMillis()));
         game.addPlayer("42");
         game.addPlayer("43");
@@ -158,7 +158,7 @@ class StandardGameTest {
      * Method under test: {@link StandardGame#updatePlayersTurn()}
      */
     @Test
-    void testUpdatePlayersTurn2() throws IllegalArgumentException, GameEndedException, MatchmakingClosedException, PlayerAlreadyExistsException, PlayerNotExistsException {
+    void testUpdatePlayersTurn2() throws IllegalArgumentException, MatchmakingClosedException, PlayerAlreadyExistsException, PlayerNotExistsException {
         Game game = GameBuilder.build(new NewGameInfo("gameId", "STANDARD", 3, System.currentTimeMillis()));
         game.addPlayer("42");
         game.addPlayer("43");
