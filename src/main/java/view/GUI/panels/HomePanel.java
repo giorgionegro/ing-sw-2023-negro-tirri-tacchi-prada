@@ -9,9 +9,12 @@ import java.awt.event.ActionListener;
 import java.util.Objects;
 
 /**
- * This class
+ * This class extends JPanel and represents a graphical component that allows to create or join a game
  */
 public class HomePanel extends JPanel {
+    /** Construct an {@link CreateGamePanel} instance that uses the given {@link ActionListener} as listener for buttons events
+     * @param listener the ActionListener to be notified when a button is pressed
+     */
     public HomePanel(ActionListener listener){
 
         initializeLayout();
@@ -26,7 +29,9 @@ public class HomePanel extends JPanel {
             listener.actionPerformed(new ActionEvent(this, ViewLogic.EXIT,""))
         );
     }
-
+    /**This method prints out an error message
+     * @param message the error message to be displayed.
+     */
     public void setMessage(String message){
         if(!message.isBlank()){
             messageLabel.setVisible(true);
@@ -40,11 +45,25 @@ public class HomePanel extends JPanel {
 
 
     /*---------------------- GRAPHICS COMPONENTS and GRAPHICS INITIALIZATION -------------------------*/
-
+    /**
+     * This is the background image of this component, it is used into {@link #paintComponent(Graphics)}
+     **/
     private final Image backgroundImage = new ImageIcon (Objects.requireNonNull(getClass().getResource("/desktop.png"))).getImage();
+    /**
+     * This is the background image of this component, it is used into {@link #paintComponent(Graphics)}
+     **/
     private final Image messageBackground = new ImageIcon(Objects.requireNonNull(getClass().getResource("/filterWinnerPanel.png"))).getImage();
+    /**
+     * This is the background image of this component, it is used into {@link #paintComponent(Graphics)}
+     **/
     private final Image titleImage = new ImageIcon(Objects.requireNonNull(getClass().getResource("/title.png"))).getImage();
+    /**
+     *  This is the background image of {@link #joinButton} {@link #exitButton}{@link #createButton}
+     */
     private final Image buttonBackground = new ImageIcon(Objects.requireNonNull(getClass().getResource("/img.png"))).getImage();
+    /**
+     *  This is the main font used in this panel
+     */
     private final Font textFont = new Font("Century", Font.BOLD, 24);
     private final GridBagConstraints constraints = new GridBagConstraints(
             0,0,
@@ -55,13 +74,18 @@ public class HomePanel extends JPanel {
             new Insets(10,5,10,5),
             0,0
     );
+    /**
+     * This is the label with the written "MY SHELFIE"
+     */
     private final JLabel titleLabel = new JLabel() {
         protected void paintComponent(Graphics g) {
             g.drawImage(titleImage, 0, 0, getWidth(), getHeight(), null);
             super.paintComponent(g);
         }
     };
-
+    /**
+     * This is the button that allows the user to join a game
+     */
     private final JButton joinButton = new JButton() {
         protected void paintComponent(Graphics g) {
             g.drawImage(buttonBackground, 0, 0, getWidth(), getHeight(), null);
@@ -69,6 +93,9 @@ public class HomePanel extends JPanel {
         }
     };
 
+    /**
+     * This is the button that allows the user to create a new game
+     */
     private final JButton createButton = new JButton() {
         protected void paintComponent(Graphics g) {
             g.drawImage(buttonBackground, 0, 0, getWidth(), getHeight(), null);
@@ -76,6 +103,9 @@ public class HomePanel extends JPanel {
         }
     };
 
+    /**
+     * This is the button that allows the user to exit from the application
+     */
     private final JButton exitButton = new JButton() {
         protected void paintComponent(Graphics g) {
             g.drawImage(buttonBackground, 0, 0, getWidth(), getHeight(), null);
@@ -84,7 +114,7 @@ public class HomePanel extends JPanel {
     };
 
     /**
-     *
+     * This label shows an error if occurred
      */
     private final JLabel messageLabel = new JLabel() {
         protected void paintComponent(Graphics g) {
@@ -93,10 +123,8 @@ public class HomePanel extends JPanel {
         }
     };
 
-    private final Dimension zeroDimension = new Dimension(0,0);
-
     /**
-     *
+     *  This method initializes the layout of the component
      */
     private void initializeLayout(){
         this.setLayout(new GridBagLayout());
@@ -107,7 +135,7 @@ public class HomePanel extends JPanel {
     }
 
     /**
-     *
+     *  This method initializes the Borders of the panel
      */
     private void initializeBorders(){
         constraints.weightx=1;
@@ -132,9 +160,11 @@ public class HomePanel extends JPanel {
     }
 
     /**
-     *
+     This method initializes the contents of the panel: 3 buttons (JOIN, CREATE, EXIT) and the Title label.
+     * The positions and dimensions of components within the grid are set.
      */
     private void initializeContents(){
+        final Dimension zeroDimension = new Dimension(0,0);
         constraints.gridy=1;
         constraints.gridx=1;
         constraints.gridwidth=1;

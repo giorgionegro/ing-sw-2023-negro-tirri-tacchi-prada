@@ -11,7 +11,13 @@ import java.util.Map;
 import java.util.Objects;
 
 public class CommonGoalsPanel extends JPanel implements CommonGoalGraphics {
+    /**
+     * //TODO
+     */
     private final Map<String, Token> commonGoals = new HashMap<>();
+    /**
+     * //TODO
+     */
     private final Map<String, Token> achieved = new HashMap<>();
 
     /**

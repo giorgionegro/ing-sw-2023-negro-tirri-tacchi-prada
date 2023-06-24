@@ -11,7 +11,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
+//TODO
 public class TilesOrderingPanel extends JPanel implements ActionListener{
     private final List<TileButton> pickedTiles = new ArrayList<>();
     private final ActionListener moveSender;
@@ -88,7 +88,6 @@ public class TilesOrderingPanel extends JPanel implements ActionListener{
 
     /*------------------ GRAPHIC LAYOUT ---------------------*/
     private final Image background = new ImageIcon(Objects.requireNonNull(getClass().getResource("/TilesOrderingTableBackground.png"))).getImage();
-
     private final SwapButton swapButton1 = new SwapButton();
     private final SwapButton swapButton2 = new SwapButton();
 
@@ -163,6 +162,11 @@ public class TilesOrderingPanel extends JPanel implements ActionListener{
         this.add(new Container(), constraints);
     }
 
+
+    /**
+     * This method overrides {@link  JComponent#paintComponent(Graphics)} drawing an image as background
+     * @param g the <code>Graphics</code> object to protect
+     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
