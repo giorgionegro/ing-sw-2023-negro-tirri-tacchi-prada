@@ -261,7 +261,7 @@ class StandardGameControllerTest {
      * </ul>
      */
     @Test
-    void pr() throws GameAccessDeniedException, InterruptedException {
+    void rejoinEndedGame() throws GameAccessDeniedException, InterruptedException {
         Game game = GameBuilder.build(new NewGameInfo("42", "STANDARD", 2, System.currentTimeMillis()));
         StandardGameController standardGameController = new StandardGameController(game, lobbyController -> {
         });
@@ -289,12 +289,11 @@ class StandardGameControllerTest {
         //leave the game
 
 
-
-            try {
-                standardGameController.leavePlayer(fclient);
-            } catch (GameAccessDeniedException e) {
-                throw new RuntimeException(e);
-            }
+        try {
+            standardGameController.leavePlayer(fclient);
+        } catch (GameAccessDeniedException e) {
+            throw new RuntimeException(e);
+        }
 
         //try to join again in 6 seconds
 
