@@ -261,7 +261,7 @@ class StandardGameControllerTest {
      * </ul>
      */
     @Test
-    void rejoinEndedGame() throws GameAccessDeniedException {
+    void pr() throws GameAccessDeniedException, InterruptedException {
         Game game = GameBuilder.build(new NewGameInfo("42", "STANDARD", 2, System.currentTimeMillis()));
         StandardGameController standardGameController = new StandardGameController(game, lobbyController -> {
         });
@@ -288,7 +288,7 @@ class StandardGameControllerTest {
 
         //leave the game
 
-        new Thread(() -> {
+
 
             try {
                 standardGameController.leavePlayer(fclient);
@@ -296,19 +296,17 @@ class StandardGameControllerTest {
                 throw new RuntimeException(e);
             }
 
-        }).start();
-
         //try to join again in 6 seconds
 
 
         User finalUser = user;
-        try {
-            standardGameController.joinPlayer(fclient, finalUser, finalLoginInfo2.playerId());
-        } catch (GameAccessDeniedException e) {
-        }
+
+        Thread.sleep(100);
+        assertDoesNotThrow(() -> standardGameController.joinPlayer(fclient, finalUser, finalLoginInfo2.playerId()));
 
         //now try to leave again and join after 6 seconds
         assertDoesNotThrow(() -> standardGameController.leavePlayer(fclient));
+        Thread.sleep(7000);
         assertDoesNotThrow(() -> standardGameController.joinPlayer(fclient, finalUser1, finalLoginInfo2.playerId()));
         //network test can really check result without using a real network
 
