@@ -18,7 +18,7 @@ public class PlayerShelfPanel extends JPanel implements PlayerShelfGraphics, Act
     private Tile[][] shelfState = new Tile[6][5];
     private final List<JButton> columnSelectorList = new ArrayList<>();
     private final ActionListener orderingTable;
-
+    private boolean isFirstPlayer;
     public PlayerShelfPanel(ActionListener orderingTable) {
         this.orderingTable = orderingTable;
         this.setOpaque(false);
@@ -28,6 +28,8 @@ public class PlayerShelfPanel extends JPanel implements PlayerShelfGraphics, Act
             Arrays.fill(r,Tile.EMPTY);
 
         initializeLayout();
+
+        isFirstPlayer = false;
     }
 
     @Override
@@ -58,11 +60,14 @@ public class PlayerShelfPanel extends JPanel implements PlayerShelfGraphics, Act
         this.repaint();
     }
 
+    public void setIsFirstPlayer(boolean isFirstPlayer){
+        this.isFirstPlayer = isFirstPlayer;
+    }
     /* ------------------ GRAPHIC LAYOUT ---------------------*/
 
     private final Image foreground = new ImageIcon(Objects.requireNonNull(getClass().getResource("/BookshelfForeground.png"))).getImage();
     private final Image background = new ImageIcon(Objects.requireNonNull(getClass().getResource("/BookshelfBackground.png"))).getImage();
-
+    private final Image firstPlayerOverlay = new ImageIcon(Objects.requireNonNull(getClass().getResource("/FirstPlayerOverlay.png"))).getImage();
     private void initializeLayout(){
         GridBagConstraints leftSpacerConstraints = new GridBagConstraints(
                 0,0,
@@ -153,5 +158,9 @@ public class PlayerShelfPanel extends JPanel implements PlayerShelfGraphics, Act
         }
 
         g.drawImage(foreground,0,buttonPadding,getWidth(),getHeight()-buttonPadding,null);
+
+        if(isFirstPlayer){
+            g.drawImage(firstPlayerOverlay,0,buttonPadding,getWidth(),getHeight()-buttonPadding,null);
+        }
     }
 }

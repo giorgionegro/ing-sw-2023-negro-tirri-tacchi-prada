@@ -1,5 +1,4 @@
 package view.graphicInterfaces;
-
 import model.Tile;
 
 /**
@@ -10,8 +9,7 @@ import model.Tile;
 public interface PersonalGoalGraphics {
     /**
      * This method updates the information of the personal goal with the specified parameters:
-     *
-     * @param id              the id of this goal, unique among others player personal goal
+     * @param id the id of this goal, unique among others player personal goal
      * @param hasBeenAchieved true if the goal is achieved
      * @param description     matrix representation of the goal
      */

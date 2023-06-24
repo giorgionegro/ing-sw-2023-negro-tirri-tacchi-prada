@@ -8,6 +8,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Objects;
 
+/**
+ * This class
+ */
 public class HomePanel extends JPanel {
     public HomePanel(ActionListener listener){
 
@@ -80,6 +83,9 @@ public class HomePanel extends JPanel {
         }
     };
 
+    /**
+     *
+     */
     private final JLabel messageLabel = new JLabel() {
         protected void paintComponent(Graphics g) {
             g.drawImage(messageBackground, 0, 0, getWidth(), getHeight(), null);
@@ -88,6 +94,10 @@ public class HomePanel extends JPanel {
     };
 
     private final Dimension zeroDimension = new Dimension(0,0);
+
+    /**
+     *
+     */
     private void initializeLayout(){
         this.setLayout(new GridBagLayout());
         initializeBorders();
@@ -96,6 +106,9 @@ public class HomePanel extends JPanel {
         this.repaint();
     }
 
+    /**
+     *
+     */
     private void initializeBorders(){
         constraints.weightx=1;
         constraints.weighty=1;
@@ -118,6 +131,9 @@ public class HomePanel extends JPanel {
         this.add(new Container(),constraints);
     }
 
+    /**
+     *
+     */
     private void initializeContents(){
         constraints.gridy=1;
         constraints.gridx=1;
@@ -165,6 +181,10 @@ public class HomePanel extends JPanel {
         this.add(messageLabel,constraints);
     }
 
+    /**
+     * This method overrides {@link  JComponent#paintComponent(Graphics)} drawing an image as background
+     * @param g the <code>Graphics</code> object to protect
+     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
