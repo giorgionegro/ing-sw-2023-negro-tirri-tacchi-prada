@@ -73,7 +73,7 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
      * @throws RemoteException {@inheritDoc}
      */
     @Override
-    public ServerInterface connect(ClientInterface client) throws RemoteException {
+    public synchronized ServerInterface connect(ClientInterface client) throws RemoteException {
         // Generate a User for the client
         User user = new User();
         // start ping thread
@@ -132,7 +132,7 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
      * @throws RemoteException If an error occurred reaching the remote object
      */
     @Override
-    public void disconnect(ClientInterface client) throws RemoteException {
+    public synchronized void disconnect(ClientInterface client) throws RemoteException {
         // Checks if the client has been authenticated
         if (!this.users.containsKey(client))
             System.err.println("ServerController: Command from unauthenticated client");
@@ -160,7 +160,7 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
      * @throws RemoteException {@inheritDoc}
      */
     @Override
-    public void joinGame(ClientInterface client, LoginInfo info) throws RemoteException {
+    public synchronized void joinGame(ClientInterface client, LoginInfo info) throws RemoteException {
         // Checks if the client has been authenticated
         if (!this.users.containsKey(client))
             System.err.println("ServerController: Command from unauthenticated client");
@@ -200,7 +200,7 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
      * @throws RemoteException {@inheritDoc}
      */
     @Override
-    public void leaveGame(ClientInterface client) throws RemoteException {
+    public synchronized void leaveGame(ClientInterface client) throws RemoteException {
         // Check if client has been authenticated
         if (!this.users.containsKey(client))
             System.err.println("ServerController: Command from unauthenticated client");
@@ -223,7 +223,7 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
      * @throws RemoteException {@inheritDoc}
      */
     @Override
-    public void createGame(ClientInterface client, NewGameInfo gameInfo) throws RemoteException {
+    public synchronized void createGame(ClientInterface client, NewGameInfo gameInfo) throws RemoteException {
         if (!this.users.containsKey(client))
             System.err.println("ServerController: Command from unauthenticated client");
         else

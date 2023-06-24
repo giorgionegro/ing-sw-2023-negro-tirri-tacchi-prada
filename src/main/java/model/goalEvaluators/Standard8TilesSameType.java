@@ -7,9 +7,9 @@ import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * This class is the goal evaluator for the Standard8TilesSameType goal
- * It implements the GoalEvaluator abstract class
- * It is used by the CommonGoal class
+ * This class is the goal evaluator for the Standard8TilesSameType goal.
+ * It implements the GoalEvaluator abstract class.
+ * It is used by the CommonGoal class.
  */
 public class Standard8TilesSameType extends GoalEvaluator {
     private final int numberOfTiles = 8;
