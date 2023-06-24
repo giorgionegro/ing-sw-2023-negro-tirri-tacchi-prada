@@ -9,7 +9,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
 
-<<<<<<<<< Temporary merge branch 1
 /**
  * //TODO controllare
  * This class is responsible for creating a new game based on its type and initializing the various game components.

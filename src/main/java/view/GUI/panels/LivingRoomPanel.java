@@ -15,11 +15,18 @@ import java.util.Objects;
 public class LivingRoomPanel extends JPanel implements LivingRoomGraphics {
     private final ActionListener orderingTable;
 
+    private boolean isLastTurn;
+
     public LivingRoomPanel(ActionListener orderingTable) {
         this.orderingTable = orderingTable;
-
+        this.isLastTurn = false;
         this.setLayout(new GridBagLayout());
     }
+
+    public void setIsLastTurn(boolean isLastTurn){
+        this.isLastTurn = isLastTurn;
+    }
+
     @Override
     public void updateBoardGraphics(Tile[][] board) {
         this.removeAll();
@@ -106,8 +113,8 @@ public class LivingRoomPanel extends JPanel implements LivingRoomGraphics {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         g.drawImage(background, 0, 0, getWidth(), getHeight(), null);
-        //TODO show endGame only if present (lastTurn == false)
-        g.drawImage(endGameToken,0,0,getWidth(),getHeight(),null);
+        if(!isLastTurn)
+            g.drawImage(endGameToken,0,0,getWidth(),getHeight(),null);
     }
 }
 

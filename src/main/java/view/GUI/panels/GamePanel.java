@@ -206,23 +206,23 @@ public class GamePanel extends JComponent implements ActionListener, GameGraphic
         interactionContainer.removeAll();
 
         tilesOrderingPanel = new TilesOrderingPanel(this);
-        tableContainer.add(tilesOrderingPanel);
+        //tableContainer.add(tilesOrderingPanel);
 
         playerShelf = new PlayerShelfPanel(tilesOrderingPanel);
         tilesOrderingPanel.setColumnChooser(playerShelf);
         playerShelfContainer.add(playerShelf);
 
         livingRoomBoard = new LivingRoomPanel(tilesOrderingPanel);
-        livingRoomContainer.add(livingRoomBoard);
+        //livingRoomContainer.add(livingRoomBoard);
 
         chatPanel = new ChatPanel(this,newPlayerId);
         chatContainer.add(chatPanel);
 
         personalGoalPanel = new PersonalGoalPanel();
-        personalGoalContainer.add(personalGoalPanel);
+        //personalGoalContainer.add(personalGoalPanel);
 
         commonGoalsPanel = new CommonGoalsPanel();
-        commonGoalContainer.add(commonGoalsPanel);
+        //commonGoalContainer.add(commonGoalsPanel);
 
         errorLabel = new JLabel("");
         errorLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -258,6 +258,22 @@ public class GamePanel extends JComponent implements ActionListener, GameGraphic
                 0,0
         );
         interactionContainer.add(exitButton,exitButtonConstraint);
+    }
+
+    public void displayGameScene(){
+        tableContainer.removeAll();
+        livingRoomContainer.removeAll();
+        personalGoalContainer.removeAll();
+        commonGoalContainer.removeAll();
+
+        tableContainer.add(tilesOrderingPanel);
+        livingRoomContainer.add(livingRoomBoard);
+        personalGoalContainer.add(personalGoalPanel);
+        commonGoalContainer.add(commonGoalsPanel);
+    }
+
+    public void displayMatchmakingScene(){
+
     }
 
     /*------------------------------------------------------------*/
@@ -323,9 +339,9 @@ public class GamePanel extends JComponent implements ActionListener, GameGraphic
     }
 
     private final Color accent = Color.red;
-    private final Color normal = new Color(0,0,0);
+    private final Color normal = Color.BLACK;
     @Override
-    public void updateGameInfoGraphics(Game.GameStatus status, String playerOnTurn, boolean isLastTurn, Map<String, Integer> pointsValues) {
+    public void updateGameInfoGraphics(Game.GameStatus status, String firstTurnPlayer, String playerOnTurn, boolean isLastTurn, Map<String, Integer> pointsValues) {
         playerLabel.setForeground(normal);
         for(JLabel label : opponentLabels.values())
             label.setForeground(normal);
@@ -349,9 +365,11 @@ public class GamePanel extends JComponent implements ActionListener, GameGraphic
             );
             this.add(winnerPanel,winnerConstraints);
         } else if (status == Game.GameStatus.STARTED) {
+            //TODO show firstTurnPlayer
             //TODO show points on playerShelf
-        }else if (status == Game.GameStatus.MATCHMAKING) {
-            //TODO
+        }else if (status == Game.GameStatus.MATCHMAKING || status == Game.GameStatus.SUSPENDED) {
+            displayMatchmakingScene();
+            //TODO show message and not commonGoal personalGoal and LivingRoom
         }
         this.revalidate();
         this.repaint();
