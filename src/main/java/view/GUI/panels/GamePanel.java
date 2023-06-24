@@ -212,23 +212,23 @@ public class GamePanel extends JComponent implements ActionListener, GameGraphic
         interactionContainer.removeAll();
 
         tilesOrderingPanel = new TilesOrderingPanel(this);
-        //tableContainer.add(tilesOrderingPanel);
+        tableContainer.add(tilesOrderingPanel);
 
         playerShelf = new PlayerShelfPanel(tilesOrderingPanel);
         tilesOrderingPanel.setColumnChooser(playerShelf);
         playerShelfContainer.add(playerShelf);
 
         livingRoomBoard = new LivingRoomPanel(tilesOrderingPanel);
-        //livingRoomContainer.add(livingRoomBoard);
+        livingRoomContainer.add(livingRoomBoard);
 
         chatPanel = new ChatPanel(this,newPlayerId);
         chatContainer.add(chatPanel);
 
         personalGoalPanel = new PersonalGoalPanel();
-        //personalGoalContainer.add(personalGoalPanel);
+        personalGoalContainer.add(personalGoalPanel);
 
         commonGoalsPanel = new CommonGoalsPanel();
-        //commonGoalContainer.add(commonGoalsPanel);
+        commonGoalContainer.add(commonGoalsPanel);
 
         errorLabel = new JLabel("");
         errorLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -371,8 +371,10 @@ public class GamePanel extends JComponent implements ActionListener, GameGraphic
             );
             this.add(winnerPanel,winnerConstraints);
         } else if (status == Game.GameStatus.STARTED) {
-            //TODO show firstTurnPlayer
-            //TODO show points on playerShelf
+            playerShelf.setIsFirstPlayer(thisPlayerId.equals(firstTurnPlayer));
+            for (String s : opponentShelfBoards.keySet()){
+                opponentShelfBoards.get(s).setIsFirstPlayer(s.equals(firstTurnPlayer));
+            }
         }else if (status == Game.GameStatus.MATCHMAKING || status == Game.GameStatus.SUSPENDED) {
             displayMatchmakingScene();
             //TODO show message and not commonGoal personalGoal and LivingRoom
