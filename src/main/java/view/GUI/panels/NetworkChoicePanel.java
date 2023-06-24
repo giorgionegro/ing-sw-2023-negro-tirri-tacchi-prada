@@ -11,16 +11,21 @@ import java.util.Objects;
 public class NetworkChoicePanel extends JPanel implements ActionListener {
     private final ActionListener listener;
 
+    /**
+     * This method is used to allow the user to choose the network type (Socket or RMI) to connect to the server by clicking a button on the panel.
+     * @param listener the ActionListener to be notified when a network choice is made
+     */
     public  NetworkChoicePanel(ActionListener listener) {
         this.listener = listener;
-
         initializeLayout();
-
         socketButton.addActionListener(this);
         RMIButton.addActionListener(this);
         exitButton.addActionListener(this);
     }
 
+    /**This method prints out an error message
+     * @param errorMessage the error message to be displayed.
+     */
     public void setErrorMessage(String errorMessage){
         if(!errorMessage.isBlank()){
             errorLabel.setVisible(true);
@@ -31,6 +36,11 @@ public class NetworkChoicePanel extends JPanel implements ActionListener {
         this.revalidate();
         this.repaint();
     }
+
+    /**
+     *This method handles the action performed by the buttons.
+     * @param e the ActionEvent object representing the action performed by the user
+     */
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == socketButton) {
@@ -86,6 +96,12 @@ public class NetworkChoicePanel extends JPanel implements ActionListener {
     };
     
     private final Dimension zeroDimension = new Dimension(0,0);
+
+    /**
+     * This method initializes the layout of the component:
+     * - Set the background color black
+     * - Set the layout manager to GridBagLayout
+     */
     private void initializeLayout(){
         this.setBackground(Color.BLACK);
         this.setLayout(new GridBagLayout());
@@ -95,6 +111,9 @@ public class NetworkChoicePanel extends JPanel implements ActionListener {
         this.repaint();
     }
 
+    /**
+     *This method initializes the Borders of the Panel
+     */
     private void initializeBorders(){
         constraints.weightx=1;
         constraints.weighty=2;
@@ -118,6 +137,10 @@ public class NetworkChoicePanel extends JPanel implements ActionListener {
         this.add(new Container(),constraints);
     }
 
+    /**
+     * This method initializes the contents of the panel: 3 buttons (RMI, SOCKET, EXIT) and the text label
+     * The positions and dimensions of components within the grid are set.
+     */
     private void initializeContents(){
         constraints.gridy=1;
         constraints.gridx=1;

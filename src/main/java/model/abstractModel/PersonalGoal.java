@@ -40,7 +40,7 @@ public abstract class PersonalGoal extends Observable<PersonalGoal.Event>{
     public abstract void setAchieved();
 
     /**
-     * This method test if the given shelf representation match the goal requirements
+     * This method tests if the given shelf representation matches the goal requirements
      * @param playerShelf the shelf representation that has to be tested
      * @return {@code true} if the given shelf representation match the goal requirements, {@code false} otherwise
      */
