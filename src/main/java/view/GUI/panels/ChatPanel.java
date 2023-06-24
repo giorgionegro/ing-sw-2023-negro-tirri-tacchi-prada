@@ -11,6 +11,7 @@ import java.awt.event.ActionListener;
 import java.util.*;
 import java.util.List;
 
+
 public class ChatPanel extends JPanel implements PlayerChatGraphics {
 
     private final Map<String,String> subjects = new HashMap<>(){{
@@ -47,7 +48,6 @@ public class ChatPanel extends JPanel implements PlayerChatGraphics {
 
     private void updateText(){
         JTextArea textarea = new JTextArea();
-        textarea.setPreferredSize(new Dimension(0,0));
         textarea.setBackground(new Color(255,255,200));
         textarea.setEditable(false);
 
@@ -94,9 +94,11 @@ public class ChatPanel extends JPanel implements PlayerChatGraphics {
     private void initializeLayout(){
         this.setLayout(new GridBagLayout());
 
+        Dimension zeroDimension = new Dimension(0,0);
+
         constraints.gridwidth = 2;
-        constraints.weighty = 12;
-        scrolltextarea.setPreferredSize(new Dimension(0,0));
+        constraints.weighty = 3;
+        scrolltextarea.setPreferredSize(zeroDimension);
         this.add(scrolltextarea,constraints);
 
         constraints.gridwidth = 1;
@@ -104,16 +106,19 @@ public class ChatPanel extends JPanel implements PlayerChatGraphics {
         constraints.weighty = 1;
         constraints.gridx++;
         constraints.gridy++;
+        invia.setPreferredSize(zeroDimension);
         invia.setBackground(new Color(0,0,0,0));
         this.add(invia,constraints);
 
         constraints.gridheight = 1;
-        constraints.weightx = 18;
+        constraints.weightx = 6;
         constraints.gridx--;
         constraints.gridy++;
+        mex.setPreferredSize(zeroDimension);
         this.add(mex, constraints);
 
         constraints.gridy--;
+        subjectsCombo.setPreferredSize(zeroDimension);
         this.add(subjectsCombo,constraints);
     }
 }
