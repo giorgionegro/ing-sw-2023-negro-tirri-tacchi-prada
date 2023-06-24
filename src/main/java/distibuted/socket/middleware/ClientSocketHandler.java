@@ -13,16 +13,33 @@ import modelView.PlayerMoveInfo;
 import java.io.IOException;
 import java.rmi.RemoteException;
 
+/**
+ * This class manages a socket connection on client side
+ */
 public class ClientSocketHandler extends SocketHandler<ClientInterface> implements ServerInterface, AppServer {
 
+    /**
+     * Thread responsible for reading the input stream
+     */
     private Thread receiverLoop;
 
+    /**
+     * Class constructor
+     * @param ip Ip address of the socket
+     * @param port Port of the socket
+     */
     public ClientSocketHandler(String ip, int port) {
         super(ip, port);
     }
 
     ////APP SERVER//////////////////
 
+    /**
+     * {@inheritDoc}
+     * @param client The client that asked to be connected
+     * @return {@inheritDoc}
+     * @throws RemoteException {@inheritDoc}
+     */
     @Override
     public synchronized ServerInterface connect(ClientInterface client) throws RemoteException {
         super.open();
@@ -42,6 +59,11 @@ public class ClientSocketHandler extends SocketHandler<ClientInterface> implemen
         return this;
     }
 
+    /**
+     * {@inheritDoc}
+     * @param client The client that asked to be disconnected
+     * @throws RemoteException {@inheritDoc}
+     */
     @Override
     public synchronized void disconnect(ClientInterface client) throws RemoteException {
         try {
@@ -56,6 +78,12 @@ public class ClientSocketHandler extends SocketHandler<ClientInterface> implemen
     ///SERVER INTERFACE///////////////
 
 
+    /**
+     * {@inheritDoc}
+     * @param client The reference of the client who is doing the move
+     * @param info   The move info
+     * @throws RemoteException {@inheritDoc}
+     */
     @Override
     public void doPlayerMove(ClientInterface client, PlayerMoveInfo info) throws RemoteException {
         try {
@@ -71,6 +99,12 @@ public class ClientSocketHandler extends SocketHandler<ClientInterface> implemen
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * @param client     The reference of the client who is sending the message
+     * @param newMessage The message info
+     * @throws RemoteException {@inheritDoc}
+     */
     @Override
     public void sendMessage(ClientInterface client, Message newMessage) throws RemoteException {
         try {
@@ -86,6 +120,11 @@ public class ClientSocketHandler extends SocketHandler<ClientInterface> implemen
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * @param client The client asking to join
+     * @param info   The join-info
+     */
     @Override
     public void joinGame(ClientInterface client, LoginInfo info) {
         try {
@@ -102,6 +141,11 @@ public class ClientSocketHandler extends SocketHandler<ClientInterface> implemen
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * @param client The client asking to leave
+     * @throws RemoteException {@inheritDoc}
+     */
     @Override
     public void leaveGame(ClientInterface client) throws RemoteException {
         try {
@@ -118,6 +162,11 @@ public class ClientSocketHandler extends SocketHandler<ClientInterface> implemen
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * @param client The client asking to create the game
+     * @param info   The new-game info
+     */
     @Override
     public void createGame(ClientInterface client, NewGameInfo info) {
         try {

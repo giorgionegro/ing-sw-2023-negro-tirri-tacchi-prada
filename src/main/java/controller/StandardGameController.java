@@ -25,7 +25,7 @@ import java.util.function.Consumer;
 /**
  * This is a combined implementation of a {@link LobbyController} and a {@link GameController}
  * <p>
- * The game rules implemented follows the standard rules
+ * The game rules implemented follow the standard rules
  */
 public class StandardGameController implements GameController, LobbyController {
     /**
@@ -44,14 +44,14 @@ public class StandardGameController implements GameController, LobbyController {
     private final Map<User, String> playerAssociation;
 
     /**
-     * Map of association between a client and all the observer it is attached to, observers are also associated with
+     * Map of association between a client and all the observers it is attached to, observers are also associated with
      * the observable they are attached to.
      * This object is mainly used when a client needs to be detached from the game
      */
     private final Map<ClientInterface, Map<Observable, Observer>> observerAssociation;
 
     /**
-     * Consumer called after the game has been definitely closed. This allows to notify who generate this instance that
+     * Consumer called after the game has been definitely closed. This allows to notify who generated this instance that
      * this game controller is no longer useful
      */
     private final Consumer<LobbyController> gameClosedCallback;
@@ -62,7 +62,8 @@ public class StandardGameController implements GameController, LobbyController {
     private final TimedLock<Boolean> lobbyLock = new TimedLock<>(false);
 
     /**
-     * This constructor build an instance that use the given game model and gameClosed callback and with empty user, player and observer assoiation
+     * This constructor builds an instance that uses the given game model and gameClosed callback,
+     * it is initialized with empty user, player and observer association
      *
      * @param game               The game model that the game controller need to use
      * @param gameClosedCallback The gameClosed callback
@@ -407,9 +408,9 @@ public class StandardGameController implements GameController, LobbyController {
     }
 
     /**
-     * This method close definitely the game, detach all the client and call the gameClosed callback, send the given message to all connected user
+     * This method permanently closes the game, detaches all the clients and calls the gameClosed callback, sends the given message to all connected users
      *
-     * @param message The message that needs to be sent to the connected user
+     * @param message The message that needs to be sent to the connected users
      */
     private void closeTheGame(String message) {
 
@@ -589,6 +590,7 @@ public class StandardGameController implements GameController, LobbyController {
 
 
     /**
+     * This method checks whether the picked tiles are the same or not
      * @param pickedTiles list of picked tiles
      * @return true if tiles are different, false otherwise
      */
@@ -605,6 +607,7 @@ public class StandardGameController implements GameController, LobbyController {
 
 
     /**
+     * Given a column of a player shelf this method counts the number of free spaces
      * @param column column to check
      * @param shelf  player shelf
      * @return number of free spaces in the column
@@ -619,6 +622,7 @@ public class StandardGameController implements GameController, LobbyController {
     }
 
     /**
+     * This method inserts the picked tiles in the shelf
      * @param column column to check
      * @param shelf  player shelf
      * @param tile   tile to insert
@@ -632,6 +636,7 @@ public class StandardGameController implements GameController, LobbyController {
     }
 
     /**
+     * This method checks whether the selected tile is pickable or not
      * @param row    row of the tile
      * @param column column of the tile
      * @param board  board to check
@@ -651,6 +656,7 @@ public class StandardGameController implements GameController, LobbyController {
     }
 
     /**
+     * This method checks whether the shelf is full or not
      * @param shelf shelf to check
      * @return true if shelf is full, false otherwise
      */
@@ -664,6 +670,7 @@ public class StandardGameController implements GameController, LobbyController {
     }
 
     /**
+     * This method checks whether the picked tiles are aligned or not
      * @param pickedTiles Tiles picked from board
      * @return true if picked tiles are aligned ad adjacent one another
      */

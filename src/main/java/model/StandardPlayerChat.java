@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This class is an implementation of PlayerChat.
+ * This class is an implementation of {@link PlayerChat}.
  * <p>
  * It uses a List to manage messages
  */

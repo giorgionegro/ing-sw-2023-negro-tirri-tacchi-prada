@@ -1,7 +1,7 @@
 package util;
 
 public class TimedLock<ValueType>{
-
+//TODO teletu
     private boolean notified;
     private ValueType value;
     public TimedLock(ValueType defaultValue){

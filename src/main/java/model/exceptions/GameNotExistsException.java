@@ -1,7 +1,7 @@
 package model.exceptions;
 
 /**
- * This class represents an error occurred when trying to perform an action on a Game that has ended
+ * This class represents an error occurred when trying to retrieve a Game that does not exist
  */
 public class GameNotExistsException extends Exception{
 

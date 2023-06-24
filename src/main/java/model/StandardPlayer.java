@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This class is an implementation of Player.
+ * This class is an implementation of {@link Player}.
  * <p>
  * It uses a Map to manage achieved common goals
  */

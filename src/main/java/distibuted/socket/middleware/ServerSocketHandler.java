@@ -14,8 +14,15 @@ import java.io.IOException;
 import java.net.Socket;
 import java.rmi.RemoteException;
 
+/**
+ * This class manages a socket connection on server side
+ */
 public class ServerSocketHandler extends SocketHandler<ServerInterface> implements ClientInterface {
 
+    /**
+     * Class constructor
+     * @param socket socket
+     */
     public ServerSocketHandler(Socket socket) {
         super(socket);
     }
