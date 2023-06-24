@@ -225,6 +225,7 @@ public class TUI implements AppGraphics, GameGraphics {
         List<Pair> currentOldCmd;
         Map<String,Tile[][]> currentPlayerShelves;
         String currentPlayerId;
+        String currentFirstPlayer;
         String currentPlayerOnTurn;
         Map<String,Integer> currentPointsValues;
         String currentCursor;
@@ -243,6 +244,7 @@ public class TUI implements AppGraphics, GameGraphics {
             currentBoardState = boardState;
             currentPlayerShelves = new HashMap<>(playerShelves);
             currentPlayerOnTurn = playerOnTurn;
+            currentFirstPlayer = firstTurnPlayer;
             currentPointsValues = new HashMap<>(pointsValues);
             currentIsLastTurn = isLastTurn;
             currentChat = new ArrayList<>(chat);
@@ -261,7 +263,7 @@ public class TUI implements AppGraphics, GameGraphics {
             if(scene == Scene.GAME){
                 if(currentGameStatus == GameStatus.MATCHMAKING || currentGameStatus == GameStatus.STARTED || currentGameStatus == GameStatus.SUSPENDED){
                     drawChat(playerId,currentChat, this.canvas, this.canvasColors);
-                    drawShelves(currentPlayerShelves, currentPlayerId, currentPlayerOnTurn, currentPointsValues, this.canvas, this.canvasColors);
+                    drawShelves(currentPlayerShelves, currentFirstPlayer, currentPlayerId, currentPlayerOnTurn, currentPointsValues, this.canvas, this.canvasColors);
                 }
                 if(currentGameStatus == GameStatus.MATCHMAKING || currentGameStatus == GameStatus.SUSPENDED){
                     drawCenteredString("WAITING FOR OTHER PLAYERS TO JOIN",0,32,80,GREEN,canvas,canvasColors);
@@ -449,6 +451,8 @@ public class TUI implements AppGraphics, GameGraphics {
 
     private String playerOnTurn;
 
+    private String firstTurnPlayer;
+
     private Map<String,Integer> pointsValues;
 
     private boolean isLastTurn;
@@ -456,11 +460,12 @@ public class TUI implements AppGraphics, GameGraphics {
     private GameStatus status;
 
     @Override
-    public void updateGameInfoGraphics(GameStatus status, String playerOnTurn, boolean isLastTurn, Map<String,Integer> pointsValues){
+    public void updateGameInfoGraphics(GameStatus status, String firstTurnPlayer, String playerOnTurn, boolean isLastTurn, Map<String,Integer> pointsValues){
         synchronized (updateLock){
             this.status = status;
+            this.firstTurnPlayer = firstTurnPlayer;
             this.playerOnTurn = playerOnTurn;
-            this.pointsValues.putAll(pointsValues);
+            this.pointsValues = new HashMap<>(pointsValues);
             this.isLastTurn = isLastTurn;
 
             if(status == GameStatus.ENDED){
