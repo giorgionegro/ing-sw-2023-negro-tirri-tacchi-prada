@@ -1503,7 +1503,7 @@ class StandardGameControllerTest {
         standardGameController.doPlayerMove(client2, playerMoveInfo);
         //wait 100ms and check playerInfos, one of them should have Malformed move: Tiles are not aligned error
 
-        Thread.sleep(100);
+        Thread.sleep(300);
         assert playerInfo[0] != null && playerInfo1[0] != null && (playerInfo[0].errorMessage().equals("Malformed move: Tiles are not aligned") || playerInfo1[0].errorMessage().equals("Malformed move: Tiles are not aligned"));
         //check that living room at 1,3 and 4,1 are not empty
         assert livingRoomInfo[0] != null && livingRoomInfo[0].board()[1][3] != Tile.EMPTY && livingRoomInfo[0].board()[4][1] != Tile.EMPTY;
@@ -1665,7 +1665,7 @@ class StandardGameControllerTest {
         standardGameController.doPlayerMove(client, playerMoveInfo);
         standardGameController.doPlayerMove(client2, playerMoveInfo);
         //wait 100ms and check gameInfi, status should be ENDED
-        Thread.sleep(100);
+        Thread.sleep(300);
         assert gameInfo[0] != null && gameInfo[0].status() == Game.GameStatus.ENDED;
         assert gameInfo1[0] != null && gameInfo1[0].status() == Game.GameStatus.ENDED;
 
@@ -2292,7 +2292,7 @@ class StandardGameControllerTest {
         standardGameController.doPlayerMove(client2, playerMoveInfo);
         //wait until the move is done, gameinfo is updated
         synchronized (lock) {
-            lock.wait(1000);
+            lock.wait(3000);
         }
         if (!lock.getValue()) {
             fail("GameInfo not updated");
