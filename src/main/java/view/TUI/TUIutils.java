@@ -40,7 +40,7 @@ enum TUIutils {
      *
      * @param function callback to be run on screen cleaning error
      */
-    public static void ClearScreen(Consumer<String> function) {
+    public static void ClearScreen(Consumer<? super String> function) {
         try {
             String operatingSystem = System.getProperty("os.name"); //Check the current operating system
 

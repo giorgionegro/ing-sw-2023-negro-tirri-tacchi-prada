@@ -1,16 +1,16 @@
 package model.abstractModel;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import model.StandardCommonGoal;
 import model.Token;
 import model.goalEvaluators.Standard4Groups4Tiles;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class CommonGoalTest {
     /**
      * Method under test: {@link CommonGoal#getTopToken()}
+     * Testing Token stack
      */
     @Test
     void testGetTopToken() {

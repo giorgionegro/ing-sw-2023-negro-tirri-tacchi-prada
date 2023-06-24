@@ -20,6 +20,7 @@ class StandardServerControllerTest {
 
     /**
      * Method under test: {@link StandardServerController#connect(ClientInterface)}
+     * Testing normal behaviour
      */
     @Test
     void testConnect() throws RemoteException {
@@ -143,77 +144,79 @@ class StandardServerControllerTest {
 
     /**
      * Method under test: {@link StandardServerController#disconnect(ClientInterface)}
+     * Testing normal behaviour
      */
     @Test
     void testDisconnect() throws RemoteException {
-        // Arrange
-        StandardServerController standardServerController = new StandardServerController();
-        ClientInterface client = new ClientInterface() {
-            @Override
-            public void bind(ServerInterface server) throws RemoteException {
-            }
+        assertDoesNotThrow(() -> {
+            StandardServerController standardServerController = new StandardServerController();
+            ClientInterface client = new ClientInterface() {
+                @Override
+                public void bind(ServerInterface server) throws RemoteException {
+                }
 
-            @Override
-            public void ping() throws RemoteException {
+                @Override
+                public void ping() throws RemoteException {
 
-            }
+                }
 
-            @Override
-            public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
+                @Override
+                public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
 
-            }
+                }
 
-            @Override
-            public void update(GameInfo o, Game.Event evt) throws RemoteException {
-            }
-
-
-            @Override
-            public void update(LivingRoomInfo o, LivingRoom.Event evt) throws RemoteException {
-
-            }
-
-            @Override
-            public void update(PersonalGoalInfo o, PersonalGoal.Event evt) throws RemoteException {
-
-            }
-
-            @Override
-            public void update(PlayerChatInfo o, PlayerChat.Event evt) throws RemoteException {
-
-            }
-
-            @Override
-            public void update(PlayerInfo o, Player.Event evt) throws RemoteException {
-
-            }
-
-            @Override
-            public void update(ShelfInfo o, Shelf.Event evt) throws RemoteException {
-
-            }
-
-            @Override
-            public void update(UserInfo o, User.Event evt) throws RemoteException {
-
-            }
-        };
+                @Override
+                public void update(GameInfo o, Game.Event evt) throws RemoteException {
+                }
 
 
-        standardServerController.connect(client);
-        standardServerController.disconnect(client);
+                @Override
+                public void update(LivingRoomInfo o, LivingRoom.Event evt) throws RemoteException {
 
-        standardServerController.createGame(client, new NewGameInfo("test", "STANDARD", 2, 2));
-        standardServerController.joinGame(client, new LoginInfo("1", "test", 2));
-        standardServerController.disconnect(client);
+                }
 
-        // Assert
+                @Override
+                public void update(PersonalGoalInfo o, PersonalGoal.Event evt) throws RemoteException {
 
+                }
+
+                @Override
+                public void update(PlayerChatInfo o, PlayerChat.Event evt) throws RemoteException {
+
+                }
+
+                @Override
+                public void update(PlayerInfo o, Player.Event evt) throws RemoteException {
+
+                }
+
+                @Override
+                public void update(ShelfInfo o, Shelf.Event evt) throws RemoteException {
+
+                }
+
+                @Override
+                public void update(UserInfo o, User.Event evt) throws RemoteException {
+
+                }
+            };
+
+
+            standardServerController.connect(client);
+            standardServerController.disconnect(client);
+
+            standardServerController.createGame(client, new NewGameInfo("test", "STANDARD", 2, 2));
+            standardServerController.joinGame(client, new LoginInfo("1", "test", 2));
+            standardServerController.disconnect(client);
+
+
+        });
     }
 
 
     /**
      * Method under test: {@link StandardServerController#joinGame(ClientInterface, LoginInfo)}
+     * Testing normal behaviour
      */
     @Test
     void testJoinGame() throws RemoteException {
@@ -347,6 +350,7 @@ class StandardServerControllerTest {
 
     /**
      * Method under test: {@link StandardServerController#leaveGame(ClientInterface)}
+     * Testing normal behaviour
      */
     @Test
     void testLeaveGame() throws RemoteException, InterruptedException {
@@ -417,6 +421,7 @@ class StandardServerControllerTest {
 
     /**
      * Method under test: {@link StandardServerController#createGame(ClientInterface, NewGameInfo)}
+     * Testing normal behaviour
      */
     @Test
     void testCreateGame() throws RemoteException, InterruptedException {
@@ -495,6 +500,7 @@ class StandardServerControllerTest {
 
     /**
      * Method under test: {@link StandardServerController#createGame(NewGameInfo)}
+     * Testing normal behaviour
      */
     @Test
     void testCreateGame2() throws IllegalArgumentException, RemoteException, GameAlreadyExistsException {
@@ -510,6 +516,7 @@ class StandardServerControllerTest {
 
     /**
      * Method under test: {@link StandardServerController#getGame(String)}
+     * Testing normal behaviour
      */
     @Test
     void testGetGame() throws RemoteException {
@@ -574,7 +581,10 @@ class StandardServerControllerTest {
 
     }
 
-
+    /**
+     * Method under test: {@link StandardServerController#connect(ClientInterface)}
+     * Testing ping failed awareness
+     */
     @Test
     void testConnectPingFailed() throws RemoteException, InterruptedException {
         StandardServerController standardServerController = new StandardServerController();

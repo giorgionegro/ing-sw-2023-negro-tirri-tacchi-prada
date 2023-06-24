@@ -229,7 +229,7 @@ enum TUIdraw {
      * @param cliPixel          2d array of characters representing the pixels
      * @param cliPixelColor     2d array of integers representing the color of the pixels
      */
-    static void drawChat(String thisPlayerId, List<Message> currentPlayerChat, char[][] cliPixel, int[][] cliPixelColor) {
+    static void drawChat(String thisPlayerId, List<? extends Message> currentPlayerChat, char[][] cliPixel, int[][] cliPixelColor) {
         final int chatX = 80;
         final int chatY = 23;
         final int chatBoxWidth = 58;
@@ -361,7 +361,7 @@ enum TUIdraw {
      * @param cliPixel       2d array of characters representing the pixels
      * @param cliPixelColor  2d array of integers representing the color of the pixels
      */
-    static void drawShelves(Map<String, Tile[][]> currentShelves, String thisPlayerId, String playerOnTurn, Map<String, Integer> pointsValue, char[][] cliPixel, int[][] cliPixelColor) {
+    static void drawShelves(Map<String, Tile[][]> currentShelves, String thisPlayerId, String playerOnTurn, Map<String, ? super Integer> pointsValue, char[][] cliPixel, int[][] cliPixelColor) {
         final int shelvesX = 43;
 
         final int shelvesY = 4;
