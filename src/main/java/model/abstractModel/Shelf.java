@@ -21,14 +21,14 @@ public abstract class Shelf extends Observable<Shelf.Event>{
     }
 
     /**
-     * This method return a copy of the current representation of living room board
+     * This method returns a copy of the current representation of living room board
      *
      * @return a copy of the representation of living room board
      */
     public abstract Tile[][] getTiles();
 
     /**
-     * this method update the current representation of living room board
+     * this method updates the current representation of living room board
      *
      * @param modifiedShelf the new representation of living room board
      */
