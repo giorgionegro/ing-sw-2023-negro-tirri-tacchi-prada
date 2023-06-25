@@ -2126,10 +2126,7 @@ class StandardGameControllerTest {
             @Override
             public void update(GameInfo o, Game.Event evt) throws RemoteException {
                 gameInfo[0] = o;
-                synchronized (lock) {
-                    lock.setValue(true);
-                    lock.notifyAll();
-                }
+                lock.unlock(true);
             }
 
 
