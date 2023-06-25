@@ -4,8 +4,7 @@ import java.io.Serializable;
 import java.rmi.RemoteException;
 
 /**
- * TODO
- * This interface represents an operation between two objects
+ * This interface represents an interaction between two objects
  */
 @FunctionalInterface
 public interface SocketObject extends Serializable {
