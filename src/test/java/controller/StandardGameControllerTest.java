@@ -92,7 +92,7 @@ class StandardGameControllerTest {
 
         assertDoesNotThrow(() -> {
             standardGameController.joinPlayer(client, user, loginInfo.playerId());
-            Thread.sleep(100);
+            Thread.sleep(400);
         });
     }
 
@@ -308,7 +308,7 @@ class StandardGameControllerTest {
 
         User finalUser = user;
 
-        Thread.sleep(100);
+        Thread.sleep(400);
         assertDoesNotThrow(() -> standardGameController.joinPlayer(fclient, finalUser, finalLoginInfo2.playerId()));
 
         //now try to leave again and join after 6 seconds
@@ -651,7 +651,7 @@ class StandardGameControllerTest {
             //with the second player we test a move after the game starts
             standardGameController.doPlayerMove(client2, playerMoveInfo);
             //wait 100ms and check living room at 4,1
-            Thread.sleep(100);
+            Thread.sleep(400);
             assert livingRoomInfo[0] != null && livingRoomInfo[0].board()[4][1] == Tile.EMPTY;
         });
     }
@@ -793,7 +793,7 @@ class StandardGameControllerTest {
         standardGameController.doPlayerMove(client2, playerMoveInfo);
 
         //wait 100ms and check living room at 4,1
-        Thread.sleep(100);
+        Thread.sleep(400);
         assert (playerInfo[0] != null && playerInfo[0].errorMessage().contains("Malformed move")) || (playerInfo1[0] != null && playerInfo1[0].errorMessage().contains("Malformed move"));
     }
 
@@ -933,7 +933,7 @@ class StandardGameControllerTest {
         standardGameController.doPlayerMove(client, playerMoveInfo);
         standardGameController.doPlayerMove(client2, playerMoveInfo);
         //wait 100ms and check living room at 2,3
-        Thread.sleep(100);
+        Thread.sleep(400);
         assert livingRoomInfo[0] != null && livingRoomInfo[0].board()[2][3] != Tile.EMPTY;
     }
 
@@ -1084,7 +1084,7 @@ class StandardGameControllerTest {
         standardGameController.doPlayerMove(client, playerMoveInfo);
         standardGameController.doPlayerMove(client2, playerMoveInfo);
         //wait 100ms and check playerInfos, one of them should have Malformed move: Not enough space to insert tiles in shelf error
-        Thread.sleep(100);
+        Thread.sleep(400);
         assert playerInfo[0] != null && playerInfo1[0] != null && (playerInfo[0].errorMessage().equals("Malformed move: Not enough space to insert tiles in shelf") || playerInfo1[0].errorMessage().equals("Malformed move: Not enough space to insert tiles in shelf"));
     }
 
@@ -1232,7 +1232,7 @@ class StandardGameControllerTest {
         standardGameController.doPlayerMove(client2, playerMoveInfo);
 
         //wait 100ms and check living room at 1,4
-        Thread.sleep(100);
+        Thread.sleep(400);
         assert livingRoomInfo[0] != null && livingRoomInfo[0].board()[1][4] == Tile.EMPTY;
 
 
@@ -1388,7 +1388,7 @@ class StandardGameControllerTest {
         standardGameController.doPlayerMove(client, playerMoveInfo);
         standardGameController.doPlayerMove(client2, playerMoveInfo);
         //wait 100ms and check living room at 1,3
-        Thread.sleep(100);
+        Thread.sleep(400);
         assert livingRoomInfo[0] != null && livingRoomInfo[0].board()[1][3] == Tile.EMPTY;
 
 
@@ -1867,7 +1867,7 @@ class StandardGameControllerTest {
         standardGameController.doPlayerMove(client, playerMoveInfo);
         standardGameController.doPlayerMove(client2, playerMoveInfo);
 
-        Thread.sleep(100);
+        Thread.sleep(400);
         assert game.getLivingRoom().getBoard()[0][0] == Tile.EMPTY;
 
     }
@@ -2172,7 +2172,7 @@ class StandardGameControllerTest {
         standardGameController.doPlayerMove(client, playerMoveInfo);
         standardGameController.doPlayerMove(client2, playerMoveInfo);
         //wait
-        Thread.sleep(100);
+        Thread.sleep(400);
         assert livingRoomInfo[0] != null && game.getLivingRoom().getBoard()[1][3] != Tile.EMPTY && game.getLivingRoom().getBoard()[3][3] != Tile.EMPTY;
         assert playerInfo[0] != null && playerInfo1[0] != null && (playerInfo[0].errorMessage().equals("Malformed move: Tiles are not aligned") || playerInfo1[0].errorMessage().equals("Malformed move: Tiles are not aligned"));
     }

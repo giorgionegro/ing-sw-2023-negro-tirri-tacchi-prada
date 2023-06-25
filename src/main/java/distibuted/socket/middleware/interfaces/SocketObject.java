@@ -10,7 +10,6 @@ import java.rmi.RemoteException;
 @FunctionalInterface
 public interface SocketObject extends Serializable {
     /**
-     * TODO
      * This method contains the interaction between a sender and a receiver
      * @param sender the sender of the interaction
      * @param receiver the receiver of the interaction

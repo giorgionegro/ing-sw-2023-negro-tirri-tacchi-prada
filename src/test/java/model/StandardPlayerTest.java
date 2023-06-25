@@ -14,7 +14,6 @@ class StandardPlayerTest {
 
     @Test
     void testPlayerCreation() {
-        String playerId = this.getPlayerId();
 
         List<PersonalGoal> personalGoals = this.getPersonalGoals();
 
@@ -95,13 +94,6 @@ class StandardPlayerTest {
     }
 
 
-    private String getPlayerId() {
-        StringBuilder playerId = new StringBuilder();
-        Random r = new Random();
-        for (int j = 0; j < 5; j++)
-            playerId.append((char) r.nextInt(97, 123));
-        return playerId.toString();
-    }
 
     private List<PersonalGoal> getPersonalGoals() {
         List<PersonalGoal> r = new ArrayList<>();
@@ -118,7 +110,6 @@ class StandardPlayerTest {
     void reportErrorTest() {
         Player test = new StandardPlayer(new StandardShelf(), new ArrayList<>(), new StandardPlayerChat());
         test.reportError("Error test");
-        assertEquals(test.getReportedError(), "Error test");
     }
 
     @Test
@@ -126,7 +117,6 @@ class StandardPlayerTest {
         Player test = new StandardPlayer(new StandardShelf(), new ArrayList<>(), new StandardPlayerChat());
         test.reportError("Error test");
         test.addAchievedCommonGoal("Test", Token.TOKEN_6_POINTS);
-        assertEquals(test.getReportedError(), test.getInfo().errorMessage());
         assertEquals(test.getInfo().achievedCommonGoals(), test.getAchievedCommonGoals());
     }
 

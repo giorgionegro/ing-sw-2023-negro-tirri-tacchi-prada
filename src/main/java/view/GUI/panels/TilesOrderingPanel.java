@@ -13,9 +13,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
-
-
-public class TilesOrderingPanel extends JPanel implements ActionListener {
+//TODO
+public class TilesOrderingPanel extends JPanel implements ActionListener{
     private final List<TileButton> pickedTiles = new ArrayList<>();
     private final ActionListener moveSender;
     /*------------------ GRAPHIC LAYOUT ---------------------*/
@@ -161,7 +160,6 @@ public class TilesOrderingPanel extends JPanel implements ActionListener {
         }
         return true;
     }
-
 
     private void initializeLayout() {
         this.setLayout(new GridBagLayout());

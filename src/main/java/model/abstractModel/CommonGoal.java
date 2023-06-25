@@ -24,6 +24,7 @@ public abstract class CommonGoal extends Observable<CommonGoal.Event> {
 
     /**
      * Constructor for the CommonGoal class with empty token stack, but initialized with the given Evaluator
+     *
      * @param evaluator the goal evaluator
      **/
     public CommonGoal(GoalEvaluator evaluator) {
@@ -34,12 +35,14 @@ public abstract class CommonGoal extends Observable<CommonGoal.Event> {
 
     /**
      * This method initializes {@link #tokenStack}
+     *
      * @param nToken number of token to add to tokenStack
      */
     protected abstract void fillStack(int nToken);
 
     /**
      * This method returns the goal evaluator
+     *
      * @return the goal evaluator
      **/
     public GoalEvaluator getEvaluator() {
@@ -48,6 +51,7 @@ public abstract class CommonGoal extends Observable<CommonGoal.Event> {
 
     /**
      * This method returns the top token of {@link #tokenStack}
+     *
      * @return the top token of {@link #tokenStack}
      **/
     public Token getTopToken() {
@@ -59,6 +63,7 @@ public abstract class CommonGoal extends Observable<CommonGoal.Event> {
 
     /**
      * This method pops the top token of {@link #tokenStack}
+     *
      * @return the top token of {@link #tokenStack}
      */
     public Token popToken() {
@@ -70,6 +75,7 @@ public abstract class CommonGoal extends Observable<CommonGoal.Event> {
 
     /**
      * This method returns an {@link CommonGoalInfo} representing this object instance
+     *
      * @return An {@link CommonGoalInfo} representing this object instance
      */
     public CommonGoalInfo getInfo() {

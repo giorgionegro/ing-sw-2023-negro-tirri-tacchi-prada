@@ -66,6 +66,17 @@ class StandardGameTest {
         game.addPlayer("43");
         assertDoesNotThrow(() -> game.removePlayer("43"));
         assertDoesNotThrow(() -> game.removePlayer("42"));
+    }
+        @Test
+        void testRemovePlayer2() throws IllegalArgumentException, MatchmakingClosedException, PlayerAlreadyExistsException {
+
+            Game game2 = GameBuilder.build(new NewGameInfo("gameId", "STANDARD", 2, System.currentTimeMillis()));
+        game2.addPlayer("42");
+        game2.addPlayer("43");
+        assertDoesNotThrow(() -> game2.removePlayer(game2.getTurnPlayerId()));
+        assertDoesNotThrow(() -> game2.removePlayer(game2.getTurnPlayerId()));
+
+
 
 
     }

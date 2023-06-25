@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+//TODO
 public class GamePanel extends JComponent implements ActionListener, GameGraphics {
     private final ActionListener listener;
     private final Container livingRoomContainer = new Container();
