@@ -82,7 +82,6 @@ public class ViewLogic implements Remote, ViewCollection, ActionListener {
     private final ClientInterface clientEndPoint;
     private long currentSessionTime = -1;
 
-
     private boolean connected;
     public ViewLogic(AppGraphics appGraphics, String hostIp, int RMIHostPort, int SocketHostPort) throws RemoteException {
         this.hostIp = hostIp;
@@ -112,6 +111,7 @@ public class ViewLogic implements Remote, ViewCollection, ActionListener {
         }
         updateService.submit(() -> {
             connected = false;
+            currentSessionTime = -1;
             serverEndpoint = null;
             server = null;
             this.actionPerformed(new ActionEvent(appGraphics,ROUTE_CONNECT,message));
@@ -181,7 +181,6 @@ public class ViewLogic implements Remote, ViewCollection, ActionListener {
                 this.actionPerformed(new ActionEvent(appGraphics, ROUTE_JOIN, "Wrong number of parameters: "+joinInfoParts.length+" (2 required)"));
             }else if(!(joinInfoParts[0].isBlank() || joinInfoParts[1].isBlank())){
                 try {
-                    //TODO RESET GRAPHICS
                     gameGraphics.resetGameGraphics(joinInfoParts[0]);
 
                     this.currentSessionTime = System.currentTimeMillis();
