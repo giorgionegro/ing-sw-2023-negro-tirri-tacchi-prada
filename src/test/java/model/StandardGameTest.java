@@ -133,6 +133,19 @@ class StandardGameTest {
 
     }
 
+    /**
+     * Method under test: {@link StandardGame#updatePlayersTurn()}
+     */
+    @Test
+    void testClose() throws IllegalArgumentException {
+        Game game = GameBuilder.build(new NewGameInfo("gameId", "STANDARD", 3, System.currentTimeMillis()));
+        game.close();
+        assertThrows(MatchmakingClosedException.class, () -> game.addPlayer("42"));
+        assertThrows(GameEndedException.class, game::updatePlayersTurn);
+
+    }
+
+
 
     /**
      * Method under test: {@link StandardGame#close()}
@@ -144,6 +157,7 @@ class StandardGameTest {
         game.close();
         assertEquals(Game.GameStatus.ENDED, game.getGameStatus());
         assertThrows(MatchmakingClosedException.class, () -> game.addPlayer("42"));
+
     }
 
 

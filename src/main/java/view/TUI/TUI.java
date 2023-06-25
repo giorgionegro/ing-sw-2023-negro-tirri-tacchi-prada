@@ -825,7 +825,7 @@ public class TUI implements AppGraphics, GameGraphics {
 
     /**
      * Class that represents a pair of string and colour
-     * @param string string
+     * @param string string to be stored
      * @param colour int that represents the colour
      */
     record Pair(String string, int colour) {

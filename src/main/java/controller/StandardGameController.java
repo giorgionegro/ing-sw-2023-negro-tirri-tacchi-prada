@@ -405,7 +405,6 @@ public class StandardGameController implements GameController, LobbyController {
                                 this.closeTheGame("Game closed due to reconnection timeout");
                         }).start();
                     }
-
                     /* If a skip was needed then skip the turn */
                     else if (skipNeeded) {
                         try {

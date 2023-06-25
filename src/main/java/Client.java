@@ -8,8 +8,9 @@ import java.rmi.registry.Registry;
 import java.util.HashMap;
 import java.util.Map;
 
-public enum Client {
-    ;
+public class Client {
+    private Client() {
+    }
     private static final String UI_type = "TUI";
     private static final String DEFAULT_hostIp = "localhost";
     private static final String DEFAULT_clientIp = "localhost";
