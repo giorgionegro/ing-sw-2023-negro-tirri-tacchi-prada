@@ -91,24 +91,30 @@ public class StandardGameController implements GameController, LobbyController {
     public void joinPlayer(ClientInterface newClient, User newUser, String playerId) throws GameAccessDeniedException {
         synchronized (this.lobbyLock) {
             try {
+                /* Get model status before the player joins*/
                 Game.GameStatus previousStatus = this.game.getGameStatus();
 
+                /* Try to join the player */
                 this.game.addPlayer(playerId);
 
+                /* Authorize the client to use this controller*/
                 this.userAssociation.put(newClient, newUser);
 
                 /* Put newUser into known users */
                 this.playerAssociation.put(newUser, playerId);
 
+                /* Attach all the observers to the client */
                 try {
                     this.addObservers(newClient, playerId);
                 } catch (PlayerNotExistsException e) {
                     this.printModelError("Player that should exists does not exists, warning due to possible malfunctions");
                 }
 
+                /* Get model status after the player has joined */
                 Game.GameStatus newStatus = this.game.getGameStatus();
 
                 if (previousStatus == Game.GameStatus.SUSPENDED) {
+                    /* If the model was in suspended status then notify to resume the game */
                     this.lobbyLock.notify(true);
 
                 } else if (previousStatus == Game.GameStatus.MATCHMAKING && newStatus == Game.GameStatus.STARTED) {
@@ -116,6 +122,7 @@ public class StandardGameController implements GameController, LobbyController {
                     this.game.getLivingRoom().refillBoard();
                     this.game.updatePlayersTurn();
                 }
+
             } catch (PlayerAlreadyExistsException e) {
                 throw new GameAccessDeniedException("Player id already exists");
             } catch (MatchmakingClosedException | GameEndedException e) {
@@ -125,12 +132,13 @@ public class StandardGameController implements GameController, LobbyController {
     }
 
     /**
-     * Add observers to all needed objects
+     * Add observers to all needed observable model objects
      *
      * @param newClient   new player's ClientInterface
      * @param newPlayerId new player's id
      */
     private void addObservers(ClientInterface newClient, String newPlayerId) throws PlayerNotExistsException {
+        /* Creates a map to associate each observer to his observable */
         Map<Observable, Observer> newObserverAssociation = new HashMap<>();
 
         Player newPlayer = this.game.getPlayer(newPlayerId);
@@ -189,6 +197,7 @@ public class StandardGameController implements GameController, LobbyController {
             joinedPlayerShelf.addObserver(joinedPlayerShelfEventObserver);
         }
 
+        /* Associate the observers to the client they are updating */
         this.observerAssociation.put(newClient, newObserverAssociation);
     }
 
@@ -358,26 +367,33 @@ public class StandardGameController implements GameController, LobbyController {
                 association.getKey().deleteObserver(association.getValue());
             }
 
+            /* Reports to the user it has leaved the game */
             leavedUser.reportEvent(User.Status.NOT_JOINED, "Player leaved", User.Event.GAME_LEAVED);
 
-            /* If the game is MatchMaking directly close the game */
             if (this.game.getGameStatus() == Game.GameStatus.MATCHMAKING)
+                /* If the game is Matchmaking then directly close the game */
                 this.closeTheGame("Game closed due to disconnection while matchmaking");
+
             else if (this.game.getGameStatus() == Game.GameStatus.SUSPENDED) {
+                /* If the game was suspended then notify to close the game */
                 this.lobbyLock.notify(false);
+
             } else if (this.game.getGameStatus() == Game.GameStatus.STARTED) {
+                /* If the game is running then remove the player */
                 try {
+                    /* Get the playerID */
                     String leavedPlayer = this.playerAssociation.remove(leavedUser);
 
-                    /* Else evaluate if game needs a turn-skip (is player who leaved has the turn) */
+                    /* Evaluate if game needs a turn-skip (is player who leaved has the turn) */
                     boolean skipNeeded = this.game.getTurnPlayerId().equals(leavedPlayer);
 
                     /* Remove player on model side */
                     this.game.removePlayer(leavedPlayer);
 
-                    /* If model signal SUSPENDED status then wait 6 second for a player to rejoin */
+                    /* If model signal SUSPENDED status then run a timer */
                     if (this.game.getGameStatus() == Game.GameStatus.SUSPENDED) {
                         new Thread(() -> {
+                            /* Timer wait 6 seconds for a player to rejoin */
                             this.lobbyLock.reset();
                             if (!this.lobbyLock.hasBeenNotified())
                                 try {
@@ -385,6 +401,7 @@ public class StandardGameController implements GameController, LobbyController {
                                 } catch (InterruptedException e) {
                                     System.err.println("GameController: Timer is not working as intended");
                                 }
+
                             /* If nobody has rejoined then close the game */
                             if (!this.lobbyLock.getValue())
                                 this.closeTheGame("Game closed due to reconnection timeout");
@@ -396,7 +413,7 @@ public class StandardGameController implements GameController, LobbyController {
                         try {
                             this.game.updatePlayersTurn();
                         } catch (GameEndedException e) {
-                            /* If skipping the turn game is ended then close the game */
+                            /* If skipping the turn makes game end, then close the game */
                             this.closeTheGame("Game Ended");
                         }
                     }
@@ -413,14 +430,17 @@ public class StandardGameController implements GameController, LobbyController {
      * @param message The message that needs to be sent to the connected users
      */
     private void closeTheGame(String message) {
-
+        /* Reports to all connected user they left the game */
         for (User u : this.userAssociation.values()) {
             u.reportEvent(User.Status.NOT_JOINED, message, User.Event.GAME_LEAVED);
         }
 
+        /* Remove all allowed user */
         this.userAssociation.clear();
 
+        /* Signal the model to definitely end the game */
         this.game.close();
+        /* Detach all the observers from the model */
         this.game.deleteObservers();
         this.game.getCommonGoals().forEach(Observable::deleteObservers);
         this.game.getLivingRoom().deleteObservers();
@@ -436,6 +456,7 @@ public class StandardGameController implements GameController, LobbyController {
             }
         }
 
+        /* Calls gameClosedCallback to signal this controller is no longer useful */
         this.gameClosedCallback.accept(this);
     }
 
@@ -457,8 +478,8 @@ public class StandardGameController implements GameController, LobbyController {
                 /* Get player information associated with his client */
                 Player player = this.game.getPlayer(playerId);
 
-                /* If game is not started we discard the request */
                 if (this.game.getGameStatus() != Game.GameStatus.STARTED)
+                    /* If game is not started we discard the request */
                     player.reportError("Game not started yet");
 
                 else if (!playerId.equals(this.game.getTurnPlayerId()))
@@ -471,6 +492,7 @@ public class StandardGameController implements GameController, LobbyController {
                     Tile[][] board = this.game.getLivingRoom().getBoard();
 
                     try {
+                        /* Check if move object is well-formed and contains coherent info */
                         this.checkWellFormedMove(playerMove, shelf, board);
 
                         /* Foreach tile we pick it from board and put it on the shelf */
@@ -485,7 +507,7 @@ public class StandardGameController implements GameController, LobbyController {
                         this.game.getLivingRoom().refillBoard();
                         player.getShelf().setTiles(shelf);
 
-                        /* If shelf has been filled we signal that this will be the last round of turns */
+                        /* If player shelf has been filled we signal that this will be the last round of turns */
                         if (this.evaluateFullShelf(shelf)) {
                             /* If nobody else has already completed the shelf we assign a "GAME_END" token */
                             if (!this.game.isLastTurn())
@@ -513,6 +535,7 @@ public class StandardGameController implements GameController, LobbyController {
                         try {
                             this.game.updatePlayersTurn();
                         } catch (GameEndedException e) {
+                            /* If skipping the turn makes game end, then close the game */
                             this.closeTheGame("Game Ended");
                         }
 
@@ -543,14 +566,21 @@ public class StandardGameController implements GameController, LobbyController {
                 /* get player object associated with senderId */
                 Player sender = this.game.getPlayer(senderId);
 
+                /* Checks if client and message sender info are coherent*/
+                if(!newMessage.getSender().equals(senderId))
+                    sender.reportError("Sender of the message is not the same of message info");
+
                 /* If subject is not a player of this game then send an error */
-                if (!(newMessage.getReceiver().isEmpty() || this.playerAssociation.containsValue(newMessage.getReceiver())))
+                else if (!(newMessage.getReceiver().isEmpty() || this.playerAssociation.containsValue(newMessage.getReceiver())))
                     sender.reportError("Subject of the message does not exists");
 
                 /* If subject is a player or all players send message */
-                for (String playerId : this.playerAssociation.values()) {
-                    if (newMessage.getReceiver().isEmpty() || newMessage.getReceiver().equals(playerId) || newMessage.getSender().equals(playerId))
-                        this.game.getPlayer(playerId).getPlayerChat().addMessage(newMessage);
+                else {
+                    for (String playerId : this.playerAssociation.values()) {
+                        /* Send the message to all if receiver is empty or only to sender or receiver if specified */
+                        if (newMessage.getReceiver().isEmpty() || newMessage.getReceiver().equals(playerId) || newMessage.getSender().equals(playerId))
+                            this.game.getPlayer(playerId).getPlayerChat().addMessage(newMessage);
+                    }
                 }
             } catch (PlayerNotExistsException e) {
                 this.printModelError("Player should exists but does not exists, skipping message sending");

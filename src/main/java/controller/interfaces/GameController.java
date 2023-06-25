@@ -10,7 +10,7 @@ import java.rmi.RemoteException;
 /**
  * This is the interface of a game controller
  * <p>
- * It defines all the method required to interact with a Game instance
+ * It defines all the method required to interact with a {@link model.abstractModel.Game} instance
  */
 public interface GameController extends Remote {
 

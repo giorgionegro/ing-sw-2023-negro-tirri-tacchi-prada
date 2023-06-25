@@ -7,7 +7,7 @@ import modelView.NewGameInfo;
 /**
  * This is the interface of a game manager controller
  * <p>
- * It defines all the methods needed to manage game controllers
+ * It defines all the methods needed to manage {@link GameController}s
  */
 public interface GameManagerController {
     /**
@@ -20,7 +20,7 @@ public interface GameManagerController {
     GameController getGame(String gameId) throws GameNotExistsException;
 
     /**
-     * This method builds a {@link GameController} on the given new-game info
+     * This method builds a {@link GameController} on the given {@link NewGameInfo}
      * @param newGameInfo the new-game info that needs to be used
      * @throws GameAlreadyExistsException if there already is an {@link GameController} associated with the given {@link NewGameInfo} gameID
      * @throws IllegalArgumentException if the given {@link NewGameInfo} contains illegal or unknown parameters

@@ -161,9 +161,17 @@ public class ServerSocketHandler extends SocketHandler<ServerInterface> implemen
             throw new RemoteException("Unable to send the socket object");
         }
 
-        while (true) {
-            this.waitForReceive(server);
-        }
+
+        new Thread(() -> {
+            while (true) {
+                try {
+                    this.waitForReceive(server);
+                } catch (RemoteException e) {
+                    System.err.println(e.getMessage());
+                    break;
+                }
+            }
+        }).start();
     }
 
     @Override
