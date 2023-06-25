@@ -9,7 +9,7 @@ import java.rmi.RemoteException;
 public interface Binder extends Remote {
     /**
      * This method binds a client to a server
-     * @param server a ServerInterface that represents the server the client will bind with
+     * @param server the {@link ServerInterface} of the server that client have to bind to
      * @throws RemoteException if the binding fails
      */
     void bind(ServerInterface server) throws RemoteException;

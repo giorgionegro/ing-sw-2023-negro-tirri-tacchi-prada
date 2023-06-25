@@ -102,7 +102,7 @@ public abstract class SocketHandler<ReceiverType> {
 
     /**
      * This method waits for a SocketObject sent on the input stream and call interaction on it, acting as the sender
-     * @param receiver the receiver object
+     * @param receiver the {@link SocketObject} receiver object
      * @throws RemoteException when an input/output exception occurs
      */
     protected void waitForReceive(ReceiverType receiver) throws RemoteException {

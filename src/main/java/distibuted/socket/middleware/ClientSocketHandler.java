@@ -44,7 +44,7 @@ public class ClientSocketHandler extends SocketHandler<ClientInterface> implemen
         /* Calls SocketHandler to open the socket connection */
         super.open();
         
-        /* Create and runs input stream handler thread */
+        /* Create and runs input-stream-handler thread */
         this.receiverLoop = new Thread(() -> {
             try {
                 while (true) {

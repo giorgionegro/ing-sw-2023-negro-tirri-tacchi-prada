@@ -173,8 +173,7 @@ public class ClientEndPoint extends UnicastRemoteObject implements ClientInterfa
                 pingWaiter.setValue(false);
 
                 try {
-                        this.pingWaiter.lock(2000);
-
+                    this.pingWaiter.lock(2000);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
