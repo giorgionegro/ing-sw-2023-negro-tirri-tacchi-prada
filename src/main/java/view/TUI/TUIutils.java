@@ -3,15 +3,42 @@ package view.TUI;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
+/**
+ * This class contains utility methods for the TUI
+ */
 final class TUIutils {
 
+    /**
+     * This is the ANSI codes for white
+     */
     public static final int WHITE = 37;
+    /**
+     * This is the ANSI codes for green
+     */
     public static final int GREEN = 32;
+    /**
+     * This is the ANSI codes for yellow
+     */
     public static final int YELLOW = 33;
+    /**
+     * This is the ANSI codes for blue
+     */
     public static final int BLUE = 34;
+    /**
+     * This is the ANSI codes for magenta
+     */
     public static final int MAGENTA = 35;
+    /**
+     * This is the ANSI codes for cyan
+     */
     public static final int CYAN = 36;
+    /**
+     * This is the ANSI codes for red
+     */
     public static final int RED = 31;
+    /**
+     * This is the ANSI codes for default
+     */
     public static final int DEFAULT = 39;
     private TUIutils() {
     }
@@ -37,8 +64,7 @@ final class TUIutils {
     }
 
     /**
-     * //TODO function javadoc
-     * This method checks what OS the game is being run on and clears the terminal.
+     * This method clears the terminal.
      *
      * @param function callback to be run on screen cleaning error
      */

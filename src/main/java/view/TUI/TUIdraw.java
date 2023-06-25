@@ -72,6 +72,13 @@ final class TUIdraw {
         }
     }
 
+    /**
+     * @param startX x coordinate of the start of the grid
+     * @param startY y coordinate of the start of the grid
+     * @param contents 2d array of tiles representing the contents of the grid
+     * @param cliPixel 2d array of characters representing the pixels
+     * @param cliPixelColor 2d array of integers representing the color of the pixels
+     */
     static void drawGridContents(int startX, int startY, Tile[][] contents, char[][] cliPixel, int[][] cliPixelColor) {
         startX = startX + 1;
         startY = startY + 1;
@@ -319,10 +326,10 @@ final class TUIdraw {
     }
 
     /**
-     * //TODO javadoc drawCommandLine
+     * this method draws the command line
      *
-     * @param cursor
-     * @param oldCmds
+     * @param cursor        starting string of the command line
+     * @param oldCmds       list of old commands
      * @param cliPixel      2d array of characters representing the pixels
      * @param cliPixelColor 2d array of integers representing the color of the pixels
      */
@@ -338,9 +345,9 @@ final class TUIdraw {
     }
 
     /**
-     * //TODO javadoc drawOldCmds
+     * this method draws the old commands
      *
-     * @param oldCmds
+     * @param oldCmds       list of old commands
      * @param cliPixel      2d array of characters representing the pixels
      * @param cliPixelColor 2d array of integers representing the color of the pixels
      */
@@ -357,8 +364,9 @@ final class TUIdraw {
      * this method draws the shelves of the players in the game
      *
      * @param currentShelves map that associates each playerId to its shelf
+     * @param firstPlayerId  ID of the first player
      * @param thisPlayerId   ID of the player who is
-     * @param
+     * @param pointsValue    map that associates each playerId to its points
      * @param cliPixel       2d array of characters representing the pixels
      * @param cliPixelColor  2d array of integers representing the color of the pixels
      */
@@ -485,9 +493,9 @@ final class TUIdraw {
     }
 
     /**
-     * //TODO javadoc getCommonGoalRes
-     *
-     * @return
+     * this method retrives the resource of the common goal
+     *  @param id   id of the common goal
+     * @return   array of strings representing the resource
      */
     private static String[] getCommonGoalRes(String id) {
         String[] ris = new String[0];
