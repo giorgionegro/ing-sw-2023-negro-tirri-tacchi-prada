@@ -12,6 +12,9 @@ import static org.junit.jupiter.api.Assertions.fail;
 class StandardPlayerTest {
 
 
+    /**
+     * Method under test: {@link StandardPlayer(model.abstractModel.Shelf, List, model.abstractModel.PlayerChat)}
+     */
     @Test
     void testPlayerCreation() {
 
@@ -39,6 +42,9 @@ class StandardPlayerTest {
         }
     }
 
+    /**
+     * Method under test: {@link StandardPlayer#getShelf()}
+     */
     @Test
     void testPlayerShelfModification() {
         Player p = new StandardPlayer(new StandardShelf(), new ArrayList<>(), new StandardPlayerChat());
@@ -70,6 +76,9 @@ class StandardPlayerTest {
         }
     }
 
+    /**
+     * Method under test: {@link StandardPlayer#addAchievedCommonGoal(String, Token)}
+     */
     @Test
     void testPlayerAchievingCommonGoal() {
         Player p = new StandardPlayer(new StandardShelf(), new ArrayList<>(), new StandardPlayerChat());
@@ -94,7 +103,10 @@ class StandardPlayerTest {
     }
 
 
-
+    /**
+     * Utility method to get a list of personal goals
+     * @return a list of personal goals
+     */
     private List<PersonalGoal> getPersonalGoals() {
         List<PersonalGoal> r = new ArrayList<>();
         r.add(new StandardPersonalGoal(0, Tile.CATS_1, 0, 0));
@@ -106,12 +118,19 @@ class StandardPlayerTest {
         return r;
     }
 
+    /**
+     *  Method under test: {@link StandardPlayer#reportError(String)}
+     */
     @Test
     void reportErrorTest() {
         Player test = new StandardPlayer(new StandardShelf(), new ArrayList<>(), new StandardPlayerChat());
         test.reportError("Error test");
+       assert  test.getInfo().errorMessage().equals("Error test");
     }
 
+    /**
+     * Method under test: {@link StandardPlayer#addAchievedCommonGoal(String, Token)}
+     */
     @Test
     void getInfoTest() {
         Player test = new StandardPlayer(new StandardShelf(), new ArrayList<>(), new StandardPlayerChat());

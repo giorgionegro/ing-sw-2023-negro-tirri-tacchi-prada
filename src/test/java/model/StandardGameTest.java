@@ -67,6 +67,9 @@ class StandardGameTest {
         assertDoesNotThrow(() -> game.removePlayer("43"));
         assertDoesNotThrow(() -> game.removePlayer("42"));
     }
+    /**
+     * Method under test: {@link StandardGame#removePlayer(String)}
+     */
         @Test
         void testRemovePlayer2() throws IllegalArgumentException, MatchmakingClosedException, PlayerAlreadyExistsException {
 
@@ -263,7 +266,6 @@ class StandardGameTest {
         try {
             test.addPlayer("p1");
             test.addPlayer("p2");
-
             test.close();
             assertEquals(Game.GameStatus.ENDED, test.getGameStatus());
 

@@ -10,6 +10,14 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class StandardShelfTest {
+    /**
+     * Methods under test:
+     * <ul>
+     *     <li>{@link StandardShelf#setTiles(Tile[][])}
+     *     <li>{@link StandardShelf#getTiles()}
+     *     <li>{@link StandardShelf#getInfo(String)}
+     *     <li>{@link StandardShelf}
+     */
     @Test
     void shelfTest() {
         Tile[][] modifiedShelf = new Tile[6][5];
