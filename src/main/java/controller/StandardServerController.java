@@ -118,8 +118,8 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
             /* Un-authenticate the client and remove user observers */
             User user = this.users.remove(client);
             user.deleteObservers();
-            System.out.println("CLIENT DISCONNECTED, connected user: " + this.users.size());
 
+            System.out.println("CLIENT DISCONNECTED, connected user: " + this.users.size());
         }
     }
 

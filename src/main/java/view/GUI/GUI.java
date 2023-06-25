@@ -4,11 +4,13 @@ import view.GUI.panels.*;
 import view.graphicInterfaces.AppGraphics;
 import view.graphicInterfaces.GameGraphics;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Objects;
 
-public class  GUI implements AppGraphics, ActionListener {
+public class GUI extends JFrame implements AppGraphics, ActionListener {
     private final NetworkChoicePanel networkChoice = new NetworkChoicePanel(this);
     private final HomePanel homePanel = new HomePanel(this);
     private final JoinGamePanel join = new JoinGamePanel(this);
@@ -18,9 +20,23 @@ public class  GUI implements AppGraphics, ActionListener {
 
     private ActionListener viewLogic;
     public GUI(){
-        MyFrame frame = new MyFrame();
-        frame.setVisible(true);
-        this.root = frame.getContentPane();
+        super();
+
+        this.setLayout(new BorderLayout());
+
+        Image icon = new ImageIcon (Objects.requireNonNull(getClass().getResource("/AppIcon.png"))).getImage();
+        this.setIconImage(icon);
+
+        this.setTitle("My Shelfie");
+        this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+
+        this.setSize(new Dimension(1100, 700));
+        this.setMinimumSize(new Dimension(825,525));
+
+        this.setResizable(true);
+        this.setVisible(true);
+
+        this.root = this.getContentPane();
     }
 
     public void refresh() {

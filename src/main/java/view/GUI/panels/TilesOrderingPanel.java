@@ -1,8 +1,8 @@
 package view.GUI.panels;
 
 import modelView.PickedTile;
-import view.GUI.components.SwapButton;
-import view.GUI.components.TileButton;
+import view.GUI.buttons.SwapButton;
+import view.GUI.buttons.TileButton;
 import view.ViewLogic;
 
 import javax.swing.*;

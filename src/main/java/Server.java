@@ -107,8 +107,6 @@ public class Server {
 
                 ServerSocketHandler serverSocketHandler = new ServerSocketHandler(socket);
                 try {
-                    serverSocketHandler.open();
-                    this.serverController.connect(serverSocketHandler);
                     serverController.connect(serverSocketHandler);
                 } catch (RemoteException e) {
                     System.err.println("Cannot receive from client: " + e.getMessage() + ".\n-> Closing this connection...");

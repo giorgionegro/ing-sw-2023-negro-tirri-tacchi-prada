@@ -1,4 +1,4 @@
-package view.GUI.components;
+package view.GUI.buttons;
 
 
 

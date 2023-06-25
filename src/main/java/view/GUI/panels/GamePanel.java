@@ -4,7 +4,7 @@ import model.Tile;
 import model.Token;
 import model.abstractModel.Game;
 import model.abstractModel.Message;
-import view.GUI.AspectRatioLayout;
+import view.GUI.layouts.AspectRatioLayout;
 import view.ViewLogic;
 import view.graphicInterfaces.GameGraphics;
 

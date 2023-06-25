@@ -2,7 +2,7 @@ package view.GUI.panels;
 
 import model.Token;
 
-import view.GUI.AspectRatioLayout;
+import view.GUI.layouts.AspectRatioLayout;
 import view.graphicInterfaces.CommonGoalGraphics;
 import javax.swing.*;
 import java.awt.*;
