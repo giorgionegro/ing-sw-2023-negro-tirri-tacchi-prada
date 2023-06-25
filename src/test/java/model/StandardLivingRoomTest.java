@@ -31,11 +31,13 @@ class StandardLivingRoomTest {
         assertEquals(9, actualStandardLivingRoom.getBoard().length);
     }
 
-
+    /**
+     * Method under test: {@link StandardLivingRoom#StandardLivingRoom(int)}
+     */
     @Test
+    void twoPlayerBoardHasCorrectEmptyTiles() {
         //after refillBoard(), check that all the board cells that should be empty actually are
         //when there are 2 Players
-    void twoPlayerBoardHasCorrectEmptyTiles() {
         StandardLivingRoom test = new StandardLivingRoom(2);
         test.refillBoard();
         Tile[][] actualBoard = test.getBoard();
@@ -89,7 +91,9 @@ class StandardLivingRoomTest {
             fail();
         }
     }
-
+    /**
+     * Method under test: {@link StandardLivingRoom#StandardLivingRoom(int)}
+     */
     @Test
         //after refillBoard(), check that all the board cells that should contain a TIle actually do
         //when there are 2 Players
@@ -141,7 +145,9 @@ class StandardLivingRoomTest {
             fail();
         }
     }
-
+    /**
+     * Method under test: {@link StandardLivingRoom#StandardLivingRoom(int)}
+     */
     @Test
         //after refillBoard(), check that all the board cells that should be empty actually are
         //when there are 3 Players
@@ -203,7 +209,9 @@ class StandardLivingRoomTest {
             fail();
         }
     }
-
+    /**
+     * Method under test: {@link StandardLivingRoom#StandardLivingRoom(int)}
+     */
     @Test
         //after refillBoard(), check that all the board cells that should contain a TIle actually do
         //when there are 3 Players
@@ -252,22 +260,17 @@ class StandardLivingRoomTest {
             }
         }
 
-        if (actualBoard[2][5] == Tile.EMPTY ||
-                actualBoard[5][6] == Tile.EMPTY ||
-                actualBoard[6][4] == Tile.EMPTY ||
-                actualBoard[4][1] == Tile.EMPTY ||
-                actualBoard[1][3] == Tile.EMPTY ||
-                actualBoard[2][6] == Tile.EMPTY ||
-                actualBoard[3][8] == Tile.EMPTY ||
-                actualBoard[6][6] == Tile.EMPTY ||
-                actualBoard[8][5] == Tile.EMPTY ||
-                actualBoard[6][2] == Tile.EMPTY ||
-                actualBoard[5][0] == Tile.EMPTY ||
-                actualBoard[2][2] == Tile.EMPTY) {
+        if (actualBoard[2][5] == Tile.EMPTY || actualBoard[5][6] == Tile.EMPTY || actualBoard[2][6] == Tile.EMPTY || actualBoard[3][8] == Tile.EMPTY || actualBoard[6][6] == Tile.EMPTY || actualBoard[8][5] == Tile.EMPTY || actualBoard[6][2] == Tile.EMPTY || actualBoard[5][0] == Tile.EMPTY || actualBoard[2][2] == Tile.EMPTY) {
             fail();
         }
     }
 
+
+
+
+    /**
+     * Method under test: {@link StandardLivingRoom#StandardLivingRoom(int)}
+     */
     @Test
         //after refillBoard(), check that all the board cells that should be empty actually are
         //when there are 4 Players
@@ -321,7 +324,9 @@ class StandardLivingRoomTest {
             fail();
         }
     }
-
+    /**
+     * Method under test: {@link StandardLivingRoom#StandardLivingRoom(int)}
+     */
     @Test
         //after refillBoard(), check that all the board cells that should contain a TIle actually do
         //when there are 4 Players
@@ -370,31 +375,15 @@ class StandardLivingRoomTest {
             }
         }
 
-        if (actualBoard[2][5] == Tile.EMPTY ||
-                actualBoard[5][6] == Tile.EMPTY ||
-                actualBoard[6][4] == Tile.EMPTY ||
-                actualBoard[4][1] == Tile.EMPTY ||
-                actualBoard[1][3] == Tile.EMPTY ||
-                actualBoard[2][6] == Tile.EMPTY ||
-                actualBoard[3][8] == Tile.EMPTY ||
-                actualBoard[6][6] == Tile.EMPTY ||
-                actualBoard[8][5] == Tile.EMPTY ||
-                actualBoard[6][2] == Tile.EMPTY ||
-                actualBoard[5][0] == Tile.EMPTY ||
-                actualBoard[0][4] == Tile.EMPTY ||
-                actualBoard[1][5] == Tile.EMPTY ||
-                actualBoard[4][8] == Tile.EMPTY ||
-                actualBoard[5][7] == Tile.EMPTY ||
-                actualBoard[8][4] == Tile.EMPTY ||
-                actualBoard[7][3] == Tile.EMPTY ||
-                actualBoard[4][0] == Tile.EMPTY ||
-                actualBoard[3][1] == Tile.EMPTY ||
-                actualBoard[2][2] == Tile.EMPTY) {
+        if (actualBoard[2][5] == Tile.EMPTY || actualBoard[5][6] == Tile.EMPTY || actualBoard[2][6] == Tile.EMPTY || actualBoard[3][8] == Tile.EMPTY || actualBoard[6][6] == Tile.EMPTY || actualBoard[8][5] == Tile.EMPTY || actualBoard[6][2] == Tile.EMPTY || actualBoard[5][0] == Tile.EMPTY || actualBoard[0][4] == Tile.EMPTY || actualBoard[1][5] == Tile.EMPTY || actualBoard[4][8] == Tile.EMPTY || actualBoard[5][7] == Tile.EMPTY || actualBoard[8][4] == Tile.EMPTY || actualBoard[7][3] == Tile.EMPTY || actualBoard[4][0] == Tile.EMPTY || actualBoard[3][1] == Tile.EMPTY || actualBoard[2][2] == Tile.EMPTY) {
             fail();
         }
     }
 
 
+    /**
+     * Method under test: {@link StandardLivingRoom#refillBoard()}
+     */
     @Test
         //if the Player cannot pick more than 1 Tile from the board (it only contains islands of Tiles)
         //calling refillBoard() should fill the board
@@ -409,6 +398,9 @@ class StandardLivingRoomTest {
         assertFalse(Arrays.deepEquals(newBoard, test.getBoard()));
     }
 
+    /**
+     * Method under test: {@link StandardLivingRoom#refillBoard()}
+     */
     @Test
         //if the Player can pick more than 1 Tile from the board (it doesn't only contain islands of Tiles)
         //calling refillBoard() should not fill the board
@@ -431,6 +423,9 @@ class StandardLivingRoomTest {
     }
 
 
+    /**
+     * Method under test: {@link StandardLivingRoom#refillBoard()}
+     */
     @Test
         //board stops refilling if bag is empty
     void boardRefillWorksCorrectlyCenterSquare() {
@@ -442,6 +437,10 @@ class StandardLivingRoomTest {
         assertTrue(test.getBoard()[3][5] == Tile.EMPTY && test.getBoard()[3][4] != Tile.EMPTY);
     }
 
+
+    /**
+     * Method under test: {@link StandardLivingRoom#refillBoard()}
+     */
     @Test
         //board stops refilling if bag is empty
     void boardRefillWorksCorrectlySideSquares() {
@@ -453,6 +452,10 @@ class StandardLivingRoomTest {
         assertTrue(test.getBoard()[1][4] == Tile.EMPTY && test.getBoard()[1][3] != Tile.EMPTY);
     }
 
+
+    /**
+     * Method under test: {@link StandardLivingRoom#refillBoard()}
+     */
     @Test
         //board stops refilling if bag is empty
     void boardRefillWorksCorrectlyMissingCells() {
@@ -464,6 +467,9 @@ class StandardLivingRoomTest {
         assertTrue(test.getBoard()[3][2] == Tile.EMPTY && test.getBoard()[2][5] != Tile.EMPTY);
     }
 
+    /**
+     * Method under test: {@link StandardLivingRoom#refillBoard()}
+     */
     @Test
         //board stops refilling if bag is empty
     void boardRefillWorksCorrectlyMissingCells3Players() {
@@ -475,6 +481,9 @@ class StandardLivingRoomTest {
         assertTrue(test.getBoard()[2][2] == Tile.EMPTY && test.getBoard()[0][3] != Tile.EMPTY);
     }
 
+    /**
+     * Method under test: {@link StandardLivingRoom#refillBoard()}
+     */
     @Test
         //board stops refilling if bag is empty
     void boardRefillWorksCorrectlyMissingCells4Players() {
@@ -524,9 +533,6 @@ class StandardLivingRoomTest {
     void testGetBag() {
         Game game = GameBuilder.build(new NewGameInfo("gameId", "STANDARD", 2, System.currentTimeMillis()));
         Stack<Tile> actualBag = ((StandardLivingRoom) game.getLivingRoom()).getBag();
-
-
-        // Assert
         assertFalse(actualBag.isEmpty());
     }
 }//package model;

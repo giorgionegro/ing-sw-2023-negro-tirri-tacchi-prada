@@ -2338,7 +2338,7 @@ class StandardGameControllerTest {
         if (!lock.getValue()) {
             fail("GameInfo not updated");
         }
-        lock.lock(500);
+        Thread.sleep(400);
         assert gameInfo[0] != null && gameInfo[0].lastTurn();
     }
 

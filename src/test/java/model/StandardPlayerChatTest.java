@@ -15,6 +15,15 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class StandardPlayerChatTest {
+    /**
+     * Methods under test:
+     * <ul>
+     *     <li>{@link StandardPlayerChat#addMessage(Message)}
+     *     <li>{@link StandardPlayerChat#getMessages()}
+     * </ul>
+     *
+     *
+     */
     @Test
     void chatMessagesInsertionAndGet() {
         PlayerChat chat = new StandardPlayerChat();
@@ -64,6 +73,10 @@ class StandardPlayerChatTest {
                 fail("Chat saved an message wrong");
         }
     }
+
+    /**
+     * Method under test: {@link StandardPlayerChat#getInfo()}
+     */
     @Test
     void getInfoTest(){
         PlayerChat chat = new StandardPlayerChat();
