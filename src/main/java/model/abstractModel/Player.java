@@ -57,12 +57,7 @@ public abstract class Player extends Observable<Player.Event> {
      */
     public abstract void reportError(String error);
 
-    /**
-     * This method returns the last error that player encountered during gameplay
-     *
-     * @return the last error that player encountered during gameplay
-     */
-    public abstract String getReportedError();
+
 
     /**
      * This method returns a {@link PlayerInfo} representing this object instance

@@ -12,13 +12,11 @@ import java.util.Objects;
  * This class extends JPanel and represents a graphical component that allows to create a new game inserting a GameId and a PlayerId
  */
 public class CreateGamePanel extends JPanel {
-    private final ActionListener listener;
 
     /** Construct an {@link CreateGamePanel} instance that uses the given {@link ActionListener} as listener for buttons events
      * @param listener the ActionListener to be notified when a button is pressed
      */
     public CreateGamePanel(ActionListener listener){
-        this.listener = listener;
 
         initializeLayout();
 

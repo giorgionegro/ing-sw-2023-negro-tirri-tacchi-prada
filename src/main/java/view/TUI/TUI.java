@@ -17,41 +17,124 @@ import java.util.*;
 import static view.TUI.TUIdraw.*;
 import static view.TUI.TUIutils.*;
 
+
+/**
+ * This class is the Text User Interface of the game.
+ */
 public class TUI implements AppGraphics, GameGraphics {
 
+    /**
+     * Render height of the TUI
+     */
     static final int renderHeight = 53;
+    /**
+     * Render width of the TUI
+     */
     static final int renderWidth = 140;
+    /**
+     * X Position of the cursor on the TUI
+     */
     static final int cursorX = 3;
+    /**
+     * Y Position of the cursor on the TUI
+     */
     static final int cursorY = 51;
+    /**
+     * Stream used to print on the TUI
+     */
     private final PrintStream out = System.out;
+    /**
+     * Scanner used to read from the TUI
+     */
     private final Scanner scanner = new Scanner(System.in);
+    /**
+     * History of the commands executed and printed on the TUI
+     */
     private final List<Pair> oldCmds = new ArrayList<>();
+    /**
+     * Canvas of the TUI, tile matrix of chars
+     */
     private final char[][] canvas = new char[renderHeight][renderWidth];
+    /**
+     * color canvas of the TUI, tile matrix of int
+     */
     private final int[][] canvasColors = new int[renderHeight][renderWidth];
+    /**
+     * Lock used to synchronize the render of the TUI
+     */
     private final Object renderLock = new Object();
+    /**
+     * Lock used to synchronize the updates of the fields of the TUI
+     */
     private final Object updateLock = new Object();
+    /**
+     * Current cursor of the TUI
+     */
     private String cursor = "";
+    /**
+     * Current scene of the TUI
+     */
     private Scene scene;
+    /**
+     * Action listener of the TUI for handling events
+     */
     private ActionListener actionListener;
+    /**
+     * current player id of the game
+     */
     private String playerId;
+    /**
+     * current board state of the game
+     */
     private Tile[][] boardState;
+    /**
+     * current players shelf of the game
+     */
     private Map<String, Tile[][]> playerShelves;
+    /**
+     * current player on turn
+     */
     private String playerOnTurn;
+    /**
+     * player that had the first turn
+     */
     private String firstTurnPlayer;
+    /**
+     * players points
+     */
     private Map<String, Integer> pointsValues;
 
-    /*-----------------  GRAPHIC UTILITY --------------------*/
+    /**
+     * is the last turn of the game
+     */
     private boolean isLastTurn;
+    /**
+     * current game status
+     */
     private GameStatus status;
+    /**
+     * current chat of the game
+     */
     private List<? extends Message> chat;
+    /**
+     * current common goals of the game
+     */
     private Map<String, Token> commonGoals;
 
-    /*----------------- CONSTRUCTOR ------------------------*/
+    /**
+     *  player achieved common goals
+     */
+
     private Map<String, Token> achievedCommonGoals;
 
-    /*----------------- APP GRAPHICS ------------------------*/
+    /**
+     * personal goal description
+     */
     private Tile[][] personalGoalsDescription;
-    /*------------------ INPUT UTILITY --------------------*/
+
+    /**
+     * Thread used to read the input from the TUI
+     */
     private final Thread inputThread = new Thread(() -> {
         while (true) {
             String cmd = this.scanner.nextLine();
@@ -59,14 +142,24 @@ public class TUI implements AppGraphics, GameGraphics {
             this.dispatchInput(cmd);
         }
     });
+    /**
+     * personal goals
+     */
     private Map<Integer, Boolean> personalGoals;
 
+    /**
+     * Constructor of the TUI
+     */
     public TUI() {
         super();
         this.inputThread.start();
         this.resetGameGraphics("");
     }
 
+    /**
+     * execute read command
+     * @param cmd command read from the TUI
+     */
     private void dispatchInput(String cmd) {
         switch (this.scene) {
             case CONNECTION -> {
@@ -127,6 +220,9 @@ public class TUI implements AppGraphics, GameGraphics {
         }
     }
 
+    /**
+     * start routine to send a message
+     */
     private void sendMessageRoutine() {
         String subject;
         String content;
@@ -147,6 +243,9 @@ public class TUI implements AppGraphics, GameGraphics {
             ));
     }
 
+    /**
+     * start routine to do a move
+     */
     private void doMoveRoutine() {
         String pickedTiles;
         String sCol = "";
@@ -226,6 +325,9 @@ public class TUI implements AppGraphics, GameGraphics {
         }
     }
 
+    /**
+     * Shows hints for the current scene
+     */
     private void showHints() {
         synchronized (this.updateLock) {
             switch (this.scene) {
@@ -235,6 +337,9 @@ public class TUI implements AppGraphics, GameGraphics {
         }
     }
 
+    /**
+     * Update and render the canvas
+     */
     private void render() {
         /* Current values of gameplay info */
         Tile[][] currentBoardState;
@@ -313,14 +418,29 @@ public class TUI implements AppGraphics, GameGraphics {
 
     /*------------------- OTHER GRAPHICS ----------------------*/
 
+    /**
+     * render single pixel
+     * @param x     x coordinate of the pixel
+     * @param y    y coordinate of the pixel
+     * @return String representing the pixel at the given coordinates
+     */
     private String renderPixel(int x, int y) {
         return "\u001B[" + this.canvasColors[x][y] + "m" + this.canvas[x][y] + "\u001B[0m";
     }
 
+    /**
+     * Print a string in the command line
+     * @param toPrint  String to print
+     */
     private void printCommandLine(String toPrint) {
         this.printCommandLine(toPrint, DEFAULT);
     }
 
+    /**
+     * Print a string in the command line with a given colour
+     * @param toPrint  String to print
+     * @param colour  Colour of the string
+     */
     private void printCommandLine(String toPrint, int colour) {
         String[] lines = toPrint.split("\n");
 
@@ -333,16 +453,29 @@ public class TUI implements AppGraphics, GameGraphics {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * @param actionListener {@inheritDoc}
+     */
     @Override
     public void setActionListener(ActionListener actionListener) {
         this.actionListener = actionListener;
     }
 
+    /**
+     * {@inheritDoc}
+     * @return {@inheritDoc}
+     */
     @Override
     public GameGraphics getGameGraphics() {
         return this;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param error {@inheritDoc}
+     */
     @Override
     public void showConnection(String error) {
         synchronized (this.renderLock) {
@@ -355,6 +488,11 @@ public class TUI implements AppGraphics, GameGraphics {
         this.render();
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param message {@inheritDoc}
+     */
     @Override
     public void showServerInteraction(String message) {
         synchronized (this.renderLock) {
@@ -367,6 +505,10 @@ public class TUI implements AppGraphics, GameGraphics {
         this.render();
     }
 
+    /**
+     * {@inheritDoc}
+     * @param error {@inheritDoc}
+     */
     @Override
     public void showJoin(String error) {
         synchronized (this.renderLock) {
@@ -379,6 +521,10 @@ public class TUI implements AppGraphics, GameGraphics {
         this.render();
     }
 
+    /**
+     * {@inheritDoc}
+     * @param error eventual error message to be printed
+     */
     @Override
     public void showCreate(String error) {
         synchronized (this.renderLock) {
@@ -391,6 +537,10 @@ public class TUI implements AppGraphics, GameGraphics {
         this.render();
     }
 
+    /**
+     * {@inheritDoc}
+     * @param message eventual message to be printed
+     */
     @Override
     public void showGame(String message) {
         synchronized (this.updateLock) {
@@ -404,12 +554,19 @@ public class TUI implements AppGraphics, GameGraphics {
         this.render();
     }
 
+    /**
+     * Exit the game
+     */
     @Override
     public void exit() {
         this.inputThread.interrupt();
         System.exit(0);
     }
 
+    /**
+     * reset the game graphics for a new game
+     * @param playerId {@inheritDoc}
+     */
     @Override
     public void resetGameGraphics(String playerId) {
         synchronized (this.updateLock) {
@@ -432,6 +589,10 @@ public class TUI implements AppGraphics, GameGraphics {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * @param board board of the living room
+     */
     @Override
     public void updateBoardGraphics(Tile[][] board) {
         synchronized (this.updateLock) {
@@ -440,6 +601,11 @@ public class TUI implements AppGraphics, GameGraphics {
         this.render();
     }
 
+    /**
+     * {@inheritDoc}
+     * @param playerId id of the player that owns the shelf
+     * @param shelf    shelf representation of the player
+     */
     @Override
     public void updatePlayerShelfGraphics(String playerId, Tile[][] shelf) {
         synchronized (this.updateLock) {
@@ -448,6 +614,14 @@ public class TUI implements AppGraphics, GameGraphics {
         this.render();
     }
 
+    /**
+     * {@inheritDoc}
+     * @param status          status of the game
+     * @param firstTurnPlayer id of the player that has the first turn
+     * @param playerOnTurn    id of the player on turn
+     * @param isLastTurn      true if the game is in the last round of turns
+     * @param pointsValues    points amount of each player
+     */
     @Override
     public void updateGameInfoGraphics(GameStatus status, String firstTurnPlayer, String playerOnTurn, boolean isLastTurn, Map<String, Integer> pointsValues) {
         synchronized (this.updateLock) {
@@ -465,6 +639,10 @@ public class TUI implements AppGraphics, GameGraphics {
         this.render();
     }
 
+    /**
+     * {@inheritDoc}
+     * @param chat list of messages sent to a player
+     */
     @Override
     public void updatePlayerChatGraphics(List<? extends Message> chat) {
         synchronized (this.updateLock) {
@@ -473,6 +651,12 @@ public class TUI implements AppGraphics, GameGraphics {
         this.render();
     }
 
+    /**
+     * {@inheritDoc}
+     * @param id          the unique id of the common goal
+     * @param description the description of common goal specs
+     * @param tokenState  the current token value of the common goal
+     */
     @Override
     public void updateCommonGoalGraphics(String id, String description, Token tokenState) {
         synchronized (this.updateLock) {
@@ -481,6 +665,10 @@ public class TUI implements AppGraphics, GameGraphics {
         this.render();
     }
 
+    /**
+     * {@inheritDoc}
+     * @param achievedCommonGoals map of achieved common goals with earned token
+     */
     @Override
     public void updateAchievedCommonGoals(Map<String, Token> achievedCommonGoals) {
         synchronized (this.updateLock) {
@@ -489,6 +677,10 @@ public class TUI implements AppGraphics, GameGraphics {
         this.render();
     }
 
+    /**
+     * {@inheritDoc}
+     * @param reportedError message of en error encountered during gameplay
+     */
     @Override
     public void updateErrorState(String reportedError) {
         synchronized (this.updateLock) {
@@ -498,6 +690,12 @@ public class TUI implements AppGraphics, GameGraphics {
         this.render();
     }
 
+    /**
+     * {@inheritDoc}
+     * @param id              the id of this goal, unique among others player personal goal
+     * @param hasBeenAchieved true if the goal is achieved
+     * @param description     matrix representation of the goal
+     */
     @Override
     public void updatePersonalGoalGraphics(int id, boolean hasBeenAchieved, Tile[][] description) {
         synchronized (this.updateLock) {
@@ -519,6 +717,12 @@ public class TUI implements AppGraphics, GameGraphics {
         this.render();
     }
 
+    /**
+     * Method that determines if a list of tiles are pickable
+     * @param pickedTiles list of tiles picked by the player
+     * @param board board of the living room
+     * @return true if the tile is pickable
+     */
     public boolean pickable(List<PickedTile> pickedTiles, Tile[][] board) {
         if (!this.areTilesDifferent(new ArrayList<>(pickedTiles))) {
             this.printCommandLine("Tiles are not different", RED);
@@ -536,6 +740,11 @@ public class TUI implements AppGraphics, GameGraphics {
         return true;
     }
 
+    /**
+     * Method that determines if tiles are aligned
+     * @param pickedTiles list of tiles picked by the player
+     * @return true if the tiles are aligned
+     */
     private boolean areTilesAligned(List<PickedTile> pickedTiles) {
 
         boolean rowAligned = true;
@@ -565,6 +774,7 @@ public class TUI implements AppGraphics, GameGraphics {
     }
 
     /**
+     * Method that determines if tiles are different
      * @param pickedTiles list of picked tiles
      * @return true if tiles are different, false otherwise
      */
@@ -580,6 +790,7 @@ public class TUI implements AppGraphics, GameGraphics {
     }
 
     /**
+     * Method that determines if a tile is in a pickable position
      * @param row    row of the tile
      * @param column column of the tile
      * @param board  board to check
@@ -599,6 +810,9 @@ public class TUI implements AppGraphics, GameGraphics {
     }
 
 
+    /**
+     * Enum that represents the scenes of the game
+     */
     private enum Scene {
         CONNECTION,
         INTERACTION,
@@ -608,6 +822,12 @@ public class TUI implements AppGraphics, GameGraphics {
         LEADERBOARD,
     }
 
+
+    /**
+     * Class that represents a pair of string and colour
+     * @param string string
+     * @param colour int that represents the colour
+     */
     record Pair(String string, int colour) {
     }
 

@@ -353,10 +353,8 @@ public class StandardGameController implements GameController, LobbyController {
             User leavedUser = this.userAssociation.remove(client);
 
             /* remove all observer associated with this user */
-            Map<Observable, Observer> playerObserverAssociation = this.observerAssociation.get(client);
-            for (Map.Entry<Observable, Observer> association : playerObserverAssociation.entrySet()) {
-                association.getKey().deleteObserver(association.getValue());
-            }
+            Map<Observable,Observer> playerObserverAssociation = this.observerAssociation.get(client);
+            playerObserverAssociation.forEach(Observable::deleteObserver);
 
             leavedUser.reportEvent(User.Status.NOT_JOINED, "Player leaved", User.Event.GAME_LEAVED);
 

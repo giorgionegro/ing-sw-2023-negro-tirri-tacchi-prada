@@ -121,15 +121,7 @@ public class StandardPlayer extends Player {
         this.notifyObservers(Event.ERROR_REPORTED);
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @return {@link #errorReport}
-     */
-    @Override
-    public String getReportedError() {
-        return this.errorReport;
-    }
+
 
     /**
      * {@inheritDoc}

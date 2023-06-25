@@ -10,17 +10,17 @@ import java.util.Map;
 
 public enum Client {
     ;
-    private static final String UItype = "TUI";
+    private static final String UI_type = "TUI";
     private static final String DEFAULT_hostIp = "localhost";
     private static final String DEFAULT_clientIp = "localhost";
-    private static final int DEFAULT_RMIhostPort = Registry.REGISTRY_PORT;
-    private static final int DEFAULT_SOCKEThostPort = 10101;
+    private static final int DEFAULT_RMI_hostPort = Registry.REGISTRY_PORT;
+    private static final int DEFAULT_SOCKET_hostPort = 10101;
     private static final Map<String, String> parameters = new HashMap<>() {{
-        this.put("-ui", UItype);
+        this.put("-ui", UI_type);
         this.put("-hip", DEFAULT_hostIp);
         this.put("-cip", DEFAULT_clientIp);
-        this.put("-rP", String.valueOf(DEFAULT_RMIhostPort));
-        this.put("-sP", String.valueOf(DEFAULT_SOCKEThostPort));
+        this.put("-rP", String.valueOf(DEFAULT_RMI_hostPort));
+        this.put("-sP", String.valueOf(DEFAULT_SOCKET_hostPort));
     }};
 
     public static void main(String[] args) throws RemoteException {
@@ -42,13 +42,13 @@ public enum Client {
 
         if (parameters.containsKey("-h")) {
             System.out.println("-ui -> specifies UI type:\n" +
-                    "\t(Default = " + UItype + ")\n" +
+                    "\t(Default = " + UI_type + ")\n" +
                     "\t\tTUI for Textual User Interface\n" +
                     "\t\tGUI for Graphical User Interface\n" +
                     "-hip -> specifies host Ip\n\t(Default = " + DEFAULT_hostIp + ")\n" +
                     "-cip -> specifies client RMI Ip\n\t(Default = " + DEFAULT_clientIp + ")\n" +
-                    "-rP -> specifies host RMI port\n\t(Default = " + DEFAULT_RMIhostPort + ")\n" +
-                    "-rP -> specifies host SOCKET port\n\t(Default = " + DEFAULT_SOCKEThostPort + ")\n" +
+                    "-rP -> specifies host RMI port\n\t(Default = " + DEFAULT_RMI_hostPort + ")\n" +
+                    "-rP -> specifies host SOCKET port\n\t(Default = " + DEFAULT_SOCKET_hostPort + ")\n" +
                     "-h -> show this message");
             return;
         }
