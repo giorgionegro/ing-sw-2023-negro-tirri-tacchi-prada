@@ -17,7 +17,6 @@ import model.exceptions.GameNotExistsException;
 import modelView.LoginInfo;
 import modelView.NewGameInfo;
 import util.Observer;
-import util.TimedLock;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
