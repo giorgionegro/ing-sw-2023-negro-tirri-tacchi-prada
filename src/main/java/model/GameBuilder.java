@@ -10,8 +10,7 @@ import java.util.List;
 import java.util.Stack;
 
 /**
- * //TODO controllare
- * This class is responsible for creating a new game based on its type and initializing the various game components.
+ * This class contains the methods for creating a new game based on its type and initializing the various game components.
  */
 @SuppressWarnings({"UseOfObsoleteCollectionType", "UtilityClass"})
 public final class GameBuilder {
@@ -73,7 +72,7 @@ public final class GameBuilder {
     }
 
     /**
-     * this method return stack containing lists of all the standard personal goals
+     * this method returns a stack containing lists of all the standard personal goals
      *
      * @return stack containing lists of all the standard personal goals
      */

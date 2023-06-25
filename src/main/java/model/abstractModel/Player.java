@@ -44,6 +44,7 @@ public abstract class Player extends Observable<Player.Event> {
 
     /**
      * This method adds a new achieved common goal
+     *
      * @param description the common goal description
      * @param token       the token won by achieving the common goal
      */
@@ -51,12 +52,14 @@ public abstract class Player extends Observable<Player.Event> {
 
     /**
      * This method reports a new error that player encountered during gameplay
+     *
      * @param error the encountered error description
      */
     public abstract void reportError(String error);
 
     /**
-     * This method returns the last error the player has encountered during gameplay
+     * This method returns the last error that player encountered during gameplay
+     *
      * @return the last error that player encountered during gameplay
      */
     public abstract String getReportedError();

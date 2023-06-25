@@ -9,27 +9,63 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.rmi.RemoteException;
 
-public abstract class SocketHandler<Interface> {
+/**
+ * This class is used to manage socket connections
+ * <p>
+ * This class only send and receives SocketObjects,
+ * when it receives a {@link SocketObject} it tries to act as the sender of the interaction
+ * @param <ReceiveType> type of the interaction-receiver object
+ */
+public abstract class SocketHandler<ReceiveType> {
+    /**
+     * The socket output stream
+     */
     private ObjectOutputStream oos;
+
+    /**
+     * The socket input stream
+     */
     private ObjectInputStream ois;
 
-
+    /**
+     * Ip address of the socket
+     */
     private String ip = null;
+
+    /**
+     * Port of the socket
+     */
     private int port = 0;
 
+    /**
+     * The socket
+     */
     private Socket socket = null;
 
+    /**
+     * Class constructor of socket
+     * @param ip the ip address to be assigned to the socket
+     * @param port the port to be assigned to the socket
+     */
     public SocketHandler(String ip, int port) {
         super();
         this.ip = ip;
         this.port = port;
     }
 
+    /**
+     * Class constructor of socket
+     * @param socket an already existing socket
+     */
     public SocketHandler(Socket socket) {
         super();
         this.socket = socket;
     }
 
+    /**
+     * This method opens a new socket connection
+     * @throws RemoteException if the connection fails to open
+     */
     public void open() throws RemoteException {
         try {
             if (this.socket == null) {
@@ -48,6 +84,10 @@ public abstract class SocketHandler<Interface> {
         }
     }
 
+    /**
+     * This method closes a socket connection
+     * @throws RemoteException if the connection fails to close
+     */
     public void close() throws RemoteException {
         try {
             if (this.socket != null) {
@@ -60,7 +100,12 @@ public abstract class SocketHandler<Interface> {
         }
     }
 
-    protected void waitForReceive(Interface receiver) throws RemoteException {
+    /**
+     * This method waits for a SocketObject sent on the input stream and call interaction on it acting as the sender
+     * @param receiver the receiver object
+     * @throws RemoteException when an input/output exception occurs
+     */
+    protected void waitForReceive(ReceiveType receiver) throws RemoteException {
         try {
             SocketObject no = (SocketObject) this.ois.readObject();
             no.update(this, receiver);
@@ -71,6 +116,11 @@ public abstract class SocketHandler<Interface> {
         }
     }
 
+    /**
+     * This method sends a SocketObject on the output stream
+     * @param o SocketObject to send
+     * @throws IOException when an input/output error occurs
+     */
     protected synchronized void send(SocketObject o) throws IOException {
         this.oos.writeObject(o);
         this.oos.flush();
