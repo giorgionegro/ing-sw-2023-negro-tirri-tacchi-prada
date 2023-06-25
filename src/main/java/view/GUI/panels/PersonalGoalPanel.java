@@ -12,18 +12,36 @@ import java.util.Map;
 import java.util.Objects;
 
 public class PersonalGoalPanel extends JPanel implements PersonalGoalGraphics {
-    private final Image personalGoalImage = new ImageIcon(Objects.requireNonNull(getClass().getResource("/PersonalGoalBackground.jpg"))).getImage();
 
+    /**
+     * This map contains information whether a personalGoal has been achieved or not
+     * <p>
+     * It associates the ID of a personalGoal to its achieved status
+     */
     private final Map<Integer,Boolean> personalGoals = new HashMap<>();
 
+
+    /**
+     * Matrix of tiles that represents the player's personal goal
+     */
     private final Tile[][] merged = new Tile[6][5];
 
+    /**
+     * Construct an {@link PersonalGoalPanel} instance that sets the layout of the panel
+     */
     public PersonalGoalPanel(){
         this.setOpaque(false);
         for(Tile[] r : merged)
             Arrays.fill(r,Tile.EMPTY);
     }
 
+
+    /**
+     * {@inheritDoc}
+     * @param id              the id of this goal, unique among others player personal goal
+     * @param hasBeenAchieved true if the goal is achieved
+     * @param description     matrix representation of the goal
+     */
     @Override
     public void updatePersonalGoalGraphics(int id, boolean hasBeenAchieved, Tile[][] description) {
         if(!personalGoals.containsKey(id)){
@@ -39,10 +57,15 @@ public class PersonalGoalPanel extends JPanel implements PersonalGoalGraphics {
         this.repaint();
     }
 
+    /**
+     * This method overrides {@link  JComponent#paintComponent(Graphics)} drawing an image as background
+     * @param g the <code>Graphics</code> object to protect
+     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
+        Image personalGoalImage = new ImageIcon(Objects.requireNonNull(getClass().getResource("/PersonalGoalBackground.jpg"))).getImage();
         double ratio = (double)getWidth()/personalGoalImage.getWidth(null);
         int topPadding = (int)Math.round(86*ratio);
         int leftPadding = (int)Math.round(90*ratio);

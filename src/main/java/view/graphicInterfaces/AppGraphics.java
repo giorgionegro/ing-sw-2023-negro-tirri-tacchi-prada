@@ -38,17 +38,19 @@ public interface AppGraphics {
     void showJoin(String error);
 
     /**
+     * TODO
      * @param error
      */
     void showCreate(String error);
 
     /**
+     * TODO
      * @param message
      */
     void showGame(String message);
 
     /**
-     *
+     *TODO
      */
     void exit();
 }

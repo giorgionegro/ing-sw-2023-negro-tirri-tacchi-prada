@@ -396,6 +396,10 @@ public class GamePanel extends JComponent implements ActionListener, GameGraphic
         this.repaint();
     }
 
+    /**
+     * {@inheritDoc}
+     * @param achievedCommonGoals map of achieved common goals with earned token
+     */
     @Override
     public void updateAchievedCommonGoals(Map<String, Token> achievedCommonGoals) {
         this.commonGoalsPanel.setAchievedCommonGoals(achievedCommonGoals);

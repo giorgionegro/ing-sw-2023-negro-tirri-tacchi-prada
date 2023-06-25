@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-
+//TODO
 public class PlayerShelfPanel extends JPanel implements PlayerShelfGraphics, ActionListener {
     private Tile[][] shelfState = new Tile[6][5];
     private final List<JButton> columnSelectorList = new ArrayList<>();
