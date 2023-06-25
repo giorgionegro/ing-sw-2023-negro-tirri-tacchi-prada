@@ -1,6 +1,6 @@
 package view.GUI.panels;
 
-import view.GUI.AspectRatioLayout;
+import view.GUI.layouts.AspectRatioLayout;
 import view.ViewLogic;
 
 import javax.swing.*;

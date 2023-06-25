@@ -2,8 +2,8 @@ package view.GUI.panels;
 
 import model.Tile;
 import model.Token;
-import view.GUI.AspectRatioLayout;
-import view.GUI.components.TileButton;
+import view.GUI.layouts.AspectRatioLayout;
+import view.GUI.buttons.TileButton;
 import view.graphicInterfaces.LivingRoomGraphics;
 
 import javax.swing.*;

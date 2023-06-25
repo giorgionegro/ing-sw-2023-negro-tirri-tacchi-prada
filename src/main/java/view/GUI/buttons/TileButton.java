@@ -1,4 +1,4 @@
-package view.GUI.components;
+package view.GUI.buttons;
 
 import javax.swing.*;
 import model.Tile;

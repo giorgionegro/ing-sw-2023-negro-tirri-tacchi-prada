@@ -2,7 +2,7 @@ package view.GUI.panels;
 
 import model.Tile;
 
-import view.GUI.components.ColumnChooserButton;
+import view.GUI.buttons.ColumnChooserButton;
 import view.graphicInterfaces.PlayerShelfGraphics;
 
 import javax.swing.*;
