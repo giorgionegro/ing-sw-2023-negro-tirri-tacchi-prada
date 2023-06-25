@@ -1,7 +1,5 @@
 package distibuted.socket.middleware;
 
-import distibuted.socket.middleware.interfaces.SocketObject;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -14,9 +12,9 @@ import java.rmi.RemoteException;
  * <p>
  * This class only send and receives SocketObjects,
  * when it receives a {@link SocketObject} it tries to act as the sender of the interaction
- * @param <ReceiveType> type of the interaction-receiver object
+ * @param <ReceiverType> type of the interaction-receiver object
  */
-public abstract class SocketHandler<ReceiveType> {
+public abstract class SocketHandler<ReceiverType> {
     /**
      * The socket output stream
      */
@@ -38,7 +36,7 @@ public abstract class SocketHandler<ReceiveType> {
     private int port = 0;
 
     /**
-     * The socket
+     * The socket this class manages
      */
     private Socket socket = null;
 
@@ -63,20 +61,22 @@ public abstract class SocketHandler<ReceiveType> {
     }
 
     /**
-     * This method opens a new socket connection
+     * This method opens a socket connection
      * @throws RemoteException if the connection fails to open
      */
     public void open() throws RemoteException {
         try {
+            /* If there is no currently managed socket then creates a new one */
             if (this.socket == null) {
                 this.socket = new Socket(this.ip, this.port);
             }
 
+            /* If managed socket is not connected then open a new connection */
             if (!this.socket.isConnected()) {
-                //Could ip be null?
                 this.socket.connect(new InetSocketAddress(this.ip, this.port), 1000);
             }
 
+            /* Creates a new input and output stream on connected socket */
             this.oos = new ObjectOutputStream(this.socket.getOutputStream());
             this.ois = new ObjectInputStream(this.socket.getInputStream());
         } catch (IOException e) {
@@ -101,14 +101,16 @@ public abstract class SocketHandler<ReceiveType> {
     }
 
     /**
-     * This method waits for a SocketObject sent on the input stream and call interaction on it acting as the sender
+     * This method waits for a SocketObject sent on the input stream and call interaction on it, acting as the sender
      * @param receiver the receiver object
      * @throws RemoteException when an input/output exception occurs
      */
-    protected void waitForReceive(ReceiveType receiver) throws RemoteException {
+    protected void waitForReceive(ReceiverType receiver) throws RemoteException {
         try {
-            SocketObject no = (SocketObject) this.ois.readObject();
-            no.update(this, receiver);
+            /* Wait to receive a SocketObject on input stream */
+            SocketObject so = (SocketObject) this.ois.readObject();
+            /* Call interaction on SocketObject */
+            so.interact(this, receiver);
         } catch (IOException e) {
             throw new RemoteException("Unable to communicate with socket");
         } catch (ClassNotFoundException e) {

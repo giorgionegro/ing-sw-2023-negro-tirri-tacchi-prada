@@ -1,4 +1,4 @@
-package distibuted.socket.middleware.interfaces;
+package distibuted.socket.middleware;
 
 import java.io.Serializable;
 import java.rmi.RemoteException;
@@ -15,5 +15,5 @@ public interface SocketObject extends Serializable {
      * @param receiver the receiver of the interaction
      * @throws RemoteException If an error occurred during the interaction
      */
-    void update(Object sender, Object receiver) throws RemoteException;
+    void interact(Object sender, Object receiver) throws RemoteException;
 }

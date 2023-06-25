@@ -17,6 +17,7 @@ import java.util.Objects;
 public class TilesOrderingPanel extends JPanel implements ActionListener{
     private final List<TileButton> pickedTiles = new ArrayList<>();
     private final ActionListener moveSender;
+
     /*------------------ GRAPHIC LAYOUT ---------------------*/
     private final Image background = new ImageIcon(Objects.requireNonNull(this.getClass().getResource("/TilesOrderingTableBackground.png"))).getImage();
     private final SwapButton swapButton1 = new SwapButton();

@@ -1,4 +1,4 @@
 /**
- * This package contains the classes and interfaces that allow socket and RMI communication.
+ * This package contains interfaces and implementation of distribution layer of the application.
  */
 package distibuted;

@@ -1703,12 +1703,10 @@ class StandardGameControllerTest {
         playerMoveInfo = new PlayerMoveInfo(pickedTiles, 0);
         standardGameController.doPlayerMove(client, playerMoveInfo);
         standardGameController.doPlayerMove(client2, playerMoveInfo);
-        //wait 100ms and check gameInfi, status should be ENDED
+        //wait 100ms and check gameInfo, status should be ENDED
         Thread.sleep(300);
         assert gameInfo[0] != null && gameInfo[0].status() == Game.GameStatus.ENDED;
         assert gameInfo1[0] != null && gameInfo1[0].status() == Game.GameStatus.ENDED;
-
-
     }
 
     /**
@@ -2336,13 +2334,11 @@ class StandardGameControllerTest {
         standardGameController.doPlayerMove(client, playerMoveInfo);
         standardGameController.doPlayerMove(client2, playerMoveInfo);
         //wait until the move is done, gameinfo is updated
-        synchronized (lock) {
-            lock.wait(3000);
-        }
+        lock.lock(3000);
         if (!lock.getValue()) {
             fail("GameInfo not updated");
         }
-        lock.wait(500);
+        lock.lock(500);
         assert gameInfo[0] != null && gameInfo[0].lastTurn();
     }
 
