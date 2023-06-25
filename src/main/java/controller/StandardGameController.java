@@ -362,7 +362,7 @@ public class StandardGameController implements GameController, LobbyController {
             User leavedUser = this.userAssociation.remove(client);
 
             /* remove all observer associated with this user */
-            Map<Observable,Observer> playerObserverAssociation = this.observerAssociation.get(client);
+            Map<Observable, Observer> playerObserverAssociation = this.observerAssociation.get(client);
             playerObserverAssociation.forEach(Observable::deleteObserver);
 
             /* Reports to the user it has leaved the game */
@@ -564,14 +564,14 @@ public class StandardGameController implements GameController, LobbyController {
                 Player sender = this.game.getPlayer(senderId);
 
                 /* Checks if client and message sender info are coherent*/
-                if(!newMessage.getSender().equals(senderId))
+                if (!newMessage.getSender().equals(senderId))
                     sender.reportError("Sender of the message is not the same of message info");
 
-                /* If subject is not a player of this game then send an error */
+                    /* If subject is not a player of this game then send an error */
                 else if (!(newMessage.getReceiver().isEmpty() || this.playerAssociation.containsValue(newMessage.getReceiver())))
                     sender.reportError("Subject of the message does not exists");
 
-                /* If subject is a player or all players send message */
+                    /* If subject is a player or all players send message */
                 else {
                     for (String playerId : this.playerAssociation.values()) {
                         /* Send the message to all if receiver is empty or only to sender or receiver if specified */
@@ -618,6 +618,7 @@ public class StandardGameController implements GameController, LobbyController {
 
     /**
      * This method checks whether the picked tiles are the same or not
+     *
      * @param pickedTiles list of picked tiles
      * @return true if tiles are different, false otherwise
      */
@@ -635,6 +636,7 @@ public class StandardGameController implements GameController, LobbyController {
 
     /**
      * Given a column of a player shelf this method counts the number of free spaces
+     *
      * @param column column to check
      * @param shelf  player shelf
      * @return number of free spaces in the column
@@ -650,6 +652,7 @@ public class StandardGameController implements GameController, LobbyController {
 
     /**
      * This method inserts the picked tiles in the shelf
+     *
      * @param column column to check
      * @param shelf  player shelf
      * @param tile   tile to insert
@@ -664,6 +667,7 @@ public class StandardGameController implements GameController, LobbyController {
 
     /**
      * This method checks whether the selected tile is pickable or not
+     *
      * @param row    row of the tile
      * @param column column of the tile
      * @param board  board to check
@@ -684,6 +688,7 @@ public class StandardGameController implements GameController, LobbyController {
 
     /**
      * This method checks whether the shelf is full or not
+     *
      * @param shelf shelf to check
      * @return true if shelf is full, false otherwise
      */
@@ -698,6 +703,7 @@ public class StandardGameController implements GameController, LobbyController {
 
     /**
      * This method checks whether the picked tiles are aligned or not
+     *
      * @param pickedTiles Tiles picked from board
      * @return true if picked tiles are aligned ad adjacent one another
      */

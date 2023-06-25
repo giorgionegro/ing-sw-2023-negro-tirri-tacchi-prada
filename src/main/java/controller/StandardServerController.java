@@ -17,6 +17,7 @@ import model.exceptions.GameNotExistsException;
 import modelView.LoginInfo;
 import modelView.NewGameInfo;
 import util.Observer;
+import util.TimedLock;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -98,20 +99,32 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
         client.bind(server);
 
         // start ping thread
-        executorService.submit(() -> {
+        new Thread(() -> {
             /* This thread pings client every 1s */
-            while (true) {
-                try {
-                    client.ping();
-                    Thread.sleep(1000);
-                } catch (InterruptedException | RemoteException e) {
-                    /* If an error occurred during a ping, then disconnect the client */
-                    System.err.println("Ping failed");
-                    this.disconnect(client);
-                    break;
+            try {
+                while (true) {
+                    System.out.println("PINGING CLIENT" + client);
+                    TimedLock<Boolean> lock = new TimedLock<>(false);
+                    new Thread(() -> {
+                        try {
+                            client.ping();
+                            lock.notify(true);
+                        } catch (RemoteException ignored) {
+                        }
+                    }).start();
+                    lock.lock(200);
+                    if (!lock.hasBeenNotified()) {
+                        System.err.println("Ping timeout");
+                        throw new RemoteException();
+                    }
+                    Thread.sleep(500);
                 }
+            } catch (InterruptedException | RemoteException e) {
+                /* If an error occurred during a ping, then disconnect the client */
+                System.err.println("Ping failed");
+                this.disconnect(client);
             }
-        });
+        }).start();
 
         System.out.println("CLIENT CONNECTED, currently connected users: " + this.users.size());
 
@@ -140,8 +153,8 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
             /* Un-authenticate the client and remove user observers */
             User user = this.users.remove(client);
             user.deleteObservers();
-
             System.out.println("CLIENT DISCONNECTED, connected user: " + this.users.size());
+
         }
     }
 
