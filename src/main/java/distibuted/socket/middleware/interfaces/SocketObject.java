@@ -6,9 +6,11 @@ import java.rmi.RemoteException;
 /**
  * TODO
  */
+@FunctionalInterface
 public interface SocketObject extends Serializable {
     /**
      * TODO
+     *
      * @param sender
      * @param receiver
      * @throws RemoteException

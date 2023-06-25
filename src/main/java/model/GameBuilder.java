@@ -3,45 +3,46 @@ package model;
 import model.abstractModel.*;
 import model.goalEvaluators.*;
 import modelView.NewGameInfo;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
 
-public class GameBuilder {
-    /**
-     * //TODO controllare
-     * Class constructor of GameBuilder
-     */
-    private GameBuilder(){}
+/**
+ * //TODO controllare
+ * This class is responsible for creating a new game based on its type and initializing the various game components.
+ */
+@SuppressWarnings({"UseOfObsoleteCollectionType", "UtilityClass"})
+public final class GameBuilder {
+    private GameBuilder() {
+    }
+
     /**
      * //TODO controllare
      * This method creates a new Game instance based on the type of game the user wants to create.
+     *
      * @param newGameInfo record containing information of a {@link model.abstractModel.Game} creation request
      * @return a new Game instance
      * @throws IllegalArgumentException if newGameInfo type is not supported
      */
     public static Game build(NewGameInfo newGameInfo) throws IllegalArgumentException {
-        //noinspection SwitchStatementWithTooFewBranches
-        switch (newGameInfo.type()) {
-            case "STANDARD" -> {
-                List<Player> avaiablePlayers = new ArrayList<>();
-                List<CommonGoal> avaiableCommonGoals = setCommonGoals(newGameInfo.playerNumber());
-                Stack<List<PersonalGoal>> avaiablePersonalGoals = setPersonalGoals();
-                LivingRoom livingRoom = new StandardLivingRoom(newGameInfo.playerNumber());
-                for (int i = 0; i < newGameInfo.playerNumber(); i++)
-                    avaiablePlayers.add(new StandardPlayer(new StandardShelf(), avaiablePersonalGoals.pop(), new StandardPlayerChat()));
+        if (newGameInfo.type().equals("STANDARD")) {
+            List<Player> avaiablePlayers = new ArrayList<>();
+            List<CommonGoal> avaiableCommonGoals = setCommonGoals(newGameInfo.playerNumber());
+            Stack<List<PersonalGoal>> avaiablePersonalGoals = setPersonalGoals();
+            LivingRoom livingRoom = new StandardLivingRoom(newGameInfo.playerNumber());
+            for (int i = 0; i < newGameInfo.playerNumber(); i++)
+                avaiablePlayers.add(new StandardPlayer(new StandardShelf(), avaiablePersonalGoals.pop(), new StandardPlayerChat()));
 
-                return new StandardGame(avaiablePlayers, livingRoom, avaiableCommonGoals);
-            }
-            default -> throw new IllegalArgumentException("Unexpected value: " + newGameInfo.type());
+            return new StandardGame(avaiablePlayers, livingRoom, avaiableCommonGoals);
         }
+        throw new IllegalArgumentException("Unexpected value: " + newGameInfo.type());
     }
 
     /**
      * This method initializes the common goals of a StandardGames
+     *
      * @param nPlayers number of players in the game
      * @return an ArrayList containing two common goals
      */

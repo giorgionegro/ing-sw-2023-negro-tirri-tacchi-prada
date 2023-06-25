@@ -8,19 +8,19 @@ import java.rmi.registry.Registry;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Client {
+public enum Client {
+    ;
     private static final String UItype = "TUI";
     private static final String DEFAULT_hostIp = "localhost";
     private static final String DEFAULT_clientIp = "localhost";
     private static final int DEFAULT_RMIhostPort = Registry.REGISTRY_PORT;
     private static final int DEFAULT_SOCKEThostPort = 10101;
-
     private static final Map<String, String> parameters = new HashMap<>() {{
-        put("-ui", UItype);
-        put("-hip", DEFAULT_hostIp);
-        put("-cip", DEFAULT_clientIp);
-        put("-rP", String.valueOf(DEFAULT_RMIhostPort));
-        put("-sP", String.valueOf(DEFAULT_SOCKEThostPort));
+        this.put("-ui", UItype);
+        this.put("-hip", DEFAULT_hostIp);
+        this.put("-cip", DEFAULT_clientIp);
+        this.put("-rP", String.valueOf(DEFAULT_RMIhostPort));
+        this.put("-sP", String.valueOf(DEFAULT_SOCKEThostPort));
     }};
 
     public static void main(String[] args) throws RemoteException {
@@ -55,15 +55,15 @@ public class Client {
 
         int RMIhostPort;
         int SockethostPort;
-        try{
+        try {
             RMIhostPort = Integer.parseInt(parameters.get("-rP"));
-        }catch (NumberFormatException e){
+        } catch (NumberFormatException e) {
             System.err.println("Host RMI port is not a number");
             return;
         }
-        try{
+        try {
             SockethostPort = Integer.parseInt(parameters.get("-sP"));
-        }catch (NumberFormatException e){
+        } catch (NumberFormatException e) {
             System.err.println("Host RMI port is not a number");
             return;
         }
@@ -79,7 +79,7 @@ public class Client {
             }
         }
 
-        System.setProperty("java.rmi.server.hostname",parameters.get("-cip"));
+        System.setProperty("java.rmi.server.hostname", parameters.get("-cip"));
 
         new ViewLogic(appGraphics, parameters.get("-hip"), RMIhostPort, SockethostPort).run();
     }

@@ -6,6 +6,7 @@ import modelView.GameInfo;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
+@FunctionalInterface
 public interface GameView extends Remote {
     void update(GameInfo o, Game.Event evt) throws RemoteException;
 }

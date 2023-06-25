@@ -6,6 +6,7 @@ import modelView.PlayerChatInfo;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
+@FunctionalInterface
 public interface PlayerChatView extends Remote {
     void update(PlayerChatInfo o, PlayerChat.Event evt) throws RemoteException;
 }

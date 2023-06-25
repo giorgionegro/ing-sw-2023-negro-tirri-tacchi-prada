@@ -46,7 +46,7 @@ public class StandardGame extends Game {
     /**
      * First player that ever had the turn, it is assumed to be also the first player of every round
      */
-    private String firstPlayer = null;
+    private String firstPlayer = "";
     /**
      * Signal of last round of turns
      */
@@ -292,6 +292,10 @@ public class StandardGame extends Game {
     public GameInfo getInfo() {
         Map<String, Integer> points = new HashMap<>();
         this.players.forEach((s, player) -> {
+            /* If a player is disconnected does not send points */
+            if (availablePlayers.contains(player))
+                return;
+
             /*  Points earned by each player are the sum of points earned by
                 achieving common goals and by forming groups of tiles       */
             int playerPoints = this.getCommonGoalPoints(player.getAchievedCommonGoals().values().stream().toList())
@@ -304,7 +308,7 @@ public class StandardGame extends Game {
 
             points.put(s, playerPoints);
         });
-        return new GameInfo(this.status, this.lastTurn, this.getTurnPlayerId(), points);
+        return new GameInfo(this.status, this.lastTurn, this.firstPlayer, this.getTurnPlayerId(), points);
     }
 
     /**

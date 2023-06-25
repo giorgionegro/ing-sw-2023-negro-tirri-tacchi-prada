@@ -3,117 +3,121 @@ package view.GUI.panels;
 import model.abstractModel.Message;
 import view.ViewLogic;
 import view.graphicInterfaces.PlayerChatGraphics;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
-import java.util.*;
 import java.util.List;
+import java.util.*;
+
 
 public class ChatPanel extends JPanel implements PlayerChatGraphics {
 
-    private final Map<String,String> subjects = new HashMap<>(){{
-        put("Everyone","");
+    private final Map<String, String> subjects = new HashMap<>() {{
+        this.put("Everyone", "");
     }};
     private final String playerId;
     private final List<Message> messages = new ArrayList<>();
-
-    public ChatPanel(ActionListener viewLogic, String playerId){
-        this.playerId = playerId;
-
-        initializeLayout();
-
-        invia.addActionListener(e -> {
-            String message =  mex.getText();
-            String subject = subjects.get((String) subjectsCombo.getSelectedItem());
-            viewLogic.actionPerformed(new ActionEvent(this, ViewLogic.SEND_MESSAGE,playerId+"\n"+subject+"\n"+message));
-        });
-    }
-
-    public void addSubject(String subjectID){
-        if(!subjects.containsKey(subjectID) && !subjectID.equals(this.playerId)){
-            subjects.put(subjectID,subjectID);
-            subjectsCombo.addItem(subjectID);
-        }
-    }
-
-    @Override
-    public void updatePlayerChatGraphics(List<Message> chat) {
-        messages.clear();
-        messages.addAll(chat);
-        updateText();
-    }
-
-    private void updateText(){
-        JTextArea textarea = new JTextArea();
-        textarea.setPreferredSize(new Dimension(0,0));
-        textarea.setBackground(new Color(255,255,200));
-        textarea.setEditable(false);
-
-        textarea.setLineWrap(true);
-        for(Message m : messages){
-            String sender = m.getSender();
-            String receiver = m.getReceiver();
-            String text = (sender.equals(playerId) ? "YOU" : sender) + " to " + (receiver.isBlank() ? "Everyone" : receiver.equals(playerId) ? "YOU" : receiver) + ": " + m.getText()+"\n";
-            textarea.append(text);
-        }
-
-        scrolltextarea.setViewportView(textarea);
-
-        //Scrolls to the end
-        scrolltextarea.revalidate();
-        JScrollBar verticalScrollBar = scrolltextarea.getVerticalScrollBar();
-        verticalScrollBar.setValue(verticalScrollBar.getMaximum());
-        scrolltextarea.revalidate();
-        scrolltextarea.repaint();
-    }
-
-
     /*----------------- GRAPHICS LAYOUT ----------------*/
-    private final Image buttonBackground = new ImageIcon(Objects.requireNonNull(getClass().getResource("/img.png"))).getImage();
-    private final JScrollPane scrolltextarea = new JScrollPane(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+    private final Image buttonBackground = new ImageIcon(Objects.requireNonNull(this.getClass().getResource("/img.png"))).getImage();
+    private final JScrollPane scrolltextarea = new JScrollPane(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
     private final JComboBox<String> subjectsCombo = new JComboBox<>(new String[]{"Everyone"});
-    private final JButton invia = new JButton("Send"){
+    private final JButton invia = new JButton("Send") {
         protected void paintComponent(Graphics g) {
-            g.drawImage(buttonBackground, 0, 0, getWidth(), getHeight(), null);
+            g.drawImage(ChatPanel.this.buttonBackground, 0, 0, this.getWidth(), this.getHeight(), null);
             super.paintComponent(g);
         }
     };
     private final JTextField mex = new JTextField();
     private final GridBagConstraints constraints = new GridBagConstraints(
-            0,0,
-            1,1,
-            1,1,
+            0, 0,
+            1, 1,
+            1, 1,
             GridBagConstraints.NORTHWEST,
             GridBagConstraints.BOTH,
-            new Insets(0,0,0,0),
-            0,0
+            new Insets(0, 0, 0, 0),
+            0, 0
     );
 
-    private void initializeLayout(){
+    public ChatPanel(ActionListener viewLogic, String playerId) {
+        super();
+        this.playerId = playerId;
+
+        this.initializeLayout();
+
+        this.invia.addActionListener(e -> {
+            String message = this.mex.getText();
+            String subject = this.subjects.get((String) this.subjectsCombo.getSelectedItem());
+            viewLogic.actionPerformed(new ActionEvent(this, ViewLogic.SEND_MESSAGE, playerId + "\n" + subject + "\n" + message));
+        });
+    }
+
+    public void addSubject(String subjectID) {
+        if (!this.subjects.containsKey(subjectID) && !subjectID.equals(this.playerId)) {
+            this.subjects.put(subjectID, subjectID);
+            this.subjectsCombo.addItem(subjectID);
+        }
+    }
+
+    @Override
+    public void updatePlayerChatGraphics(List<? extends Message> chat) {
+        this.messages.clear();
+        this.messages.addAll(chat);
+        this.updateText();
+    }
+
+    private void updateText() {
+        JTextArea textarea = new JTextArea();
+        textarea.setBackground(new Color(255, 255, 200));
+        textarea.setEditable(false);
+
+        textarea.setLineWrap(true);
+        for (Message m : this.messages) {
+            String sender = m.getSender();
+            String receiver = m.getReceiver();
+            String text = (sender.equals(this.playerId) ? "YOU" : sender) + " to " + (receiver.isBlank() ? "Everyone" : receiver.equals(this.playerId) ? "YOU" : receiver) + ": " + m.getText() + "\n";
+            textarea.append(text);
+        }
+
+        this.scrolltextarea.setViewportView(textarea);
+
+        //Scrolls to the end
+        this.scrolltextarea.revalidate();
+        JScrollBar verticalScrollBar = this.scrolltextarea.getVerticalScrollBar();
+        verticalScrollBar.setValue(verticalScrollBar.getMaximum());
+        this.scrolltextarea.revalidate();
+        this.scrolltextarea.repaint();
+    }
+
+    private void initializeLayout() {
         this.setLayout(new GridBagLayout());
 
-        constraints.gridwidth = 2;
-        constraints.weighty = 12;
-        scrolltextarea.setPreferredSize(new Dimension(0,0));
-        this.add(scrolltextarea,constraints);
+        Dimension zeroDimension = new Dimension(0, 0);
 
-        constraints.gridwidth = 1;
-        constraints.gridheight = 2;
-        constraints.weighty = 1;
-        constraints.gridx++;
-        constraints.gridy++;
-        invia.setBackground(new Color(0,0,0,0));
-        this.add(invia,constraints);
+        this.constraints.gridwidth = 2;
+        this.constraints.weighty = 3;
+        this.scrolltextarea.setPreferredSize(zeroDimension);
+        this.add(this.scrolltextarea, this.constraints);
 
-        constraints.gridheight = 1;
-        constraints.weightx = 18;
-        constraints.gridx--;
-        constraints.gridy++;
-        this.add(mex, constraints);
+        this.constraints.gridwidth = 1;
+        this.constraints.gridheight = 2;
+        this.constraints.weighty = 1;
+        this.constraints.gridx++;
+        this.constraints.gridy++;
+        this.invia.setPreferredSize(zeroDimension);
+        this.invia.setBackground(new Color(0, 0, 0, 0));
+        this.add(this.invia, this.constraints);
 
-        constraints.gridy--;
-        this.add(subjectsCombo,constraints);
+        this.constraints.gridheight = 1;
+        this.constraints.weightx = 6;
+        this.constraints.gridx--;
+        this.constraints.gridy++;
+        this.mex.setPreferredSize(zeroDimension);
+        this.add(this.mex, this.constraints);
+
+        this.constraints.gridy--;
+        this.subjectsCombo.setPreferredSize(zeroDimension);
+        this.add(this.subjectsCombo, this.constraints);
     }
 }

@@ -10,6 +10,7 @@ import java.util.Stack;
 /**
  * This class is an implementation of {@link LivingRoom}
  */
+@SuppressWarnings("UseOfObsoleteCollectionType")
 public class StandardLivingRoom extends LivingRoom {
     /**
      * Bag of Tiles used to fill the board

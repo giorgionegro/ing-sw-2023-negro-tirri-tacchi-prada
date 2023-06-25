@@ -342,7 +342,7 @@ public class ViewLogic implements Remote, ViewCollection, ActionListener {
     @Override
     public void update(GameInfo o, Game.Event evt) throws RemoteException {
         updateService.submit(()->
-            gameGraphics.updateGameInfoGraphics(o.status(),o.playerOnTurn(),o.lastTurn(),o.points())
+            gameGraphics.updateGameInfoGraphics(o.status(),o.firstTurnPlayer(),o.playerOnTurn(),o.lastTurn(),o.points())
         );
     }
 

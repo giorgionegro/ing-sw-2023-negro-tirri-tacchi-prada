@@ -14,15 +14,25 @@ public class CommonGoalsPanel extends JPanel implements CommonGoalGraphics {
     private final Map<String, Token> commonGoals = new HashMap<>();
     private final Map<String, Token> achieved = new HashMap<>();
 
+    /**
+     * Construct an {@link CommonGoalsPanel} instance that sets the layout of the panel
+     */
     public CommonGoalsPanel(){
         this.setOpaque(false);
         this.setLayout(new GridBagLayout());
     }
 
+    /**
+     * This method updates the graphics of the player achieving a common goal with the specified parameter:
+     * @param achieved map of achieved common goals with earned token
+     */
     public void setAchievedCommonGoals(Map<String,Token> achieved){
         this.achieved.putAll(achieved);
     }
 
+    /**
+     *  This method refresh the graphics of the player achieving a common goal
+     */
     private void refreshCommonGoalState(){
         this.removeAll();
 
@@ -74,6 +84,11 @@ public class CommonGoalsPanel extends JPanel implements CommonGoalGraphics {
         this.repaint();
     }
 
+    /**This method updates the graphics of the common goal with the specified parameters:
+     * @param id the unique id of the common goal
+     * @param description the description of common goal specs
+     * @param tokenState  the current token value of the common goal
+     */
     @Override
     public void updateCommonGoalGraphics(String id, String description, Token tokenState) {
         commonGoals.put(id,tokenState);

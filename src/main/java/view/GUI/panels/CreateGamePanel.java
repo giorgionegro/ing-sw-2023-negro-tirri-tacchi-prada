@@ -8,9 +8,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Objects;
 
+/**
+ * This class extends JPanel and represents a graphical component that allows to create a new game inserting a GameId and a PlayerId
+ */
 public class CreateGamePanel extends JPanel implements ActionListener {
     private final ActionListener listener;
 
+    /** Construct an {@link CreateGamePanel} instance that uses the given {@link ActionListener} as listener for buttons events
+     * @param listener the ActionListener to be notified when a button is pressed
+     */
     public CreateGamePanel(ActionListener listener){
         this.listener = listener;
 
@@ -20,6 +26,9 @@ public class CreateGamePanel extends JPanel implements ActionListener {
         exitButton.addActionListener(this);
     }
 
+    /**This method prints out an error message
+     * @param error the error message to be displayed.
+     */
     public void setMessage(String error){
         if(!error.isBlank()){
             errorLabel.setVisible(true);
@@ -31,6 +40,9 @@ public class CreateGamePanel extends JPanel implements ActionListener {
         this.repaint();
     }
 
+    /**
+     * @param e the event to be processed
+     */
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == createButton) {
@@ -46,9 +58,22 @@ public class CreateGamePanel extends JPanel implements ActionListener {
     }
 
     /*---------------------- GRAPHICS COMPONENTS and GRAPHICS INITIALIZATION -------------------------*/
+    /**
+     * This is the background image of this component, it is used into {@link #paintComponent(Graphics)}
+     **/
     private final Image backgroundImage = new ImageIcon (Objects.requireNonNull(getClass().getResource("/desktop.png"))).getImage();
+    /**
+     *  This is the background image of this component, it is used into {@link #paintComponent(Graphics)}
+     *
+     */
     private final Image errorBackground = new ImageIcon(Objects.requireNonNull(getClass().getResource("/filterWinnerPanel.png"))).getImage();
+    /**
+     *  This is the background image of {@link #createButton} {@link #exitButton}
+     */
     private final Image buttonBackground = new ImageIcon(Objects.requireNonNull(getClass().getResource("/img.png"))).getImage();
+    /**
+     *  This is the main font used in this panel
+     */
     private final Font textFont = new Font("Century", Font.BOLD, 24);
     private final GridBagConstraints constraints = new GridBagConstraints(
             0,0,
@@ -60,6 +85,9 @@ public class CreateGamePanel extends JPanel implements ActionListener {
             0,0
     );
 
+    /**
+     * This is the label with the written "PLAYER ID:"
+     */
     private final JLabel playerNumberLabel = new JLabel() {
         protected void paintComponent(Graphics g) {
             g.drawImage(buttonBackground, 0, 0, getWidth(), getHeight(), null);
@@ -67,16 +95,28 @@ public class CreateGamePanel extends JPanel implements ActionListener {
         }
     };
 
+    /**
+     * This is the label with the written "GAME ID:"
+     */
     private final JLabel gameIDLabel = new JLabel() {
         protected void paintComponent(Graphics g) {
             g.drawImage(buttonBackground, 0, 0, getWidth(), getHeight(), null);
             super.paintComponent(g);
         }
     };
+    /**
+     * This is the TextField where the user inserts the GameId
+     */
     private final JTextField gameIdTextField = new JTextField();
 
+    /**
+     * This is the ComboBox where the user chooses the number of players' game
+     */
     private final JComboBox<String> playerNumberCombo = new JComboBox<>(new String[]{"2","3","4"});
 
+    /**
+     * This is the button that allows the user to create the new game
+     */
     private final JButton createButton = new JButton() {
         protected void paintComponent(Graphics g) {
             g.drawImage(buttonBackground, 0, 0, getWidth(), getHeight(), null);
@@ -84,6 +124,9 @@ public class CreateGamePanel extends JPanel implements ActionListener {
         }
     };
 
+    /**
+     * This is the button that allows the user to exit from the application
+     */
     private final JButton exitButton = new JButton() {
         protected void paintComponent(Graphics g) {
             g.drawImage(buttonBackground, 0, 0, getWidth(), getHeight(), null);
@@ -91,6 +134,9 @@ public class CreateGamePanel extends JPanel implements ActionListener {
         }
     };
 
+    /**
+     * This label shows an error if occurred
+     */
     private final JLabel errorLabel = new JLabel() {
         protected void paintComponent(Graphics g) {
             g.drawImage(errorBackground, 0, 0, getWidth(), getHeight(), null);
@@ -99,6 +145,10 @@ public class CreateGamePanel extends JPanel implements ActionListener {
     };
     
     private final Dimension zeroDimension = new Dimension(0,0);
+
+    /**
+     *  This method initializes the layout of the component
+     */
     private void initializeLayout(){
         this.setLayout(new GridBagLayout());
         initializeBorders();
@@ -107,6 +157,9 @@ public class CreateGamePanel extends JPanel implements ActionListener {
         this.repaint();
     }
 
+    /**
+     *  This method initializes the Borders of the panel
+     */
     private void initializeBorders(){
         constraints.weightx=1;
         constraints.weighty=2;
@@ -130,6 +183,10 @@ public class CreateGamePanel extends JPanel implements ActionListener {
         this.add(new Container(),constraints);
     }
 
+    /**
+     This method initializes the contents of the panel: 2 buttons (EXIT, CREATE), 2 labels, the comboBox and the TextField
+     * The positions and dimensions of components within the grid are set.
+     */
     private void initializeContents(){
         constraints.gridy=1;
         constraints.gridx=1;
@@ -190,6 +247,10 @@ public class CreateGamePanel extends JPanel implements ActionListener {
         this.add(errorLabel,constraints);
     }
 
+    /**
+     * This method overrides {@link  JComponent#paintComponent(Graphics)} drawing an image as background
+     * @param g the <code>Graphics</code> object to protect
+     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
