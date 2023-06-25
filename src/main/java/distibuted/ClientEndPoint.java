@@ -5,7 +5,6 @@ import distibuted.interfaces.ServerInterface;
 import model.User;
 import model.abstractModel.*;
 import modelView.*;
-import util.TimedLock;
 import view.interfaces.ViewCollection;
 
 import java.rmi.RemoteException;
@@ -150,7 +149,6 @@ public class ClientEndPoint extends UnicastRemoteObject implements ClientInterfa
             printError("Update UserInfo",e.getMessage());
         }
     }
-    private final TimedLock<Boolean> pingWaiter = new TimedLock<>(false);
 
     /**
      * {@inheritDoc}
@@ -161,40 +159,19 @@ public class ClientEndPoint extends UnicastRemoteObject implements ClientInterfa
      */
     @Override
     public void bind(ServerInterface server) throws RemoteException {
-       new Thread(()->{
+        // start ping thread
+        new Thread(() -> {
+            /* This thread pings client every 1s */
             try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-            while (true)
-            {
-                pingWaiter.reset();
-                pingWaiter.setValue(false);
-
-                try {
-                    this.pingWaiter.lock(2000);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
+                while (true) {
+                    server.ping();
+                    Thread.sleep(1000);
                 }
-
-                if (!pingWaiter.hasBeenNotified()) {
-                    disconnectionCallback.accept("Connection lost: ping timeout");
-                    break;
-                }
+            } catch (InterruptedException | RemoteException e) {
+                /* If an error occurred during a ping, then disconnect the client */
+                disconnectionCallback.accept("Ping timeout");
             }
         }).start();
-    }
-
-    /**
-     * {@inheritDoc}
-     * <p>
-     * It notifies the ping handler Thread that a ping has been received
-     * @throws RemoteException {@inheritDoc}
-     */
-    @Override
-    public void ping() throws RemoteException {
-        pingWaiter.notify(true);
     }
 
     /**

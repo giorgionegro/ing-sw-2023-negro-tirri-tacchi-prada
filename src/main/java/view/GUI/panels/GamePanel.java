@@ -83,7 +83,7 @@ public class GamePanel extends JComponent implements ActionListener, GameGraphic
     private void initializeGameLayout() {
         this.removeAll();
 
-        GridBagConstraints livingRoomContraints = new GridBagConstraints(
+        GridBagConstraints livingRoomConstraints = new GridBagConstraints(
                 0, 0,
                 1, 5,
                 16, 16,
@@ -91,7 +91,7 @@ public class GamePanel extends JComponent implements ActionListener, GameGraphic
                 new Insets(0, 0, 0, 0),
                 0, 0
         );
-        this.add(this.livingRoomContainer, livingRoomContraints);
+        this.add(this.livingRoomContainer, livingRoomConstraints);
 
         GridBagConstraints opponentsShelvesConstraints = new GridBagConstraints(
                 1, 0,
@@ -260,22 +260,6 @@ public class GamePanel extends JComponent implements ActionListener, GameGraphic
         this.interactionContainer.add(exitButton, exitButtonConstraint);
     }
 
-    public void displayGameScene() {
-        this.tableContainer.removeAll();
-        this.livingRoomContainer.removeAll();
-        this.personalGoalContainer.removeAll();
-        this.commonGoalContainer.removeAll();
-
-        this.tableContainer.add(this.tilesOrderingPanel);
-        this.livingRoomContainer.add(this.livingRoomBoard);
-        this.personalGoalContainer.add(this.personalGoalPanel);
-        this.commonGoalContainer.add(this.commonGoalsPanel);
-    }
-
-    public void displayMatchmakingScene() {
-
-    }
-
     /*------------------------------------------------------------*/
     private void addPlayerShelf(JPanel shelfPanel, String playerId) {
         Container shelfContainer = new Container();
@@ -367,8 +351,8 @@ public class GamePanel extends JComponent implements ActionListener, GameGraphic
             for (String s : this.opponentShelfBoards.keySet()) {
                 this.opponentShelfBoards.get(s).setIsFirstPlayer(s.equals(firstTurnPlayer));
             }
+            livingRoomBoard.setIsLastTurn(isLastTurn);
         } else if (status == Game.GameStatus.MATCHMAKING || status == Game.GameStatus.SUSPENDED) {
-            this.displayMatchmakingScene();
             //TODO show message and not commonGoal personalGoal and LivingRoom
         }
         this.revalidate();

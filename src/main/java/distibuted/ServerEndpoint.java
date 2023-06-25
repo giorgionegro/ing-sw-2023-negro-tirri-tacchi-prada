@@ -10,9 +10,11 @@ import model.exceptions.GameNotExistsException;
 import modelView.LoginInfo;
 import modelView.NewGameInfo;
 import modelView.PlayerMoveInfo;
+import util.TimedLock;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.function.Consumer;
 
 /**
  * This class is an implementation of {@link ServerInterface} and represents the server endpoint for socket and RMI connections
@@ -34,17 +36,38 @@ public class ServerEndpoint extends UnicastRemoteObject implements ServerInterfa
      */
     private GameController gameController;
 
+    private final TimedLock<Boolean> pingWaiter = new TimedLock<>(false);
+
     /**
      * This class constructor crates an instance of this class with a given {@link controller.interfaces.ServerController}, {@link controller.interfaces.GameManagerController} and null {@link controller.interfaces.GameController}
      * @param serverController a given server controller
      * @param gameManagerController a given game manager controller
      * @throws RemoteException in case of an error occurred exporting this remote object
      */
-    public ServerEndpoint(ServerController serverController, GameManagerController gameManagerController) throws RemoteException {
+    public ServerEndpoint(ServerController serverController, GameManagerController gameManagerController, Consumer<String> disconnectionCallback) throws RemoteException {
         super();
         this.serverController = serverController;
         this.gameManagerController = gameManagerController;
         this.gameController = null;
+
+        new Thread(()->{
+            try {
+                Thread.sleep(2000);
+
+                do {
+                    pingWaiter.reset();
+                    pingWaiter.setValue(false);
+
+                    this.pingWaiter.lock(2000);
+
+                } while (pingWaiter.hasBeenNotified());
+
+            } catch (InterruptedException e) {
+                System.err.println("Error: Ping thread had been interrupted");
+            } finally {
+                disconnectionCallback.accept("Ping timeout");
+            }
+        }).start();
     }
 
     /**
@@ -133,5 +156,16 @@ public class ServerEndpoint extends UnicastRemoteObject implements ServerInterfa
         if (!message.isBlank())
             message = " : " + message;
         System.err.print("ServerEndpoint: exception from " + from + message);
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * It notifies the ping handler Thread that a ping has been received
+     * @throws RemoteException {@inheritDoc}
+     */
+    @Override
+    public void ping() throws RemoteException {
+        pingWaiter.notify(true);
     }
 }

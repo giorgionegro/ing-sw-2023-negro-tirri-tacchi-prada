@@ -26,14 +26,14 @@ public final class GameBuilder {
      */
     public static Game build(NewGameInfo newGameInfo) throws IllegalArgumentException {
         if (newGameInfo.type().equals("STANDARD")) {
-            List<Player> avaiablePlayers = new ArrayList<>();
-            List<CommonGoal> avaiableCommonGoals = setCommonGoals(newGameInfo.playerNumber());
-            Stack<List<PersonalGoal>> avaiablePersonalGoals = setPersonalGoals();
+            List<Player> availablePlayers = new ArrayList<>();
+            List<CommonGoal> availableCommonGoals = setCommonGoals(newGameInfo.playerNumber());
+            Stack<List<PersonalGoal>> availablePersonalGoals = setPersonalGoals();
             LivingRoom livingRoom = new StandardLivingRoom(newGameInfo.playerNumber());
             for (int i = 0; i < newGameInfo.playerNumber(); i++)
-                avaiablePlayers.add(new StandardPlayer(new StandardShelf(), avaiablePersonalGoals.pop(), new StandardPlayerChat()));
+                availablePlayers.add(new StandardPlayer(new StandardShelf(), availablePersonalGoals.pop(), new StandardPlayerChat()));
 
-            return new StandardGame(avaiablePlayers, livingRoom, avaiableCommonGoals);
+            return new StandardGame(availablePlayers, livingRoom, availableCommonGoals);
         }
         throw new IllegalArgumentException("Unexpected value: " + newGameInfo.type());
     }

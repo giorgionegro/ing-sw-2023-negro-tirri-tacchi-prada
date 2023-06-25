@@ -23,17 +23,11 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * This class is a combined implementation of a {@link ServerController} a {@link GameManagerController} and a {@link AppServer}
  */
 public class StandardServerController extends UnicastRemoteObject implements ServerController, GameManagerController, AppServer {
-    /**
-     * The executor service checks connections status between clients and the server
-     */
-    private static final ExecutorService executorService = Executors.newCachedThreadPool();
     /**
      * The association between a client and a user on the server, it is assumed that only well authenticated clients have a user association
      */
@@ -93,38 +87,10 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
         this.users.put(client, user);
 
         // Generate the serverEndpoint of the connection
-        ServerInterface server = new ServerEndpoint(this, this);
+        ServerInterface server = new ServerEndpoint(this, this, s -> disconnect(client));
 
         // Binds serverEndpoint and clientEndpoint
         client.bind(server);
-
-        // start ping thread
-        new Thread(() -> {
-            /* This thread pings client every 1s */
-            try {
-                while (true) {
-                    System.out.println("PINGING CLIENT" + client);
-                    TimedLock<Boolean> lock = new TimedLock<>(false);
-                    new Thread(() -> {
-                        try {
-                            client.ping();
-                            lock.notify(true);
-                        } catch (RemoteException ignored) {
-                        }
-                    }).start();
-                    lock.lock(200);
-                    if (!lock.hasBeenNotified()) {
-                        System.err.println("Ping timeout");
-                        throw new RemoteException();
-                    }
-                    Thread.sleep(500);
-                }
-            } catch (InterruptedException | RemoteException e) {
-                /* If an error occurred during a ping, then disconnect the client */
-                System.err.println("Ping failed");
-                this.disconnect(client);
-            }
-        }).start();
 
         System.out.println("CLIENT CONNECTED, currently connected users: " + this.users.size());
 

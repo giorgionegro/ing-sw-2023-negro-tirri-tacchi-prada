@@ -194,4 +194,26 @@ public class ClientSocketHandler extends SocketHandler<ClientInterface> implemen
             throw new RemoteException("Unable to send the socket object");
         }
     }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Generates and send {@link SocketObject} that calls {@link ServerInterface#ping()} on receiver
+     * @throws RemoteException if fails to send a {@link SocketObject}
+     */
+    @Override
+    public void ping() throws RemoteException {
+        try {
+            this.send((SocketObject) (sender, receiver) -> {
+                try {
+                    ((ServerInterface) receiver).ping();
+                } catch (ClassCastException e) {
+                    throw new RemoteException("Socket object not usable");
+                }
+            });
+        } catch (IOException e) {
+            super.close();
+            throw new RemoteException("Unable to send the socket object");
+        }
+    }
 }
