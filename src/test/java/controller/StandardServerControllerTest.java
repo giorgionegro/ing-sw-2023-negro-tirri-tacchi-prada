@@ -7,6 +7,8 @@ import model.abstractModel.*;
 import model.exceptions.GameAlreadyExistsException;
 import model.exceptions.GameNotExistsException;
 import modelView.*;
+import modelView.NewGameInfo;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.rmi.RemoteException;
@@ -136,7 +138,7 @@ class StandardServerControllerTest {
                 throw new RemoteException("This method must be called.");
             }
         };
-        standardServerController.connect(client2);
+        assertThrows(RemoteException.class, () ->standardServerController.connect(client2));
 
 
     }
