@@ -2342,6 +2342,7 @@ class StandardGameControllerTest {
         if (!lock.getValue()) {
             fail("GameInfo not updated");
         }
+        lock.wait(500);
         assert gameInfo[0] != null && gameInfo[0].lastTurn();
     }
 
