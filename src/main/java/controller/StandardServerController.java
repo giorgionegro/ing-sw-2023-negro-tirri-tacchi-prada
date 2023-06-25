@@ -30,11 +30,11 @@ import java.util.concurrent.Executors;
  */
 public class StandardServerController extends UnicastRemoteObject implements ServerController, GameManagerController, AppServer {
     /**
-     * The executor service that manage and run connections from socket interface
+     * The executor service that runs and manages connections from socket interface
      */
     private static final ExecutorService executorService = Executors.newCachedThreadPool();
     /**
-     * The association between a client and a user on the server, it is assumed that only well authenticated clients has a user association
+     * The association between a client and a user on the server, it is assumed that only well authenticated clients have a user association
      */
     private final Map<ClientInterface, User> users;
     /**
@@ -42,7 +42,7 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
      */
     private final Map<User, LobbyController> activeUsers;
     /**
-     * The association between a lobby and his ID
+     * The association between a lobby and its ID
      */
     private final Map<String, LobbyController> lobbies;
     /**
@@ -51,7 +51,7 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
     private final Map<LobbyController, GameController> gameControllers;
 
     /**
-     * This constructor build an instance with no lobbies, game controller, users and active users
+     * This constructor builds an instance with no lobbies, game controller, users and active users
      *
      * @throws RemoteException If an error occurred on remote object construction or export
      */

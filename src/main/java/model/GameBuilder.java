@@ -21,7 +21,6 @@ public final class GameBuilder {
     /**
      * //TODO controllare
      * This method creates a new Game instance based on the type of game the user wants to create.
-     *
      * @param newGameInfo record containing information of a {@link model.abstractModel.Game} creation request
      * @return a new Game instance
      * @throws IllegalArgumentException if newGameInfo type is not supported
@@ -42,7 +41,6 @@ public final class GameBuilder {
 
     /**
      * This method initializes the common goals of a StandardGames
-     *
      * @param nPlayers number of players in the game
      * @return an ArrayList containing two common goals
      */
@@ -73,7 +71,7 @@ public final class GameBuilder {
     }
 
     /**
-     * this method return stack containing lists of all the standard personal goals
+     * this method returns a stack containing lists of all the standard personal goals
      *
      * @return stack containing lists of all the standard personal goals
      */
