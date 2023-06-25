@@ -104,13 +104,14 @@ public class ViewLogic implements Remote, ViewCollection, ActionListener {
     }
 
     private void disconnect(String message){
+        try {
+            if(server!=null)
+                server.disconnect(clientEndPoint);
+        } catch (RemoteException e) {
+            System.err.println("Error on disconnection, continue disconnecting.... ");
+        }
         updateService.submit(() -> {
             connected = false;
-            try {
-                server.disconnect(clientEndPoint);
-            } catch (RemoteException e) {
-                //TODO
-            }
             serverEndpoint = null;
             server = null;
             this.actionPerformed(new ActionEvent(appGraphics,ROUTE_CONNECT,message));
@@ -134,7 +135,7 @@ public class ViewLogic implements Remote, ViewCollection, ActionListener {
                     try {
                         this.serverWaiter.lock(6000);
                     } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
+                        throw new RemoteException("Timer interrupted");
                     }
                 }
 

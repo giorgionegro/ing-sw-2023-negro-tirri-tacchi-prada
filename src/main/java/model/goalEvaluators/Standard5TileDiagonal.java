@@ -48,7 +48,7 @@ public class Standard5TileDiagonal extends GoalEvaluator {
     public boolean evaluate(Tile[][] playerShelf) {
         // check diagonal win from top left to bottom right
 
-        // first we check the diagonal from top left to bottom righ
+        // first we check the diagonal from top left to bottom right
         for (int i = 0; i < playerShelf.length - 4; i++) {
             for (int j = 0; j < playerShelf[0].length - 4; j++) {
                 if (playerShelf[i][j].getColor().equals(playerShelf[i + 1][j + 1].getColor()) &&

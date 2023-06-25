@@ -9,7 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class  GUI implements AppGraphics, ActionListener {
-    private final NetworkChoicePanel networkChoise = new NetworkChoicePanel(this);
+    private final NetworkChoicePanel networkChoice = new NetworkChoicePanel(this);
     private final HomePanel homePanel = new HomePanel(this);
     private final JoinGamePanel join = new JoinGamePanel(this);
     private final CreateGamePanel create = new CreateGamePanel(this);
@@ -48,9 +48,9 @@ public class  GUI implements AppGraphics, ActionListener {
 
     @Override
     public void showConnection(String error) {
-        networkChoise.setErrorMessage(error);
+        networkChoice.setErrorMessage(error);
         root.removeAll();
-        root.add(networkChoise);
+        root.add(networkChoice);
         refresh();
     }
 

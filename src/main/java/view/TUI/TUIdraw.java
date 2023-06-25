@@ -381,7 +381,7 @@ final class TUIdraw {
             int shelvesHeight = 0;
             int shelvesWidth = 0;
 
-            int shelfDrewed = 0;
+            int shelfDrawn = 0;
 
             StringBuilder playersName = new StringBuilder();
             StringBuilder playersPoints = new StringBuilder();
@@ -392,7 +392,7 @@ final class TUIdraw {
                 shelvesHeight = shelf.length;
                 shelvesWidth = shelf[0].length * 4 + 1;
 
-                int shelfX = shelvesX + (shelvesWidth + shelvesPadding) * shelfDrewed;
+                int shelfX = shelvesX + (shelvesWidth + shelvesPadding) * shelfDrawn;
                 drawGrid(shelfX, shelvesGridY, shelf[0].length, shelf.length, cliPixel, cliPixelColor);
                 drawGridContents(shelfX, shelvesGridY, shelf, cliPixel, cliPixelColor);
 
@@ -430,7 +430,7 @@ final class TUIdraw {
                 playersPoints.append(" ".repeat(spaceAfter));
                 playersPoints.append(" ".repeat(shelvesPadding));
 
-                shelfDrewed++;
+                shelfDrawn++;
             }
 
             drawString(playersName.toString(), shelvesGridY + shelvesHeight * 2 + 1, shelvesX, DEFAULT, playersName.length(), cliPixel, cliPixelColor);
@@ -460,9 +460,9 @@ final class TUIdraw {
         if (!commonGoals.isEmpty()) {
             int boxesStartY = commonGoalsY + 1;
             StringBuilder points = new StringBuilder();
-            int drewedCommonGoals = 0;
+            int drawnCommonGoals = 0;
             for (String id : commonGoals.keySet()) {
-                int boxStartX = commonGoalsX + drewedCommonGoals * (commonGoalBoxWidth + commonGoalsPadding);
+                int boxStartX = commonGoalsX + drawnCommonGoals * (commonGoalBoxWidth + commonGoalsPadding);
                 drawBox(boxesStartY, boxStartX, commonGoalBoxHeight, commonGoalBoxWidth, DEFAULT, cliPixel, cliPixelColor);
 
                 String[] res = getCommonGoalRes(id);
@@ -483,7 +483,7 @@ final class TUIdraw {
                 points.append(" ".repeat(spaceAfter));
                 points.append(" ".repeat(commonGoalsPadding));
 
-                drewedCommonGoals++;
+                drawnCommonGoals++;
             }
             drawString(points.toString(), boxesStartY + commonGoalBoxHeight, commonGoalsX, DEFAULT, points.length(), cliPixel, cliPixelColor);
 
@@ -493,7 +493,7 @@ final class TUIdraw {
     }
 
     /**
-     * this method retrives the resource of the common goal
+     * this method retrieves the resource of the common goal
      *  @param id   id of the common goal
      * @return   array of strings representing the resource
      */

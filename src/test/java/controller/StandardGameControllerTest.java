@@ -43,12 +43,7 @@ class StandardGameControllerTest {
             public void bind(ServerInterface server) throws RemoteException {
 
             }
-
-            @Override
-            public void ping() throws RemoteException {
-
-            }
-
+            
             @Override
             public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
 
@@ -114,11 +109,6 @@ class StandardGameControllerTest {
         ClientInterface client = new ClientInterface() {
             @Override
             public void bind(ServerInterface server) throws RemoteException {
-
-            }
-
-            @Override
-            public void ping() throws RemoteException {
 
             }
 
@@ -192,11 +182,6 @@ class StandardGameControllerTest {
             ClientInterface clientInterface = new ClientInterface() {
                 @Override
                 public void bind(ServerInterface server) throws RemoteException {
-
-                }
-
-                @Override
-                public void ping() throws RemoteException {
 
                 }
 
@@ -344,11 +329,6 @@ class StandardGameControllerTest {
             }
 
             @Override
-            public void ping() throws RemoteException {
-
-            }
-
-            @Override
             public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
 
             }
@@ -418,11 +398,6 @@ class StandardGameControllerTest {
         ClientInterface client = new ClientInterface() {
             @Override
             public void bind(ServerInterface server) throws RemoteException {
-
-            }
-
-            @Override
-            public void ping() throws RemoteException {
 
             }
 
@@ -538,11 +513,6 @@ class StandardGameControllerTest {
                 }
 
                 @Override
-                public void ping() throws RemoteException {
-
-                }
-
-                @Override
                 public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
 
 
@@ -593,11 +563,6 @@ class StandardGameControllerTest {
             ClientInterface client2 = new ClientInterface() {
                 @Override
                 public void bind(ServerInterface server) throws RemoteException {
-
-                }
-
-                @Override
-                public void ping() throws RemoteException {
 
                 }
 
@@ -682,11 +647,6 @@ class StandardGameControllerTest {
             }
 
             @Override
-            public void ping() throws RemoteException {
-
-            }
-
-            @Override
             public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
 
 
@@ -737,11 +697,6 @@ class StandardGameControllerTest {
         ClientInterface client2 = new ClientInterface() {
             @Override
             public void bind(ServerInterface server) throws RemoteException {
-
-            }
-
-            @Override
-            public void ping() throws RemoteException {
 
             }
 
@@ -822,11 +777,6 @@ class StandardGameControllerTest {
             }
 
             @Override
-            public void ping() throws RemoteException {
-
-            }
-
-            @Override
             public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
 
 
@@ -877,11 +827,6 @@ class StandardGameControllerTest {
         ClientInterface client2 = new ClientInterface() {
             @Override
             public void bind(ServerInterface server) throws RemoteException {
-
-            }
-
-            @Override
-            public void ping() throws RemoteException {
 
             }
 
@@ -962,11 +907,6 @@ class StandardGameControllerTest {
             }
 
             @Override
-            public void ping() throws RemoteException {
-
-            }
-
-            @Override
             public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
 
 
@@ -1017,11 +957,6 @@ class StandardGameControllerTest {
         ClientInterface client2 = new ClientInterface() {
             @Override
             public void bind(ServerInterface server) throws RemoteException {
-
-            }
-
-            @Override
-            public void ping() throws RemoteException {
 
             }
 
@@ -1113,11 +1048,6 @@ class StandardGameControllerTest {
             }
 
             @Override
-            public void ping() throws RemoteException {
-
-            }
-
-            @Override
             public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
 
 
@@ -1168,11 +1098,6 @@ class StandardGameControllerTest {
         ClientInterface client2 = new ClientInterface() {
             @Override
             public void bind(ServerInterface server) throws RemoteException {
-
-            }
-
-            @Override
-            public void ping() throws RemoteException {
 
             }
 
@@ -1263,11 +1188,6 @@ class StandardGameControllerTest {
             }
 
             @Override
-            public void ping() throws RemoteException {
-
-            }
-
-            @Override
             public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
 
 
@@ -1318,11 +1238,6 @@ class StandardGameControllerTest {
         ClientInterface client2 = new ClientInterface() {
             @Override
             public void bind(ServerInterface server) throws RemoteException {
-
-            }
-
-            @Override
-            public void ping() throws RemoteException {
 
             }
 
@@ -1419,11 +1334,6 @@ class StandardGameControllerTest {
             }
 
             @Override
-            public void ping() throws RemoteException {
-
-            }
-
-            @Override
             public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
 
 
@@ -1474,11 +1384,6 @@ class StandardGameControllerTest {
         ClientInterface client2 = new ClientInterface() {
             @Override
             public void bind(ServerInterface server) throws RemoteException {
-
-            }
-
-            @Override
-            public void ping() throws RemoteException {
 
             }
 
@@ -1571,11 +1476,6 @@ class StandardGameControllerTest {
             }
 
             @Override
-            public void ping() throws RemoteException {
-
-            }
-
-            @Override
             public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
 
 
@@ -1626,11 +1526,6 @@ class StandardGameControllerTest {
         ClientInterface client2 = new ClientInterface() {
             @Override
             public void bind(ServerInterface server) throws RemoteException {
-
-            }
-
-            @Override
-            public void ping() throws RemoteException {
 
             }
 
@@ -1734,11 +1629,6 @@ class StandardGameControllerTest {
             }
 
             @Override
-            public void ping() throws RemoteException {
-
-            }
-
-            @Override
             public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
 
 
@@ -1789,11 +1679,6 @@ class StandardGameControllerTest {
         ClientInterface client2 = new ClientInterface() {
             @Override
             public void bind(ServerInterface server) throws RemoteException {
-
-            }
-
-            @Override
-            public void ping() throws RemoteException {
 
             }
 
@@ -1894,11 +1779,6 @@ class StandardGameControllerTest {
             }
 
             @Override
-            public void ping() throws RemoteException {
-
-            }
-
-            @Override
             public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
 
 
@@ -1946,11 +1826,6 @@ class StandardGameControllerTest {
         ClientInterface client2 = new ClientInterface() {
             @Override
             public void bind(ServerInterface server) throws RemoteException {
-
-            }
-
-            @Override
-            public void ping() throws RemoteException {
 
             }
 
@@ -2043,11 +1918,6 @@ class StandardGameControllerTest {
             }
 
             @Override
-            public void ping() throws RemoteException {
-
-            }
-
-            @Override
             public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
 
 
@@ -2098,11 +1968,6 @@ class StandardGameControllerTest {
         ClientInterface client2 = new ClientInterface() {
             @Override
             public void bind(ServerInterface server) throws RemoteException {
-
-            }
-
-            @Override
-            public void ping() throws RemoteException {
 
             }
 
@@ -2200,11 +2065,6 @@ class StandardGameControllerTest {
             }
 
             @Override
-            public void ping() throws RemoteException {
-
-            }
-
-            @Override
             public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
 
 
@@ -2255,11 +2115,6 @@ class StandardGameControllerTest {
         ClientInterface client2 = new ClientInterface() {
             @Override
             public void bind(ServerInterface server) throws RemoteException {
-
-            }
-
-            @Override
-            public void ping() throws RemoteException {
 
             }
 
@@ -2394,11 +2249,6 @@ class StandardGameControllerTest {
             public void bind(ServerInterface server) throws RemoteException {
 
             }
-
-            @Override
-            public void ping() throws RemoteException {
-
-            }
         };
         var client = new ClientInterface() {
             @Override
@@ -2444,11 +2294,6 @@ class StandardGameControllerTest {
 
             @Override
             public void bind(ServerInterface server) throws RemoteException {
-
-            }
-
-            @Override
-            public void ping() throws RemoteException {
 
             }
         };
@@ -2519,11 +2364,6 @@ class StandardGameControllerTest {
             public void bind(ServerInterface server) throws RemoteException {
 
             }
-
-            @Override
-            public void ping() throws RemoteException {
-
-            }
         };
         standardGameController.sendMessage(client3, new StandardMessage("1", "2", "test"));
 
@@ -2581,11 +2421,6 @@ class StandardGameControllerTest {
             @Override
             public void bind(ServerInterface server) throws RemoteException {
                 throw new RemoteException();
-            }
-
-            @Override
-            public void ping() throws RemoteException {
-
             }
         };
         var game = GameBuilder.build(new NewGameInfo("42", "STANDARD", 2, System.currentTimeMillis()));

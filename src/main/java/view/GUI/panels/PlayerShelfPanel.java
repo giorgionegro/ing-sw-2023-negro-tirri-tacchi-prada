@@ -2,7 +2,7 @@ package view.GUI.panels;
 
 import model.Tile;
 
-import view.GUI.components.ColumnChoserButton;
+import view.GUI.components.ColumnChooserButton;
 import view.graphicInterfaces.PlayerShelfGraphics;
 
 import javax.swing.*;
@@ -104,7 +104,7 @@ public class PlayerShelfPanel extends JPanel implements PlayerShelfGraphics, Act
         for (int i = 0; i < 5; i++) {
             buttonsConstraints.gridx = 1+i;
 
-            ColumnChoserButton insert = new ColumnChoserButton(i);
+            ColumnChooserButton insert = new ColumnChooserButton(i);
             insert.addActionListener(this);
 
             columnSelectorList.add(insert);

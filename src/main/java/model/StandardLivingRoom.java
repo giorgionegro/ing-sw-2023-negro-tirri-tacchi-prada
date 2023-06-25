@@ -129,9 +129,9 @@ public class StandardLivingRoom extends LivingRoom {
      * this method is responsible for calling the methods needed to fill the board, namely
      * {@link #fillCenterSquare(Tile[][])} that fills the center part of the board, always called
      * {@link #fillSideSquares(Tile[][], int, int)} (Tile[][])} that fills the squares around the center, always called
-     * {@link #fillMissingCells(Tile[][])} (Tile[][])} that fills the missing cells needed for the 2 player baord, always called
-     * {@link #fillMissingCells3Players(Tile[][])} (Tile[][])} (Tile[][])} that fills the missing cells needed for the 3 player baord, called if 3 players are in the game
-     * {@link #fillMissingCells4Players(Tile[][])} (Tile[][])} (Tile[][])} that fills the missing cells needed for the 4 player baord, called if 4 players are in the game
+     * {@link #fillMissingCells(Tile[][])} (Tile[][])} that fills the missing cells needed for the 2 player board, always called
+     * {@link #fillMissingCells3Players(Tile[][])} (Tile[][])} (Tile[][])} that fills the missing cells needed for the 3 player board, called if 3 players are in the game
+     * {@link #fillMissingCells4Players(Tile[][])} (Tile[][])} (Tile[][])} that fills the missing cells needed for the 4 player board, called if 4 players are in the game
      *
      * @param board a 2D array of Tiles representing the game board
      */

@@ -106,12 +106,10 @@ public class Server{
 
                 ServerSocketHandler serverSocketHandler = new ServerSocketHandler(socket);
                 try {
-                    serverSocketHandler.open();
                     serverController.connect(serverSocketHandler);
                 } catch (RemoteException e) {
                     System.err.println("Cannot receive from client: "+e.getMessage()+".\n-> Closing this connection...");
                 }
-
             }
         } catch (IOException e) {
             throw new RemoteException("Cannot start socket server", e);

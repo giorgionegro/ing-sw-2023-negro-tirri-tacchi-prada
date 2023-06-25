@@ -38,6 +38,7 @@ public abstract class CommonGoal extends Observable<CommonGoal.Event> {
      *
      * @param nToken number of token to add to tokenStack
      */
+    @SuppressWarnings("unused")
     protected abstract void fillStack(int nToken);
 
     /**

@@ -1,7 +1,5 @@
 package distibuted.socket.middleware;
 
-import distibuted.ClientEndPoint;
-import distibuted.interfaces.Binder;
 import distibuted.interfaces.ClientInterface;
 import distibuted.interfaces.ServerInterface;
 import model.User;
@@ -22,8 +20,9 @@ public class ServerSocketHandler extends SocketHandler<ServerInterface> implemen
      * Class constructor, initialize a {@link SocketHandler} with the given socket
      * @param socket socket to manage
      */
-    public ServerSocketHandler(Socket socket) {
+    public ServerSocketHandler(Socket socket) throws RemoteException {
         super(socket);
+        super.open();
     }
 
     /**
@@ -213,7 +212,7 @@ public class ServerSocketHandler extends SocketHandler<ServerInterface> implemen
     /**
      * {@inheritDoc}
      * <p>
-     * Generates and send {@link SocketObject} that calls {@link Binder#bind(ServerInterface)} on receiver
+     * Generates and send {@link SocketObject} that calls {@link ClientInterface#bind(ServerInterface)} on receiver
      * <p>
      * Create and runs input-stream-handler thread
      * @param server the {@link ServerInterface} of the server that client have to bind to
@@ -224,8 +223,7 @@ public class ServerSocketHandler extends SocketHandler<ServerInterface> implemen
         try {
             this.send((SocketObject) (sender, receiver) -> {
                 try {
-
-                    ((Binder) receiver).bind((ServerInterface) sender);
+                    ((ClientInterface) receiver).bind((ServerInterface) sender);
                 } catch (ClassCastException e) {
                     throw new RemoteException("Socket object not usable");
                 }
@@ -245,28 +243,4 @@ public class ServerSocketHandler extends SocketHandler<ServerInterface> implemen
             }
         }).start();
     }
-
-    /**
-     * {@inheritDoc}
-     * <p>
-     * Generates and send {@link SocketObject} that calls {@link Binder#ping()} on receiver
-     * @throws RemoteException if fails to send a {@link SocketObject}
-     */
-    @Override
-    public void ping() throws RemoteException {
-        try {
-            this.send((SocketObject) (sender, receiver) -> {
-                try {
-                    ((ClientEndPoint) receiver).ping();
-                } catch (ClassCastException e) {
-                    throw new RemoteException("Socket object not usable");
-                }
-            });
-        } catch (IOException e) {
-            super.close();
-            throw new RemoteException("Unable to send the socket object");
-        }
-    }
-
-
 }
