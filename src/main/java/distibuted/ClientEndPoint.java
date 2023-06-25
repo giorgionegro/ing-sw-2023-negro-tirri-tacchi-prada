@@ -178,7 +178,6 @@ public class ClientEndPoint extends UnicastRemoteObject implements ClientInterfa
                     throw new RuntimeException(e);
                 }
 
-
                 if (!pingWaiter.hasBeenNotified()) {
                     disconnectionCallback.accept("Connection lost: ping timeout");
                     break;

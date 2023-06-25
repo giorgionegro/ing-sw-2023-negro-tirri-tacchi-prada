@@ -106,6 +106,11 @@ public class ViewLogic implements Remote, ViewCollection, ActionListener {
     private void disconnect(String message){
         updateService.submit(() -> {
             connected = false;
+            try {
+                server.disconnect(clientEndPoint);
+            } catch (RemoteException e) {
+                //TODO
+            }
             serverEndpoint = null;
             server = null;
             this.actionPerformed(new ActionEvent(appGraphics,ROUTE_CONNECT,message));

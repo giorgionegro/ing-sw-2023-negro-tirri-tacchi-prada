@@ -263,6 +263,7 @@ public class ServerSocketHandler extends SocketHandler<ServerInterface> implemen
                 }
             });
         } catch (IOException e) {
+            super.close();
             throw new RemoteException("Unable to send the socket object");
         }
     }
