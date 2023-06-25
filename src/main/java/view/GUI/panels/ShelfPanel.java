@@ -8,7 +8,7 @@ import java.util.Objects;
 import model.Tile;
 
 import view.graphicInterfaces.PlayerShelfGraphics;
-
+//TODO
 public class ShelfPanel extends JPanel implements PlayerShelfGraphics {
     private Tile[][] shelfState = new Tile[6][5];
     private boolean isFirstPlayer;

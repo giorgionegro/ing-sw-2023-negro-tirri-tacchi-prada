@@ -13,9 +13,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
-
-
-public class TilesOrderingPanel extends JPanel implements ActionListener {
+//TODO
+public class TilesOrderingPanel extends JPanel implements ActionListener{
     private final List<TileButton> pickedTiles = new ArrayList<>();
     private final ActionListener moveSender;
     /*------------------ GRAPHIC LAYOUT ---------------------*/
@@ -162,7 +161,6 @@ public class TilesOrderingPanel extends JPanel implements ActionListener {
         return true;
     }
 
-
     private void initializeLayout() {
         this.setLayout(new GridBagLayout());
 
@@ -222,6 +220,11 @@ public class TilesOrderingPanel extends JPanel implements ActionListener {
         this.add(new Container(), this.constraints);
     }
 
+
+    /**
+     * This method overrides {@link  JComponent#paintComponent(Graphics)} drawing an image as background
+     * @param g the <code>Graphics</code> object to protect
+     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);

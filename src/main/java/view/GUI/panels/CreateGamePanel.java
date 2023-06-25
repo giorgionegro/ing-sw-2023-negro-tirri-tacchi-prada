@@ -11,7 +11,7 @@ import java.util.Objects;
 /**
  * This class extends JPanel and represents a graphical component that allows to create a new game inserting a GameId and a PlayerId
  */
-public class CreateGamePanel extends JPanel implements ActionListener {
+public class CreateGamePanel extends JPanel {
     private final ActionListener listener;
 
     /** Construct an {@link CreateGamePanel} instance that uses the given {@link ActionListener} as listener for buttons events
@@ -22,8 +22,15 @@ public class CreateGamePanel extends JPanel implements ActionListener {
 
         initializeLayout();
 
-        createButton.addActionListener(this);
-        exitButton.addActionListener(this);
+        createButton.addActionListener(e -> {
+            String gameId = gameIdTextField.getText();
+            String k = (String) playerNumberCombo.getSelectedItem();
+            if(k==null)
+                k = "";
+
+            listener.actionPerformed(new ActionEvent(this, ViewLogic.CREATE,"STANDARD "+gameId+" "+k));
+        });
+        exitButton.addActionListener(e ->  listener.actionPerformed(new ActionEvent(this,ViewLogic.ROUTE_HOME,"")));
     }
 
     /**This method prints out an error message
@@ -38,23 +45,6 @@ public class CreateGamePanel extends JPanel implements ActionListener {
         }
         this.revalidate();
         this.repaint();
-    }
-
-    /**
-     * @param e the event to be processed
-     */
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == createButton) {
-            String gameId = gameIdTextField.getText();
-            String k = (String) playerNumberCombo.getSelectedItem();
-            if(k==null)
-                k = "";
-
-            listener.actionPerformed(new ActionEvent(this, ViewLogic.CREATE,"STANDARD "+gameId+" "+k));
-        } else if (e.getSource()==exitButton) {
-            listener.actionPerformed(new ActionEvent(this,ViewLogic.ROUTE_HOME,""));
-        }
     }
 
     /*---------------------- GRAPHICS COMPONENTS and GRAPHICS INITIALIZATION -------------------------*/
@@ -143,8 +133,7 @@ public class CreateGamePanel extends JPanel implements ActionListener {
             super.paintComponent(g);
         }
     };
-    
-    private final Dimension zeroDimension = new Dimension(0,0);
+
 
     /**
      *  This method initializes the layout of the component
@@ -188,6 +177,8 @@ public class CreateGamePanel extends JPanel implements ActionListener {
      * The positions and dimensions of components within the grid are set.
      */
     private void initializeContents(){
+
+        final Dimension zeroDimension = new Dimension(0,0);
         constraints.gridy=1;
         constraints.gridx=1;
         constraints.gridwidth=1;

@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+//TODO
 public class GamePanel extends JComponent implements ActionListener, GameGraphics {
     private final ActionListener listener;
     private final Container livingRoomContainer = new Container();
@@ -396,6 +397,10 @@ public class GamePanel extends JComponent implements ActionListener, GameGraphic
         this.repaint();
     }
 
+    /**
+     * {@inheritDoc}
+     * @param achievedCommonGoals map of achieved common goals with earned token
+     */
     @Override
     public void updateAchievedCommonGoals(Map<String, Token> achievedCommonGoals) {
         this.commonGoalsPanel.setAchievedCommonGoals(achievedCommonGoals);
