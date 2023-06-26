@@ -299,10 +299,8 @@ class StandardGameControllerTest {
         //now try to leave again and join after 6 seconds
         assertDoesNotThrow(() -> standardGameController.leavePlayer(fclient));
         Thread.sleep(7000);
-        assertDoesNotThrow(() -> standardGameController.joinPlayer(fclient, finalUser1, finalLoginInfo2.playerId()));
+        assertThrows(GameAccessDeniedException.class,() -> standardGameController.joinPlayer(fclient, finalUser1, finalLoginInfo2.playerId()));
         //network test can really check result without using a real network
-
-
     }
 
 
@@ -2126,10 +2124,7 @@ class StandardGameControllerTest {
             @Override
             public void update(GameInfo o, Game.Event evt) throws RemoteException {
                 gameInfo[0] = o;
-                synchronized (lock) {
-                    lock.setValue(true);
-                    lock.notifyAll();
-                }
+                lock.unlock(true);
             }
 
 

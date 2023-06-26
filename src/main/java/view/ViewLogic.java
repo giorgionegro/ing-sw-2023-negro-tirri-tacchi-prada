@@ -123,15 +123,14 @@ public class ViewLogic implements Remote, ViewCollection, ActionListener {
             this.actionPerformed(new ActionEvent(appGraphics,ROUTE_CONNECT,"Unknown Command"));
         else{
             try {
-                this.serverWaiter.reset();
-                this.serverWaiter.setValue(true);
+                this.serverWaiter.reset(true);
 
                 switch (connectionType) {
                     case CONNECT_RMI -> connectRMI(clientEndPoint);
                     case CONNECT_SOCKET -> connectSocket(clientEndPoint);
                 }
 
-                if (!this.serverWaiter.hasBeenNotified()) {
+                if (!this.serverWaiter.hasBeenUnlocked()) {
                     try {
                         this.serverWaiter.lock(6000);
                     } catch (InterruptedException e) {
@@ -184,12 +183,11 @@ public class ViewLogic implements Remote, ViewCollection, ActionListener {
                     gameGraphics.resetGameGraphics(joinInfoParts[0]);
 
                     this.currentSessionTime = System.currentTimeMillis();
-                    this.serverWaiter.reset();
-                    this.serverWaiter.setValue(true);
+                    this.serverWaiter.reset(true);
 
                     this.serverEndpoint.joinGame(this.clientEndPoint, new LoginInfo(joinInfoParts[0], joinInfoParts[1], currentSessionTime));
 
-                    if (!this.serverWaiter.hasBeenNotified()) {
+                    if (!this.serverWaiter.hasBeenUnlocked()) {
                         try {
                             this.serverWaiter.lock(6000);
                         } catch (InterruptedException e) {
@@ -223,12 +221,11 @@ public class ViewLogic implements Remote, ViewCollection, ActionListener {
                 try {
                     int playerNumber = Integer.parseInt(gameInfoParts[gameInfoParts.length-1]);
                     this.currentSessionTime = System.currentTimeMillis();
-                    this.serverWaiter.reset();
-                    this.serverWaiter.setValue(true);
+                    this.serverWaiter.reset(true);
 
                     this.serverEndpoint.createGame(this.clientEndPoint, new NewGameInfo(gameInfoParts[1], gameInfoParts[0], playerNumber, this.currentSessionTime));
 
-                    if (!this.serverWaiter.hasBeenNotified()) {
+                    if (!this.serverWaiter.hasBeenUnlocked()) {
                         try {
                             this.serverWaiter.lock(6000);
                         } catch (InterruptedException e) {
@@ -311,12 +308,11 @@ public class ViewLogic implements Remote, ViewCollection, ActionListener {
 
     private void leaveGame(){
         try {
-            this.serverWaiter.reset();
-            this.serverWaiter.setValue(true);
+            this.serverWaiter.reset(true);
 
             this.serverEndpoint.leaveGame(this.clientEndPoint);
 
-            if (!this.serverWaiter.hasBeenNotified()) {
+            if (!this.serverWaiter.hasBeenUnlocked()) {
                 try {
                     this.serverWaiter.lock(6000);
                 } catch (InterruptedException e) {
@@ -402,15 +398,15 @@ public class ViewLogic implements Remote, ViewCollection, ActionListener {
                 return;
 
             if (evt == null) {
-                this.serverWaiter.notify(false);
+                this.serverWaiter.unlock(false);
                 return;
             }
 
             switch (evt) {
-                case GAME_JOINED, GAME_CREATED, GAME_LEAVED -> this.serverWaiter.notify(false);
+                case GAME_JOINED, GAME_CREATED, GAME_LEAVED -> this.serverWaiter.unlock(false);
                 case ERROR_REPORTED -> {
                     userMessage = o.eventMessage();
-                    this.serverWaiter.notify(true);
+                    this.serverWaiter.unlock(true);
                 }
             }
         });

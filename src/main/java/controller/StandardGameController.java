@@ -115,7 +115,7 @@ public class StandardGameController implements GameController, LobbyController {
 
                 if (previousStatus == Game.GameStatus.SUSPENDED) {
                     /* If the model was in suspended status then notify to resume the game */
-                    this.lobbyLock.notify(true);
+                    this.lobbyLock.unlock(true);
 
                 } else if (previousStatus == Game.GameStatus.MATCHMAKING && newStatus == Game.GameStatus.STARTED) {
                     /* If game is ready to be started we force the first turn*/
@@ -374,7 +374,7 @@ public class StandardGameController implements GameController, LobbyController {
 
             else if (this.game.getGameStatus() == Game.GameStatus.SUSPENDED) {
                 /* If the game was suspended then notify to close the game */
-                this.lobbyLock.notify(false);
+                this.lobbyLock.unlock(false);
 
             } else if (this.game.getGameStatus() == Game.GameStatus.STARTED) {
                 /* If the game is running then remove the player */
@@ -392,8 +392,8 @@ public class StandardGameController implements GameController, LobbyController {
                     if (this.game.getGameStatus() == Game.GameStatus.SUSPENDED) {
                         new Thread(() -> {
                             /* Timer wait 6 seconds for a player to rejoin */
-                            this.lobbyLock.reset();
-                            if (!this.lobbyLock.hasBeenNotified())
+                            this.lobbyLock.reset(false);
+                            if (!this.lobbyLock.hasBeenUnlocked())
                                 try {
                                     this.lobbyLock.lock(6000);
                                 } catch (InterruptedException e) {

@@ -55,12 +55,11 @@ public class ServerEndpoint extends UnicastRemoteObject implements ServerInterfa
                 Thread.sleep(2000);
 
                 do {
-                    pingWaiter.reset();
-                    pingWaiter.setValue(false);
+                    pingWaiter.reset(false);
 
                     this.pingWaiter.lock(2000);
 
-                } while (pingWaiter.hasBeenNotified());
+                } while (pingWaiter.hasBeenUnlocked());
 
             } catch (InterruptedException e) {
                 System.err.println("Error: Ping thread had been interrupted");
@@ -166,6 +165,6 @@ public class ServerEndpoint extends UnicastRemoteObject implements ServerInterfa
      */
     @Override
     public void ping() throws RemoteException {
-        pingWaiter.notify(true);
+        pingWaiter.unlock(true);
     }
 }
