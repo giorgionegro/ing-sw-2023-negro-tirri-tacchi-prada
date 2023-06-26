@@ -98,7 +98,7 @@ Disconnecting during the login phase will cause the game to terminate.
 
 The game will determine a turn order randomly, will assign a personal goal to each player, will pick two common goals and fill the living room with the tiles.
 
-#### turns
+#### Turns
 
 During each player's turn, they will have to select one to three Tiles from the available Tiles in the living room, and place them in one column of their shelf, according to the game rules.
 
