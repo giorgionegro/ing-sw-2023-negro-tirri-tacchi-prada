@@ -35,7 +35,9 @@ As part of the grading of the project, a number of possible functionalities coul
 - Disconnection resilience: players can disconnect and reconnect to the server, game will continue without them allowing rejoining.
 
 ## Running the Game
-The game consists of a two jar files by the name <code>placeholder1.jar</code> and <code>placeholder2.jar</code>. They can be found in <code>/target</code> directory after building the project with Maven. [//TODO: change name of jar file] 
+The game consists of a two jar files by the name <code>placeholder1.jar</code> and <code>placeholder2.jar</code>. They can be found in <code>/target</code> directory after building the project with Maven. 
+
+[//]: # (TODO: change name of jar file)
 
 To run the  client file, use the command
 
@@ -131,7 +133,8 @@ If only one player remains in a game there will be a 6 seconds countdown before 
 - <code>e</code> exit the game
 
 ## File System Structure
-[//TODO: update file system structure]
+
+[//]: # (TODO: update file system structure )
 * `deliverables`: various explanatory documents, such as a description of the connection protocol and various UMLs
 * `javadoc`: documentation for the classes and methods generated from the comments in the code
 * `specifications`: specifications for the project and ruleset for the game
