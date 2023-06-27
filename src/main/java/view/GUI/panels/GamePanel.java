@@ -17,38 +17,117 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-//TODO
+
+/**
+ *  This class extends JComponent manage game play graphics
+ */
 public class GamePanel extends JComponent implements GameGraphics {
+    /**
+     * The ActionListener that used to send game actions
+     */
     private final ActionListener listener;
+    /**
+     * This container is the layout placeholder for {@link #livingRoomBoard}
+     */
     private final Container livingRoomContainer = new Container();
+    /**
+     * This container is the layout placeholder for {@link #opponentShelfBoards}
+     */
     private final Container opponentsShelvesContainer = new Container();
+    /**
+     * This container is the layout placeholder for {@link #opponentLabels}
+     */
     private final Container opponentLabelsContainer = new Container();
+    /**
+     * This container is the layout placeholder for {@link #tilesOrderingPanel}
+     */
     private final Container tableContainer = new Container();
+    /**
+     * This container is the layout placeholder for {@link #playerShelf}
+     */
     private final Container playerShelfContainer = new Container();
+    /**
+     * This container is the layout placeholder for {@link #personalGoalPanel}
+     */
     private final Container personalGoalContainer = new Container();
+    /**
+     * This container is the layout placeholder for {@link #chatPanel}
+     */
     private final Container chatContainer = new Container();
+    /**
+     * This container is the layout placeholder for {@link #commonGoalsPanel}
+     */
     private final Container commonGoalContainer = new Container();
+    /**
+     * This container is the layout placeholder for {@link #errorLabel}
+     */
     private final Container interactionContainer = new Container();
-    private final Image buttonBackground = new ImageIcon(Objects.requireNonNull(this.getClass().getResource("/img.png"))).getImage();
+    /**
+     * This is the background image of this component, it is used into {@link #paintComponent(Graphics)}
+     **/
     private final Image parquet = new ImageIcon(Objects.requireNonNull(this.getClass().getResource("/parquet.jpg"))).getImage();
-    private final Color accent = Color.red;
-    private final Color normal = Color.BLACK;
+    /**
+     * The panel which displays living room board
+     */
     private LivingRoomPanel livingRoomBoard;
+    /**
+     * Map that associates opponents playerID to the panel which displays his shelf
+     */
     private final Map<String, ShelfPanel> opponentShelfBoards = new HashMap<>();
+    /**
+     * Map that associates opponents playerID to the panel which displays his PlayerID
+     */
     private final Map<String, JLabel> opponentLabels = new HashMap<>();
+    /**
+     * The panel which displays this player shelf
+     */
     private PlayerShelfPanel playerShelf;
-    private JLabel playerLabel;
+    /**
+     * The panel which allows to order picked tiles
+     */
     private TilesOrderingPanel tilesOrderingPanel;
+    /**
+     * The panel that displays the player's personal goal
+     */
     private PersonalGoalPanel personalGoalPanel;
+    /**
+     * The panel that displays the game's common goals
+     */
     private CommonGoalsPanel commonGoalsPanel;
+    /**
+     * The label associated to the player's playerID
+     */
+    private final JLabel playerLabel = new JLabel("YOU");
+
+    /**
+     * The label that shows a waiting message during matchmaking
+     */
+    private final JLabel waitingLabel = new JLabel("WAITING FOR PLAYERS TO JOIN");
+    /**
+     * Label that shows an error when occurred
+     */
+    private final JLabel errorLabel = new JLabel("");
+    /**
+     * This player's playerID
+     */
     private String thisPlayerId;
+    /**
+     * The playerID of the player that is on turn
+     */
     private String playerOnTurn;
+
+    /**
+     * The playerID of the first player on turn
+     */
     private String firstPlayer;
-    private JLabel errorLabel;
+    /**
+     * Panel that displays the chat
+     */
     private ChatPanel chatPanel;
 
-    private final Object errorLock = new Object();
-
+    /** Construct an {@link GamePanel} instance that uses the given {@link ActionListener} as listener for game actions
+     * @param listener the ActionListener to be notified when a game action need to be sent
+     */
     public GamePanel(ActionListener listener) {
         super();
         this.listener = listener;
@@ -59,7 +138,7 @@ public class GamePanel extends JComponent implements GameGraphics {
     }
 
     /**
-     * This method initializes the containers for the Game Panel allowing you to make the page resizable.
+     * This method initializes the layout placeholders
      */
     private void initializeGameContainers() {
         this.livingRoomContainer.setLayout(new AspectRatioLayout(1));
@@ -72,15 +151,19 @@ public class GamePanel extends JComponent implements GameGraphics {
         this.opponentLabelsContainer.setLayout(new GridBagLayout());
         this.interactionContainer.setLayout(new GridBagLayout());
 
-        this.playerLabel = new JLabel("YOU");
+
         Font font = new Font("Century", Font.BOLD, 20);
+
         this.playerLabel.setFont(font);
         this.playerLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        this.playerLabel.setBackground(new Color(255, 127, 39));
+        this.errorLabel.setFont(font);
+        this.errorLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        this.waitingLabel.setFont(font);
+        this.waitingLabel.setHorizontalAlignment(SwingConstants.CENTER);
     }
 
     /**
-     *
+     * This method initializes the layout
      */
     private void initializeGameLayout() {
         this.removeAll();
@@ -190,8 +273,10 @@ public class GamePanel extends JComponent implements GameGraphics {
         this.add(this.interactionContainer, interactionConstraints);
     }
 
-    public void resetGameLayout(String newPlayerId) {
-        this.thisPlayerId = newPlayerId;
+    /**
+     * This method resets the gameplay graphic
+     */
+    private void resetGameLayout() {
         this.opponentShelfBoards.clear();
         this.opponentLabels.clear();
         this.initializeGameLayout();
@@ -224,7 +309,7 @@ public class GamePanel extends JComponent implements GameGraphics {
 
         this.chatPanel = new ChatPanel(
                 e -> listener.actionPerformed(new ActionEvent(this, e.getID(), e.getActionCommand())),
-                newPlayerId
+                thisPlayerId
         );
         this.chatContainer.add(this.chatPanel);
 
@@ -232,7 +317,7 @@ public class GamePanel extends JComponent implements GameGraphics {
 
         this.commonGoalsPanel = new CommonGoalsPanel();
 
-        this.errorLabel = new JLabel("");
+        this.errorLabel.setText("");
         this.errorLabel.setHorizontalAlignment(SwingConstants.CENTER);
         GridBagConstraints errorLabelConstraints = new GridBagConstraints(
                 0, 0,
@@ -245,9 +330,10 @@ public class GamePanel extends JComponent implements GameGraphics {
         );
         this.interactionContainer.add(this.errorLabel, errorLabelConstraints);
 
+        Image buttonBackground = new ImageIcon(Objects.requireNonNull(this.getClass().getResource("/img.png"))).getImage();
         JButton exitButton = new JButton("EXIT") {
             protected void paintComponent(Graphics g) {
-                g.drawImage(GamePanel.this.buttonBackground, 0, 0, this.getWidth(), this.getHeight(), null);
+                g.drawImage(buttonBackground, 0, 0, this.getWidth(), this.getHeight(), null);
                 super.paintComponent(g);
             }
         };
@@ -268,6 +354,9 @@ public class GamePanel extends JComponent implements GameGraphics {
         this.interactionContainer.add(exitButton, exitButtonConstraint);
     }
 
+    /**
+     * This method modifies the graphic in order to display a waiting scene
+     */
     private void showMatchmakingScene(){
         tableContainer.removeAll();
         livingRoomContainer.removeAll();
@@ -275,10 +364,12 @@ public class GamePanel extends JComponent implements GameGraphics {
         commonGoalContainer.removeAll();
 
         playerShelf.enableButtons(false);
-        JLabel waitingLabel = new JLabel("WAITING FOR PLAYERS TO JOIN");
         livingRoomContainer.add(waitingLabel, BorderLayout.CENTER);
     }
 
+    /**
+     * This method modifies the graphic in order to display gameplay scene
+     */
     private void showGameScene(){
         tableContainer.removeAll();
         livingRoomContainer.removeAll();
@@ -292,21 +383,27 @@ public class GamePanel extends JComponent implements GameGraphics {
         this.commonGoalContainer.add(this.commonGoalsPanel);
     }
 
-    private void resetFirstPlayer(){
-        this.playerLabel.setForeground(this.normal);
+    /**
+     * This method updates first player graphics
+     */
+    private void updateFirstPlayer(){
+        this.playerLabel.setForeground(Color.BLACK);
         for (JLabel label : this.opponentLabels.values())
-            label.setForeground(this.normal);
+            label.setForeground(Color.BLACK);
 
 
         if (playerOnTurn.equals(this.thisPlayerId)) {
-            this.playerLabel.setForeground(this.accent);
+            this.playerLabel.setForeground(Color.RED);
         } else {
             if(opponentLabels.containsKey(playerOnTurn))
-                this.opponentLabels.get(playerOnTurn).setForeground(this.accent);
+                this.opponentLabels.get(playerOnTurn).setForeground(Color.RED);
         }
     }
+    /**
+     * This method updates player on turn graphics
+     */
 
-    private void resetPlayerOnTurn(){
+    private void updatePlayerOnTurn(){
         this.playerShelf.setIsFirstPlayer(this.thisPlayerId.equals(firstPlayer));
         for (String s : this.opponentShelfBoards.keySet()) {
             this.opponentShelfBoards.get(s).setIsFirstPlayer(s.equals(firstPlayer));
@@ -332,7 +429,8 @@ public class GamePanel extends JComponent implements GameGraphics {
      */
     @Override
     public void resetGameGraphics(String playerId) {
-        this.resetGameLayout(playerId);
+        this.thisPlayerId = playerId;
+        this.resetGameLayout();
         this.showMatchmakingScene();
     }
 
@@ -365,8 +463,8 @@ public class GamePanel extends JComponent implements GameGraphics {
             livingRoomBoard.setIsLastTurn(isLastTurn);
             tilesOrderingPanel.actionPerformed(new ActionEvent(this,TilesOrderingPanel.RESET,""));
             showGameScene();
-            resetPlayerOnTurn();
-            resetFirstPlayer();
+            updatePlayerOnTurn();
+            updateFirstPlayer();
         } else if (status == Game.GameStatus.MATCHMAKING || status == Game.GameStatus.SUSPENDED) {
             showMatchmakingScene();
         }
@@ -425,7 +523,7 @@ public class GamePanel extends JComponent implements GameGraphics {
      */
     @Override
     public void updateErrorState(String reportedError) {
-        synchronized (errorLock) {
+        synchronized (errorLabel) {
             this.errorLabel.setText(reportedError);
         }
         //expire error message after 3 seconds
@@ -435,7 +533,7 @@ public class GamePanel extends JComponent implements GameGraphics {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            synchronized (errorLock) {
+            synchronized (errorLabel) {
                 this.errorLabel.setText("");
                 this.revalidate();
                 this.repaint();
@@ -467,13 +565,18 @@ public class GamePanel extends JComponent implements GameGraphics {
             shelfPanel.updatePlayerShelfGraphics(playerId, shelf);
         }
 
-        resetPlayerOnTurn();
-        resetFirstPlayer();
+        updatePlayerOnTurn();
+        updateFirstPlayer();
 
         this.revalidate();
         this.repaint();
     }
 
+    /**
+     * This method adds an opponent shelf to the graphics
+     * @param shelfPanel opponent shelf panel
+     * @param playerId opponent playerID
+     */
     private void addPlayerShelf(JPanel shelfPanel, String playerId) {
         Container shelfContainer = new Container();
         shelfContainer.setLayout(new AspectRatioLayout((float) 1218 / 1218));
@@ -500,6 +603,10 @@ public class GamePanel extends JComponent implements GameGraphics {
         this.opponentLabels.put(playerId, playerLabel);
     }
 
+    /**
+     * This method overrides {@link  JComponent#paintComponent(Graphics)} drawing an image as background
+     * @param g the <code>Graphics</code> object to protect
+     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
