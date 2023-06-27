@@ -147,7 +147,7 @@ public class TilesOrderingPanel extends JPanel implements ActionListener{
         return rowAligned || colAligned;
     }
 
-    /**
+    /**TODO
      * @param pickedTiles list of picked tiles
      * @return true if tiles are different, false otherwise
      */

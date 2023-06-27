@@ -8,7 +8,6 @@ package view.graphicInterfaces;
 public interface CommonGoalGraphics {
     /**
      * This method updates the information of the common goal with the specified parameters:
-     *
      * @param id          the unique id of the common goal
      * @param description the description of common goal specs
      * @param tokenState  the current token value of the common goal

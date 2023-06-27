@@ -260,6 +260,7 @@ public class GamePanel extends JComponent implements ActionListener, GameGraphic
         this.interactionContainer.add(exitButton, exitButtonConstraint);
     }
 
+
     /*------------------------------------------------------------*/
     private void addPlayerShelf(JPanel shelfPanel, String playerId) {
         Container shelfContainer = new Container();
@@ -288,6 +289,10 @@ public class GamePanel extends JComponent implements ActionListener, GameGraphic
         this.opponentLabels.put(playerId, playerLabel);
     }
 
+    /**
+     * {@inheritDoc}
+     * @param g the <code>Graphics</code> object to protect
+     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -305,11 +310,21 @@ public class GamePanel extends JComponent implements ActionListener, GameGraphic
         g.drawImage(this.parquet, 0, 0, width, height, null);
     }
 
+    /**
+     * {@inheritDoc}
+     * @param e the event to be processed
+     */
     @Override
     public void actionPerformed(ActionEvent e) {
         this.listener.actionPerformed(new ActionEvent(this, e.getID(), e.getActionCommand()));
     }
 
+    /**
+     * {@inheritDoc}
+     * @param id          the unique id of the common goal
+     * @param description the description of common goal specs
+     * @param tokenState  the current token value of the common goal
+     */
     @Override
     public void updateCommonGoalGraphics(String id, String description, Token tokenState) {
         this.commonGoalsPanel.updateCommonGoalGraphics(id, description, tokenState);
@@ -317,11 +332,23 @@ public class GamePanel extends JComponent implements ActionListener, GameGraphic
         this.repaint();
     }
 
+    /**
+     * {@inheritDoc}
+     * @param playerId the player ID used in the next game
+     */
     @Override
     public void resetGameGraphics(String playerId) {
         this.resetGameLayout(playerId);
     }
 
+    /**
+     * {@inheritDoc}
+     * @param status          status of the game
+     * @param firstTurnPlayer id of the player that has the first turn
+     * @param playerOnTurn    id of the player on turn
+     * @param isLastTurn      true if the game is in the last round of turns
+     * @param pointsValues    points amount of each player
+     */
     @Override
     public void updateGameInfoGraphics(Game.GameStatus status, String firstTurnPlayer, String playerOnTurn, boolean isLastTurn, Map<String, Integer> pointsValues) {
         this.playerLabel.setForeground(this.normal);
@@ -359,6 +386,10 @@ public class GamePanel extends JComponent implements ActionListener, GameGraphic
         this.repaint();
     }
 
+    /**
+     * {@inheritDoc}
+     * @param board board of the living room
+     */
     @Override
     public void updateBoardGraphics(Tile[][] board) {
         this.livingRoomBoard.updateBoardGraphics(board);
@@ -367,6 +398,12 @@ public class GamePanel extends JComponent implements ActionListener, GameGraphic
         this.repaint();
     }
 
+    /**
+     * {@inheritDoc}
+     * @param id              the id of this goal, unique among others player personal goal
+     * @param hasBeenAchieved true if the goal is achieved
+     * @param description     matrix representation of the goal
+     */
     @Override
     public void updatePersonalGoalGraphics(int id, boolean hasBeenAchieved, Tile[][] description) {
         this.personalGoalPanel.updatePersonalGoalGraphics(id, hasBeenAchieved, description);
@@ -374,6 +411,9 @@ public class GamePanel extends JComponent implements ActionListener, GameGraphic
         this.repaint();
     }
 
+    /**{@inheritDoc}
+     * @param chat list of messages sent to a player
+     */
     @Override
     public void updatePlayerChatGraphics(List<? extends Message> chat) {
         this.chatPanel.updatePlayerChatGraphics(chat);
@@ -392,6 +432,9 @@ public class GamePanel extends JComponent implements ActionListener, GameGraphic
         this.repaint();
     }
 
+    /**{@inheritDoc}
+     * @param reportedError message of en error encountered during gameplay
+     */
     @Override
     public void updateErrorState(String reportedError) {
         this.errorLabel.setText(reportedError);
@@ -399,6 +442,10 @@ public class GamePanel extends JComponent implements ActionListener, GameGraphic
         this.repaint();
     }
 
+    /**{@inheritDoc}
+     * @param playerId id of the player that owns the shelf
+     * @param shelf    shelf representation of the player
+     */
     @Override
     public void updatePlayerShelfGraphics(String playerId, Tile[][] shelf) {
         this.chatPanel.addSubject(playerId);
