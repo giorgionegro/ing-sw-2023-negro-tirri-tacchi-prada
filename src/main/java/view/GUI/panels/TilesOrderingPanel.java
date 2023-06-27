@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.Objects;
 //TODO
 public class TilesOrderingPanel extends JPanel implements ActionListener{
+
+
     private final List<TileButton> pickedTiles = new ArrayList<>();
     private final ActionListener moveSender;
 
@@ -26,6 +28,7 @@ public class TilesOrderingPanel extends JPanel implements ActionListener{
     public static int CONFIRM = 2;
 
     /*------------------ GRAPHIC LAYOUT ---------------------*/
+
     private final Image background = new ImageIcon(Objects.requireNonNull(this.getClass().getResource("/TilesOrderingTableBackground.png"))).getImage();
     private final SwapButton swapButton1 = new SwapButton();
     private final SwapButton swapButton2 = new SwapButton();
@@ -52,6 +55,10 @@ public class TilesOrderingPanel extends JPanel implements ActionListener{
         this.swapButton2.addActionListener(e -> actionPerformed(new ActionEvent(swapButton2,SWITCH_TWO_THREE,e.getActionCommand())));
     }
 
+    /**
+     * {@inheritDoc}
+     * @param e the event to be processed
+     */
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getID() == RESET) {
