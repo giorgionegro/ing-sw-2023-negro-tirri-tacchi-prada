@@ -37,7 +37,6 @@ public class PersonalGoalPanel extends JPanel implements PersonalGoalGraphics {
             Arrays.fill(r,Tile.EMPTY);
     }
 
-
     /**
      * {@inheritDoc}
      * @param id              the id of this goal, unique among others player personal goal

@@ -15,9 +15,21 @@ import java.util.List;
 import java.util.Objects;
 
 public class PlayerShelfPanel extends JPanel implements PlayerShelfGraphics, ActionListener {
+    /**
+     * Matrix of tiles which contains the current shelf state of the player
+     */
     private Tile[][] shelfState = new Tile[6][5];
+    /**
+     * List of buttons that are used to insert the tiles inside the shelf
+     */
     private final List<JButton> columnSelectorList = new ArrayList<>();
+    /**
+     * TODO ENRICO
+     */
     private final ActionListener orderingTable;
+    /**
+     * Boolean that indicates the first player
+     */
     private boolean isFirstPlayer;
 
     /** Construct an {@link PlayerShelfPanel} instance that uses the given {@link ActionListener} as listener for buttons events
