@@ -1,4 +1,4 @@
 /**
- * This package contains the controller interfaces
+ * This package contains {@link controller} interfaces
  */
 package controller.interfaces;
