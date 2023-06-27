@@ -105,7 +105,7 @@ public class TilesOrderingPanel extends JPanel implements ActionListener{
             temp.add(new PickedTile(t.getTileX(), t.getTileY()));
         }
         temp.add(new PickedTile(button.getTileX(), button.getTileY()));
-        //TODO implementa algoritmo
+
         return this.pickable(temp);
     }
 

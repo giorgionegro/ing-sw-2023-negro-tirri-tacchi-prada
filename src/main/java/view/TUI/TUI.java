@@ -301,7 +301,7 @@ public class TUI implements AppGraphics, GameGraphics {
                         }
 
                         var sC = Integer.parseInt(sCol);
-                        int emptyTiles = Arrays.stream(this.playerShelves.get(this.playerId)).mapToInt(row -> row[sC] == Tile.EMPTY ? 1 : 0).sum();//TODO test this
+                        int emptyTiles = Arrays.stream(this.playerShelves.get(this.playerId)).mapToInt(row -> row[sC] == Tile.EMPTY ? 1 : 0).sum();
                         if (emptyTiles < tTiles.size()) {
                             this.printCommandLine("Not enough space in the shelf", RED);
                             continue;

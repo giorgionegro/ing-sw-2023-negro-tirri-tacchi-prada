@@ -171,7 +171,7 @@ public class ViewLogic implements Remote, ViewCollection, ActionListener {
     private final TimedLock<Boolean> serverWaiter = new TimedLock<>(false);
 
     // take PLAYERID GAMEID spaced
-    public void joinGame(String joinInfo) {
+    private void joinGame(String joinInfo) {
         if(joinInfo==null)
             this.actionPerformed(new ActionEvent(appGraphics,ROUTE_JOIN,"Null info value"));
         else {

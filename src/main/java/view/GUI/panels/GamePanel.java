@@ -18,11 +18,9 @@ import java.util.Map;
 import java.util.Objects;
 
 //TODO
-public class GamePanel extends JComponent implements ActionListener, GameGraphics {
+public class GamePanel extends JComponent implements GameGraphics {
     private final ActionListener listener;
     private final Container livingRoomContainer = new Container();
-
-    /*------------------------------------------------------------*/
     private final Container opponentsShelvesContainer = new Container();
     private final Container opponentLabelsContainer = new Container();
     private final Container tableContainer = new Container();
@@ -205,24 +203,24 @@ public class GamePanel extends JComponent implements ActionListener, GameGraphic
         this.commonGoalContainer.removeAll();
         this.interactionContainer.removeAll();
 
-        this.tilesOrderingPanel = new TilesOrderingPanel(this);
-        this.tableContainer.add(this.tilesOrderingPanel);
+        this.tilesOrderingPanel = new TilesOrderingPanel(e -> listener.actionPerformed(new ActionEvent(this, e.getID(), e.getActionCommand())));
+        //this.tableContainer.add(this.tilesOrderingPanel);
 
         this.playerShelf = new PlayerShelfPanel(this.tilesOrderingPanel);
         this.tilesOrderingPanel.setColumnChooser(this.playerShelf);
         this.playerShelfContainer.add(this.playerShelf);
 
         this.livingRoomBoard = new LivingRoomPanel(this.tilesOrderingPanel);
-        this.livingRoomContainer.add(this.livingRoomBoard);
+        //this.livingRoomContainer.add(this.livingRoomBoard);
 
-        this.chatPanel = new ChatPanel(this, newPlayerId);
+        this.chatPanel = new ChatPanel(e -> listener.actionPerformed(new ActionEvent(this, e.getID(), e.getActionCommand())), newPlayerId);
         this.chatContainer.add(this.chatPanel);
 
         this.personalGoalPanel = new PersonalGoalPanel();
-        this.personalGoalContainer.add(this.personalGoalPanel);
+        //this.personalGoalContainer.add(this.personalGoalPanel);
 
         this.commonGoalsPanel = new CommonGoalsPanel();
-        this.commonGoalContainer.add(this.commonGoalsPanel);
+        //this.commonGoalContainer.add(this.commonGoalsPanel);
 
         this.errorLabel = new JLabel("");
         this.errorLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -260,54 +258,28 @@ public class GamePanel extends JComponent implements ActionListener, GameGraphic
         this.interactionContainer.add(exitButton, exitButtonConstraint);
     }
 
-    /*------------------------------------------------------------*/
-    private void addPlayerShelf(JPanel shelfPanel, String playerId) {
-        Container shelfContainer = new Container();
-        shelfContainer.setLayout(new AspectRatioLayout((float) 1218 / 1218));
-        shelfContainer.add(shelfPanel);
+    private void showMatchmakingScene(){
+        tableContainer.removeAll();
+        livingRoomContainer.removeAll();
+        personalGoalContainer.removeAll();
+        commonGoalContainer.removeAll();
 
-        Font font = new Font("Century", Font.BOLD, 18);
-        JLabel playerLabel = new JLabel(playerId);
-        playerLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        playerLabel.setFont(font);
-        //playerLabel.setBackground(new Color(255,127,39));
-
-
-        GridBagConstraints shelfConstraints = new GridBagConstraints(
-                -1, -1,
-                1, 1,
-                1, 1,
-                GridBagConstraints.NORTHWEST,
-                GridBagConstraints.BOTH,
-                new Insets(0, 0, 0, 0),
-                0, 0
-        );
-
-        this.opponentsShelvesContainer.add(shelfContainer, shelfConstraints);
-        this.opponentLabelsContainer.add(playerLabel, shelfConstraints);
-        this.opponentLabels.put(playerId, playerLabel);
+        playerShelf.enableButtons(false);
+        JLabel waitingLabel = new JLabel("WAITING FOR PLAYERS TO JOIN");
+        livingRoomContainer.add(waitingLabel, BorderLayout.CENTER);
     }
 
-    @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        double ratio = 1.765;
-        double windowRatio = (double) this.getWidth() / this.getHeight();
-        int width;
-        int height;
-        if (windowRatio > ratio) {
-            width = this.getWidth();
-            height = (int) (this.getWidth() / ratio);
-        } else {
-            height = this.getHeight();
-            width = (int) (this.getHeight() * ratio);
-        }
-        g.drawImage(this.parquet, 0, 0, width, height, null);
-    }
+    private void showGameScene(){
+        tableContainer.removeAll();
+        livingRoomContainer.removeAll();
+        personalGoalContainer.removeAll();
+        commonGoalContainer.removeAll();
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        this.listener.actionPerformed(new ActionEvent(this, e.getID(), e.getActionCommand()));
+        playerShelf.enableButtons(true);
+        this.tableContainer.add(this.tilesOrderingPanel);
+        this.livingRoomContainer.add(this.livingRoomBoard);
+        this.personalGoalContainer.add(this.personalGoalPanel);
+        this.commonGoalContainer.add(this.commonGoalsPanel);
     }
 
     @Override
@@ -320,6 +292,7 @@ public class GamePanel extends JComponent implements ActionListener, GameGraphic
     @Override
     public void resetGameGraphics(String playerId) {
         this.resetGameLayout(playerId);
+        this.showMatchmakingScene();
     }
 
     @Override
@@ -335,7 +308,7 @@ public class GamePanel extends JComponent implements ActionListener, GameGraphic
 
         if (status == Game.GameStatus.ENDED) {
             this.removeAll();
-            WinnerGamePanel winnerPanel = new WinnerGamePanel(this, pointsValues, this.thisPlayerId);
+            WinnerGamePanel winnerPanel = new WinnerGamePanel(e -> listener.actionPerformed(new ActionEvent(this, e.getID(), e.getActionCommand())), pointsValues, this.thisPlayerId);
             GridBagConstraints winnerConstraints = new GridBagConstraints(
                     0, 0,
                     10, 10,
@@ -347,13 +320,15 @@ public class GamePanel extends JComponent implements ActionListener, GameGraphic
             );
             this.add(winnerPanel, winnerConstraints);
         } else if (status == Game.GameStatus.STARTED) {
+            showGameScene();
+            //TODO sistemare che non mostra il firstplayer dopo una riconnessione, probabilmente perchè arriva prima gameinfo della shelf e quando fa il loop qua sotto il nome del giocatore non c'è
             this.playerShelf.setIsFirstPlayer(this.thisPlayerId.equals(firstTurnPlayer));
             for (String s : this.opponentShelfBoards.keySet()) {
                 this.opponentShelfBoards.get(s).setIsFirstPlayer(s.equals(firstTurnPlayer));
             }
             livingRoomBoard.setIsLastTurn(isLastTurn);
         } else if (status == Game.GameStatus.MATCHMAKING || status == Game.GameStatus.SUSPENDED) {
-            //TODO show message and not commonGoal personalGoal and LivingRoom
+            showMatchmakingScene();
         }
         this.revalidate();
         this.repaint();
@@ -418,6 +393,49 @@ public class GamePanel extends JComponent implements ActionListener, GameGraphic
         }
         this.revalidate();
         this.repaint();
+    }
+
+    private void addPlayerShelf(JPanel shelfPanel, String playerId) {
+        Container shelfContainer = new Container();
+        shelfContainer.setLayout(new AspectRatioLayout((float) 1218 / 1218));
+        shelfContainer.add(shelfPanel);
+
+        Font font = new Font("Century", Font.BOLD, 18);
+        JLabel playerLabel = new JLabel(playerId);
+        playerLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        playerLabel.setFont(font);
+
+
+        GridBagConstraints shelfConstraints = new GridBagConstraints(
+                -1, -1,
+                1, 1,
+                1, 1,
+                GridBagConstraints.NORTHWEST,
+                GridBagConstraints.BOTH,
+                new Insets(0, 0, 0, 0),
+                0, 0
+        );
+
+        this.opponentsShelvesContainer.add(shelfContainer, shelfConstraints);
+        this.opponentLabelsContainer.add(playerLabel, shelfConstraints);
+        this.opponentLabels.put(playerId, playerLabel);
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        double ratio = 1.765;
+        double windowRatio = (double) this.getWidth() / this.getHeight();
+        int width;
+        int height;
+        if (windowRatio > ratio) {
+            width = this.getWidth();
+            height = (int) (this.getWidth() / ratio);
+        } else {
+            height = this.getHeight();
+            width = (int) (this.getHeight() * ratio);
+        }
+        g.drawImage(this.parquet, 0, 0, width, height, null);
     }
 
 }

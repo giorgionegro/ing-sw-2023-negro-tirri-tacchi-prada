@@ -34,23 +34,27 @@ public class PlayerShelfPanel extends JPanel implements PlayerShelfGraphics, Act
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if(e.getSource()==orderingTable){
+        if (e.getSource() == orderingTable) {
             int n_picked = Integer.parseInt(e.getActionCommand());
-            for(int i = 0; i<columnSelectorList.size();i++){
+            for (int i = 0; i < columnSelectorList.size(); i++) {
                 columnSelectorList.get(i).setEnabled(countEmpty(i) >= n_picked);
             }
-        }else{
-            orderingTable.actionPerformed(new ActionEvent(this,0,e.getActionCommand()));
         }
     }
 
-    public int countEmpty(int column){
+    private int countEmpty(int column){
         int count = 0;
         for (Tile[] tiles : shelfState) {
             if (tiles[column] == Tile.EMPTY)
                 count++;
         }
         return count;
+    }
+
+    public void enableButtons(boolean enable){
+        for(JButton b : columnSelectorList){
+            b.setVisible(enable);
+        }
     }
 
     @Override
@@ -63,8 +67,8 @@ public class PlayerShelfPanel extends JPanel implements PlayerShelfGraphics, Act
     public void setIsFirstPlayer(boolean isFirstPlayer){
         this.isFirstPlayer = isFirstPlayer;
     }
-    /* ------------------ GRAPHIC LAYOUT ---------------------*/
 
+    /* ------------------ GRAPHIC LAYOUT ---------------------*/
     private final Image foreground = new ImageIcon(Objects.requireNonNull(getClass().getResource("/BookshelfForeground.png"))).getImage();
     private final Image background = new ImageIcon(Objects.requireNonNull(getClass().getResource("/BookshelfBackground.png"))).getImage();
     private final Image firstPlayerOverlay = new ImageIcon(Objects.requireNonNull(getClass().getResource("/FirstPlayerOverlay.png"))).getImage();
@@ -105,7 +109,7 @@ public class PlayerShelfPanel extends JPanel implements PlayerShelfGraphics, Act
             buttonsConstraints.gridx = 1+i;
 
             ColumnChooserButton insert = new ColumnChooserButton(i);
-            insert.addActionListener(this);
+            insert.addActionListener(e -> orderingTable.actionPerformed(new ActionEvent(this, 0, e.getActionCommand())));
 
             columnSelectorList.add(insert);
             this.add(insert,buttonsConstraints);
