@@ -108,7 +108,6 @@ class GoalsEvaluatorsTest {
      * <ul>
      *     <li>{@link Standard4Groups4Tiles#evaluate(Tile[][])}
      *     <li>{@link Standard4Groups4Tiles#getDescription()}
-     *     <li>{@link Standard4Groups4Tiles)} default constructor
      *     </ul>
      * <p>
      *         Reasons:
@@ -135,7 +134,6 @@ class GoalsEvaluatorsTest {
      * <ul>
      *     <li>{@link Standard5TileDiagonal#evaluate(Tile[][])}
      *     <li>{@link Standard5TileDiagonal#getDescription()}
-     *     <li>{@link Standard5TileDiagonal)} default constructor
      *     </ul>
      * <p>
      *         Reasons:
@@ -165,7 +163,6 @@ class GoalsEvaluatorsTest {
      * <ul>
      *     <li>{@link Standard8TilesSameType#evaluate(Tile[][])}
      *     <li>{@link Standard8TilesSameType#getDescription()}
-     *     <li>{@link Standard8TilesSameType)} default constructor
      *     </ul>
      */
     @Test
@@ -184,7 +181,6 @@ class GoalsEvaluatorsTest {
      * <ul>
      *     <li>{@link StandardCorners#evaluate(Tile[][])}
      *     <li>{@link StandardCorners#getDescription()}
-     *     <li>{@link StandardCorners)} default constructor
      * </ul>
      */
     @Test
@@ -207,7 +203,6 @@ class GoalsEvaluatorsTest {
      * <ul>
      *     <li>{@link StandardSixGroup2Tiles#evaluate(Tile[][])}
      *     <li>{@link StandardSixGroup2Tiles#getDescription()}
-     *     <li>{@link StandardSixGroup2Tiles)} default constructor
      * </ul>
      */
     @Test
@@ -229,7 +224,6 @@ class GoalsEvaluatorsTest {
      * <ul>
      *     <li>{@link StandardTwoSquares#evaluate(Tile[][])}
      *     <li>{@link StandardTwoSquares#getDescription()}
-     *     <li>{@link StandardTwoSquares)} default constructor
      * </ul>
      */
     @Test
@@ -253,7 +247,6 @@ class GoalsEvaluatorsTest {
      * <ul>
      *     <li>{@link StandardStairs#evaluate(Tile[][])}
      *     <li>{@link StandardStairs#getDescription()}
-     *     <li>{@link StandardStairs)} default constructor
      * </ul>
      */
     @Test
@@ -278,7 +271,6 @@ class GoalsEvaluatorsTest {
      * <ul>
      *     <li>{@link StandardXOfDifferentTiles#evaluate(Tile[][])}
      *     <li>{@link StandardXOfDifferentTiles#getDescription()}
-     *     <li>{@link StandardXOfDifferentTiles)} default constructor
      * </ul>
      */
     @Test
@@ -296,7 +288,7 @@ class GoalsEvaluatorsTest {
     }
 
     /**
-     * Method under test {@link Standard4Groups4Tiles()}
+     * Method under test {@link Standard4Groups4Tiles#getId()}
      */
     @Test
     void testConstructor() {

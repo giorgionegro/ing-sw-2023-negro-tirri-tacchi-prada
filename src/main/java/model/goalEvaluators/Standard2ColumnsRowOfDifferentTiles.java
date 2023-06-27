@@ -74,7 +74,6 @@ public class Standard2ColumnsRowOfDifferentTiles extends GoalEvaluator {
      * @param playerShelf the player's shelf to evaluate
      * @return true if the player has at least 2 columns , or 2 rows, of 6 different tiles
      */
-    // returns true if the player has at least 2 columns of 6 different tiles
     @Override
     public boolean evaluate(Tile[][] playerShelf) {
         int counter = 0;

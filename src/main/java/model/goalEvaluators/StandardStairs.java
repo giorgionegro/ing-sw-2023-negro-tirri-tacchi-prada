@@ -51,7 +51,7 @@ public class StandardStairs extends GoalEvaluator {
     @Override
     public boolean evaluate(Tile[][] playerShelf) {
         int numColumns = playerShelf[0].length;
-        for (int dir = 0; dir < 2; dir++) {
+        for (int dir = 0; dir < 2; dir++) {// dir = 0 -> left to right, dir = 1 -> right to left
             // Check if the first column has at least numTiles tiles
             int counter = this.countTilesInColumn(playerShelf, (dir == 0) ? 0 : numColumns - 1);
             if (counter < numColumns) continue;

@@ -45,6 +45,8 @@ public class GamePanel extends JComponent implements GameGraphics {
     private JLabel errorLabel;
     private ChatPanel chatPanel;
 
+    private final Object errorLock = new Object();
+
     public GamePanel(ActionListener listener) {
         super();
         this.listener = listener;
@@ -369,7 +371,22 @@ public class GamePanel extends JComponent implements GameGraphics {
 
     @Override
     public void updateErrorState(String reportedError) {
-        this.errorLabel.setText(reportedError);
+        synchronized (errorLock) {
+            this.errorLabel.setText(reportedError);
+        }
+        //expire error message after 3 seconds
+        new Thread(() -> {
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            synchronized (errorLock) {
+                this.errorLabel.setText("");
+                this.revalidate();
+                this.repaint();
+            }
+        }).start();
         this.revalidate();
         this.repaint();
     }

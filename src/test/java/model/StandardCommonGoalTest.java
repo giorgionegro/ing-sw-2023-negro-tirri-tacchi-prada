@@ -1,5 +1,6 @@
 package model;
 
+import model.abstractModel.GoalEvaluator;
 import model.goalEvaluators.Standard2ColumnsRowOfDifferentTiles;
 import org.junit.jupiter.api.Test;
 
@@ -7,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class StandardCommonGoalTest {
     /**
-     * Method under test: {@link StandardCommonGoal(int, model.abstractModel.GoalEvaluator)}
+     * Method under test: {@link StandardCommonGoal#StandardCommonGoal(int, model.abstractModel.GoalEvaluator)}
      */
     @Test
     void constructorWorksCorrectly4Players() {
@@ -16,7 +17,7 @@ class StandardCommonGoalTest {
     }
 
     /**
-     * Method under test: {@link StandardCommonGoal(int, model.abstractModel.GoalEvaluator)}
+     * Method under test: {@link StandardCommonGoal#StandardCommonGoal(int, model.abstractModel.GoalEvaluator)}
      */
     @Test
     void constructorThrowsExceptionMoreThan4Players() {

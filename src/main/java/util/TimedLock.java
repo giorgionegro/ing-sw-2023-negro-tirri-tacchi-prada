@@ -51,7 +51,7 @@ public class TimedLock<ValueType>{
     }
 
     /**
-     * This method locks the calling thread, the lock is indefinite if the given timeout value is <=0, otherwise locks for
+     * This method locks the calling thread, the lock is indefinite if the given timeout value is &lt;=0, otherwise locks for
      * the given timeout amount of time
      * @param timeoutMillis the timeout time amount
      * @throws InterruptedException if an error occurred during lock

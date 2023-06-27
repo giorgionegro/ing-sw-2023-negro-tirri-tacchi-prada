@@ -2,6 +2,8 @@ package model;
 
 import model.abstractModel.PersonalGoal;
 import model.abstractModel.Player;
+import model.abstractModel.PlayerChat;
+import model.abstractModel.Shelf;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
@@ -13,7 +15,7 @@ class StandardPlayerTest {
 
 
     /**
-     * Method under test: {@link StandardPlayer(model.abstractModel.Shelf, List, model.abstractModel.PlayerChat)}
+     * Method under test: {@link StandardPlayer#StandardPlayer(model.abstractModel.Shelf, List, model.abstractModel.PlayerChat)}
      */
     @Test
     void testPlayerCreation() {
