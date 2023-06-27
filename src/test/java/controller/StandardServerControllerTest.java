@@ -8,7 +8,6 @@ import model.exceptions.GameAlreadyExistsException;
 import model.exceptions.GameNotExistsException;
 import modelView.*;
 import modelView.NewGameInfo;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.rmi.RemoteException;
@@ -208,50 +207,7 @@ class StandardServerControllerTest {
     void testJoinGame() throws RemoteException {
         // Arrange
         StandardServerController standardServerController = new StandardServerController();
-        ClientInterface client = new ClientInterface() {
-            @Override
-            public void bind(ServerInterface server) throws RemoteException {
-            }
-
-            @Override
-            public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
-
-            }
-
-            @Override
-            public void update(GameInfo o, Game.Event evt) throws RemoteException {
-            }
-
-            @Override
-            public void update(LivingRoomInfo o, LivingRoom.Event evt) throws RemoteException {
-
-            }
-
-            @Override
-            public void update(PersonalGoalInfo o, PersonalGoal.Event evt) throws RemoteException {
-
-            }
-
-            @Override
-            public void update(PlayerChatInfo o, PlayerChat.Event evt) throws RemoteException {
-
-            }
-
-            @Override
-            public void update(PlayerInfo o, Player.Event evt) throws RemoteException {
-
-            }
-
-            @Override
-            public void update(ShelfInfo o, Shelf.Event evt) throws RemoteException {
-
-            }
-
-            @Override
-            public void update(UserInfo o, User.Event evt) throws RemoteException {
-
-            }
-        };
+        ClientInterface client = mock(ClientInterface.class);
         LoginInfo info = new LoginInfo("1", "test", 2);
 
         standardServerController.joinGame(client, info);
@@ -542,72 +498,6 @@ class StandardServerControllerTest {
 
     }
 
-    /**
-     * Method under test: {@link StandardServerController#connect(ClientInterface)}
-     * Testing ping failed awareness
-     */
-    @Test
-    @Disabled
-    void testConnectPingFailed() throws RemoteException, InterruptedException {
-        StandardServerController standardServerController = new StandardServerController();
-        final boolean[] pingFailed = {false};
-        ClientInterface client = new ClientInterface() {
-            @Override
-            public void bind(ServerInterface server) throws RemoteException {
-            }
 
-//TODO rifare il test
-//            @Override
-//            public void ping() throws RemoteException {
-//                pingFailed[0] = true;
-//                throw new RemoteException();
-//
-//            }
-
-            @Override
-            public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
-
-            }
-
-            @Override
-            public void update(GameInfo o, Game.Event evt) throws RemoteException {
-            }
-
-            @Override
-            public void update(LivingRoomInfo o, LivingRoom.Event evt) throws RemoteException {
-
-            }
-
-            @Override
-            public void update(PersonalGoalInfo o, PersonalGoal.Event evt) throws RemoteException {
-
-            }
-
-            @Override
-            public void update(PlayerChatInfo o, PlayerChat.Event evt) throws RemoteException {
-
-            }
-
-            @Override
-            public void update(PlayerInfo o, Player.Event evt) throws RemoteException {
-
-            }
-
-            @Override
-            public void update(ShelfInfo o, Shelf.Event evt) throws RemoteException {
-
-            }
-
-            @Override
-            public void update(UserInfo o, User.Event evt) throws RemoteException {
-
-            }
-        };
-        assertDoesNotThrow(() -> standardServerController.connect(client));
-        Thread.sleep(100);
-        assert pingFailed[0];
-
-
-    }
 }
 

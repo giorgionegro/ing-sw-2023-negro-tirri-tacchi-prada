@@ -8,14 +8,41 @@ import java.rmi.registry.Registry;
 import java.util.HashMap;
 import java.util.Map;
 
+import static util.Parser.argumentsParser;
+
+/**
+ * This class is the entry point of the client
+ */
 public class Client {
+    /**
+     * Private constructor to hide the implicit public one
+     */
     private Client() {
     }
+
+    /**
+     * UI type
+     */
     private static final String UI_type = "TUI";
+    /**
+     * Default host ip
+     */
     private static final String DEFAULT_hostIp = "localhost";
+    /**
+     * Default client ip
+     */
     private static final String DEFAULT_clientIp = "localhost";
+    /**
+     * Default RMI host port
+     */
     private static final int DEFAULT_RMI_hostPort = Registry.REGISTRY_PORT;
+    /**
+     * Default SOCKET host port
+     */
     private static final int DEFAULT_SOCKET_hostPort = 10101;
+    /**
+     * This map contains the parameters passed that can be optionally specified
+     */
     private static final Map<String, String> parameters = new HashMap<>() {{
         this.put("-ui", UI_type);
         this.put("-hip", DEFAULT_hostIp);
@@ -24,23 +51,17 @@ public class Client {
         this.put("-sP", String.valueOf(DEFAULT_SOCKET_hostPort));
     }};
 
+    /**
+     * This method is the entry point of the client, it reads the parameters and starts the client
+     *
+     * @param args command line arguments
+     * @throws RemoteException if there are connection problems
+     */
     public static void main(String[] args) throws RemoteException {
-        if (args.length != 0) {
-            for (int i = 0; i < args.length; i++) {
-                if (args[i].startsWith("-")) {
-                    if (i + 1 < args.length && !args[i + 1].startsWith("-")) {
-                        parameters.put(args[i], args[i + 1]);
-                        i++;
-                    } else {
-                        parameters.put(args[i], args[i]);
-                    }
-                } else {
-                    System.err.println("Parameter \"" + args[i] + "\" has no tag");
-                    return;
-                }
-            }
-        }
+        //parse arguments
+        if (argumentsParser(args, parameters)) return;
 
+        //show help if requested
         if (parameters.containsKey("-h")) {
             System.out.println("-ui -> specifies UI type:\n" +
                     "\t(Default = " + UI_type + ")\n" +
@@ -56,6 +77,7 @@ public class Client {
 
         int RMIhostPort;
         int SockethostPort;
+        //check if the arguments are valid
         try {
             RMIhostPort = Integer.parseInt(parameters.get("-rP"));
         } catch (NumberFormatException e) {
@@ -70,7 +92,7 @@ public class Client {
         }
 
         AppGraphics appGraphics;
-
+        //check if the arguments are valid and create the UI accordingly
         switch (parameters.get("-ui")) {
             case "GUI" -> appGraphics = new GUI();
             case "TUI" -> appGraphics = new TUI();
@@ -79,9 +101,11 @@ public class Client {
                 return;
             }
         }
-
+        //set the client ip for RMI
         System.setProperty("java.rmi.server.hostname", parameters.get("-cip"));
-
-        new ViewLogic(appGraphics, parameters.get("-hip"), RMIhostPort, SockethostPort).run();
+        //start the client
+        new ViewLogic(appGraphics, parameters.get("-hip"), RMIhostPort, SockethostPort).start();
     }
+
+
 }

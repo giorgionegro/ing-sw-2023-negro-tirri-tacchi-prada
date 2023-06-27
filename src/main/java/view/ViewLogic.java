@@ -94,7 +94,7 @@ public class ViewLogic implements Remote, ViewCollection, ActionListener {
         this.connected = false;
     }
 
-    public void run(){
+    public void start(){
         this.actionPerformed(new ActionEvent(appGraphics,ROUTE_CONNECT,""));
     }
 
@@ -376,7 +376,7 @@ public class ViewLogic implements Remote, ViewCollection, ActionListener {
             }
             switch (evt) {
                 case ERROR_REPORTED -> gameGraphics.updateErrorState(o.errorMessage());
-                case COMMONGOAL_ACHIEVED -> gameGraphics.updateAchievedCommonGoals(o.achievedCommonGoals());
+                case COMMON_GOAL_ACHIEVED -> gameGraphics.updateAchievedCommonGoals(o.achievedCommonGoals());
             }
         });
     }

@@ -108,13 +108,7 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
             System.err.println("ServerController: Command from unauthenticated client");
         else {
             /* Tries to make client leave a game if it is connected to one*/
-            try {
-                this.leaveGame(client);
-            } catch (RemoteException e) {
-                /* if it is not connected to any game it's not a problem, continue the disconnection */
-                System.out.println("ServerController: Failed to detach client from game, continuing disconnection...");
-            }
-
+            this.leaveGame(client);
             /* Un-authenticate the client and remove user observers */
             User user = this.users.remove(client);
             user.deleteObservers();
@@ -174,7 +168,7 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
      * @throws RemoteException {@inheritDoc}
      */
     @Override
-    public synchronized void leaveGame(ClientInterface client) throws RemoteException {
+    public synchronized void leaveGame(ClientInterface client) {
         /* Check if client has been authenticated */
         if (!this.users.containsKey(client))
             System.err.println("ServerController: Command from unauthenticated client");

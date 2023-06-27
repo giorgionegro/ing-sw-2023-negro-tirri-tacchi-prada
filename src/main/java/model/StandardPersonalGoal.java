@@ -80,6 +80,7 @@ public class StandardPersonalGoal extends PersonalGoal {
     @Override
     public void setAchieved() {
         this.achieved = true;
+        //notify the observers, so that the view can receive the update
         this.setChanged();
         this.notifyObservers(Event.GOAL_ACHIEVED);
     }
@@ -97,9 +98,6 @@ public class StandardPersonalGoal extends PersonalGoal {
     public boolean evaluate(model.Tile[][] playerShelf) {
         if (playerShelf.length < this.row && playerShelf[0].length < this.column) {
             throw new IndexOutOfBoundsException("Shelf not big enough, cannot achieved the goal");
-        }
-        if (playerShelf[this.row][this.column] == Tile.EMPTY) {
-            return false;
         }
         return (this.tile.getColor()).equals(playerShelf[this.row][this.column].getColor());
     }

@@ -106,7 +106,7 @@ public class StandardPlayer extends Player {
     public void addAchievedCommonGoal(String description, Token token) {
         this.achievedCommonGoals.put(description, token);
         this.setChanged();
-        this.notifyObservers(Event.COMMONGOAL_ACHIEVED);
+        this.notifyObservers(Event.COMMON_GOAL_ACHIEVED);
     }
 
     /**

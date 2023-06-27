@@ -74,7 +74,7 @@ public abstract class Game extends Observable<Game.Event>{
     /**
      * This method marks the current turn sequence to be the last one.
      * <p>
-     * If invoked then isLastTurn method will then return {@code true}
+     * If invoked then isLastTurn method will return {@code true}
      */
     public abstract void setLastTurn();
 
