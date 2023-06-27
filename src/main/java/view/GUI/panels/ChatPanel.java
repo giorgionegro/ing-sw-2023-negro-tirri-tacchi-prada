@@ -49,7 +49,7 @@ public class ChatPanel extends JPanel implements PlayerChatGraphics {
     /**
      * This is the button that allows the user to send a message
      */
-    private final JButton Send = new JButton("Send") {
+    private final JButton Send = new JButton("▶") {
         /**
          * This method overrides {@link  JComponent#paintComponent(Graphics)} drawing an image as background
          * @param g the <code>Graphics</code> object to protect
@@ -157,9 +157,10 @@ public class ChatPanel extends JPanel implements PlayerChatGraphics {
 
         constraints.gridwidth = 1;
         constraints.gridheight = 2;
-        constraints.weighty = 1;
+        constraints.weighty = 0;
         constraints.gridx++;
         constraints.gridy++;
+        constraints.ipady=60;
         this.Send.setPreferredSize(zeroDimension);
         this.Send.setBackground(new Color(0, 0, 0, 0));
         this.add(this.Send, constraints);
@@ -168,6 +169,7 @@ public class ChatPanel extends JPanel implements PlayerChatGraphics {
         constraints.weightx = 6;
         constraints.gridx--;
         constraints.gridy++;
+        constraints.ipady = 30;
         this.mex.setPreferredSize(zeroDimension);
         this.add(this.mex, constraints);
 

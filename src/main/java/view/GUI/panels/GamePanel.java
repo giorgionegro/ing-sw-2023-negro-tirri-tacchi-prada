@@ -152,14 +152,17 @@ public class GamePanel extends JComponent implements GameGraphics {
         this.interactionContainer.setLayout(new GridBagLayout());
 
 
-        Font font = new Font("Century", Font.BOLD, 20);
+        Font font = new Font("Century", Font.BOLD, 15);
 
         this.playerLabel.setFont(font);
         this.playerLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        this.playerLabel.setPreferredSize(new Dimension(0,0));
         this.errorLabel.setFont(font);
         this.errorLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        this.errorLabel.setPreferredSize(new Dimension(0,0));
         this.waitingLabel.setFont(font);
         this.waitingLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        this.waitingLabel.setPreferredSize(new Dimension(0,0));
     }
 
     /**
@@ -582,10 +585,11 @@ public class GamePanel extends JComponent implements GameGraphics {
         shelfContainer.setLayout(new AspectRatioLayout((float) 1218 / 1218));
         shelfContainer.add(shelfPanel);
 
-        Font font = new Font("Century", Font.BOLD, 18);
+        Font font = new Font("Century", Font.BOLD, 15);
         JLabel playerLabel = new JLabel(playerId);
         playerLabel.setHorizontalAlignment(SwingConstants.CENTER);
         playerLabel.setFont(font);
+        playerLabel.setPreferredSize(new Dimension(0,0));
 
 
         GridBagConstraints shelfConstraints = new GridBagConstraints(

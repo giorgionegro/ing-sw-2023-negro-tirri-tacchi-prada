@@ -54,11 +54,6 @@ public class JoinGamePanel extends JPanel {
      */
     private final Image buttonBackground = new ImageIcon(Objects.requireNonNull(getClass().getResource("/img.png"))).getImage();
     /**
-     *  This is the main font used in this panel
-     */
-    private final Font textFont = new Font("Century", Font.BOLD, 24);
-
-    /**
      * This is the button that allows the user to play a game
      */
     private final JButton playButton = new JButton() {
@@ -170,6 +165,7 @@ public class JoinGamePanel extends JPanel {
      * The positions and dimensions of components within the grid are set.
      */
     private void initializeContents(){
+        Font textFont = new Font("Century", Font.BOLD, 20);
         GridBagConstraints constraints = new GridBagConstraints(
                 0,0,
                 1,1,

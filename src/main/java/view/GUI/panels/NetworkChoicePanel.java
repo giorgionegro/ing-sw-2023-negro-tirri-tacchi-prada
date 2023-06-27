@@ -143,7 +143,7 @@ public class NetworkChoicePanel extends JPanel {
      * The positions and dimensions of components within the grid are set.
      */
     private void initializeContents(){
-        Font textFont = new Font("Century", Font.BOLD, 24);
+        Font textFont = new Font("Century", Font.BOLD, 20);
 
         Dimension zeroDimension = new Dimension(0,0);
 

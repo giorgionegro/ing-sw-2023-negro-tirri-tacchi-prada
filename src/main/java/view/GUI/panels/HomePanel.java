@@ -62,11 +62,6 @@ public class HomePanel extends JPanel {
      */
     private final Image buttonBackground = new ImageIcon(Objects.requireNonNull(getClass().getResource("/img.png"))).getImage();
     /**
-     *  This is the main font used in this panel
-     */
-    private final Font textFont = new Font("Century", Font.BOLD, 24);
-
-    /**
      * This is the label with the written "MY SHELFIE"
      */
     private final JLabel titleLabel = new JLabel() {
@@ -165,6 +160,7 @@ public class HomePanel extends JPanel {
      * The positions and dimensions of components within the grid are set.
      */
     private void initializeContents(){
+        Font textFont = new Font("Century", Font.BOLD, 20);
         final Dimension zeroDimension = new Dimension(0,0);
         GridBagConstraints constraints = new GridBagConstraints(
                 0,0,

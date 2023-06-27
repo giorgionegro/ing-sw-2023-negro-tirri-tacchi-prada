@@ -188,7 +188,6 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
      *
      * @param client   The client asking to create the game
      * @param gameInfo The new-game info
-     * @throws RemoteException {@inheritDoc}
      */
     @Override
     public synchronized void createGame(ClientInterface client, NewGameInfo gameInfo) {
