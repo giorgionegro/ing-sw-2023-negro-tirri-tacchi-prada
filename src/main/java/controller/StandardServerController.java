@@ -165,7 +165,6 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
      * {@inheritDoc}
      *
      * @param client The client asking to leave
-     * @throws RemoteException {@inheritDoc}
      */
     @Override
     public synchronized void leaveGame(ClientInterface client) {

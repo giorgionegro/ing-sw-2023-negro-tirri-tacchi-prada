@@ -17,6 +17,7 @@ class StandardShelfTest {
      *     <li>{@link StandardShelf#getTiles()}
      *     <li>{@link StandardShelf#getInfo(String)}
      *     <li>{@link StandardShelf}
+     * </ul>
      */
     @Test
     void shelfTest() {
