@@ -191,7 +191,7 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
      * @throws RemoteException {@inheritDoc}
      */
     @Override
-    public synchronized void createGame(ClientInterface client, NewGameInfo gameInfo) throws RemoteException {
+    public synchronized void createGame(ClientInterface client, NewGameInfo gameInfo) {
         /* Check if client has been authenticated */
         if (!this.users.containsKey(client))
             System.err.println("ServerController: Command from unauthenticated client");
