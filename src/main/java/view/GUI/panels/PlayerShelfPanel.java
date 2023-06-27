@@ -14,33 +14,42 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * This class extends JPanel and represents a graphical component that shows the player shelf
+ */
 public class PlayerShelfPanel extends JPanel implements PlayerShelfGraphics, ActionListener {
     /**
-     * Matrix of tiles which contains the current shelf state of the player
+     * Matrix of tiles that represents the player's shelf
      */
     private Tile[][] shelfState = new Tile[6][5];
     /**
-     * List of buttons that are used to insert the tiles inside the shelf
+     * List of column selector buttons
      */
     private final List<JButton> columnSelectorList = new ArrayList<>();
-
+    /**
+     * Boolean that represents if the player is the first player
+     */
     private boolean isFirstPlayer;
 
-    public static int UPDATE_CHOICES = 0;
+    /**
+     * Update choices event code
+     */
+    public static final int UPDATE_CHOICES = 0;
 
-    /** Construct an {@link PlayerShelfPanel} instance that uses the given {@link ActionListener} as listener for buttons events
-     * @param orderingTable the ActionListener //TODO CHIEDERE
+    /** Construct an {@link PlayerShelfPanel} instance that uses the given {@link ActionListener} as listener for the column buttons
+     * @param orderingTable ActionListener used to send column selector events
      */
     public PlayerShelfPanel(ActionListener orderingTable) {
+        super();
         this.setOpaque(false);
         this.setLayout(new GridBagLayout());
 
-        for(Tile[] r : shelfState)
-            Arrays.fill(r,Tile.EMPTY);
+        for (Tile[] r : this.shelfState)
+            Arrays.fill(r, Tile.EMPTY);
 
-        initializeLayout(orderingTable);
+        this.initializeLayout(orderingTable);
 
-        isFirstPlayer = false;
+        this.isFirstPlayer = false;
     }
 
     /**{@inheritDoc}
@@ -50,8 +59,8 @@ public class PlayerShelfPanel extends JPanel implements PlayerShelfGraphics, Act
     public void actionPerformed(ActionEvent e) {
         if(e.getID() == UPDATE_CHOICES) {
             int n_picked = Integer.parseInt(e.getActionCommand());
-            for (int i = 0; i < columnSelectorList.size(); i++) {
-                columnSelectorList.get(i).setEnabled(countEmpty(i) >= n_picked);
+            for (int i = 0; i < this.columnSelectorList.size(); i++) {
+                this.columnSelectorList.get(i).setEnabled(this.countEmpty(i) >= n_picked);
             }
         }
     }
@@ -63,7 +72,7 @@ public class PlayerShelfPanel extends JPanel implements PlayerShelfGraphics, Act
      */
     private int countEmpty(int column){
         int count = 0;
-        for (Tile[] tiles : shelfState) {
+        for (Tile[] tiles : this.shelfState) {
             if (tiles[column] == Tile.EMPTY)
                 count++;
         }
@@ -76,7 +85,7 @@ public class PlayerShelfPanel extends JPanel implements PlayerShelfGraphics, Act
      * @param enable if enable or not the buttons
      */
     public void enableButtons(boolean enable){
-        for(JButton b : columnSelectorList){
+        for(JButton b : this.columnSelectorList){
             b.setVisible(enable);
         }
     }
@@ -87,7 +96,7 @@ public class PlayerShelfPanel extends JPanel implements PlayerShelfGraphics, Act
      */
     @Override
     public void updatePlayerShelfGraphics(String playerId, Tile[][] shelf) {
-        shelfState = shelf;
+        this.shelfState = shelf;
         this.revalidate();
         this.repaint();
     }
@@ -105,15 +114,15 @@ public class PlayerShelfPanel extends JPanel implements PlayerShelfGraphics, Act
     /**
      * This is the background image of this component, it is used into {@link #paintComponent(Graphics)}
      **/
-    private final Image foreground = new ImageIcon(Objects.requireNonNull(getClass().getResource("/BookshelfForeground.png"))).getImage();
+    private final Image foreground = new ImageIcon(Objects.requireNonNull(this.getClass().getResource("/BookshelfForeground.png"))).getImage();
     /**
      * This is the background image of this component, it is used into {@link #paintComponent(Graphics)}
      **/
-    private final Image background = new ImageIcon(Objects.requireNonNull(getClass().getResource("/BookshelfBackground.png"))).getImage();
+    private final Image background = new ImageIcon(Objects.requireNonNull(this.getClass().getResource("/BookshelfBackground.png"))).getImage();
     /**
      * This is the background image of this component, it is used into {@link #paintComponent(Graphics)}
      **/
-    private final Image firstPlayerOverlay = new ImageIcon(Objects.requireNonNull(getClass().getResource("/FirstPlayerOverlay.png"))).getImage();
+    private final Image firstPlayerOverlay = new ImageIcon(Objects.requireNonNull(this.getClass().getResource("/FirstPlayerOverlay.png"))).getImage();
 
     /**
      This method initializes the layout and the contents of the panel;
@@ -157,7 +166,7 @@ public class PlayerShelfPanel extends JPanel implements PlayerShelfGraphics, Act
 
             ColumnChooserButton insert = new ColumnChooserButton(i);
             insert.addActionListener(orderingTable);
-            columnSelectorList.add(insert);
+            this.columnSelectorList.add(insert);
             this.add(insert,buttonsConstraints);
         }
 
@@ -185,7 +194,7 @@ public class PlayerShelfPanel extends JPanel implements PlayerShelfGraphics, Act
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        double ratio = (double)getWidth()/foreground.getWidth(null);
+        double ratio = (double) this.getWidth()/ this.foreground.getWidth(null);
         int buttonPadding = (int)Math.round(171*ratio);
         int topPadding = (int)Math.round(79*ratio) + buttonPadding;
         int leftPadding = (int)Math.round(144*ratio);
@@ -196,14 +205,14 @@ public class PlayerShelfPanel extends JPanel implements PlayerShelfGraphics, Act
         int horizontalSkip = size + vHorizontal;
         int verticalSkip = size + vVertical;
 
-        g.drawImage(background,0,buttonPadding,getWidth(),getHeight()-buttonPadding,null);
+        g.drawImage(this.background,0,buttonPadding, this.getWidth(), this.getHeight()-buttonPadding,null);
 
         int y = topPadding;
-        for (Tile[] tiles : shelfState) {
+        for (Tile[] tiles : this.shelfState) {
             int x = leftPadding;
-            for (int j = 0; j < shelfState[0].length; j++) {
+            for (int j = 0; j < this.shelfState[0].length; j++) {
                 if (tiles[j] != Tile.EMPTY) {
-                    Image tileImage = new ImageIcon(Objects.requireNonNull(getClass().getResource("/Tile/" + tiles[j].name() + ".png"))).getImage();
+                    Image tileImage = new ImageIcon(Objects.requireNonNull(this.getClass().getResource("/Tile/" + tiles[j].name() + ".png"))).getImage();
                     g.drawImage(tileImage, x, y, size, size, null);
                 }
                 x += horizontalSkip;
@@ -211,10 +220,10 @@ public class PlayerShelfPanel extends JPanel implements PlayerShelfGraphics, Act
             y += verticalSkip;
         }
 
-        g.drawImage(foreground,0,buttonPadding,getWidth(),getHeight()-buttonPadding,null);
+        g.drawImage(this.foreground,0,buttonPadding, this.getWidth(), this.getHeight()-buttonPadding,null);
 
-        if(isFirstPlayer){
-            g.drawImage(firstPlayerOverlay,0,buttonPadding,getWidth(),getHeight()-buttonPadding,null);
+        if(this.isFirstPlayer){
+            g.drawImage(this.firstPlayerOverlay,0,buttonPadding, this.getWidth(), this.getHeight()-buttonPadding,null);
         }
     }
 }

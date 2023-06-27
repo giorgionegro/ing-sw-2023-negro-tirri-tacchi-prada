@@ -12,12 +12,12 @@ import java.awt.event.ActionListener;
 import java.util.Objects;
 
 /**
- * This class extends JPanel and represents a graphical component that shows the livingroom board
+ * This class extends JPanel and represents a graphical component that shows the living room board
  */
 @SuppressWarnings("DuplicatedCode")
 public class LivingRoomPanel extends JPanel implements LivingRoomGraphics {
     /**
-     * TODO
+     * Action listener for the buttons of the living room
      */
     private final ActionListener orderingTable;
     /**
@@ -28,53 +28,7 @@ public class LivingRoomPanel extends JPanel implements LivingRoomGraphics {
      * This is the background image of this component, it is used into {@link #paintComponent(Graphics)}
      **/
     private final Image endGameToken = new ImageIcon(Objects.requireNonNull(this.getClass().getResource("/Token/" + Token.TOKEN_GAME_END.name() + ".png"))).getImage();
-    private final GridBagConstraints topSpacerConstraints = new GridBagConstraints(
-            0, 0,
-            11, 1,
-            1, 134,
-            GridBagConstraints.NORTHWEST,
-            GridBagConstraints.BOTH,
-            new Insets(0, 0, 0, 0),
-            0, 0
-    );
-    private final GridBagConstraints leftSpacerConstraints = new GridBagConstraints(
-            0, 1,
-            1, 9,
-            121, 300,
-            GridBagConstraints.NORTHWEST,
-            GridBagConstraints.BOTH,
-            new Insets(0, 0, 0, 0),
-            0, 0
-    );
-    private final GridBagConstraints rightSpacerConstraints = new GridBagConstraints(
-            10, 1,
-            1, 9,
-            148, 300,
-            GridBagConstraints.NORTHWEST,
-            GridBagConstraints.BOTH,
-            new Insets(0, 0, 0, 0),
-            0, 0
-    );
 
-    /*------------------------ GRAPHIC LAYOUT -------------------*/
-    private final GridBagConstraints bottomSpacerConstraints = new GridBagConstraints(
-            0, 10,
-            11, 1,
-            1, 135,
-            GridBagConstraints.NORTHWEST,
-            GridBagConstraints.BOTH,
-            new Insets(0, 0, 0, 0),
-            0, 0
-    );
-    private final GridBagConstraints tileConstraints = new GridBagConstraints(
-            0, 0,
-            1, 1,
-            298, 298,
-            GridBagConstraints.NORTHWEST,
-            GridBagConstraints.BOTH,
-            new Insets(0, 0, 0, 0),
-            0, 0
-    );
     private boolean isLastTurn;
 
     /** Construct an {@link CreateGamePanel} instance that uses the given {@link ActionListener} as listener for buttons events
@@ -100,22 +54,66 @@ public class LivingRoomPanel extends JPanel implements LivingRoomGraphics {
     @Override
     public void updateBoardGraphics(Tile[][] board) {
         this.removeAll();
-
-        this.add(new Container(), this.topSpacerConstraints);
-        this.add(new Container(), this.bottomSpacerConstraints);
-        this.add(new Container(), this.leftSpacerConstraints);
-        this.add(new Container(), this.rightSpacerConstraints);
+        GridBagConstraints tileConstraints = new GridBagConstraints(
+                0, 0,
+                1, 1,
+                298, 298,
+                GridBagConstraints.NORTHWEST,
+                GridBagConstraints.BOTH,
+                new Insets(0, 0, 0, 0),
+                0, 0
+        );
+        //topSpacerConstraints
+        this.add(new Container(), new GridBagConstraints(
+                0, 0,
+                11, 1,
+                1, 134,
+                GridBagConstraints.NORTHWEST,
+                GridBagConstraints.BOTH,
+                new Insets(0, 0, 0, 0),
+                0, 0
+        ));
+        //bottomSpacerConstraints
+        this.add(new Container(), new GridBagConstraints(
+                0, 10,
+                11, 1,
+                1, 135,
+                GridBagConstraints.NORTHWEST,
+                GridBagConstraints.BOTH,
+                new Insets(0, 0, 0, 0),
+                0, 0
+        ));
+        //leftSpacerConstraints
+        this.add(new Container(), new GridBagConstraints(
+                0, 1,
+                1, 9,
+                121, 300,
+                GridBagConstraints.NORTHWEST,
+                GridBagConstraints.BOTH,
+                new Insets(0, 0, 0, 0),
+                0, 0
+        ));
+        //rightSpacerConstraints
+        this.add(new Container(), new GridBagConstraints(
+                10, 1,
+                1, 9,
+                148, 300,
+                GridBagConstraints.NORTHWEST,
+                GridBagConstraints.BOTH,
+                new Insets(0, 0, 0, 0),
+                0, 0
+        ));
 
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[i].length; j++) {
-                this.tileConstraints.gridx = 1 + j;
-                this.tileConstraints.gridy = 1 + i;
+                tileConstraints.gridx = 1 + j;
+                tileConstraints.gridy = 1 + i;
 
                 Container imagetileContainer = new Container();
                 imagetileContainer.setLayout(new AspectRatioLayout(1));
 
                 if (board[i][j] == Tile.EMPTY) {
-                    imagetileContainer.add(new Container(), this.tileConstraints);
+                    imagetileContainer.add(new Container(), tileConstraints);
                 } else {
                     TileButton tileButton = new TileButton(j, i, board[i][j]);
                     if (this.isTilePickable(i, j, board))
@@ -126,7 +124,7 @@ public class LivingRoomPanel extends JPanel implements LivingRoomGraphics {
                     imagetileContainer.add(tileButton);
                 }
 
-                this.add(imagetileContainer, this.tileConstraints);
+                this.add(imagetileContainer, tileConstraints);
             }
         }
         this.revalidate();
