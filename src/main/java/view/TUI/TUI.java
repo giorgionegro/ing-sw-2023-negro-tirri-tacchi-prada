@@ -220,7 +220,7 @@ public class TUI implements AppGraphics, GameGraphics {
                         this.showHints();
                         this.render();
                     }
-                    //if the command is pick, we handle the pick routine and then we notify the view logic
+                    //if the command is pick, we handle the pick routine, then we notify the view logic
                     case "p" -> this.doMoveRoutine();
                     //same for the place command
                     case "s" -> this.sendMessageRoutine();
@@ -310,7 +310,7 @@ public class TUI implements AppGraphics, GameGraphics {
                 choosing = true;
                 do {
                     try {
-                        this.printCommandLine("Write the column of the shelf (left-starts from 0) (empty to abort)");
+                        this.printCommandLine("Write the column of the shelf (empty to abort)");
                         this.render();
                         sCol = this.scanner.nextLine();
 
@@ -321,7 +321,7 @@ public class TUI implements AppGraphics, GameGraphics {
 
                         var sC = Integer.parseInt(sCol);
                         //we check if there is enough space in the shelf
-                        int emptyTiles = Arrays.stream(this.playerShelves.get(this.playerId)).mapToInt(row -> row[sC] == Tile.EMPTY ? 1 : 0).sum();//TODO test this
+                        int emptyTiles = Arrays.stream(this.playerShelves.get(this.playerId)).mapToInt(row -> row[sC] == Tile.EMPTY ? 1 : 0).sum();
                         if (emptyTiles < tTiles.size()) {
                             this.printCommandLine("Not enough space in the shelf", RED);
                             continue;

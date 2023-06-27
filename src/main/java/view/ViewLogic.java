@@ -302,7 +302,7 @@ public class ViewLogic implements Remote, ViewCollection, ActionListener {
      * @param joinInfo the info to be sent to the server
      */
     // take PLAYERID GAMEID spaced
-    public void joinGame(String joinInfo) {
+    private void joinGame(String joinInfo) {
         //check if the join info is valid
         if(joinInfo==null)
             this.actionPerformed(new ActionEvent(appGraphics,ROUTE_JOIN,"Null info value"));

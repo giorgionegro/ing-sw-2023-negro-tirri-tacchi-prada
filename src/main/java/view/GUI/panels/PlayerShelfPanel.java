@@ -17,21 +17,21 @@ import java.util.Objects;
 public class PlayerShelfPanel extends JPanel implements PlayerShelfGraphics, ActionListener {
     private Tile[][] shelfState = new Tile[6][5];
     private final List<JButton> columnSelectorList = new ArrayList<>();
-    private final ActionListener orderingTable;
     private boolean isFirstPlayer;
+
+    public static int UPDATE_CHOICES = 0;
 
     /** Construct an {@link PlayerShelfPanel} instance that uses the given {@link ActionListener} as listener for buttons events
      * @param orderingTable the ActionListener //TODO CHIEDERE
      */
     public PlayerShelfPanel(ActionListener orderingTable) {
-        this.orderingTable = orderingTable;
         this.setOpaque(false);
         this.setLayout(new GridBagLayout());
 
         for(Tile[] r : shelfState)
             Arrays.fill(r,Tile.EMPTY);
 
-        initializeLayout();
+        initializeLayout(orderingTable);
 
         isFirstPlayer = false;
     }
@@ -41,13 +41,11 @@ public class PlayerShelfPanel extends JPanel implements PlayerShelfGraphics, Act
      */
     @Override
     public void actionPerformed(ActionEvent e) {
-        if(e.getSource()==orderingTable){
+        if(e.getID() == UPDATE_CHOICES) {
             int n_picked = Integer.parseInt(e.getActionCommand());
-            for(int i = 0; i<columnSelectorList.size();i++){
+            for (int i = 0; i < columnSelectorList.size(); i++) {
                 columnSelectorList.get(i).setEnabled(countEmpty(i) >= n_picked);
             }
-        }else{
-            orderingTable.actionPerformed(new ActionEvent(this,0,e.getActionCommand()));
         }
     }
 
@@ -56,13 +54,24 @@ public class PlayerShelfPanel extends JPanel implements PlayerShelfGraphics, Act
      @param column the column index to count the empty tiles in.
      @return the number of empty tiles in the specified column.
      */
-    public int countEmpty(int column){
+    private int countEmpty(int column){
         int count = 0;
         for (Tile[] tiles : shelfState) {
             if (tiles[column] == Tile.EMPTY)
                 count++;
         }
         return count;
+    }
+
+
+    /**
+     * This method enable or disable the column chooser buttons based on parameter value
+     * @param enable if enable or not the buttons
+     */
+    public void enableButtons(boolean enable){
+        for(JButton b : columnSelectorList){
+            b.setVisible(enable);
+        }
     }
 
     /** {@inheritDoc}
@@ -83,6 +92,7 @@ public class PlayerShelfPanel extends JPanel implements PlayerShelfGraphics, Act
     public void setIsFirstPlayer(boolean isFirstPlayer){
         this.isFirstPlayer = isFirstPlayer;
     }
+
     /* ------------------ GRAPHIC LAYOUT ---------------------*/
 
     /**
@@ -102,7 +112,7 @@ public class PlayerShelfPanel extends JPanel implements PlayerShelfGraphics, Act
      This method initializes the layout and the contents of the panel;
      * The positions and dimensions of components within the grid are set.
      */
-    private void initializeLayout(){
+    private void initializeLayout(ActionListener orderingTable){
         GridBagConstraints leftSpacerConstraints = new GridBagConstraints(
                 0,0,
                 1,1,
@@ -139,8 +149,7 @@ public class PlayerShelfPanel extends JPanel implements PlayerShelfGraphics, Act
             buttonsConstraints.gridx = 1+i;
 
             ColumnChooserButton insert = new ColumnChooserButton(i);
-            insert.addActionListener(this);
-
+            insert.addActionListener(orderingTable);
             columnSelectorList.add(insert);
             this.add(insert,buttonsConstraints);
         }

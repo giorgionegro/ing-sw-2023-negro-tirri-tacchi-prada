@@ -18,6 +18,13 @@ public class TilesOrderingPanel extends JPanel implements ActionListener{
     private final List<TileButton> pickedTiles = new ArrayList<>();
     private final ActionListener moveSender;
 
+    public static int SELECT_TILE = 0;
+    public static int RESET = 1;
+
+    private final int SWITCH_ONE_TWO = 3;
+    private final int SWITCH_TWO_THREE = 4;
+    public static int CONFIRM = 2;
+
     /*------------------ GRAPHIC LAYOUT ---------------------*/
     private final Image background = new ImageIcon(Objects.requireNonNull(this.getClass().getResource("/TilesOrderingTableBackground.png"))).getImage();
     private final SwapButton swapButton1 = new SwapButton();
@@ -32,36 +39,36 @@ public class TilesOrderingPanel extends JPanel implements ActionListener{
             0, 0
     );
     private final Dimension zeroDimension = new Dimension(0, 0);
-    private ActionListener columnChooser;
+    private final ActionListener columnChooser;
 
-    public TilesOrderingPanel(ActionListener moveSender) {
+    public TilesOrderingPanel(ActionListener moveSender, ActionListener columnChooser) {
         super();
+        this.columnChooser = columnChooser;
         this.moveSender = moveSender;
 
         this.initializeLayout();
 
-        this.swapButton1.addActionListener(this);
-        this.swapButton2.addActionListener(this);
+        this.swapButton1.addActionListener(e -> actionPerformed(new ActionEvent(swapButton1,SWITCH_ONE_TWO,e.getActionCommand())));
+        this.swapButton2.addActionListener(e -> actionPerformed(new ActionEvent(swapButton2,SWITCH_TWO_THREE,e.getActionCommand())));
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == this.moveSender) {
+        if (e.getID() == RESET) {
             //Resets the selection if there is an update of livingRoom
             for (TileButton t : this.pickedTiles) {
                 t.setSelected(false);
             }
             this.pickedTiles.clear();
-        } else if (e.getSource() == this.swapButton1) {
+        } else if (e.getID() == SWITCH_ONE_TWO) {
             if (this.pickedTiles.size() == 3) {
                 this.pickedTiles.add(this.pickedTiles.remove(1));
             }
-        } else if (e.getSource() == this.swapButton2) {
+        } else if (e.getID() == SWITCH_TWO_THREE) {
             if (this.pickedTiles.size() > 1) {
                 this.pickedTiles.add(0, this.pickedTiles.remove(1));
             }
-        } else if (e.getSource() == this.columnChooser) {
-
+        } else if (e.getID() == CONFIRM) {
             if (this.pickedTiles.size() > 0) {
                 String columnInShelf = e.getActionCommand();
                 StringBuilder picked = new StringBuilder();
@@ -73,9 +80,7 @@ public class TilesOrderingPanel extends JPanel implements ActionListener{
                 String move = picked + "\n" + columnInShelf;
                 this.moveSender.actionPerformed(new ActionEvent(this, ViewLogic.SEND_MOVE, move));
             }
-
-        } else if (e.getSource() instanceof TileButton button) {
-
+        } else if (e.getID() == SELECT_TILE && e.getSource() instanceof TileButton button) {
             boolean selected = button.isSelected();
             if (selected) {
                 button.setSelected(false);
@@ -94,10 +99,6 @@ public class TilesOrderingPanel extends JPanel implements ActionListener{
         this.columnChooser.actionPerformed(new ActionEvent(this, 0, String.valueOf(this.pickedTiles.size())));
     }
 
-    public void setColumnChooser(ActionListener columnChooser) {
-        this.columnChooser = columnChooser;
-    }
-
     private boolean isPickable(TileButton button) {
 
         List<PickedTile> temp = new ArrayList<>();
@@ -105,7 +106,7 @@ public class TilesOrderingPanel extends JPanel implements ActionListener{
             temp.add(new PickedTile(t.getTileX(), t.getTileY()));
         }
         temp.add(new PickedTile(button.getTileX(), button.getTileY()));
-        //TODO implementa algoritmo
+
         return this.pickable(temp);
     }
 
