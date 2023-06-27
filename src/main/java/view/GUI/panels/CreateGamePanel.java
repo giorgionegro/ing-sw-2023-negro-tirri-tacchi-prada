@@ -63,15 +63,6 @@ public class CreateGamePanel extends JPanel {
      *  This is the main font used in this panel
      */
     private final Font textFont = new Font("Century", Font.BOLD, 24);
-    private final GridBagConstraints constraints = new GridBagConstraints(
-            0,0,
-            1,1,
-            1,1,
-            GridBagConstraints.NORTHWEST,
-            GridBagConstraints.BOTH,
-            new Insets(10,5,10,5),
-            0,0
-    );
 
     /**
      * This is the label with the written "PLAYER ID:"
@@ -148,6 +139,15 @@ public class CreateGamePanel extends JPanel {
      *  This method initializes the Borders of the panel
      */
     private void initializeBorders(){
+        GridBagConstraints constraints = new GridBagConstraints(
+                0,0,
+                1,1,
+                1,1,
+                GridBagConstraints.NORTHWEST,
+                GridBagConstraints.BOTH,
+                new Insets(10,5,10,5),
+                0,0
+        );
         constraints.weightx=1;
         constraints.weighty=2;
 
@@ -175,6 +175,16 @@ public class CreateGamePanel extends JPanel {
      * The positions and dimensions of components within the grid are set.
      */
     private void initializeContents(){
+
+        GridBagConstraints constraints = new GridBagConstraints(
+                0,0,
+                1,1,
+                1,1,
+                GridBagConstraints.NORTHWEST,
+                GridBagConstraints.BOTH,
+                new Insets(10,5,10,5),
+                0,0
+        );
 
         final Dimension zeroDimension = new Dimension(0,0);
         constraints.gridy=1;

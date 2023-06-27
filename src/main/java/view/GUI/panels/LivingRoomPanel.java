@@ -11,10 +11,22 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.util.Objects;
 
+/**
+ * This class extends JPanel and represents a graphical component that shows the livingroom board
+ */
 @SuppressWarnings("DuplicatedCode")
 public class LivingRoomPanel extends JPanel implements LivingRoomGraphics {
+    /**
+     * TODO
+     */
     private final ActionListener orderingTable;
+    /**
+     * This is the background image of this component, it is used into {@link #paintComponent(Graphics)}
+     **/
     private final Image background = new ImageIcon(Objects.requireNonNull(this.getClass().getResource("/LivingRoomBackground.png"))).getImage();
+    /**
+     * This is the background image of this component, it is used into {@link #paintComponent(Graphics)}
+     **/
     private final Image endGameToken = new ImageIcon(Objects.requireNonNull(this.getClass().getResource("/Token/" + Token.TOKEN_GAME_END.name() + ".png"))).getImage();
     private final GridBagConstraints topSpacerConstraints = new GridBagConstraints(
             0, 0,
@@ -65,6 +77,9 @@ public class LivingRoomPanel extends JPanel implements LivingRoomGraphics {
     );
     private boolean isLastTurn;
 
+    /** Construct an {@link CreateGamePanel} instance that uses the given {@link ActionListener} as listener for buttons events
+     * @param orderingTable listener the ActionListener to be notified when a button is pressed
+     */
     public LivingRoomPanel(ActionListener orderingTable) {
         super();
         this.orderingTable = orderingTable;
@@ -72,10 +87,16 @@ public class LivingRoomPanel extends JPanel implements LivingRoomGraphics {
         this.setLayout(new GridBagLayout());
     }
 
+    /** This method sets whether it is the last turn.
+     * @param isLastTurn boolean that represents when it's the last turn
+     */
     public void setIsLastTurn(boolean isLastTurn) {
         this.isLastTurn = isLastTurn;
     }
 
+    /**{@inheritDoc}
+     * @param board board of the living room
+     */
     @Override
     public void updateBoardGraphics(Tile[][] board) {
         this.removeAll();
@@ -112,7 +133,7 @@ public class LivingRoomPanel extends JPanel implements LivingRoomGraphics {
         this.repaint();
     }
 
-    /**
+    /**This method checks whether a tile at the specified position on the board is clickable or not.
      * @param row    row of the tile
      * @param column column of the tile
      * @param board  board to check
@@ -131,6 +152,10 @@ public class LivingRoomPanel extends JPanel implements LivingRoomGraphics {
                 || board[row][column + 1] == Tile.EMPTY;
     }
 
+    /**
+     * This method overrides {@link  JComponent#paintComponent(Graphics)} drawing an image as background
+     * @param g the <code>Graphics</code> object to protect
+     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);

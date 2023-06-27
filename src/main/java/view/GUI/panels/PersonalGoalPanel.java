@@ -10,7 +10,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-
+/**
+ * This class extends JPanel and represents a graphical component that represents the player personal goal
+ */
 public class PersonalGoalPanel extends JPanel implements PersonalGoalGraphics {
 
     /**
