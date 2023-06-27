@@ -13,12 +13,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-//TODO
+
 public class PlayerShelfPanel extends JPanel implements PlayerShelfGraphics, ActionListener {
     private Tile[][] shelfState = new Tile[6][5];
     private final List<JButton> columnSelectorList = new ArrayList<>();
     private final ActionListener orderingTable;
     private boolean isFirstPlayer;
+
+    /** Construct an {@link PlayerShelfPanel} instance that uses the given {@link ActionListener} as listener for buttons events
+     * @param orderingTable the ActionListener //TODO CHIEDERE
+     */
     public PlayerShelfPanel(ActionListener orderingTable) {
         this.orderingTable = orderingTable;
         this.setOpaque(false);
@@ -32,6 +36,9 @@ public class PlayerShelfPanel extends JPanel implements PlayerShelfGraphics, Act
         isFirstPlayer = false;
     }
 
+    /**{@inheritDoc}
+     * @param e the event to be processed
+     */
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == orderingTable) {
@@ -42,6 +49,11 @@ public class PlayerShelfPanel extends JPanel implements PlayerShelfGraphics, Act
         }
     }
 
+    /**
+     This method counts the number of empty tiles in a specific column of the shelf state.
+     @param column the column index to count the empty tiles in.
+     @return the number of empty tiles in the specified column.
+     */
     private int countEmpty(int column){
         int count = 0;
         for (Tile[] tiles : shelfState) {
@@ -51,12 +63,21 @@ public class PlayerShelfPanel extends JPanel implements PlayerShelfGraphics, Act
         return count;
     }
 
+
+    /**
+     * This method enable or disable the column chooser buttons based on parameter value
+     * @param enable if enable or not the buttons
+     */
     public void enableButtons(boolean enable){
         for(JButton b : columnSelectorList){
             b.setVisible(enable);
         }
     }
 
+    /** {@inheritDoc}
+     * @param playerId id of the player that owns the shelf
+     * @param shelf    shelf representation of the player
+     */
     @Override
     public void updatePlayerShelfGraphics(String playerId, Tile[][] shelf) {
         shelfState = shelf;
@@ -64,14 +85,33 @@ public class PlayerShelfPanel extends JPanel implements PlayerShelfGraphics, Act
         this.repaint();
     }
 
+    /**
+     * This method sets whether the player is the first player.
+     * @param isFirstPlayer true if the player is the first player, false otherwise.
+     */
     public void setIsFirstPlayer(boolean isFirstPlayer){
         this.isFirstPlayer = isFirstPlayer;
     }
 
     /* ------------------ GRAPHIC LAYOUT ---------------------*/
+
+    /**
+     * This is the background image of this component, it is used into {@link #paintComponent(Graphics)}
+     **/
     private final Image foreground = new ImageIcon(Objects.requireNonNull(getClass().getResource("/BookshelfForeground.png"))).getImage();
+    /**
+     * This is the background image of this component, it is used into {@link #paintComponent(Graphics)}
+     **/
     private final Image background = new ImageIcon(Objects.requireNonNull(getClass().getResource("/BookshelfBackground.png"))).getImage();
+    /**
+     * This is the background image of this component, it is used into {@link #paintComponent(Graphics)}
+     **/
     private final Image firstPlayerOverlay = new ImageIcon(Objects.requireNonNull(getClass().getResource("/FirstPlayerOverlay.png"))).getImage();
+
+    /**
+     This method initializes the layout and the contents of the panel;
+     * The positions and dimensions of components within the grid are set.
+     */
     private void initializeLayout(){
         GridBagConstraints leftSpacerConstraints = new GridBagConstraints(
                 0,0,
@@ -131,6 +171,10 @@ public class PlayerShelfPanel extends JPanel implements PlayerShelfGraphics, Act
         this.add(shelfSpacer,spacerConstraints);
     }
 
+    /**
+     * This method overrides {@link JComponent#paintComponent(Graphics)} drawing the {@link #shelfState} on background
+     * @param g the <code>Graphics</code> object to protect
+     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);

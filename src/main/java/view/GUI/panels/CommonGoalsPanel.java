@@ -9,14 +9,16 @@ import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-
+/**
+ * This class extends JPanel and represents a graphical component that represents the common goals
+ */
 public class CommonGoalsPanel extends JPanel implements CommonGoalGraphics {
     /**
-     * //TODO
+     *  This map contains associations between CommonGoalId and the token state
      */
     private final Map<String, Token> commonGoals = new HashMap<>();
     /**
-     * //TODO
+     *  This map contains associations between CommonGoalId and token that the player has achived
      */
     private final Map<String, Token> achieved = new HashMap<>();
 

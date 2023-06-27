@@ -65,15 +65,7 @@ public class HomePanel extends JPanel {
      *  This is the main font used in this panel
      */
     private final Font textFont = new Font("Century", Font.BOLD, 24);
-    private final GridBagConstraints constraints = new GridBagConstraints(
-            0,0,
-            1,1,
-            1,1,
-            GridBagConstraints.NORTHWEST,
-            GridBagConstraints.BOTH,
-            new Insets(10,5,10,5),
-            0,0
-    );
+
     /**
      * This is the label with the written "MY SHELFIE"
      */
@@ -138,6 +130,15 @@ public class HomePanel extends JPanel {
      *  This method initializes the Borders of the panel
      */
     private void initializeBorders(){
+        GridBagConstraints constraints = new GridBagConstraints(
+                0,0,
+                1,1,
+                1,1,
+                GridBagConstraints.NORTHWEST,
+                GridBagConstraints.BOTH,
+                new Insets(10,5,10,5),
+                0,0
+        );
         constraints.weightx=1;
         constraints.weighty=1;
 
@@ -165,6 +166,15 @@ public class HomePanel extends JPanel {
      */
     private void initializeContents(){
         final Dimension zeroDimension = new Dimension(0,0);
+        GridBagConstraints constraints = new GridBagConstraints(
+                0,0,
+                1,1,
+                1,1,
+                GridBagConstraints.NORTHWEST,
+                GridBagConstraints.BOTH,
+                new Insets(10,5,10,5),
+                0,0
+        );
         constraints.gridy=1;
         constraints.gridx=1;
         constraints.gridwidth=1;

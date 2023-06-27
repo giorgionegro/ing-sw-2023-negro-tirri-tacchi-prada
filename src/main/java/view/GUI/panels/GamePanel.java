@@ -284,6 +284,12 @@ public class GamePanel extends JComponent implements GameGraphics {
         this.commonGoalContainer.add(this.commonGoalsPanel);
     }
 
+    /**
+     * {@inheritDoc}
+     * @param id          the unique id of the common goal
+     * @param description the description of common goal specs
+     * @param tokenState  the current token value of the common goal
+     */
     @Override
     public void updateCommonGoalGraphics(String id, String description, Token tokenState) {
         this.commonGoalsPanel.updateCommonGoalGraphics(id, description, tokenState);
@@ -291,12 +297,24 @@ public class GamePanel extends JComponent implements GameGraphics {
         this.repaint();
     }
 
+    /**
+     * {@inheritDoc}
+     * @param playerId the player ID used in the next game
+     */
     @Override
     public void resetGameGraphics(String playerId) {
         this.resetGameLayout(playerId);
         this.showMatchmakingScene();
     }
 
+    /**
+     * {@inheritDoc}
+     * @param status          status of the game
+     * @param firstTurnPlayer id of the player that has the first turn
+     * @param playerOnTurn    id of the player on turn
+     * @param isLastTurn      true if the game is in the last round of turns
+     * @param pointsValues    points amount of each player
+     */
     @Override
     public void updateGameInfoGraphics(Game.GameStatus status, String firstTurnPlayer, String playerOnTurn, boolean isLastTurn, Map<String, Integer> pointsValues) {
         this.playerLabel.setForeground(this.normal);
@@ -336,6 +354,10 @@ public class GamePanel extends JComponent implements GameGraphics {
         this.repaint();
     }
 
+    /**
+     * {@inheritDoc}
+     * @param board board of the living room
+     */
     @Override
     public void updateBoardGraphics(Tile[][] board) {
         this.livingRoomBoard.updateBoardGraphics(board);
@@ -344,6 +366,12 @@ public class GamePanel extends JComponent implements GameGraphics {
         this.repaint();
     }
 
+    /**
+     * {@inheritDoc}
+     * @param id              the id of this goal, unique among others player personal goal
+     * @param hasBeenAchieved true if the goal is achieved
+     * @param description     matrix representation of the goal
+     */
     @Override
     public void updatePersonalGoalGraphics(int id, boolean hasBeenAchieved, Tile[][] description) {
         this.personalGoalPanel.updatePersonalGoalGraphics(id, hasBeenAchieved, description);
@@ -351,6 +379,9 @@ public class GamePanel extends JComponent implements GameGraphics {
         this.repaint();
     }
 
+    /**{@inheritDoc}
+     * @param chat list of messages sent to a player
+     */
     @Override
     public void updatePlayerChatGraphics(List<? extends Message> chat) {
         this.chatPanel.updatePlayerChatGraphics(chat);
@@ -369,6 +400,9 @@ public class GamePanel extends JComponent implements GameGraphics {
         this.repaint();
     }
 
+    /**{@inheritDoc}
+     * @param reportedError message of en error encountered during gameplay
+     */
     @Override
     public void updateErrorState(String reportedError) {
         synchronized (errorLock) {
@@ -391,6 +425,10 @@ public class GamePanel extends JComponent implements GameGraphics {
         this.repaint();
     }
 
+    /**{@inheritDoc}
+     * @param playerId id of the player that owns the shelf
+     * @param shelf    shelf representation of the player
+     */
     @Override
     public void updatePlayerShelfGraphics(String playerId, Tile[][] shelf) {
         this.chatPanel.addSubject(playerId);

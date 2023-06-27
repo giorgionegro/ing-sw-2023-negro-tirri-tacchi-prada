@@ -4,9 +4,7 @@ package view.graphicInterfaces;
 import java.awt.event.ActionListener;
 
 /**
- * This interface represents the graphics functionalities of an application.
- * It provides methods to set action listeners, retrieve game graphics, show connection status, server interaction messages,
- * join and create errors, show game messages, and exit the application.
+ * This interface represents the graphics functionalities of the application.
  */
 public interface AppGraphics {
     /**
@@ -21,36 +19,39 @@ public interface AppGraphics {
      */
     GameGraphics getGameGraphics();
 
-    /** This method shows an error message
+    /**
+     * This method asks graphics to show the connection page, showing an error if necessary
      * @param error the error message to be displayed
      */
     void showConnection(String error);
 
-    /** This method shows the server interaction message
+    /**
+     * This method asks graphics to show the server-interaction page, showing a message if necessary
      * @param message the message to be displayed
      */
     void showServerInteraction(String message);
 
-    /** This method shows the error message
+    /**
+     This method asks graphics to show the join game page, showing an error if necessary
      * @param error the error message to be displayed
      *
      */
     void showJoin(String error);
 
     /**
-     * TODO
-     * @param error
+     This method asks graphics to show the crete game page, showing an error if necessary
+     * @param error the error message to be displayed
      */
     void showCreate(String error);
 
     /**
-     * TODO
-     * @param message
+     * This method asks graphics to show the Game page, showing a message if necessary
+     * @param message the message to be displayed
      */
     void showGame(String message);
 
     /**
-     *TODO
+     *This method asks graphics to close
      */
     void exit();
 }
