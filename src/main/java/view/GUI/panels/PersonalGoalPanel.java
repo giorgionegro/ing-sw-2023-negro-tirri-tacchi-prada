@@ -72,7 +72,7 @@ public class PersonalGoalPanel extends JPanel implements PersonalGoalGraphics {
         int topPadding = (int)Math.round(86*ratio);
         int leftPadding = (int)Math.round(90*ratio);
         int size = (int) Math.round(102*ratio);
-        int vHorizontal = (int) Math.round(16*ratio);
+        int vHorizontal = (int) Math.round(17*ratio);
         int vVertical = (int) Math.round(12*ratio);
 
         int horizontalSkip = size + vHorizontal;

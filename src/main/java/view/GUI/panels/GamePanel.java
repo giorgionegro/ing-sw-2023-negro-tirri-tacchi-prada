@@ -34,14 +34,16 @@ public class GamePanel extends JComponent implements GameGraphics {
     private final Color accent = Color.red;
     private final Color normal = Color.BLACK;
     private LivingRoomPanel livingRoomBoard;
-    private Map<String, ShelfPanel> opponentShelfBoards;
-    private Map<String, JLabel> opponentLabels;
+    private final Map<String, ShelfPanel> opponentShelfBoards = new HashMap<>();
+    private final Map<String, JLabel> opponentLabels = new HashMap<>();
     private PlayerShelfPanel playerShelf;
     private JLabel playerLabel;
     private TilesOrderingPanel tilesOrderingPanel;
     private PersonalGoalPanel personalGoalPanel;
     private CommonGoalsPanel commonGoalsPanel;
     private String thisPlayerId;
+    private String playerOnTurn;
+    private String firstPlayer;
     private JLabel errorLabel;
     private ChatPanel chatPanel;
 
@@ -190,8 +192,8 @@ public class GamePanel extends JComponent implements GameGraphics {
 
     public void resetGameLayout(String newPlayerId) {
         this.thisPlayerId = newPlayerId;
-        this.opponentShelfBoards = new HashMap<>();
-        this.opponentLabels = new HashMap<>();
+        this.opponentShelfBoards.clear();
+        this.opponentLabels.clear();
         this.initializeGameLayout();
 
         this.livingRoomContainer.removeAll();
@@ -205,24 +207,30 @@ public class GamePanel extends JComponent implements GameGraphics {
         this.commonGoalContainer.removeAll();
         this.interactionContainer.removeAll();
 
-        this.tilesOrderingPanel = new TilesOrderingPanel(e -> listener.actionPerformed(new ActionEvent(this, e.getID(), e.getActionCommand())));
-        //this.tableContainer.add(this.tilesOrderingPanel);
+        this.tilesOrderingPanel = new TilesOrderingPanel(
+                e -> listener.actionPerformed(new ActionEvent(this, e.getID(), e.getActionCommand())),
+                e -> playerShelf.actionPerformed(new ActionEvent(e.getSource(), PlayerShelfPanel.UPDATE_CHOICES, e.getActionCommand()))
+        );
 
-        this.playerShelf = new PlayerShelfPanel(this.tilesOrderingPanel);
-        this.tilesOrderingPanel.setColumnChooser(this.playerShelf);
+        this.playerShelf = new PlayerShelfPanel(
+                e -> tilesOrderingPanel.actionPerformed(new ActionEvent(e.getSource(), TilesOrderingPanel.CONFIRM, e.getActionCommand()))
+        );
+
         this.playerShelfContainer.add(this.playerShelf);
 
-        this.livingRoomBoard = new LivingRoomPanel(this.tilesOrderingPanel);
-        //this.livingRoomContainer.add(this.livingRoomBoard);
+        this.livingRoomBoard = new LivingRoomPanel(
+                e -> tilesOrderingPanel.actionPerformed(new ActionEvent(e.getSource(), TilesOrderingPanel.SELECT_TILE, e.getActionCommand()))
+        );
 
-        this.chatPanel = new ChatPanel(e -> listener.actionPerformed(new ActionEvent(this, e.getID(), e.getActionCommand())), newPlayerId);
+        this.chatPanel = new ChatPanel(
+                e -> listener.actionPerformed(new ActionEvent(this, e.getID(), e.getActionCommand())),
+                newPlayerId
+        );
         this.chatContainer.add(this.chatPanel);
 
         this.personalGoalPanel = new PersonalGoalPanel();
-        //this.personalGoalContainer.add(this.personalGoalPanel);
 
         this.commonGoalsPanel = new CommonGoalsPanel();
-        //this.commonGoalContainer.add(this.commonGoalsPanel);
 
         this.errorLabel = new JLabel("");
         this.errorLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -284,6 +292,27 @@ public class GamePanel extends JComponent implements GameGraphics {
         this.commonGoalContainer.add(this.commonGoalsPanel);
     }
 
+    private void resetFirstPlayer(){
+        this.playerLabel.setForeground(this.normal);
+        for (JLabel label : this.opponentLabels.values())
+            label.setForeground(this.normal);
+
+
+        if (playerOnTurn.equals(this.thisPlayerId)) {
+            this.playerLabel.setForeground(this.accent);
+        } else {
+            if(opponentLabels.containsKey(playerOnTurn))
+                this.opponentLabels.get(playerOnTurn).setForeground(this.accent);
+        }
+    }
+
+    private void resetPlayerOnTurn(){
+        this.playerShelf.setIsFirstPlayer(this.thisPlayerId.equals(firstPlayer));
+        for (String s : this.opponentShelfBoards.keySet()) {
+            this.opponentShelfBoards.get(s).setIsFirstPlayer(s.equals(firstPlayer));
+        }
+    }
+
     /**
      * {@inheritDoc}
      * @param id          the unique id of the common goal
@@ -317,15 +346,6 @@ public class GamePanel extends JComponent implements GameGraphics {
      */
     @Override
     public void updateGameInfoGraphics(Game.GameStatus status, String firstTurnPlayer, String playerOnTurn, boolean isLastTurn, Map<String, Integer> pointsValues) {
-        this.playerLabel.setForeground(this.normal);
-        for (JLabel label : this.opponentLabels.values())
-            label.setForeground(this.normal);
-
-        if (playerOnTurn.equals(this.thisPlayerId))
-            this.playerLabel.setForeground(this.accent);
-        else
-            this.opponentLabels.get(playerOnTurn).setForeground(this.accent);
-
         if (status == Game.GameStatus.ENDED) {
             this.removeAll();
             WinnerGamePanel winnerPanel = new WinnerGamePanel(e -> listener.actionPerformed(new ActionEvent(this, e.getID(), e.getActionCommand())), pointsValues, this.thisPlayerId);
@@ -340,13 +360,13 @@ public class GamePanel extends JComponent implements GameGraphics {
             );
             this.add(winnerPanel, winnerConstraints);
         } else if (status == Game.GameStatus.STARTED) {
-            showGameScene();
-            //TODO sistemare che non mostra il firstplayer dopo una riconnessione, probabilmente perchè arriva prima gameinfo della shelf e quando fa il loop qua sotto il nome del giocatore non c'è
-            this.playerShelf.setIsFirstPlayer(this.thisPlayerId.equals(firstTurnPlayer));
-            for (String s : this.opponentShelfBoards.keySet()) {
-                this.opponentShelfBoards.get(s).setIsFirstPlayer(s.equals(firstTurnPlayer));
-            }
+            this.playerOnTurn = playerOnTurn;
+            this.firstPlayer = firstTurnPlayer;
             livingRoomBoard.setIsLastTurn(isLastTurn);
+            tilesOrderingPanel.actionPerformed(new ActionEvent(this,TilesOrderingPanel.RESET,""));
+            showGameScene();
+            resetPlayerOnTurn();
+            resetFirstPlayer();
         } else if (status == Game.GameStatus.MATCHMAKING || status == Game.GameStatus.SUSPENDED) {
             showMatchmakingScene();
         }
@@ -446,6 +466,10 @@ public class GamePanel extends JComponent implements GameGraphics {
             }
             shelfPanel.updatePlayerShelfGraphics(playerId, shelf);
         }
+
+        resetPlayerOnTurn();
+        resetFirstPlayer();
+
         this.revalidate();
         this.repaint();
     }
