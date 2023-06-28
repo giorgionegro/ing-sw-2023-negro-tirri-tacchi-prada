@@ -6,6 +6,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
+/**
+ * This class tests the TimedLock class
+ */
 class TimedLockTest {
     /**
      * Methods under test:

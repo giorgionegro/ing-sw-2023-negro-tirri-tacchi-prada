@@ -17,15 +17,15 @@ public class HomePanel extends JPanel {
      */
     public HomePanel(ActionListener listener){
 
-        initializeLayout();
+        this.initializeLayout();
 
-        joinButton.addActionListener(e ->
+        this.joinButton.addActionListener(e ->
             listener.actionPerformed(new ActionEvent(this, ViewLogic.ROUTE_JOIN,""))
         );
-        createButton.addActionListener(e ->
+        this.createButton.addActionListener(e ->
             listener.actionPerformed(new ActionEvent(this, ViewLogic.ROUTE_CREATE,""))
         );
-        exitButton.addActionListener(e ->
+        this.exitButton.addActionListener(e ->
             listener.actionPerformed(new ActionEvent(this, ViewLogic.EXIT,""))
         );
     }
@@ -34,10 +34,10 @@ public class HomePanel extends JPanel {
      */
     public void setMessage(String message){
         if(!message.isBlank()){
-            messageLabel.setVisible(true);
-            messageLabel.setText(message);
+            this.messageLabel.setVisible(true);
+            this.messageLabel.setText(message);
         }else{
-            messageLabel.setVisible(false);
+            this.messageLabel.setVisible(false);
         }
         this.revalidate();
         this.repaint();
@@ -48,25 +48,25 @@ public class HomePanel extends JPanel {
     /**
      * This is the background image of this component, it is used into {@link #paintComponent(Graphics)}
      **/
-    private final Image backgroundImage = new ImageIcon (Objects.requireNonNull(getClass().getResource("/desktop.png"))).getImage();
+    private final Image backgroundImage = new ImageIcon (Objects.requireNonNull(this.getClass().getResource("/desktop.png"))).getImage();
     /**
      * This is the background image of this component, it is used into {@link #paintComponent(Graphics)}
      **/
-    private final Image messageBackground = new ImageIcon(Objects.requireNonNull(getClass().getResource("/filterWinnerPanel.png"))).getImage();
+    private final Image messageBackground = new ImageIcon(Objects.requireNonNull(this.getClass().getResource("/BackgroundFilter.png"))).getImage();
     /**
      * This is the background image of this component, it is used into {@link #paintComponent(Graphics)}
      **/
-    private final Image titleImage = new ImageIcon(Objects.requireNonNull(getClass().getResource("/title.png"))).getImage();
+    private final Image titleImage = new ImageIcon(Objects.requireNonNull(this.getClass().getResource("/title.png"))).getImage();
     /**
      *  This is the background image of {@link #joinButton} {@link #exitButton}{@link #createButton}
      */
-    private final Image buttonBackground = new ImageIcon(Objects.requireNonNull(getClass().getResource("/img.png"))).getImage();
+    private final Image buttonBackground = new ImageIcon(Objects.requireNonNull(this.getClass().getResource("/img.png"))).getImage();
     /**
      * This is the label with the written "MY SHELFIE"
      */
     private final JLabel titleLabel = new JLabel() {
         protected void paintComponent(Graphics g) {
-            g.drawImage(titleImage, 0, 0, getWidth(), getHeight(), null);
+            g.drawImage(HomePanel.this.titleImage, 0, 0, this.getWidth(), this.getHeight(), null);
             super.paintComponent(g);
         }
     };
@@ -75,7 +75,7 @@ public class HomePanel extends JPanel {
      */
     private final JButton joinButton = new JButton() {
         protected void paintComponent(Graphics g) {
-            g.drawImage(buttonBackground, 0, 0, getWidth(), getHeight(), null);
+            g.drawImage(HomePanel.this.buttonBackground, 0, 0, this.getWidth(), this.getHeight(), null);
             super.paintComponent(g);
         }
     };
@@ -85,7 +85,7 @@ public class HomePanel extends JPanel {
      */
     private final JButton createButton = new JButton() {
         protected void paintComponent(Graphics g) {
-            g.drawImage(buttonBackground, 0, 0, getWidth(), getHeight(), null);
+            g.drawImage(HomePanel.this.buttonBackground, 0, 0, this.getWidth(), this.getHeight(), null);
             super.paintComponent(g);
         }
     };
@@ -95,7 +95,7 @@ public class HomePanel extends JPanel {
      */
     private final JButton exitButton = new JButton() {
         protected void paintComponent(Graphics g) {
-            g.drawImage(buttonBackground, 0, 0, getWidth(), getHeight(), null);
+            g.drawImage(HomePanel.this.buttonBackground, 0, 0, this.getWidth(), this.getHeight(), null);
             super.paintComponent(g);
         }
     };
@@ -105,7 +105,7 @@ public class HomePanel extends JPanel {
      */
     private final JLabel messageLabel = new JLabel() {
         protected void paintComponent(Graphics g) {
-            g.drawImage(messageBackground, 0, 0, getWidth(), getHeight(), null);
+            g.drawImage(HomePanel.this.messageBackground, 0, 0, this.getWidth(), this.getHeight(), null);
             super.paintComponent(g);
         }
     };
@@ -115,8 +115,8 @@ public class HomePanel extends JPanel {
      */
     private void initializeLayout(){
         this.setLayout(new GridBagLayout());
-        initializeBorders();
-        initializeContents();
+        this.initializeBorders();
+        this.initializeContents();
         this.revalidate();
         this.repaint();
     }
@@ -178,43 +178,43 @@ public class HomePanel extends JPanel {
         constraints.weighty=3;
         constraints.weightx=2;
 
-        titleLabel.setFont(textFont);
-        titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        titleLabel.setPreferredSize(zeroDimension);
-        this.add(titleLabel,constraints);
+        this.titleLabel.setFont(textFont);
+        this.titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        this.titleLabel.setPreferredSize(zeroDimension);
+        this.add(this.titleLabel,constraints);
 
         constraints.weighty=1;
         constraints.gridy++;
-        joinButton.setFont(textFont);
-        joinButton.setText("JOIN GAME");
-        joinButton.setHorizontalAlignment(SwingConstants.CENTER);
-        joinButton.setBackground(new Color(0,0,0,0));
-        joinButton.setPreferredSize(zeroDimension);
-        this.add(joinButton,constraints);
+        this.joinButton.setFont(textFont);
+        this.joinButton.setText("JOIN GAME");
+        this.joinButton.setHorizontalAlignment(SwingConstants.CENTER);
+        this.joinButton.setBackground(new Color(0,0,0,0));
+        this.joinButton.setPreferredSize(zeroDimension);
+        this.add(this.joinButton,constraints);
 
         constraints.gridy++;
-        createButton.setFont(textFont);
-        createButton.setText("CREATE GAME");
-        createButton.setHorizontalAlignment(SwingConstants.CENTER);
-        createButton.setBackground(new Color(0,0,0,0));
-        createButton.setPreferredSize(zeroDimension);
-        this.add(createButton,constraints);
+        this.createButton.setFont(textFont);
+        this.createButton.setText("CREATE GAME");
+        this.createButton.setHorizontalAlignment(SwingConstants.CENTER);
+        this.createButton.setBackground(new Color(0,0,0,0));
+        this.createButton.setPreferredSize(zeroDimension);
+        this.add(this.createButton,constraints);
 
         constraints.gridy++;
-        exitButton.setFont(textFont);
-        exitButton.setText("EXIT");
-        exitButton.setHorizontalAlignment(SwingConstants.CENTER);
-        exitButton.setBackground(new Color(0,0,0,0));
-        exitButton.setPreferredSize(zeroDimension);
-        this.add(exitButton,constraints);
+        this.exitButton.setFont(textFont);
+        this.exitButton.setText("EXIT");
+        this.exitButton.setHorizontalAlignment(SwingConstants.CENTER);
+        this.exitButton.setBackground(new Color(0,0,0,0));
+        this.exitButton.setPreferredSize(zeroDimension);
+        this.add(this.exitButton,constraints);
 
         constraints.gridy++;
-        messageLabel.setFont(textFont);
-        messageLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        messageLabel.setPreferredSize(zeroDimension);
-        messageLabel.setForeground(Color.LIGHT_GRAY);
-        messageLabel.setVisible(false);
-        this.add(messageLabel,constraints);
+        this.messageLabel.setFont(textFont);
+        this.messageLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        this.messageLabel.setPreferredSize(zeroDimension);
+        this.messageLabel.setForeground(Color.LIGHT_GRAY);
+        this.messageLabel.setVisible(false);
+        this.add(this.messageLabel,constraints);
     }
 
     /**
@@ -224,19 +224,19 @@ public class HomePanel extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        if(backgroundImage!=null){
+        if(this.backgroundImage !=null){
             double ratio = 1.765;
-            double windowRatio = (double)getWidth()/getHeight();
+            double windowRatio = (double) this.getWidth()/ this.getHeight();
             int width;
             int height;
             if(windowRatio>ratio) {
-                width = getWidth();
-                height = (int) (getWidth()/ratio);
+                width = this.getWidth();
+                height = (int) (this.getWidth()/ratio);
             }else{
-                height = getHeight();
-                width = (int) (getHeight()*ratio);
+                height = this.getHeight();
+                width = (int) (this.getHeight()*ratio);
             }
-            g.drawImage(backgroundImage, 0, 0, width, height, null);
+            g.drawImage(this.backgroundImage, 0, 0, width, height, null);
 
         }
     }

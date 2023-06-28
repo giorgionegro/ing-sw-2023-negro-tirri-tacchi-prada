@@ -252,6 +252,8 @@ class StandardGameControllerTest {
      *     <li>{@link StandardGameController#leavePlayer(ClientInterface)}</li>
      * </ul>
      * Test rejoin ended game
+     * @throws GameAccessDeniedException if the game is not joinable with the given credentials
+     * @throws InterruptedException if the thread is interrupted
      */
     @Test
     void rejoinEndedGame() throws GameAccessDeniedException, InterruptedException {
@@ -309,6 +311,7 @@ class StandardGameControllerTest {
     /**
      * Method under test: {@link StandardGameController#joinPlayer(ClientInterface, User, String)}
      * Testing joining a game with two client with same id
+     * @throws GameAccessDeniedException if the game is not joinable with the given credentials
      */
 
     @Test
@@ -383,6 +386,7 @@ class StandardGameControllerTest {
     /**
      * Method under test: {@link StandardGameController#leavePlayer(ClientInterface)}
      * Test leave with non-connected client
+     * @throws GameAccessDeniedException if the game is not joinable with the given credentials
      */
     @Test
     void leaveWithNonExistingClient() throws GameAccessDeniedException {
@@ -455,6 +459,7 @@ class StandardGameControllerTest {
      * Methods under test:
      * {@link StandardGameController#joinPlayer(ClientInterface, User, String)}
      * Test {@link util.Observer} disconnection on {@link ClientInterface} throwing {@link RemoteException}
+     * @throws GameAccessDeniedException if the game is not joinable with the given credentials
      */
     @Test
     void observersErrorTest() throws GameAccessDeniedException {
@@ -623,6 +628,8 @@ class StandardGameControllerTest {
     /**
      * {@link StandardGameController#doPlayerMove(ClientInterface, PlayerMoveInfo)}
      * Testing Malformed move
+     * @throws InterruptedException if the thread is interrupted
+     * @throws GameAccessDeniedException if the game is not accessible
      */
     @Test
     void doPlayerMoveMalformedMove() throws InterruptedException, GameAccessDeniedException {
@@ -753,6 +760,8 @@ class StandardGameControllerTest {
     /**
      * {@link StandardGameController#doPlayerMove(ClientInterface, PlayerMoveInfo)}
      * Testing Malformed move
+     * @throws InterruptedException if the thread is interrupted
+     * @throws GameAccessDeniedException if the game is not accessible
      */
     @Test
     void doPlayerMoveColumnOutOfBounds() throws InterruptedException, GameAccessDeniedException {
@@ -883,6 +892,9 @@ class StandardGameControllerTest {
     /**
      * {@link StandardGameController#doPlayerMove(ClientInterface, PlayerMoveInfo)}
      * Testing Malformed move
+     * @throws PlayerNotExistsException if the player does not exist
+     * @throws InterruptedException if the thread is interrupted
+     * @throws GameAccessDeniedException if the game is not accessible
      */
     @Test
     void doPlayerMoveNonDifferentTiles() throws PlayerNotExistsException, InterruptedException, GameAccessDeniedException {

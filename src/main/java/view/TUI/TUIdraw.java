@@ -14,15 +14,33 @@ import java.util.stream.Collectors;
 import static view.TUI.TUI.*;
 import static view.TUI.TUIutils.*;
 
+/**
+ * This class contains all the methods used to draw the TUI
+ */
 final class TUIdraw {
 
     /**
      * width of command line
      */
     static final int commandLineWidth = 75;
-    static final int commandLineX = 1;
-    static final int commandLineY = 41;
+    /**
+     * height of command line
+     */
+
     static final int commandLineHeight = 10;
+    /**
+     * horizontal coordinate of command line
+     */
+    static final int commandLineX = 1;
+    /**
+     * vertical coordinate of command line
+     */
+    static final int commandLineY = 41;
+
+    /**
+     * @hidden
+     * Constructor is private because this class is not meant to be instantiated
+     */
     private TUIdraw() {
     }
 
@@ -240,6 +258,7 @@ final class TUIdraw {
     /**
      * this method draws the player chat
      *
+     * @param thisPlayerId      String representing the id of the player
      * @param currentPlayerChat object containing List of messages of one player
      * @param canvas          2d array of characters representing the pixels
      * @param canvasColor     2d array of integers representing the color of the pixels
@@ -378,11 +397,12 @@ final class TUIdraw {
      * @param currentShelves map that associates each playerId to its shelf
      * @param firstPlayerId  ID of the first player
      * @param thisPlayerId   ID of the player who is
+     * @param playerOnTurn   ID of the player on turn
      * @param pointsValue    map that associates each playerId to its points
      * @param canvas       2d array of characters representing the pixels
      * @param canvasColor  2d array of integers representing the color of the pixels
      */
-    static void drawShelves(Map<String, Tile[][]> currentShelves, String firstPlayerId, String thisPlayerId, String playerOnTurn, Map<String, Integer> pointsValue, char[][] canvas, int[][] canvasColor) {
+    static void drawShelves(Map<String, Tile[][]> currentShelves, String firstPlayerId, String thisPlayerId, String playerOnTurn, Map<String, ? super Integer> pointsValue, char[][] canvas, int[][] canvasColor) {
         final int shelvesX = 43;
 
         final int shelvesY = 3;

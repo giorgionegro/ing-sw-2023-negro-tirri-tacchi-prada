@@ -23,9 +23,9 @@ public class WinnerGamePanel extends JPanel {
      * @param playerId id of the player
      */
     public WinnerGamePanel(ActionListener exitListener, Map<String,Integer> points, String playerId) {
-        initializeLayout(points, playerId);
+        this.initializeLayout(points, playerId);
 
-        exitButton.addActionListener(e ->
+        this.exitButton.addActionListener(e ->
                 exitListener.actionPerformed(new ActionEvent(this,ViewLogic.LEAVE_GAME,""))
         );
     }
@@ -36,22 +36,25 @@ public class WinnerGamePanel extends JPanel {
      * This is the background image of this component, it is used into {@link #paintComponent(Graphics)}
      */
 
-    private final Image createGame = new ImageIcon(Objects.requireNonNull(getClass().getResource("/leaderboardBackground.png"))).getImage();
+    private final Image createGame = new ImageIcon(Objects.requireNonNull(this.getClass().getResource("/leaderboardBackground.png"))).getImage();
     /**
      * This is the background image of components generated into {@link #createPointsContainer(String)} and {@link #createPlayerIdContainer(String, String)}
      */
-    private final Image filter = new ImageIcon(Objects.requireNonNull(getClass().getResource("/filterWinnerPanel.png"))).getImage();
+    private final Image filter = new ImageIcon(Objects.requireNonNull(this.getClass().getResource("/BackgroundFilter.png"))).getImage();
     /**
      * This is the background image of {@link #exitButton}
      */
-    private final Image buttonBackground = new ImageIcon(Objects.requireNonNull(getClass().getResource("/img.png"))).getImage();
+    private final Image buttonBackground = new ImageIcon(Objects.requireNonNull(this.getClass().getResource("/img.png"))).getImage();
     /**
      *This is the main font used in this panel
      */
     private final Font font = new Font("Century", Font.BOLD, 20);
+    /**
+     * This is the exit button
+     */
     private final JButton exitButton = new JButton("EXIT"){
         protected void paintComponent(Graphics g) {
-            g.drawImage(buttonBackground, 0, 0, getWidth(), getHeight(), null);
+            g.drawImage(WinnerGamePanel.this.buttonBackground, 0, 0, this.getWidth(), this.getHeight(), null);
             super.paintComponent(g);
         }
     };
@@ -62,20 +65,20 @@ public class WinnerGamePanel extends JPanel {
      */
     private void initializeLayout(Map<String,Integer> points, String playerId){
         this.setLayout(new GridBagLayout());
-        ImageIcon titleImage = new ImageIcon(Objects.requireNonNull(getClass().getResource("/title.png")));
+        ImageIcon titleImage = new ImageIcon(Objects.requireNonNull(this.getClass().getResource("/title.png")));
 
         //set exitButton options and place it into a fixed-ratio container
-        exitButton.setBackground(new Color(0,0,0,0));
-        exitButton.setFont(font);
+        this.exitButton.setBackground(new Color(0,0,0,0));
+        this.exitButton.setFont(this.font);
         Container exitContainer = new Container();
         exitContainer.setLayout(new AspectRatioLayout((float) 2));
-        exitContainer.add(exitButton);
+        exitContainer.add(this.exitButton);
 
         //create a label that displays title image and place it into a fixed-ratio container
         JLabel title = new JLabel() {
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                g.drawImage(titleImage.getImage(), 0, 0, getWidth(), getHeight(), null);
+                g.drawImage(titleImage.getImage(), 0, 0, this.getWidth(), this.getHeight(), null);
             }
         };
         title.setOpaque(false);
@@ -85,7 +88,7 @@ public class WinnerGamePanel extends JPanel {
         titleContainer.add(title);
 
         //create leaderboard
-        Container leaderboardPanel = createLeaderboardPanel(points, playerId);
+        Container leaderboardPanel = this.createLeaderboardPanel(points, playerId);
 
         GridBagConstraints panelConstraints = new GridBagConstraints(
                 0,0,
@@ -139,9 +142,9 @@ public class WinnerGamePanel extends JPanel {
      * @return final leaderboard
      */
     private Container createLeaderboardPanel(Map<String, Integer> points, String thisPlayerId) {
-        Image firstCup = new ImageIcon(Objects.requireNonNull(getClass().getResource("/firstCup.png"))).getImage();
-        Image secondCup = new ImageIcon(Objects.requireNonNull(getClass().getResource("/secondCup.png"))).getImage();
-        Image thirdCup = new ImageIcon(Objects.requireNonNull(getClass().getResource("/thirdCup.png"))).getImage();
+        Image firstCup = new ImageIcon(Objects.requireNonNull(this.getClass().getResource("/firstCup.png"))).getImage();
+        Image secondCup = new ImageIcon(Objects.requireNonNull(this.getClass().getResource("/secondCup.png"))).getImage();
+        Image thirdCup = new ImageIcon(Objects.requireNonNull(this.getClass().getResource("/thirdCup.png"))).getImage();
 
         GridBagConstraints leaderboardConstraints = new GridBagConstraints(
                 0,0,
@@ -175,11 +178,11 @@ public class WinnerGamePanel extends JPanel {
             for (Map.Entry<String, Integer> player : group.getValue()) {
 
                 // create a cupContainer for this player
-                Container cupContainer = createCupContainer(cupImage);
+                Container cupContainer = this.createCupContainer(cupImage);
                 // create a playerIdContainer for this player
-                JPanel playerIdTextContainer = createPlayerIdContainer(thisPlayerId, player.getKey());
+                JPanel playerIdTextContainer = this.createPlayerIdContainer(thisPlayerId, player.getKey());
                 // create a pointsContainer for this player
-                JPanel playerIdPointsContainer = createPointsContainer(String.valueOf(player.getValue()));
+                JPanel playerIdPointsContainer = this.createPointsContainer(String.valueOf(player.getValue()));
 
                 // add to leaderboardPanel grid the created components
                 leaderboardConstraints.weightx=1;
@@ -208,12 +211,12 @@ public class WinnerGamePanel extends JPanel {
         //Create a label that displays player points ...
         JLabel playerPoints = new JLabel(points,SwingConstants.CENTER);
         playerPoints.setForeground(Color.WHITE);
-        playerPoints.setFont(font);
+        playerPoints.setFont(this.font);
         // ... and place it into a container with colored background
         JPanel playerIdPointsContainer = new JPanel(){
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                g.drawImage(filter, 0, 0, getWidth(), getHeight(), null);
+                g.drawImage(WinnerGamePanel.this.filter, 0, 0, this.getWidth(), this.getHeight(), null);
             }
         };
         playerIdPointsContainer.setOpaque(false);
@@ -231,13 +234,13 @@ public class WinnerGamePanel extends JPanel {
     private JPanel createPlayerIdContainer(String thisPlayerId, String playerId) {
         //Create a label that displays the playerId ....
         JLabel playerIdText = new JLabel(playerId.equals(thisPlayerId) ? "YOU" : playerId, SwingConstants.CENTER);
-        playerIdText.setFont(font);
+        playerIdText.setFont(this.font);
         playerIdText.setForeground(Color.WHITE);
         // ....  and place it into a container with colored background
         JPanel playerIdTextContainer = new JPanel(){
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                g.drawImage(filter, 0, 0, getWidth(), getHeight(), null);
+                g.drawImage(WinnerGamePanel.this.filter, 0, 0, this.getWidth(), this.getHeight(), null);
             }
         };
         playerIdTextContainer.setOpaque(false);
@@ -258,7 +261,7 @@ public class WinnerGamePanel extends JPanel {
             cup = new JLabel() {
                 protected void paintComponent(Graphics g) {
                     super.paintComponent(g);
-                    g.drawImage(cupImage, 0, 0, getWidth(), getHeight(), null);
+                    g.drawImage(cupImage, 0, 0, this.getWidth(), this.getHeight(), null);
                 }
             };
         }
@@ -278,19 +281,19 @@ public class WinnerGamePanel extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        if(createGame!=null){
+        if(this.createGame !=null){
             double ratio = 1.765;
-            double windowRatio = (double)getWidth()/getHeight();
+            double windowRatio = (double) this.getWidth()/ this.getHeight();
             int width;
             int height;
             if(windowRatio>ratio) {
-                width = getWidth();
-                height = (int) (getWidth()/ratio);
+                width = this.getWidth();
+                height = (int) (this.getWidth()/ratio);
             }else{
-                height = getHeight();
-                width = (int) (getHeight()*ratio);
+                height = this.getHeight();
+                width = (int) (this.getHeight()*ratio);
             }
-            g.drawImage(createGame, 0, 0, width, height, null);
+            g.drawImage(this.createGame, 0, 0, width, height, null);
         }
     }
 }

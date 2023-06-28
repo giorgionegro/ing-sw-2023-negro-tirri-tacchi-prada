@@ -69,7 +69,7 @@ public class ClientSocketHandler extends SocketHandler<ClientInterface> implemen
     public synchronized void disconnect(ClientInterface client) throws RemoteException {
         try {
             /* If a receiverLoop is running then stop it */
-            if(receiverLoop!=null)
+            if(this.receiverLoop !=null)
                 this.receiverLoop.interrupt();
             
             /* Calls socketHandler to close socket connection */

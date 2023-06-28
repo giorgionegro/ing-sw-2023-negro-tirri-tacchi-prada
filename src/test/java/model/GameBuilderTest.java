@@ -5,6 +5,9 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+/**
+ * This class tests the game builder
+ */
 public class GameBuilderTest {
     /**
      * Method under test: {@link GameBuilder#build(NewGameInfo)}

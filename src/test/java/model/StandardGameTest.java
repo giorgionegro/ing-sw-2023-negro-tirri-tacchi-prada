@@ -211,6 +211,9 @@ class StandardGameTest {
 
     }
 
+    /**
+     * Method under test: {@link StandardGame#getInfo()}
+     */
     @Test
     void depthSearchTest() {
         Game test = GameBuilder.build(new NewGameInfo("gameId", "STANDARD", 3, System.currentTimeMillis()));
@@ -269,6 +272,9 @@ class StandardGameTest {
     }
 
 
+    /**
+     * Method under test: {@link StandardGame#updatePlayersTurn()}
+     */
     @Test
     void goalTest() {
         Game test = GameBuilder.build(new NewGameInfo("gameId", "STANDARD", 3, System.currentTimeMillis()));

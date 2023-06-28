@@ -293,7 +293,7 @@ public class StandardGame extends Game {
         Map<String, Integer> points = new HashMap<>();
         this.players.forEach((s, player) -> {
             /* If a player is disconnected does not send points */
-            if (availablePlayers.contains(player))
+            if (this.availablePlayers.contains(player))
                 return;
 
             /*  Points earned by each player are the sum of points earned by
@@ -317,7 +317,7 @@ public class StandardGame extends Game {
      * @param personalGoals list of all personal goals
      * @return the amount of points earned by personal goals
      */
-    private int getPersonalGoalPoints(List<PersonalGoal> personalGoals) {
+    private int getPersonalGoalPoints(List<? extends PersonalGoal> personalGoals) {
         int achieved = 0;
         for (PersonalGoal p : personalGoals)
             if (p.isAchieved())
@@ -385,6 +385,12 @@ public class StandardGame extends Game {
 
     /**
      * This function provides support for {@code getShelfTilesGroupPoints()} and provide a recursive depth search on tile groups
+     * @param i         row index
+     * @param j        column index
+     * @param shelf    the shelf to be evaluated
+     * @param checked  the matrix of checked tiles
+     * @param tileColor the color of the tile group
+     * @return the size of the tile group
      */
     private int depthSearch(int i, int j, Tile[][] shelf, boolean[][] checked, String tileColor) {
         if (i < 0 || i >= checked.length || j < 0 || j >= checked[0].length)

@@ -4,8 +4,10 @@ import modelView.UserInfo;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
+/**
+ * This class tests the User class
+ */
 class UserTest {
     /**
      * Method under test: {@link User#User()}

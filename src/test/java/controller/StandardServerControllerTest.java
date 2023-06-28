@@ -7,7 +7,6 @@ import model.abstractModel.*;
 import model.exceptions.GameAlreadyExistsException;
 import model.exceptions.GameNotExistsException;
 import modelView.*;
-import modelView.NewGameInfo;
 import org.junit.jupiter.api.Test;
 
 import java.rmi.RemoteException;
@@ -15,6 +14,9 @@ import java.rmi.RemoteException;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
+/**
+ * This class tests the StandardServerController class
+ */
 class StandardServerControllerTest {
 
 

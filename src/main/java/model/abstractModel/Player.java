@@ -70,7 +70,13 @@ public abstract class Player extends Observable<Player.Event> {
      * This enumeration contains all the events that can be sent to observers
      */
     public enum Event {
+        /**
+         * Event send when a goal is achieved
+         */
         COMMON_GOAL_ACHIEVED,
+        /**
+         * Event send when a error is reported
+         */
         ERROR_REPORTED
     }
 }

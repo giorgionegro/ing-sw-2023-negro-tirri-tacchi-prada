@@ -20,10 +20,10 @@ public class NetworkChoicePanel extends JPanel {
      */
 
     public NetworkChoicePanel(ActionListener listener) {
-        initializeLayout();
-        socketButton.addActionListener(e -> listener.actionPerformed(new ActionEvent(this, ViewLogic.CONNECT,ViewLogic.CONNECT_SOCKET)));
-        RMIButton.addActionListener(e -> listener.actionPerformed(new ActionEvent(this,ViewLogic.CONNECT,ViewLogic.CONNECT_RMI)));
-        exitButton.addActionListener(e -> listener.actionPerformed(new ActionEvent(this,ViewLogic.EXIT,"")));
+        this.initializeLayout();
+        this.socketButton.addActionListener(e -> listener.actionPerformed(new ActionEvent(this, ViewLogic.CONNECT,ViewLogic.CONNECT_SOCKET)));
+        this.RMIButton.addActionListener(e -> listener.actionPerformed(new ActionEvent(this,ViewLogic.CONNECT,ViewLogic.CONNECT_RMI)));
+        this.exitButton.addActionListener(e -> listener.actionPerformed(new ActionEvent(this,ViewLogic.EXIT,"")));
     }
 
     /**This method prints out an error message
@@ -31,10 +31,10 @@ public class NetworkChoicePanel extends JPanel {
      */
     public void setErrorMessage(String errorMessage){
         if(!errorMessage.isBlank()){
-            errorLabel.setVisible(true);
-            errorLabel.setText(errorMessage);
+            this.errorLabel.setVisible(true);
+            this.errorLabel.setText(errorMessage);
         }else{
-            errorLabel.setVisible(false);
+            this.errorLabel.setVisible(false);
         }
         this.revalidate();
         this.repaint();
@@ -44,18 +44,18 @@ public class NetworkChoicePanel extends JPanel {
     /**
      * This is the background image of {@link #errorLabel}
      */
-    private final Image errorBackground = new ImageIcon(Objects.requireNonNull(getClass().getResource("/filterWinnerPanel.png"))).getImage();
+    private final Image errorBackground = new ImageIcon(Objects.requireNonNull(this.getClass().getResource("/BackgroundFilter.png"))).getImage();
     /**
      * This is the background image of {@link #RMIButton} {@link #socketButton} {@link #exitButton}
      */
-    private final Image buttonBackground = new ImageIcon(Objects.requireNonNull(getClass().getResource("/img.png"))).getImage();
+    private final Image buttonBackground = new ImageIcon(Objects.requireNonNull(this.getClass().getResource("/img.png"))).getImage();
 
     /**
      * This is the button that allows the user to choose RMI connection
      */
     private final JButton RMIButton = new JButton("RMI") {
         protected void paintComponent(Graphics g) {
-            g.drawImage(buttonBackground, 0, 0, getWidth(), getHeight(), null);
+            g.drawImage(NetworkChoicePanel.this.buttonBackground, 0, 0, this.getWidth(), this.getHeight(), null);
             super.paintComponent(g);
         }
     };
@@ -65,7 +65,7 @@ public class NetworkChoicePanel extends JPanel {
      */
     private final JButton socketButton = new JButton("SOCKET") {
         protected void paintComponent(Graphics g) {
-            g.drawImage(buttonBackground, 0, 0, getWidth(), getHeight(), null);
+            g.drawImage(NetworkChoicePanel.this.buttonBackground, 0, 0, this.getWidth(), this.getHeight(), null);
             super.paintComponent(g);
         }
     };
@@ -75,7 +75,7 @@ public class NetworkChoicePanel extends JPanel {
      */
     private final JButton exitButton = new JButton("EXIT") {
         protected void paintComponent(Graphics g) {
-            g.drawImage(buttonBackground, 0, 0, getWidth(), getHeight(), null);
+            g.drawImage(NetworkChoicePanel.this.buttonBackground, 0, 0, this.getWidth(), this.getHeight(), null);
             super.paintComponent(g);
         }
     };
@@ -85,7 +85,7 @@ public class NetworkChoicePanel extends JPanel {
      */
     private final JLabel errorLabel = new JLabel() {
         protected void paintComponent(Graphics g) {
-            g.drawImage(errorBackground, 0, 0, getWidth(), getHeight(), null);
+            g.drawImage(NetworkChoicePanel.this.errorBackground, 0, 0, this.getWidth(), this.getHeight(), null);
             super.paintComponent(g);
         }
     };
@@ -96,8 +96,8 @@ public class NetworkChoicePanel extends JPanel {
     private void initializeLayout(){
         this.setBackground(Color.BLACK);
         this.setLayout(new GridBagLayout());
-        initializeBorders();
-        initializeContents();
+        this.initializeBorders();
+        this.initializeContents();
         this.revalidate();
         this.repaint();
     }
@@ -172,32 +172,32 @@ public class NetworkChoicePanel extends JPanel {
         this.add(titleLabel,constraints);
 
         constraints.gridy++;
-        RMIButton.setFont(textFont);
-        RMIButton.setHorizontalAlignment(SwingConstants.CENTER);
-        RMIButton.setBackground(new Color(0,0,0,0));
-        RMIButton.setPreferredSize(zeroDimension);
-        this.add(RMIButton,constraints);
+        this.RMIButton.setFont(textFont);
+        this.RMIButton.setHorizontalAlignment(SwingConstants.CENTER);
+        this.RMIButton.setBackground(new Color(0,0,0,0));
+        this.RMIButton.setPreferredSize(zeroDimension);
+        this.add(this.RMIButton,constraints);
 
         constraints.gridy++;
-        socketButton.setFont(textFont);
-        socketButton.setHorizontalAlignment(SwingConstants.CENTER);
-        socketButton.setBackground(new Color(0,0,0,0));
-        socketButton.setPreferredSize(zeroDimension);
-        this.add(socketButton,constraints);
+        this.socketButton.setFont(textFont);
+        this.socketButton.setHorizontalAlignment(SwingConstants.CENTER);
+        this.socketButton.setBackground(new Color(0,0,0,0));
+        this.socketButton.setPreferredSize(zeroDimension);
+        this.add(this.socketButton,constraints);
 
         constraints.gridy++;
-        exitButton.setFont(textFont);
-        exitButton.setHorizontalAlignment(SwingConstants.CENTER);
-        exitButton.setBackground(new Color(0,0,0,0));
-        exitButton.setPreferredSize(zeroDimension);
-        this.add(exitButton,constraints);
+        this.exitButton.setFont(textFont);
+        this.exitButton.setHorizontalAlignment(SwingConstants.CENTER);
+        this.exitButton.setBackground(new Color(0,0,0,0));
+        this.exitButton.setPreferredSize(zeroDimension);
+        this.add(this.exitButton,constraints);
 
         constraints.gridy++;
-        errorLabel.setFont(textFont);
-        errorLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        errorLabel.setPreferredSize(zeroDimension);
-        errorLabel.setForeground(Color.RED);
-        errorLabel.setVisible(false);
-        this.add(errorLabel,constraints);
+        this.errorLabel.setFont(textFont);
+        this.errorLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        this.errorLabel.setPreferredSize(zeroDimension);
+        this.errorLabel.setForeground(Color.RED);
+        this.errorLabel.setVisible(false);
+        this.add(this.errorLabel,constraints);
     }
 }

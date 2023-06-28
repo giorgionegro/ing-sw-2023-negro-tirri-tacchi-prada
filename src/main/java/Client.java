@@ -13,7 +13,7 @@ import static util.Parser.argumentsParser;
 /**
  * This class is the entry point of the client
  */
-public class Client {
+public final class Client {
     /**
      * Private constructor to hide the implicit public one
      */

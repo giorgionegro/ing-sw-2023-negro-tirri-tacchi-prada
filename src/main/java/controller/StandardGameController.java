@@ -54,7 +54,7 @@ public class StandardGameController implements GameController, LobbyController {
      * Consumer called after the game has been definitely closed. This allows to notify who generated this instance that
      * this game controller is no longer useful
      */
-    private final Consumer<LobbyController> gameClosedCallback;
+    private final Consumer<? super LobbyController> gameClosedCallback;
 
     /**
      * The timed lock used by lobby controller to control leave and join flow
@@ -68,7 +68,7 @@ public class StandardGameController implements GameController, LobbyController {
      * @param game               The game model that the game controller need to use
      * @param gameClosedCallback The gameClosed callback
      */
-    public StandardGameController(Game game, Consumer<LobbyController> gameClosedCallback) {
+    public StandardGameController(Game game, Consumer<? super LobbyController> gameClosedCallback) {
         super();
         this.game = game;
         this.gameClosedCallback = gameClosedCallback;
@@ -136,6 +136,7 @@ public class StandardGameController implements GameController, LobbyController {
      *
      * @param newClient   new player's ClientInterface
      * @param newPlayerId new player's id
+     * @throws PlayerNotExistsException if the player does not exists
      */
     private void addObservers(ClientInterface newClient, String newPlayerId) throws PlayerNotExistsException {
         /* Creates a map to associate each observer to his observable */
@@ -327,6 +328,7 @@ public class StandardGameController implements GameController, LobbyController {
      * Observer to update the Shelf
      *
      * @param newClient client to be added
+     * @param joinedPlayerId id of the player to be added
      * @return Observer of the Shelf to be added
      */
 

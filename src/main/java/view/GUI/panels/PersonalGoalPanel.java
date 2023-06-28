@@ -33,7 +33,7 @@ public class PersonalGoalPanel extends JPanel implements PersonalGoalGraphics {
      */
     public PersonalGoalPanel(){
         this.setOpaque(false);
-        for(Tile[] r : merged)
+        for(Tile[] r : this.merged)
             Arrays.fill(r,Tile.EMPTY);
     }
 
@@ -45,15 +45,15 @@ public class PersonalGoalPanel extends JPanel implements PersonalGoalGraphics {
      */
     @Override
     public void updatePersonalGoalGraphics(int id, boolean hasBeenAchieved, Tile[][] description) {
-        if(!personalGoals.containsKey(id)){
+        if(!this.personalGoals.containsKey(id)){
             for(int i=0;i<description.length; i++)
                 for(int j=0;j<description[i].length;j++) {
                     if (description[i][j] != Tile.EMPTY) {
-                        merged[i][j] = description[i][j];
+                        this.merged[i][j] = description[i][j];
                     }
                 }
         }
-        personalGoals.put(id,hasBeenAchieved);
+        this.personalGoals.put(id,hasBeenAchieved);
         this.revalidate();
         this.repaint();
     }
@@ -66,8 +66,8 @@ public class PersonalGoalPanel extends JPanel implements PersonalGoalGraphics {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        Image personalGoalImage = new ImageIcon(Objects.requireNonNull(getClass().getResource("/PersonalGoalBackground.jpg"))).getImage();
-        double ratio = (double)getWidth()/personalGoalImage.getWidth(null);
+        Image personalGoalImage = new ImageIcon(Objects.requireNonNull(this.getClass().getResource("/PersonalGoalBackground.jpg"))).getImage();
+        double ratio = (double) this.getWidth()/personalGoalImage.getWidth(null);
         int topPadding = (int)Math.round(86*ratio);
         int leftPadding = (int)Math.round(90*ratio);
         int size = (int) Math.round(102*ratio);
@@ -77,14 +77,14 @@ public class PersonalGoalPanel extends JPanel implements PersonalGoalGraphics {
         int horizontalSkip = size + vHorizontal;
         int verticalSkip = size + vVertical;
 
-        g.drawImage(personalGoalImage,0,0,getWidth(),getHeight(),null);
+        g.drawImage(personalGoalImage,0,0, this.getWidth(), this.getHeight(),null);
 
         int y = topPadding;
         for(int i=0;i<6; i++){
             int x = leftPadding;
             for(int j=0;j<5;j++){
-                if(merged[i][j]!=Tile.EMPTY) {
-                    Image tileImage = new ImageIcon(Objects.requireNonNull(getClass().getResource("/Tile/" + merged[i][j].name() + ".png"))).getImage();
+                if(this.merged[i][j]!=Tile.EMPTY) {
+                    Image tileImage = new ImageIcon(Objects.requireNonNull(this.getClass().getResource("/Tile/" + this.merged[i][j].name() + ".png"))).getImage();
                     g.drawImage(tileImage, x+1, y+1, size-1, size-1, null);
                 }
                 x+=horizontalSkip;

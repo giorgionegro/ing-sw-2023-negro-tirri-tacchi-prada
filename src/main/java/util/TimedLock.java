@@ -20,8 +20,8 @@ public class TimedLock<ValueType>{
      * @param defaultValue the value to be stored
      */
     public TimedLock(ValueType defaultValue){
-        unlocked = false;
-        value = defaultValue;
+        this.unlocked = false;
+        this.value = defaultValue;
     }
 
     /**
@@ -29,8 +29,8 @@ public class TimedLock<ValueType>{
      * @param defaultValue the value to be stored
      */
     public synchronized void reset(ValueType defaultValue){
-        unlocked = false;
-        value = defaultValue;
+        this.unlocked = false;
+        this.value = defaultValue;
     }
 
     /**
@@ -39,7 +39,7 @@ public class TimedLock<ValueType>{
      */
     @SuppressWarnings( "BooleanMethodIsAlwaysInverted")
     public synchronized boolean hasBeenUnlocked(){
-        return unlocked;
+        return this.unlocked;
     }
 
     /**
@@ -47,7 +47,7 @@ public class TimedLock<ValueType>{
      * @return {@link #value}
      */
     public synchronized ValueType getValue(){
-        return value;
+        return this.value;
     }
 
     /**

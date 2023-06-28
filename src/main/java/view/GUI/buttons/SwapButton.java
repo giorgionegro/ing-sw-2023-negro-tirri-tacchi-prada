@@ -6,17 +6,31 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.Objects;
 
+/**
+ * This class extends JButton and represents a graphical component that shows the swap button for swapping tiles in {@link view.GUI.panels.TilesOrderingPanel}
+ */
 public class SwapButton extends JButton {
 
-    private final Image swapArrowImage = new ImageIcon(Objects.requireNonNull(getClass().getResource("/SwapTilesIcon.png"))).getImage();
+    /**
+     * This image contains the swap arrow image
+     */
+    private final Image swapArrowImage = new ImageIcon(Objects.requireNonNull(this.getClass().getResource("/SwapTilesIcon.png"))).getImage();
 
-    public SwapButton(){
-        this.setPreferredSize(new Dimension(0,0));
+    /**
+     * Construct an {@link SwapButton} instance
+     */
+    public SwapButton() {
+        super();
+        this.setPreferredSize(new Dimension(0, 0));
     }
 
+    /**
+     * {@inheritDoc}
+     * @param g the <code>Graphics</code> object to protect
+     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        g.drawImage(swapArrowImage, 0, 0, getWidth(), getHeight(), null);
+        g.drawImage(this.swapArrowImage, 0, 0, this.getWidth(), this.getHeight(), null);
     }
 }

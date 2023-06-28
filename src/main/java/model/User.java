@@ -81,9 +81,21 @@ public class User extends Observable<User.Event> {
      * This enumeration contains all the events that can be sent to observers
      */
     public enum Event {
+        /**
+         * This event is sent when an error is reported
+         */
         ERROR_REPORTED,
+        /**
+         * This event is sent when a game is created
+         */
         GAME_CREATED,
+        /**
+         * This event is sent when a game is joined
+         */
         GAME_JOINED,
+        /**
+         * This event is sent when a game is leaved
+         */
         GAME_LEAVED
     }
 
@@ -91,7 +103,13 @@ public class User extends Observable<User.Event> {
      * This enumeration contains all the statuses a user can be
      */
     public enum Status {
+        /**
+         * This status is set when the user is in a game
+         */
         JOINED,
+        /**
+         * This status is set when the user is not in a game
+         */
         NOT_JOINED,
     }
 }

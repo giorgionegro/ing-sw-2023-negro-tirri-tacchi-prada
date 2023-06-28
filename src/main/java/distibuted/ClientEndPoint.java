@@ -24,7 +24,7 @@ public class ClientEndPoint extends UnicastRemoteObject implements ClientInterfa
     /**
      * Consumer called after the client fails to receive a ping
      */
-    private final Consumer<String> disconnectionCallback;
+    private final Consumer<? super String> disconnectionCallback;
 
     /**
      * This class constructor creates an instance of this class, initialized with a given client views and a disconnection consumer
@@ -32,7 +32,7 @@ public class ClientEndPoint extends UnicastRemoteObject implements ClientInterfa
      * @param disconnectionCallback disconnection consumer
      * @throws RemoteException in case of an error occurred exporting this remote object
      */
-    public ClientEndPoint(ViewCollection views, Consumer<String> disconnectionCallback) throws RemoteException {
+    public ClientEndPoint(ViewCollection views, Consumer<? super String> disconnectionCallback) throws RemoteException {
         super();
         this.disconnectionCallback = disconnectionCallback;
         this.views = views;
@@ -40,113 +40,113 @@ public class ClientEndPoint extends UnicastRemoteObject implements ClientInterfa
 
     /**
      * {@inheritDoc}
-     * @param o
-     * @param evt
+     * @param o {@inheritDoc}
+     * @param evt {@inheritDoc}
      */
     @Override
     public void update(LivingRoomInfo o, LivingRoom.Event evt) {
         try {
-            views.update(o,evt);
+            this.views.update(o,evt);
         } catch (RemoteException e) {
-            printError("Update LivingRoomInfo",e.getMessage());
+            this.printError("Update LivingRoomInfo",e.getMessage());
         }
     }
 
     /**
      * {@inheritDoc}
-     * @param o
-     * @param evt
+     * @param o {@inheritDoc}
+     * @param evt {@inheritDoc}
      */
     @Override
     public void update(PersonalGoalInfo o, PersonalGoal.Event evt) {
         try {
-            views.update(o,evt);
+            this.views.update(o,evt);
         } catch (RemoteException e) {
-            printError("Update PersonalGoalInfo",e.getMessage());
+            this.printError("Update PersonalGoalInfo",e.getMessage());
         }
     }
 
     /**
      * {@inheritDoc}
-     * @param o
-     * @param evt
+     * @param o {@inheritDoc}
+     * @param evt {@inheritDoc}
      */
     @Override
     public void update(PlayerChatInfo o, PlayerChat.Event evt) {
         try {
-            views.update(o,evt);
+            this.views.update(o,evt);
         } catch (RemoteException e) {
-            printError("Update PlayerChatInfo",e.getMessage());
+            this.printError("Update PlayerChatInfo",e.getMessage());
         }
     }
 
     /**
      * {@inheritDoc}
-     * @param o
-     * @param evt
+     * @param o {@inheritDoc}
+     * @param evt {@inheritDoc}
      */
     @Override
     public void update(PlayerInfo o, Player.Event evt) {
         try {
-            views.update(o,evt);
+            this.views.update(o,evt);
         } catch (RemoteException e) {
-            printError("Update PlayerInfo",e.getMessage());
+            this.printError("Update PlayerInfo",e.getMessage());
         }
     }
 
     /**
      * {@inheritDoc}
-     * @param o
-     * @param evt
+     * @param o {@inheritDoc}
+     * @param evt {@inheritDoc}
      */
     @Override
     public void update(ShelfInfo o, Shelf.Event evt) {
         try {
-            views.update(o,evt);
+            this.views.update(o,evt);
         } catch (RemoteException e) {
-            printError("Update ShelfInfo",e.getMessage());
+            this.printError("Update ShelfInfo",e.getMessage());
         }
     }
 
     /**
      * {@inheritDoc}
-     * @param o
-     * @param evt
+     * @param o {@inheritDoc}
+     * @param evt {@inheritDoc}
      */
     @Override
     public void update(GameInfo o, Game.Event evt) {
         try {
-            views.update(o,evt);
+            this.views.update(o,evt);
         } catch (RemoteException e) {
-            printError("Update GameInfo",e.getMessage());
+            this.printError("Update GameInfo",e.getMessage());
         }
     }
 
     /**
      * {@inheritDoc}
-     * @param o
-     * @param evt
+     * @param o {@inheritDoc}
+     * @param evt {@inheritDoc}
      */
     @Override
     public void update(CommonGoalInfo o, CommonGoal.Event evt) {
         try {
-            views.update(o,evt);
+            this.views.update(o,evt);
         } catch (RemoteException e) {
-            printError("Update CommonGoalInfo",e.getMessage());
+            this.printError("Update CommonGoalInfo",e.getMessage());
         }
     }
 
     /**
      * {@inheritDoc}
-     * @param o
-     * @param evt
+     * @param o {@inheritDoc}
+     * @param evt {@inheritDoc}
      */
     @Override
     public void update(UserInfo o, User.Event evt) throws RemoteException {
         try {
-            views.update(o,evt);
+            this.views.update(o,evt);
         } catch (RemoteException e) {
-            printError("Update UserInfo",e.getMessage());
+            this.printError("Update UserInfo",e.getMessage());
         }
     }
 
@@ -169,7 +169,7 @@ public class ClientEndPoint extends UnicastRemoteObject implements ClientInterfa
                 }
             } catch (InterruptedException | RemoteException e) {
                 /* If an error occurred during a ping, then disconnect the client */
-                disconnectionCallback.accept("Ping timeout");
+                this.disconnectionCallback.accept("Ping timeout");
             }
         }).start();
     }

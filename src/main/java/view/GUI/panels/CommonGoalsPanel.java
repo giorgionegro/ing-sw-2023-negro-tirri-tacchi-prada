@@ -66,18 +66,18 @@ public class CommonGoalsPanel extends JPanel implements CommonGoalGraphics {
 
         this.add(new Container(),spacerConstraints);
 
-        for(String id : commonGoals.keySet()){
-            Image commonGoalImg = new ImageIcon(Objects.requireNonNull(getClass().getResource("/CommonGoals/GUI/" + id + ".jpg"))).getImage();
-            Image tokenImg = new ImageIcon(Objects.requireNonNull(getClass().getResource("/Token/" + commonGoals.get(id).name() + ".png"))).getImage();
-            Image achievedImg = new ImageIcon(Objects.requireNonNull(getClass().getResource("/CommonGoals/GUI/achieved.png"))).getImage();
+        for(String id : this.commonGoals.keySet()){
+            Image commonGoalImg = new ImageIcon(Objects.requireNonNull(this.getClass().getResource("/CommonGoals/GUI/" + id + ".jpg"))).getImage();
+            Image tokenImg = new ImageIcon(Objects.requireNonNull(this.getClass().getResource("/Token/" + this.commonGoals.get(id).name() + ".png"))).getImage();
+            Image achievedImg = new ImageIcon(Objects.requireNonNull(this.getClass().getResource("/CommonGoals/GUI/achieved.png"))).getImage();
 
             JLabel commonGoal1 = new JLabel() {
                 protected void paintComponent(Graphics g) {
                     super.paintComponent(g);
-                    g.drawImage(commonGoalImg, 0, 0, getWidth(), getHeight(), null);
-                    g.drawImage(tokenImg, 0, 0, getWidth(), getHeight(), null);
-                    if(achieved.containsKey(id)){
-                        g.drawImage(achievedImg, 0, 0, getWidth(), getHeight(), null);
+                    g.drawImage(commonGoalImg, 0, 0, this.getWidth(), this.getHeight(), null);
+                    g.drawImage(tokenImg, 0, 0, this.getWidth(), this.getHeight(), null);
+                    if(CommonGoalsPanel.this.achieved.containsKey(id)){
+                        g.drawImage(achievedImg, 0, 0, this.getWidth(), this.getHeight(), null);
                     }
                 }
             };
@@ -99,7 +99,7 @@ public class CommonGoalsPanel extends JPanel implements CommonGoalGraphics {
      */
     @Override
     public void updateCommonGoalGraphics(String id, String description, Token tokenState) {
-        commonGoals.put(id,tokenState);
-        refreshCommonGoalState();
+        this.commonGoals.put(id,tokenState);
+        this.refreshCommonGoalState();
     }
 }

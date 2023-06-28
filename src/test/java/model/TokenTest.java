@@ -4,6 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
+/**
+ * This class tests the Token class
+ */
 class TokenTest {
     /**
      * test:

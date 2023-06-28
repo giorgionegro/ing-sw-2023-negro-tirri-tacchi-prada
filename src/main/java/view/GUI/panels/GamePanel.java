@@ -296,23 +296,23 @@ public class GamePanel extends JComponent implements GameGraphics {
         this.interactionContainer.removeAll();
 
         this.tilesOrderingPanel = new TilesOrderingPanel(
-                e -> listener.actionPerformed(new ActionEvent(this, e.getID(), e.getActionCommand())),
-                e -> playerShelf.actionPerformed(new ActionEvent(e.getSource(), PlayerShelfPanel.UPDATE_CHOICES, e.getActionCommand()))
+                e -> this.listener.actionPerformed(new ActionEvent(this, e.getID(), e.getActionCommand())),
+                e -> this.playerShelf.actionPerformed(new ActionEvent(e.getSource(), PlayerShelfPanel.UPDATE_CHOICES, e.getActionCommand()))
         );
 
         this.playerShelf = new PlayerShelfPanel(
-                e -> tilesOrderingPanel.actionPerformed(new ActionEvent(e.getSource(), TilesOrderingPanel.CONFIRM, e.getActionCommand()))
+                e -> this.tilesOrderingPanel.actionPerformed(new ActionEvent(e.getSource(), TilesOrderingPanel.CONFIRM, e.getActionCommand()))
         );
 
         this.playerShelfContainer.add(this.playerShelf);
 
         this.livingRoomBoard = new LivingRoomPanel(
-                e -> tilesOrderingPanel.actionPerformed(new ActionEvent(e.getSource(), TilesOrderingPanel.SELECT_TILE, e.getActionCommand()))
+                e -> this.tilesOrderingPanel.actionPerformed(new ActionEvent(e.getSource(), TilesOrderingPanel.SELECT_TILE, e.getActionCommand()))
         );
 
         this.chatPanel = new ChatPanel(
-                e -> listener.actionPerformed(new ActionEvent(this, e.getID(), e.getActionCommand())),
-                thisPlayerId
+                e -> this.listener.actionPerformed(new ActionEvent(this, e.getID(), e.getActionCommand())),
+                this.thisPlayerId
         );
         this.chatContainer.add(this.chatPanel);
 
@@ -361,25 +361,25 @@ public class GamePanel extends JComponent implements GameGraphics {
      * This method modifies the graphic in order to display a waiting scene
      */
     private void showMatchmakingScene(){
-        tableContainer.removeAll();
-        livingRoomContainer.removeAll();
-        personalGoalContainer.removeAll();
-        commonGoalContainer.removeAll();
+        this.tableContainer.removeAll();
+        this.livingRoomContainer.removeAll();
+        this.personalGoalContainer.removeAll();
+        this.commonGoalContainer.removeAll();
 
-        playerShelf.enableButtons(false);
-        livingRoomContainer.add(waitingLabel, BorderLayout.CENTER);
+        this.playerShelf.enableButtons(false);
+        this.livingRoomContainer.add(this.waitingLabel, BorderLayout.CENTER);
     }
 
     /**
      * This method modifies the graphic in order to display gameplay scene
      */
     private void showGameScene(){
-        tableContainer.removeAll();
-        livingRoomContainer.removeAll();
-        personalGoalContainer.removeAll();
-        commonGoalContainer.removeAll();
+        this.tableContainer.removeAll();
+        this.livingRoomContainer.removeAll();
+        this.personalGoalContainer.removeAll();
+        this.commonGoalContainer.removeAll();
 
-        playerShelf.enableButtons(true);
+        this.playerShelf.enableButtons(true);
         this.tableContainer.add(this.tilesOrderingPanel);
         this.livingRoomContainer.add(this.livingRoomBoard);
         this.personalGoalContainer.add(this.personalGoalPanel);
@@ -395,11 +395,11 @@ public class GamePanel extends JComponent implements GameGraphics {
             label.setForeground(Color.BLACK);
 
 
-        if (playerOnTurn.equals(this.thisPlayerId)) {
+        if (this.playerOnTurn.equals(this.thisPlayerId)) {
             this.playerLabel.setForeground(Color.RED);
         } else {
-            if(opponentLabels.containsKey(playerOnTurn))
-                this.opponentLabels.get(playerOnTurn).setForeground(Color.RED);
+            if(this.opponentLabels.containsKey(this.playerOnTurn))
+                this.opponentLabels.get(this.playerOnTurn).setForeground(Color.RED);
         }
     }
     /**
@@ -407,9 +407,9 @@ public class GamePanel extends JComponent implements GameGraphics {
      */
 
     private void updatePlayerOnTurn(){
-        this.playerShelf.setIsFirstPlayer(this.thisPlayerId.equals(firstPlayer));
+        this.playerShelf.setIsFirstPlayer(this.thisPlayerId.equals(this.firstPlayer));
         for (String s : this.opponentShelfBoards.keySet()) {
-            this.opponentShelfBoards.get(s).setIsFirstPlayer(s.equals(firstPlayer));
+            this.opponentShelfBoards.get(s).setIsFirstPlayer(s.equals(this.firstPlayer));
         }
     }
 
@@ -449,7 +449,7 @@ public class GamePanel extends JComponent implements GameGraphics {
     public void updateGameInfoGraphics(Game.GameStatus status, String firstTurnPlayer, String playerOnTurn, boolean isLastTurn, Map<String, Integer> pointsValues) {
         if (status == Game.GameStatus.ENDED) {
             this.removeAll();
-            WinnerGamePanel winnerPanel = new WinnerGamePanel(e -> listener.actionPerformed(new ActionEvent(this, e.getID(), e.getActionCommand())), pointsValues, this.thisPlayerId);
+            WinnerGamePanel winnerPanel = new WinnerGamePanel(e -> this.listener.actionPerformed(new ActionEvent(this, e.getID(), e.getActionCommand())), pointsValues, this.thisPlayerId);
             GridBagConstraints winnerConstraints = new GridBagConstraints(
                     0, 0,
                     10, 10,
@@ -463,13 +463,13 @@ public class GamePanel extends JComponent implements GameGraphics {
         } else if (status == Game.GameStatus.STARTED) {
             this.playerOnTurn = playerOnTurn;
             this.firstPlayer = firstTurnPlayer;
-            livingRoomBoard.setIsLastTurn(isLastTurn);
-            tilesOrderingPanel.actionPerformed(new ActionEvent(this,TilesOrderingPanel.RESET,""));
-            showGameScene();
-            updatePlayerOnTurn();
-            updateFirstPlayer();
+            this.livingRoomBoard.setIsLastTurn(isLastTurn);
+            this.tilesOrderingPanel.actionPerformed(new ActionEvent(this,TilesOrderingPanel.RESET,""));
+            this.showGameScene();
+            this.updatePlayerOnTurn();
+            this.updateFirstPlayer();
         } else if (status == Game.GameStatus.MATCHMAKING || status == Game.GameStatus.SUSPENDED) {
-            showMatchmakingScene();
+            this.showMatchmakingScene();
         }
         this.revalidate();
         this.repaint();
@@ -526,7 +526,7 @@ public class GamePanel extends JComponent implements GameGraphics {
      */
     @Override
     public void updateErrorState(String reportedError) {
-        synchronized (errorLabel) {
+        synchronized (this.errorLabel) {
             this.errorLabel.setText(reportedError);
         }
         //expire error message after 3 seconds
@@ -536,7 +536,7 @@ public class GamePanel extends JComponent implements GameGraphics {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            synchronized (errorLabel) {
+            synchronized (this.errorLabel) {
                 this.errorLabel.setText("");
                 this.revalidate();
                 this.repaint();
@@ -568,8 +568,8 @@ public class GamePanel extends JComponent implements GameGraphics {
             shelfPanel.updatePlayerShelfGraphics(playerId, shelf);
         }
 
-        updatePlayerOnTurn();
-        updateFirstPlayer();
+        this.updatePlayerOnTurn();
+        this.updateFirstPlayer();
 
         this.revalidate();
         this.repaint();

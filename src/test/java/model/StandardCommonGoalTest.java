@@ -1,11 +1,13 @@
 package model;
 
-import model.abstractModel.GoalEvaluator;
 import model.goalEvaluators.Standard2ColumnsRowOfDifferentTiles;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * This class tests the StandardCommonGoal class
+ */
 class StandardCommonGoalTest {
     /**
      * Method under test: {@link StandardCommonGoal#StandardCommonGoal(int, model.abstractModel.GoalEvaluator)}

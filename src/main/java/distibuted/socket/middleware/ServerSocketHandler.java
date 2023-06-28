@@ -19,6 +19,7 @@ public class ServerSocketHandler extends SocketHandler<ServerInterface> implemen
     /**
      * Class constructor, initialize a {@link SocketHandler} with the given socket
      * @param socket socket to manage
+     * @throws RemoteException if fails to open the socket
      */
     public ServerSocketHandler(Socket socket) throws RemoteException {
         super(socket);
@@ -216,7 +217,7 @@ public class ServerSocketHandler extends SocketHandler<ServerInterface> implemen
      * <p>
      * Create and runs input-stream-handler thread
      * @param server the {@link ServerInterface} of the server that client have to bind to
-     * @throws RemoteException
+     * @throws RemoteException if fails to send a {@link SocketObject}
      */
     @Override
     public void bind(ServerInterface server) throws RemoteException {

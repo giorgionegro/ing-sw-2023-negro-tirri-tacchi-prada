@@ -12,6 +12,9 @@ import java.util.List;
 import java.util.*;
 
 
+/**
+ * This class extends JPanel and represents a graphical component that shows the chat
+ */
 public class ChatPanel extends JPanel implements PlayerChatGraphics {
 
     /**

@@ -12,6 +12,9 @@ import java.util.Map;
 
 import static util.Parser.argumentsParser;
 
+/**
+ * This class represents the server
+ */
 public class Server {
 
 
@@ -138,7 +141,7 @@ public class Server {
                 ServerSocketHandler serverSocketHandler = new ServerSocketHandler(socket);
                 try {
                     //when a new connection is accepted, create a new ServerSocketHandler and connect it to the server controller
-                    serverController.connect(serverSocketHandler);
+                    this.serverController.connect(serverSocketHandler);
                 } catch (RemoteException e) {
                     System.err.println("Cannot receive from client: " + e.getMessage() + ".\n-> Closing this connection...");
                 }

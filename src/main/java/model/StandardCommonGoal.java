@@ -17,7 +17,7 @@ public class StandardCommonGoal extends CommonGoal {
      */
     public StandardCommonGoal(int nPlayer, GoalEvaluator evaluator) {
         super(evaluator);
-        fillStack(nPlayer);
+        this.fillStack(nPlayer);
     }
 
     /**
@@ -30,11 +30,11 @@ public class StandardCommonGoal extends CommonGoal {
     protected void fillStack(int nToken) {
         if(nToken<5){
             if(nToken>3)
-                tokenStack.push(Token.TOKEN_2_POINTS);
-            tokenStack.push(Token.TOKEN_4_POINTS);
+                this.tokenStack.push(Token.TOKEN_2_POINTS);
+            this.tokenStack.push(Token.TOKEN_4_POINTS);
             if(nToken>2)
-                tokenStack.push(Token.TOKEN_6_POINTS);
-            tokenStack.push(Token.TOKEN_8_POINTS);
+                this.tokenStack.push(Token.TOKEN_6_POINTS);
+            this.tokenStack.push(Token.TOKEN_8_POINTS);
         }else{
             throw new UnsupportedOperationException("The number of players is more than the maximum accepted (4max)");
         }

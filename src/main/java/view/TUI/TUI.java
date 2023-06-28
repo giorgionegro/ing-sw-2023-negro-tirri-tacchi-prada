@@ -426,7 +426,7 @@ public class TUI implements AppGraphics, GameGraphics {
             //we clear the screen and print the canvases
             ClearScreen(s -> this.printCommandLine(s, RED));
             //we print the canvases
-            renderCanvases();
+            this.renderCanvases();
 
             //we move the cursor to the correct position
             this.out.print("\033[" + (cursorY) + ";" + (cursorX + this.cursor.length() + 2) + "H");
@@ -852,11 +852,29 @@ public class TUI implements AppGraphics, GameGraphics {
      * Enum that represents the scenes of the game
      */
     private enum Scene {
+        /**
+         * Scene of the connection
+         */
         CONNECTION,
+        /**
+         * Scene of the interaction
+         */
         INTERACTION,
+        /**
+         * Scene of the joining
+         */
         JOIN,
+        /**
+         * Scene of the creation
+         */
         CREATE,
+        /**
+         * Scene of the main game menu
+         */
         GAME,
+        /**
+         * Scene of the end game
+         */
         LEADERBOARD,
     }
 

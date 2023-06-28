@@ -36,12 +36,16 @@ public class ServerEndpoint extends UnicastRemoteObject implements ServerInterfa
      */
     private GameController gameController;
 
+    /**
+     * This is the lock used to wait for the ping
+     */
     private final TimedLock<Boolean> pingWaiter = new TimedLock<>(false);
 
     /**
      * This class constructor crates an instance of this class with a given {@link controller.interfaces.ServerController}, {@link controller.interfaces.GameManagerController} and null {@link controller.interfaces.GameController}
      * @param serverController a given server controller
      * @param gameManagerController a given game manager controller
+     * @param disconnectionCallback a callback to be called when the client disconnects
      * @throws RemoteException in case of an error occurred exporting this remote object
      */
     public ServerEndpoint(ServerController serverController, GameManagerController gameManagerController, Consumer<String> disconnectionCallback) throws RemoteException {
@@ -55,11 +59,11 @@ public class ServerEndpoint extends UnicastRemoteObject implements ServerInterfa
                 Thread.sleep(2000);
 
                 do {
-                    pingWaiter.reset(false);
+                    this.pingWaiter.reset(false);
 
                     this.pingWaiter.lock(2000);
 
-                } while (pingWaiter.hasBeenUnlocked());
+                } while (this.pingWaiter.hasBeenUnlocked());
 
             } catch (InterruptedException e) {
                 System.err.println("Error: Ping thread had been interrupted");
@@ -165,6 +169,6 @@ public class ServerEndpoint extends UnicastRemoteObject implements ServerInterfa
      */
     @Override
     public void ping() throws RemoteException {
-        pingWaiter.unlock(true);
+        this.pingWaiter.unlock(true);
     }
 }

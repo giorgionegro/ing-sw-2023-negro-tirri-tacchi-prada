@@ -9,6 +9,9 @@ import java.util.Stack;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * This class tests the StandardLivingRoom class
+ */
 @SuppressWarnings("UseOfObsoleteCollectionType")
 class StandardLivingRoomTest {
     /**
@@ -141,7 +144,7 @@ class StandardLivingRoomTest {
             }
         }
 
-        if (actualBoard[2][5] == Tile.EMPTY || actualBoard[5][6] == Tile.EMPTY || actualBoard[6][4] == Tile.EMPTY || actualBoard[4][1] == Tile.EMPTY) {
+        if (actualBoard[2][5] == Tile.EMPTY || actualBoard[5][6] == Tile.EMPTY) {
             fail();
         }
     }

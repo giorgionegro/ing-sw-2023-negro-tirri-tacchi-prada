@@ -40,6 +40,10 @@ final class TUIutils {
      * This is the ANSI codes for default
      */
     public static final int DEFAULT = 39;
+
+    /**
+     * @hidden
+     */
     private TUIutils() {
     }
 

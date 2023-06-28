@@ -40,9 +40,9 @@ public class AspectRatioLayout implements LayoutManager {
     @Override
     public void addLayoutComponent(String name, Component comp) {
         /* Signals the layout is invalid if trying to add more than one component */
-        assert(compCount == 0) : "AspectRatioLayout can only contain one component";
+        assert(this.compCount == 0) : "AspectRatioLayout can only contain one component";
         /* Incrementing the number of component managed */
-        compCount++;
+        this.compCount++;
     }
 
     /**
@@ -52,7 +52,7 @@ public class AspectRatioLayout implements LayoutManager {
     @Override
     public void removeLayoutComponent(Component comp) {
         /* Decrement the number of component managed */
-        compCount--;
+        this.compCount--;
     }
 
     /**
@@ -74,8 +74,8 @@ public class AspectRatioLayout implements LayoutManager {
                     - (insets.top + insets.bottom);
 
             /* Get height and width of the component following ratio constraint */
-            float w = Math.min(maxHeight * ratio, maxWidth);
-            float h = w / ratio;
+            float w = Math.min(maxHeight * this.ratio, maxWidth);
+            float h = w / this.ratio;
 
             Rectangle bounds = new Rectangle();
             /* Sets bounds height and width as we just found */
@@ -96,7 +96,7 @@ public class AspectRatioLayout implements LayoutManager {
      * The result is equal to parent insets if parent does not contain any components, otherwise the result is equal
      * to the minimum size of the contained component (the one this manager is managing)
      * @param parent the component to be laid out
-     * @return
+     * @return {@inheritDoc}
      */
     @Override
     public Dimension minimumLayoutSize(Container parent) {
@@ -123,7 +123,7 @@ public class AspectRatioLayout implements LayoutManager {
      * The result is equal to parent insets if parent does not contain any components, otherwise the result is equal
      * to the preferred size of the contained component (the one this manager is managing)
      * @param parent the container to be laid out
-     * @return
+     * @return {@inheritDoc}
      */
     @Override
     public Dimension preferredLayoutSize(Container parent) {

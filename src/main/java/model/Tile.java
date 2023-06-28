@@ -100,6 +100,6 @@ public enum Tile {
      * @return {@link #color}
      */
     public String getColor() {
-        return color;
+        return this.color;
     }
 }

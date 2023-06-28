@@ -41,9 +41,18 @@ import java.util.concurrent.Executors;
 @SuppressWarnings("deprecation")
 public class Observable<Event extends Enum<Event>> {
 
+    /**
+     * Thread pool used to notify observers
+     */
     //TODO
     private final ExecutorService executorService = Executors.newFixedThreadPool(1);
+    /**
+     * Vector of observers
+     */
     private final Vector<Observer<? extends Observable<Event>, Event>> obs;
+    /**
+     * Flag that indicates if the observable has changed
+     */
     private boolean changed = false;
 
     /**

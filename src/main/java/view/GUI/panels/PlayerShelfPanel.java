@@ -127,6 +127,7 @@ public class PlayerShelfPanel extends JPanel implements PlayerShelfGraphics, Act
     /**
      This method initializes the layout and the contents of the panel;
      * The positions and dimensions of components within the grid are set.
+     * @param orderingTable ActionListener used to send column selector events
      */
     private void initializeLayout(ActionListener orderingTable){
         GridBagConstraints leftSpacerConstraints = new GridBagConstraints(

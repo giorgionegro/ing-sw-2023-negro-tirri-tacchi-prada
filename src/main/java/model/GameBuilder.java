@@ -14,6 +14,9 @@ import java.util.Stack;
  */
 @SuppressWarnings({"UseOfObsoleteCollectionType", "UtilityClass"})
 public final class GameBuilder {
+    /**
+     * @hidden
+     */
     private GameBuilder() {
     }
 

@@ -86,7 +86,7 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
         this.users.put(client, user);
 
         // Generate the serverEndpoint of the connection
-        ServerInterface server = new ServerEndpoint(this, this, s -> disconnect(client));
+        ServerInterface server = new ServerEndpoint(this, this, s -> this.disconnect(client));
 
         // Binds serverEndpoint and clientEndpoint
         client.bind(server);

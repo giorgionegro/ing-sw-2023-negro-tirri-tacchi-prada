@@ -58,7 +58,7 @@ public class StandardStairs extends GoalEvaluator {
             int jstart = (dir == 0) ? 1 : numColumns - 2;
             int jend = (dir == 0) ? numColumns : -1;
             // Check if each subsequent column has one fewer tile than the previous column
-            if (shouldContinue(playerShelf, dir, jstart, jend, counter)) continue;
+            if (this.shouldContinue(playerShelf, dir, jstart, jend, counter)) continue;
             return true;
             // If all columns meet the requirements, return true
         }

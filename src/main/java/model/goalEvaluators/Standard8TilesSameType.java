@@ -12,6 +12,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * It is used by the CommonGoal class.
  */
 public class Standard8TilesSameType extends GoalEvaluator {
+    /**
+     * This int contains the number of tiles required to achieve the goal
+     */
     private final int numberOfTiles = 8;
 
     /**

@@ -272,7 +272,7 @@ public class StandardLivingRoom extends LivingRoom {
      *
      * @param bag stack of Tiles representing the game bag
      */
-    private void fillBag8(Stack<Tile> bag) {
+    private void fillBag8(Stack<? super Tile> bag) {
         for (int i = 0; i < 8; i++) {
             bag.push(Tile.BOOKS_1);
             bag.push(Tile.CATS_1);
@@ -288,7 +288,7 @@ public class StandardLivingRoom extends LivingRoom {
      *
      * @param bag stack of Tiles representing the game bag
      */
-    private void fillBag7(Stack<Tile> bag) {
+    private void fillBag7(Stack<? super Tile> bag) {
         for (int i = 0; i < 7; i++) {
             bag.push(Tile.BOOKS_2);
             bag.push(Tile.BOOKS_3);

@@ -3,11 +3,13 @@ package util;
 import java.awt.Component;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * This class tests the Observable class
+ */
 class ObservableTest {
     /**
      * Methods under test:
@@ -51,9 +53,7 @@ class ObservableTest {
     void testNotifyObservers() {
         Observable<Component.BaselineResizeBehavior> observable = new Observable<>();
         AtomicBoolean called = new AtomicBoolean(false);
-        observable.addObserver((o, arg) -> {
-            called.set(true);
-        });
+        observable.addObserver((o, arg) -> called.set(true));
         observable.notifyObservers();
         assertTrue(called.get());
 

@@ -7,6 +7,9 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+/**
+ * This class tests the common goal
+ */
 class CommonGoalTest {
     /**
      * Method under test: {@link CommonGoal#getTopToken()}

@@ -101,26 +101,26 @@ public class ViewLogic implements Remote, ViewCollection, ActionListener {
      */
     @Override
     public synchronized void actionPerformed(ActionEvent e) {
-        if(e.getSource().equals(gameGraphics) || e.getSource().equals(appGraphics)){
+        if(e.getSource().equals(this.gameGraphics) || e.getSource().equals(this.appGraphics)){
             switch (e.getID()){
-                case EXIT -> exit();
-                case ROUTE_CONNECT -> appGraphics.showConnection(e.getActionCommand());
-                case ROUTE_JOIN -> appGraphics.showJoin(e.getActionCommand());
-                case ROUTE_CREATE -> appGraphics.showCreate(e.getActionCommand());
-                case ROUTE_GAME -> appGraphics.showGame(e.getActionCommand());
-                case ROUTE_HOME -> appGraphics.showServerInteraction(e.getActionCommand());
+                case EXIT -> this.exit();
+                case ROUTE_CONNECT -> this.appGraphics.showConnection(e.getActionCommand());
+                case ROUTE_JOIN -> this.appGraphics.showJoin(e.getActionCommand());
+                case ROUTE_CREATE -> this.appGraphics.showCreate(e.getActionCommand());
+                case ROUTE_GAME -> this.appGraphics.showGame(e.getActionCommand());
+                case ROUTE_HOME -> this.appGraphics.showServerInteraction(e.getActionCommand());
                 case CONNECT -> {
                     if(!this.connected){
-                        connect(e.getActionCommand());
+                        this.connect(e.getActionCommand());
                     }else{
-                        appGraphics.showServerInteraction("Already connected");
+                        this.appGraphics.showServerInteraction("Already connected");
                     }
                 }
-                case CREATE -> createGame(e.getActionCommand());
-                case JOIN -> joinGame(e.getActionCommand());
-                case SEND_MESSAGE -> sendMessage(e.getActionCommand());
-                case SEND_MOVE -> sendMove(e.getActionCommand());
-                case LEAVE_GAME -> leaveGame();
+                case CREATE -> this.createGame(e.getActionCommand());
+                case JOIN -> this.joinGame(e.getActionCommand());
+                case SEND_MESSAGE -> this.sendMessage(e.getActionCommand());
+                case SEND_MOVE -> this.sendMove(e.getActionCommand());
+                case LEAVE_GAME -> this.leaveGame();
             }
         }
     }
@@ -191,14 +191,14 @@ public class ViewLogic implements Remote, ViewCollection, ActionListener {
      * This method is used start the view with the connection screen
      */
     public void start(){
-        this.actionPerformed(new ActionEvent(appGraphics,ROUTE_CONNECT,""));
+        this.actionPerformed(new ActionEvent(this.appGraphics,ROUTE_CONNECT,""));
     }
 
     /**
      * This method is used to exit the application
      */
     private void exit(){
-        appGraphics.exit();
+        this.appGraphics.exit();
     }
 
     /**
@@ -208,17 +208,17 @@ public class ViewLogic implements Remote, ViewCollection, ActionListener {
      */
     private void disconnect(String message){
         try {
-            if(server!=null)
-                server.disconnect(clientEndPoint);
+            if(this.server !=null)
+                this.server.disconnect(this.clientEndPoint);
         } catch (RemoteException e) {
             System.err.println("Error on disconnection, continue disconnecting.... ");
         }
-        updateService.submit(() -> {
-            connected = false;
-            currentSessionTime = -1;
-            serverEndpoint = null;
-            server = null;
-            this.actionPerformed(new ActionEvent(appGraphics,ROUTE_CONNECT,message));
+        this.updateService.submit(() -> {
+            this.connected = false;
+            this.currentSessionTime = -1;
+            this.serverEndpoint = null;
+            this.server = null;
+            this.actionPerformed(new ActionEvent(this.appGraphics,ROUTE_CONNECT,message));
         });
     }
 
@@ -229,14 +229,14 @@ public class ViewLogic implements Remote, ViewCollection, ActionListener {
      */
     private void connect(String connectionType) {
         if(!(connectionType.equals(CONNECT_RMI) || connectionType.equals(CONNECT_SOCKET)))
-            this.actionPerformed(new ActionEvent(appGraphics,ROUTE_CONNECT,"Unknown Command"));
+            this.actionPerformed(new ActionEvent(this.appGraphics,ROUTE_CONNECT,"Unknown Command"));
         else{
             try {
                 this.serverWaiter.reset(true);
 
                 switch (connectionType) {
-                    case CONNECT_RMI -> connectRMI(clientEndPoint);
-                    case CONNECT_SOCKET -> connectSocket(clientEndPoint);
+                    case CONNECT_RMI -> this.connectRMI(this.clientEndPoint);
+                    case CONNECT_SOCKET -> this.connectSocket(this.clientEndPoint);
                 }
                 //wait for the server to respond or timeout
                 if (!this.serverWaiter.hasBeenUnlocked()) {
@@ -247,14 +247,14 @@ public class ViewLogic implements Remote, ViewCollection, ActionListener {
                     }
                 }
 
-                if (serverWaiter.getValue()) //if the server has not responded in time the connection is considered failed and we return to the connection screen
-                    this.actionPerformed(new ActionEvent(appGraphics, ROUTE_CONNECT, "Unable to connect: connection timeout"));
+                if (this.serverWaiter.getValue()) //if the server has not responded in time the connection is considered failed and we return to the connection screen
+                    this.actionPerformed(new ActionEvent(this.appGraphics, ROUTE_CONNECT, "Unable to connect: connection timeout"));
                 else {//otherwise we are connected and we can proceed to the home screen
                     this.connected = true;
-                    this.actionPerformed(new ActionEvent(appGraphics, ROUTE_HOME, "Successfully connected"));
+                    this.actionPerformed(new ActionEvent(this.appGraphics, ROUTE_HOME, "Successfully connected"));
                 }
             } catch (RemoteException e) {
-                this.actionPerformed(new ActionEvent(appGraphics,ROUTE_CONNECT,e.getMessage()));
+                this.actionPerformed(new ActionEvent(this.appGraphics,ROUTE_CONNECT,e.getMessage()));
             }
         }
 
@@ -268,8 +268,8 @@ public class ViewLogic implements Remote, ViewCollection, ActionListener {
      */
     private void connectRMI(ClientInterface client) throws RemoteException {
         try {
-            server = (AppServer) LocateRegistry.getRegistry(hostIp, RMIHostPort).lookup("server");
-            serverEndpoint = server.connect(client);
+            this.server = (AppServer) LocateRegistry.getRegistry(this.hostIp, this.RMIHostPort).lookup("server");
+            this.serverEndpoint = this.server.connect(client);
         }catch (RemoteException | NotBoundException e){
             throw new RemoteException("Unable to open rmi connection");
         }
@@ -283,8 +283,8 @@ public class ViewLogic implements Remote, ViewCollection, ActionListener {
      */
     private void connectSocket(ClientInterface client) throws RemoteException {
         try {
-            server = new ClientSocketHandler(hostIp, SocketHostPort);
-            serverEndpoint = server.connect(client);
+            this.server = new ClientSocketHandler(this.hostIp, this.SocketHostPort);
+            this.serverEndpoint = this.server.connect(client);
         }catch(RemoteException e){
             throw new RemoteException("Unable to open socket connection");
         }
@@ -305,20 +305,20 @@ public class ViewLogic implements Remote, ViewCollection, ActionListener {
     private void joinGame(String joinInfo) {
         //check if the join info is valid
         if(joinInfo==null)
-            this.actionPerformed(new ActionEvent(appGraphics,ROUTE_JOIN,"Null info value"));
+            this.actionPerformed(new ActionEvent(this.appGraphics,ROUTE_JOIN,"Null info value"));
         else {
             //count the number of parts to ensure that the string is well-formed
             String[] joinInfoParts = joinInfo.split(" ");
             if (joinInfoParts.length != 2){
-                this.actionPerformed(new ActionEvent(appGraphics, ROUTE_JOIN, "Wrong number of parameters: "+joinInfoParts.length+" (2 required)"));
+                this.actionPerformed(new ActionEvent(this.appGraphics, ROUTE_JOIN, "Wrong number of parameters: "+joinInfoParts.length+" (2 required)"));
             }else if(!(joinInfoParts[0].isBlank() || joinInfoParts[1].isBlank())){
                 try {
-                    gameGraphics.resetGameGraphics(joinInfoParts[0]);
+                    this.gameGraphics.resetGameGraphics(joinInfoParts[0]);
 
                     this.currentSessionTime = System.currentTimeMillis();
                     this.serverWaiter.reset(true);
 
-                    this.serverEndpoint.joinGame(this.clientEndPoint, new LoginInfo(joinInfoParts[0], joinInfoParts[1], currentSessionTime));
+                    this.serverEndpoint.joinGame(this.clientEndPoint, new LoginInfo(joinInfoParts[0], joinInfoParts[1], this.currentSessionTime));
                     //wait for server response or for timeout
                     if (!this.serverWaiter.hasBeenUnlocked()) {
                         try {
@@ -329,15 +329,15 @@ public class ViewLogic implements Remote, ViewCollection, ActionListener {
                     }
 
                     if (this.serverWaiter.getValue()) //if the server didn't respond in time we return to the join screen
-                        this.actionPerformed(new ActionEvent(appGraphics,ROUTE_JOIN,userMessage));
+                        this.actionPerformed(new ActionEvent(this.appGraphics,ROUTE_JOIN, this.userMessage));
                     else //otherwise we go to the game screen
-                        this.actionPerformed(new ActionEvent(appGraphics,ROUTE_GAME,""));
+                        this.actionPerformed(new ActionEvent(this.appGraphics,ROUTE_GAME,""));
 
                 } catch (RemoteException e) {
-                    this.actionPerformed(new ActionEvent(appGraphics,ROUTE_JOIN,"Unable to reach server"));
+                    this.actionPerformed(new ActionEvent(this.appGraphics,ROUTE_JOIN,"Unable to reach server"));
                 }
             }else{
-                this.actionPerformed(new ActionEvent(appGraphics, ROUTE_JOIN, "One of the parameters is blank"));
+                this.actionPerformed(new ActionEvent(this.appGraphics, ROUTE_JOIN, "One of the parameters is blank"));
             }
         }
     }
@@ -352,12 +352,12 @@ public class ViewLogic implements Remote, ViewCollection, ActionListener {
     private void createGame(String gameInfo){
         //if the gameInfo is null, the user is notified and the method returns
         if(gameInfo==null)
-            this.actionPerformed(new ActionEvent(appGraphics,ROUTE_CREATE,"Null info value"));
+            this.actionPerformed(new ActionEvent(this.appGraphics,ROUTE_CREATE,"Null info value"));
         else {
             //counting the parts to ensure that the string is well-formed
             String[] gameInfoParts = gameInfo.split(" ");
             if(gameInfoParts.length!=3)
-                this.actionPerformed(new ActionEvent(appGraphics,ROUTE_CREATE,"Wrong number of parameters "+gameInfoParts.length));
+                this.actionPerformed(new ActionEvent(this.appGraphics,ROUTE_CREATE,"Wrong number of parameters "+gameInfoParts.length));
             else if(!(gameInfoParts[0].isBlank() || gameInfoParts[1].isBlank() || gameInfoParts[2].isBlank())){
                 try {
                     int playerNumber = Integer.parseInt(gameInfoParts[gameInfoParts.length-1]);
@@ -375,17 +375,17 @@ public class ViewLogic implements Remote, ViewCollection, ActionListener {
                     }
 
                     if (this.serverWaiter.getValue()) //if timeout expired, the user is notified and we return to create screen
-                        this.actionPerformed(new ActionEvent(appGraphics, ROUTE_CREATE, userMessage));
+                        this.actionPerformed(new ActionEvent(this.appGraphics, ROUTE_CREATE, this.userMessage));
                     else
-                        this.actionPerformed(new ActionEvent(appGraphics, ROUTE_HOME, "Game created successfully"));
+                        this.actionPerformed(new ActionEvent(this.appGraphics, ROUTE_HOME, "Game created successfully"));
 
                 } catch (RemoteException e) {
-                    this.actionPerformed(new ActionEvent(appGraphics, ROUTE_CREATE, "Unable to reach server"));
+                    this.actionPerformed(new ActionEvent(this.appGraphics, ROUTE_CREATE, "Unable to reach server"));
                 } catch (NumberFormatException e) {
-                    this.actionPerformed(new ActionEvent(appGraphics, ROUTE_CREATE, "\"Number of player\" parameter is not a number"));
+                    this.actionPerformed(new ActionEvent(this.appGraphics, ROUTE_CREATE, "\"Number of player\" parameter is not a number"));
                 }
             } else{
-                this.actionPerformed(new ActionEvent(appGraphics,ROUTE_CREATE,"One of the parameters is blank"));
+                this.actionPerformed(new ActionEvent(this.appGraphics,ROUTE_CREATE,"One of the parameters is blank"));
             }
         }
     }
@@ -400,20 +400,20 @@ public class ViewLogic implements Remote, ViewCollection, ActionListener {
     private void sendMessage(String messageInfo){
         //if the message is null the client is notified and the method returns
         if(messageInfo==null)
-            gameGraphics.updateErrorState("Null message info");
+            this.gameGraphics.updateErrorState("Null message info");
         else{
             //otherwise we count the number of parts of the message to ensure that the message is well-formed
             String[] messageInfoParts = messageInfo.split("\n");
             if(messageInfoParts.length!=3){
                 //if the message is not well-formed the client is notified
-                gameGraphics.updateErrorState("Message has wrong number of parts");
+                this.gameGraphics.updateErrorState("Message has wrong number of parts");
             }else{
                 try {
                     this.serverEndpoint.sendMessage(this.clientEndPoint, new StandardMessage(
                             messageInfoParts[0], messageInfoParts[1], messageInfoParts[2]
                     ));
                 }catch (RemoteException e){
-                    gameGraphics.updateErrorState("Unable to reach server");
+                    this.gameGraphics.updateErrorState("Unable to reach server");
                 }
             }
         }
@@ -429,12 +429,12 @@ public class ViewLogic implements Remote, ViewCollection, ActionListener {
     private void sendMove(String moveInfo){
         //if the move is null the client is notified
         if(moveInfo==null)
-            gameGraphics.updateErrorState("Null move info");
+            this.gameGraphics.updateErrorState("Null move info");
         else{
             //else we check the number of parts before sending the move to the server to ensure that the message is parsable
             String[] moveInfoParts = moveInfo.split("\n");
             if(moveInfoParts.length!=2){
-                gameGraphics.updateErrorState("Move has wrong number of parts");
+                this.gameGraphics.updateErrorState("Move has wrong number of parts");
             }else{
                 try{
                     //now we create the picked tiles list
@@ -459,9 +459,9 @@ public class ViewLogic implements Remote, ViewCollection, ActionListener {
                     this.serverEndpoint.doPlayerMove(this.clientEndPoint,new PlayerMoveInfo(tiles,sC));
                 }catch(NumberFormatException e){
                     //if any argument is not a number we notify the user still to ensure that the message is parsable
-                    gameGraphics.updateErrorState("Wrong move info format");
+                    this.gameGraphics.updateErrorState("Wrong move info format");
                 } catch (RemoteException e) {
-                    gameGraphics.updateErrorState("Unable to reach the server");
+                    this.gameGraphics.updateErrorState("Unable to reach the server");
                 }
             }
         }
@@ -486,12 +486,12 @@ public class ViewLogic implements Remote, ViewCollection, ActionListener {
             }
             //if the timeout has expired we notify the user
             if (this.serverWaiter.getValue())
-                gameGraphics.updateErrorState("Unable to leave game");
+                this.gameGraphics.updateErrorState("Unable to leave game");
             else //otherwise we go back to the home screen
-                this.actionPerformed(new ActionEvent(appGraphics,ROUTE_HOME,""));
+                this.actionPerformed(new ActionEvent(this.appGraphics,ROUTE_HOME,""));
 
         } catch (RemoteException e) {
-            gameGraphics.updateErrorState("Unable to reach the server");
+            this.gameGraphics.updateErrorState("Unable to reach the server");
         }
     }
 
@@ -507,8 +507,8 @@ public class ViewLogic implements Remote, ViewCollection, ActionListener {
      */
     @Override
     public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
-        updateService.submit(() ->
-            gameGraphics.updateCommonGoalGraphics(o.id(), o.description(), o.tokenState())
+        this.updateService.submit(() ->
+                this.gameGraphics.updateCommonGoalGraphics(o.id(), o.description(), o.tokenState())
         );
     }
 
@@ -521,8 +521,8 @@ public class ViewLogic implements Remote, ViewCollection, ActionListener {
      */
     @Override
     public void update(GameInfo o, Game.Event evt) throws RemoteException {
-        updateService.submit(()->
-            gameGraphics.updateGameInfoGraphics(o.status(),o.firstTurnPlayer(),o.playerOnTurn(),o.lastTurn(),o.points())
+        this.updateService.submit(()->
+                this.gameGraphics.updateGameInfoGraphics(o.status(),o.firstTurnPlayer(),o.playerOnTurn(),o.lastTurn(),o.points())
         );
     }
 
@@ -535,8 +535,8 @@ public class ViewLogic implements Remote, ViewCollection, ActionListener {
      */
     @Override
     public void update(LivingRoomInfo o, LivingRoom.Event evt) throws RemoteException {
-        updateService.submit(() ->
-            gameGraphics.updateBoardGraphics(o.board())
+        this.updateService.submit(() ->
+                this.gameGraphics.updateBoardGraphics(o.board())
         );
     }
 
@@ -549,8 +549,8 @@ public class ViewLogic implements Remote, ViewCollection, ActionListener {
      */
     @Override
     public void update(PersonalGoalInfo o, PersonalGoal.Event evt) throws RemoteException {
-        updateService.submit(() ->
-           gameGraphics.updatePersonalGoalGraphics(o.id(),o.achieved(),o.description())
+        this.updateService.submit(() ->
+                this.gameGraphics.updatePersonalGoalGraphics(o.id(),o.achieved(),o.description())
         );
     }
 
@@ -563,8 +563,8 @@ public class ViewLogic implements Remote, ViewCollection, ActionListener {
      */
     @Override
     public void update(PlayerChatInfo o, PlayerChat.Event evt) throws RemoteException {
-        updateService.submit(() ->
-            gameGraphics.updatePlayerChatGraphics(o.messages())
+        this.updateService.submit(() ->
+                this.gameGraphics.updatePlayerChatGraphics(o.messages())
         );
     }
 
@@ -577,13 +577,13 @@ public class ViewLogic implements Remote, ViewCollection, ActionListener {
      */
     @Override
     public void update(PlayerInfo o, Player.Event evt) throws RemoteException {
-        updateService.submit(() -> {
+        this.updateService.submit(() -> {
             if (evt == null) {
                 return;
             }
             switch (evt) {
-                case ERROR_REPORTED -> gameGraphics.updateErrorState(o.errorMessage());
-                case COMMON_GOAL_ACHIEVED -> gameGraphics.updateAchievedCommonGoals(o.achievedCommonGoals());
+                case ERROR_REPORTED -> this.gameGraphics.updateErrorState(o.errorMessage());
+                case COMMON_GOAL_ACHIEVED -> this.gameGraphics.updateAchievedCommonGoals(o.achievedCommonGoals());
             }
         });
     }
@@ -597,8 +597,8 @@ public class ViewLogic implements Remote, ViewCollection, ActionListener {
      */
     @Override
     public void update(ShelfInfo o, Shelf.Event evt) throws RemoteException {
-        updateService.submit(() ->
-            gameGraphics.updatePlayerShelfGraphics(o.playerId(),o.shelf())
+        this.updateService.submit(() ->
+                this.gameGraphics.updatePlayerShelfGraphics(o.playerId(),o.shelf())
         );
     }
 
@@ -617,7 +617,7 @@ public class ViewLogic implements Remote, ViewCollection, ActionListener {
      */
     @Override
     public void update(UserInfo o, User.Event evt) throws RemoteException {
-        updateService.submit(() ->{
+        this.updateService.submit(() ->{
             //if the session is not the current one, the update is ignored
             if (o.sessionID() != this.currentSessionTime)
                 return;
@@ -631,7 +631,7 @@ public class ViewLogic implements Remote, ViewCollection, ActionListener {
                 case GAME_JOINED, GAME_CREATED, GAME_LEAVED -> this.serverWaiter.unlock(false); //unlock the server waiter
                 //otherwise we update the user message and unlock the server waiter
                 case ERROR_REPORTED -> {
-                    userMessage = o.eventMessage();
+                    this.userMessage = o.eventMessage();
                     this.serverWaiter.unlock(true);
                 }
             }

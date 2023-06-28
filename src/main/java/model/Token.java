@@ -51,6 +51,6 @@ public enum Token {
      * @return {@link #points}
      */
     public int getPoints(){
-        return points;
+        return this.points;
     }
 }

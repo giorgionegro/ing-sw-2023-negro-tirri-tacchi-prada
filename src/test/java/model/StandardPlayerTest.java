@@ -2,8 +2,6 @@ package model;
 
 import model.abstractModel.PersonalGoal;
 import model.abstractModel.Player;
-import model.abstractModel.PlayerChat;
-import model.abstractModel.Shelf;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
@@ -11,6 +9,9 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
+/**
+ * This class tests the StandardPlayer class
+ */
 class StandardPlayerTest {
 
 

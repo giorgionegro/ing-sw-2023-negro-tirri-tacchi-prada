@@ -29,6 +29,9 @@ public class LivingRoomPanel extends JPanel implements LivingRoomGraphics {
      **/
     private final Image endGameToken = new ImageIcon(Objects.requireNonNull(this.getClass().getResource("/Token/" + Token.TOKEN_GAME_END.name() + ".png"))).getImage();
 
+    /**
+     * Boolean that represents when it's the last turn
+     */
     private boolean isLastTurn;
 
     /** Construct an {@link CreateGamePanel} instance that uses the given {@link ActionListener} as listener for buttons events
