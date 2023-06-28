@@ -1,0 +1,21 @@
+unnamed package
+controller
+controller.exceptions
+controller.interfaces
+distibuted
+distibuted.interfaces
+distibuted.socket.middleware
+model
+model.abstractModel
+model.exceptions
+model.goalEvaluators
+modelView
+util
+view
+view.graphicInterfaces
+view.GUI
+view.GUI.buttons
+view.GUI.layouts
+view.GUI.panels
+view.interfaces
+view.TUI
