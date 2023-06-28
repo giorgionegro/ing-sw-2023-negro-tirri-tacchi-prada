@@ -241,6 +241,11 @@ public class ServerSocketHandler extends SocketHandler<ServerInterface> implemen
                 }
             } catch (RemoteException e) {
                 System.err.println("Cannot receive from client: " + e.getMessage() + ".\n-> Closing this connection...");
+                try {
+                    super.close();
+                } catch (RemoteException ex) {
+                    throw new RuntimeException("Error on socket disconnection");
+                }
             }
         }).start();
     }

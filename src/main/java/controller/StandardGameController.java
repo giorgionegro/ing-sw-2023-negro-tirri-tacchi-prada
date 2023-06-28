@@ -27,6 +27,7 @@ import java.util.function.Consumer;
  * <p>
  * The game rules implemented follow the standard rules
  */
+@SuppressWarnings("rawtypes")
 public class StandardGameController implements GameController, LobbyController {
     /**
      * The model of the game this controller is interacting with
@@ -48,6 +49,7 @@ public class StandardGameController implements GameController, LobbyController {
      * the observable they are attached to.
      * This object is mainly used when a client needs to be detached from the game
      */
+    @SuppressWarnings("rawtypes")
     private final Map<ClientInterface, Map<Observable, Observer>> observerAssociation;
 
     /**
@@ -97,18 +99,18 @@ public class StandardGameController implements GameController, LobbyController {
                 /* Try to join the player */
                 this.game.addPlayer(playerId);
 
-                /* Authorize the client to use this controller*/
-                this.userAssociation.put(newClient, newUser);
-
-                /* Put newUser into known users */
-                this.playerAssociation.put(newUser, playerId);
-
                 /* Attach all the observers to the client */
                 try {
                     this.addObservers(newClient, playerId);
                 } catch (PlayerNotExistsException e) {
                     this.printModelError("Player that should exists does not exists, warning due to possible malfunctions");
                 }
+
+                /* Authorize the client to use this controller*/
+                this.userAssociation.put(newClient, newUser);
+
+                /* Put newUser into known users */
+                this.playerAssociation.put(newUser, playerId);
 
                 /* Get model status after the player has joined */
                 Game.GameStatus newStatus = this.game.getGameStatus();
@@ -138,6 +140,7 @@ public class StandardGameController implements GameController, LobbyController {
      * @param newPlayerId new player's id
      * @throws PlayerNotExistsException if the player does not exists
      */
+    @SuppressWarnings("rawtypes")
     private void addObservers(ClientInterface newClient, String newPlayerId) throws PlayerNotExistsException {
         /* Creates a map to associate each observer to his observable */
         Map<Observable, Observer> newObserverAssociation = new HashMap<>();
@@ -190,9 +193,13 @@ public class StandardGameController implements GameController, LobbyController {
         /* Add Shelf status observer of new player to all already joined players */
         /* Add Shelf status observer of all already joined players to new player */
         for (Map.Entry<ClientInterface, User> association : this.userAssociation.entrySet()) {
-            newPlayerShelf.addObserver(this.getShelfObserver(association.getKey(), newPlayerId));
+            Observer<Shelf, Shelf.Event> newPlayerShelfEventObserver = this.getShelfObserver(association.getKey(), newPlayerId);
+            newPlayerShelf.addObserver(newPlayerShelfEventObserver);
+            this.observerAssociation.get(association.getKey()).put(newPlayerShelf,newPlayerShelfEventObserver);
+
             String joinedPlayerId = this.playerAssociation.get(association.getValue());
             Shelf joinedPlayerShelf = this.game.getPlayer(joinedPlayerId).getShelf();
+
             Observer<Shelf, Shelf.Event> joinedPlayerShelfEventObserver = this.getShelfObserver(newClient, joinedPlayerId);
             newObserverAssociation.put(joinedPlayerShelf, joinedPlayerShelfEventObserver);
             joinedPlayerShelf.addObserver(joinedPlayerShelfEventObserver);
@@ -352,6 +359,7 @@ public class StandardGameController implements GameController, LobbyController {
      * @param client {@inheritDoc}
      * @throws GameAccessDeniedException if client has not joined this game
      */
+    @SuppressWarnings("rawtypes")
     @Override
     public void leavePlayer(ClientInterface client) throws GameAccessDeniedException {
         /* Check if client is allowed */
@@ -365,6 +373,7 @@ public class StandardGameController implements GameController, LobbyController {
 
             /* remove all observer associated with this user */
             Map<Observable, Observer> playerObserverAssociation = this.observerAssociation.get(client);
+
             playerObserverAssociation.forEach(Observable::deleteObserver);
 
             /* Reports to the user it has leaved the game */
@@ -405,6 +414,17 @@ public class StandardGameController implements GameController, LobbyController {
                             /* If nobody has rejoined then close the game */
                             if (!this.lobbyLock.getValue())
                                 this.closeTheGame("Game closed due to reconnection timeout");
+                            else
+                            {
+                                if (skipNeeded) {
+                                    try {
+                                        this.game.updatePlayersTurn();
+                                    } catch (GameEndedException e) {
+                                        /* If skipping the turn makes game end, then close the game */
+                                        this.closeTheGame("Game Ended");
+                                    }
+                                }
+                            }
                         }).start();
                     }
                     /* If a skip was needed then skip the turn */
