@@ -27,7 +27,6 @@ public class TilesOrderingPanel extends JPanel implements ActionListener{
      * The ActionListener that will be notified when the user confirms the selection
      */
     private final ActionListener moveSender;
-
     /**
      * Code that represents the action of selecting a tile
      */
@@ -36,7 +35,6 @@ public class TilesOrderingPanel extends JPanel implements ActionListener{
      * Code that represents the action of resetting the selection
      */
     public static final int RESET = 1;
-
     /**
      * Code that represents the action of switching the first and the second tile
      */
@@ -63,7 +61,6 @@ public class TilesOrderingPanel extends JPanel implements ActionListener{
      * Swap button that allows the user to switch the second and the third tile
      */
     private final SwapButton swapButton2 = new SwapButton();
-
     /**
      * Define a zero dimension
      */
@@ -103,14 +100,17 @@ public class TilesOrderingPanel extends JPanel implements ActionListener{
             }
             this.pickedTiles.clear();
         } else if (e.getID() == this.SWITCH_ONE_TWO) {
+            /* If there are 3 tiles selected then pick the middle one and put it on end */
             if (this.pickedTiles.size() == 3) {
                 this.pickedTiles.add(this.pickedTiles.remove(1));
             }
         } else if (e.getID() == this.SWITCH_TWO_THREE) {
+            /* If there is almost two tiles then pick the middle one and put it on top */
             if (this.pickedTiles.size() > 1) {
                 this.pickedTiles.add(0, this.pickedTiles.remove(1));
             }
         } else if (e.getID() == CONFIRM) {
+            /* If a move is confirmed then checks if there is almost one tile picked and builds a command as ViewLogic requests*/
             if (this.pickedTiles.size() > 0) {
                 String columnInShelf = e.getActionCommand();
                 StringBuilder picked = new StringBuilder();
@@ -123,11 +123,14 @@ public class TilesOrderingPanel extends JPanel implements ActionListener{
                 this.moveSender.actionPerformed(new ActionEvent(this, ViewLogic.SEND_MOVE, move));
             }
         } else if (e.getID() == SELECT_TILE && e.getSource() instanceof TileButton button) {
+            /* If the calling object is an TileButton then ...*/
             boolean selected = button.isSelected();
             if (selected) {
+                /* ... if it has been already selected deselect */
                 button.setSelected(false);
                 this.pickedTiles.remove(button);
             } else {
+                /* ... otherwise check if is pickable and select it*/
                 if (this.pickedTiles.size() < 3 && this.isPickable(button)) {
                     button.setSelected(true);
                     this.pickedTiles.add(button);
@@ -137,7 +140,7 @@ public class TilesOrderingPanel extends JPanel implements ActionListener{
 
         this.revalidate();
         this.repaint();
-
+        /* Notify columnChooser of how many tiles has been picked in order to disable column chooser buttons if shelf column is too empty */
         this.columnChooser.actionPerformed(new ActionEvent(this, 0, String.valueOf(this.pickedTiles.size())));
     }
 
@@ -148,7 +151,6 @@ public class TilesOrderingPanel extends JPanel implements ActionListener{
      * @return true if the tile is pickable, false otherwise
      */
     private boolean isPickable(TileButton Tile) {
-
         List<PickedTile> temp = new ArrayList<>();
         for (TileButton t : this.pickedTiles) {
             temp.add(new PickedTile(t.getTileX(), t.getTileY()));
@@ -158,19 +160,16 @@ public class TilesOrderingPanel extends JPanel implements ActionListener{
         return this.pickable(temp);
     }
 
-
     /**
      * This method checks if a list of {@link PickedTile}s is pickable
      *
      * @param pickedTiles the tiles to be checked
      * @return true if the tiles are pickable, false otherwise
      */
-    public boolean pickable(List<PickedTile> pickedTiles) {
+    private boolean pickable(List<PickedTile> pickedTiles) {
         if (!this.areTilesDifferent(new ArrayList<>(pickedTiles))) {
-            // print error this("Tiles are not different", RED);
             return false;
         }
-        // print error  this.printCommandLine("Tiles are not aligned", RED);
         return this.areTilesAligned(new ArrayList<>(pickedTiles));
     }
 

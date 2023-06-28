@@ -23,7 +23,7 @@ import java.util.Objects;
  */
 public class GamePanel extends JComponent implements GameGraphics {
     /**
-     * The ActionListener that used to send game actions
+     * The ActionListener used to send game actions
      */
     private final ActionListener listener;
     /**
@@ -98,7 +98,6 @@ public class GamePanel extends JComponent implements GameGraphics {
      * The label associated to the player's playerID
      */
     private final JLabel playerLabel = new JLabel("YOU");
-
     /**
      * The label that shows a waiting message during matchmaking
      */
@@ -115,7 +114,6 @@ public class GamePanel extends JComponent implements GameGraphics {
      * The playerID of the player that is on turn
      */
     private String playerOnTurn;
-
     /**
      * The playerID of the first player on turn
      */
@@ -124,7 +122,6 @@ public class GamePanel extends JComponent implements GameGraphics {
      * Panel that displays the chat
      */
     private ChatPanel chatPanel;
-
     /** Construct an {@link GamePanel} instance that uses the given {@link ActionListener} as listener for game actions
      * @param listener the ActionListener to be notified when a game action need to be sent
      */
@@ -405,7 +402,6 @@ public class GamePanel extends JComponent implements GameGraphics {
     /**
      * This method updates player on turn graphics
      */
-
     private void updatePlayerOnTurn(){
         this.playerShelf.setIsFirstPlayer(this.thisPlayerId.equals(this.firstPlayer));
         for (String s : this.opponentShelfBoards.keySet()) {
@@ -500,7 +496,8 @@ public class GamePanel extends JComponent implements GameGraphics {
         this.repaint();
     }
 
-    /**{@inheritDoc}
+    /**
+     * {@inheritDoc}
      * @param chat list of messages sent to a player
      */
     @Override
@@ -521,7 +518,8 @@ public class GamePanel extends JComponent implements GameGraphics {
         this.repaint();
     }
 
-    /**{@inheritDoc}
+    /**
+     * {@inheritDoc}
      * @param reportedError message of en error encountered during gameplay
      */
     @Override
@@ -546,7 +544,8 @@ public class GamePanel extends JComponent implements GameGraphics {
         this.repaint();
     }
 
-    /**{@inheritDoc}
+    /**
+     * {@inheritDoc}
      * @param playerId id of the player that owns the shelf
      * @param shelf    shelf representation of the player
      */

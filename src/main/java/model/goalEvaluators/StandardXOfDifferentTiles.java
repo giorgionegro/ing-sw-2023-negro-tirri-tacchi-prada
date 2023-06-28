@@ -4,9 +4,7 @@ import model.Tile;
 import model.abstractModel.GoalEvaluator;
 
 /**
- * This class is the goal evaluator for the StandardXOfDifferentTiles goal.
- * It implements the GoalEvaluator abstract class.
- * It is used by the CommonGoal class
+ * This class is the goal evaluator for the StandardXOfDifferentTiles goal
  **/
 public class StandardXOfDifferentTiles extends GoalEvaluator {
 
@@ -41,7 +39,7 @@ public class StandardXOfDifferentTiles extends GoalEvaluator {
     }
 
     /**
-     * This method evaluates if the player has reached the goal
+     * {@inheritDoc}
      *
      * @param playerShelf the player's shelf
      * @return true if the player has at least 5 tiles of the same type forming an X

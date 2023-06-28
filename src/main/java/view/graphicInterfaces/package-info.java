@@ -1,5 +1,4 @@
 /**
- * This package contains interfaces that represent
- * the graphics components of the application
+ * This package contains interfaces of the graphical components of the application
  */
 package view.graphicInterfaces;

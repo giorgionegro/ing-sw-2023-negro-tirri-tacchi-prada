@@ -19,16 +19,16 @@ import java.util.Map;
 public class StandardPlayer extends Player {
 
     /**
-     * shelf of the player (2D array of tiles)
+     * shelf of the player
      */
     private final Shelf shelf;
     /**
-     * personal goals of the player (list of personal goals)
+     * personal goals of the player
      */
     private final List<PersonalGoal> personalGoal;
 
     /**
-     * common goals of the player (map of common goals descriptions and tokens)
+     * common goals of the player
      */
     private final Map<String, Token> achievedCommonGoals;
 
@@ -40,7 +40,6 @@ public class StandardPlayer extends Player {
     /**
      * last error the player reported during gameplay
      */
-
     private String errorReport;
 
     /**
@@ -120,8 +119,6 @@ public class StandardPlayer extends Player {
         this.setChanged();
         this.notifyObservers(Event.ERROR_REPORTED);
     }
-
-
 
     /**
      * {@inheritDoc}

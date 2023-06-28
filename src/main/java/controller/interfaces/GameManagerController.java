@@ -20,7 +20,7 @@ public interface GameManagerController {
     GameController getGame(String gameId) throws GameNotExistsException;
 
     /**
-     * This method builds a {@link GameController} on the given {@link NewGameInfo}
+     * This method builds a {@link GameController} using the given {@link NewGameInfo}
      * @param newGameInfo the new-game info that needs to be used
      * @throws GameAlreadyExistsException if there already is an {@link GameController} associated with the given {@link NewGameInfo} gameID
      * @throws IllegalArgumentException if the given {@link NewGameInfo} contains illegal or unknown parameters

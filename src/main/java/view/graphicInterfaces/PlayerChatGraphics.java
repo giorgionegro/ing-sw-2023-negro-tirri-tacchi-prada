@@ -13,7 +13,7 @@ public interface PlayerChatGraphics {
     /**
      * This method updates the information of the chat with the specified parameter:
      *
-     * @param chat list of messages sent to a player
+     * @param chat list of messages sent to the player
      */
     void updatePlayerChatGraphics(List<? extends Message> chat);
 }

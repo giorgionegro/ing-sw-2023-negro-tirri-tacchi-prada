@@ -39,7 +39,6 @@ public class JoinGamePanel extends JPanel {
         this.repaint();
     }
 
-
     /*---------------------- GRAPHICS COMPONENTS and GRAPHICS INITIALIZATION -------------------------*/
     /**
      * This is the background image of this component, it is used into {@link #paintComponent(Graphics)}

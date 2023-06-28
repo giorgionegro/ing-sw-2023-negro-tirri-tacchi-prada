@@ -6,9 +6,7 @@ import model.abstractModel.GoalEvaluator;
 import java.util.Arrays;
 
 /**
- * This class is the goal evaluator for the StandardSixGroup2Tiles goal.
- * It implements the GoalEvaluator abstract class.
- * It is used by the CommonGoal class.
+ * This class is the goal evaluator for the StandardSixGroup2Tiles goal
  **/
 public class StandardSixGroup2Tiles extends GoalEvaluator {
 
@@ -43,7 +41,7 @@ public class StandardSixGroup2Tiles extends GoalEvaluator {
     }
 
     /**
-     * This method evaluates the player's shelf
+     * {@inheritDoc}
      *
      * @param playerShelf the player's shelf to evaluate
      * @return true if the player has at least 6 groups of 2 tiles of the same type

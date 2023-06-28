@@ -30,12 +30,10 @@ public class WinnerGamePanel extends JPanel {
         );
     }
 
-
     /*-------------------- GRAPHIC LAYOUT ------------------*/
     /**
      * This is the background image of this component, it is used into {@link #paintComponent(Graphics)}
      */
-
     private final Image createGame = new ImageIcon(Objects.requireNonNull(this.getClass().getResource("/leaderboardBackground.png"))).getImage();
     /**
      * This is the background image of components generated into {@link #createPointsContainer(String)} and {@link #createPlayerIdContainer(String, String)}

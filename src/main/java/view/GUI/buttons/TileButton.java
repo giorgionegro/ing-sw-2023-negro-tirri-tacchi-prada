@@ -20,15 +20,15 @@ public class TileButton extends JButton {
      */
     private final int tileY;
     /**
-     * The Tile that this button represents
+     * The {@link Tile} that this button represents
      */
     private final Tile tile;
     /**
-     * This image contains the image of the tile
+     * The image of the tile
      */
     private final Image image;
     /**
-     * This image contains the image of the selected tile
+     * The filter for selected tile
      */
     private final Image selectedImage = new ImageIcon(Objects.requireNonNull(this.getClass().getResource("/ForegroundFilter.png"))).getImage();
 

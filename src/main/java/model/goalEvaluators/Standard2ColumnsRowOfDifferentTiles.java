@@ -7,9 +7,7 @@ import java.util.Arrays;
 import java.util.Objects;
 
 /**
- * This class is the goal evaluator for the Standard2ColumnsRowOfDifferentTiles goal.
- * It implements the GoalEvaluator abstract class.
- * It is used by the CommonGoal class.
+ * This class is the goal evaluator for the Standard2ColumnsOfDifferentTiles or Standard2RowOfDifferentTiles goal.
  */
 public class Standard2ColumnsRowOfDifferentTiles extends GoalEvaluator {
 
@@ -71,6 +69,7 @@ public class Standard2ColumnsRowOfDifferentTiles extends GoalEvaluator {
     }
 
     /**
+     * {@inheritDoc}
      * @param playerShelf the player's shelf to evaluate
      * @return true if the player has at least 2 columns , or 2 rows, of 6 different tiles
      */

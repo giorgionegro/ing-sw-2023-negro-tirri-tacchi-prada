@@ -16,7 +16,7 @@ public interface GameController extends Remote {
 
     /**
      * This method allows client to do a game move
-     * @param client The reference of the client who is doing the move
+     * @param client The reference of the client that is doing the move
      * @param move The move info
      * @throws RemoteException if an error occurred reaching the remote object
      */
@@ -24,7 +24,7 @@ public interface GameController extends Remote {
 
     /**
      * This method allows client to send a message
-     * @param client The reference of the client who is sending the message
+     * @param client The reference of the client that is sending the message
      * @param newMessage The message info
      * @throws RemoteException if an error occurred reaching the remote object
      */

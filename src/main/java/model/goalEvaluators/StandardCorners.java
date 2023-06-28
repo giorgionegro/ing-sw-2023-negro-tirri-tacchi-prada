@@ -4,9 +4,7 @@ import model.Tile;
 import model.abstractModel.GoalEvaluator;
 
 /**
- * This class is the goal evaluator for the StandardCorners goal.
- * It implements the GoalEvaluator abstract class.
- * It is used by the CommonGoal class.
+ * This class is the goal evaluator for the StandardCorners goal
  **/
 public class StandardCorners extends GoalEvaluator {
 
@@ -41,7 +39,7 @@ public class StandardCorners extends GoalEvaluator {
     }
 
     /**
-     * This method evaluates if the player has reached the goal
+     * {@inheritDoc}
      *
      * @param playerShelf the player's shelf
      * @return true if the 4 corners of the library are of the same type

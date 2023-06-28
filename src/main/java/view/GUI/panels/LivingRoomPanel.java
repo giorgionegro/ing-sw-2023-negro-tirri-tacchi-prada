@@ -51,7 +51,8 @@ public class LivingRoomPanel extends JPanel implements LivingRoomGraphics {
         this.isLastTurn = isLastTurn;
     }
 
-    /**{@inheritDoc}
+    /**
+     * {@inheritDoc}
      * @param board board of the living room
      */
     @Override
@@ -134,7 +135,8 @@ public class LivingRoomPanel extends JPanel implements LivingRoomGraphics {
         this.repaint();
     }
 
-    /**This method checks whether a tile at the specified position on the board is clickable or not.
+    /**
+     * This method checks whether a tile at the specified position on the board is clickable or not.
      * @param row    row of the tile
      * @param column column of the tile
      * @param board  board to check

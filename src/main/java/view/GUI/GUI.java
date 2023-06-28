@@ -45,7 +45,7 @@ public class GUI extends JFrame implements AppGraphics, ActionListener {
     private ActionListener viewLogic;
 
     /**
-     * Construct an instance of this class initializing the frame
+     * Construct an instance of this class initializing and showing the frame
      */
     public GUI(){
         super();
