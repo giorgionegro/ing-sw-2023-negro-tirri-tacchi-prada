@@ -83,8 +83,6 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;
 &nbsp;/**
 &nbsp; * This class is the goal evaluator for the Standard4Groups4Tiles goal.
-&nbsp; * It implements the GoalEvaluator abstract class.
-&nbsp; * It is used by the CommonGoal class.
 &nbsp; **/
 <b class="fc">&nbsp;public class Standard4Groups4Tiles extends GoalEvaluator {</b>
 &nbsp;
@@ -119,6 +117,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;    }
 &nbsp;
 &nbsp;    /**
+&nbsp;     * {@inheritDoc}
 &nbsp;     * @param playerShelf the player&#39;s shelf to evaluate
 &nbsp;     * @return true if the player has at least 4 groups of 4 tiles of the same type
 &nbsp;     */
@@ -144,7 +143,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;                }
 &nbsp;            }
 &nbsp;        }
-&nbsp;//then we check the vertical groups
+&nbsp;        //then we check the vertical groups
 <b class="fc">&nbsp;        for (int i = 0; i &lt; clone.length - 3; i++) {</b>
 <b class="fc">&nbsp;            for (int j = 0; j &lt; clone[0].length; j++) {</b>
 <b class="fc">&nbsp;                if (clone[i][j].getColor().equals(clone[i + 1][j].getColor()) &amp;&amp;</b>
@@ -187,7 +186,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2023-06-28 10:19</div>
+    <div style="float:right;">generated on 2023-06-28 19:27</div>
 </div>
 </body>
 </html>

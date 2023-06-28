@@ -59,10 +59,10 @@ Current scope:     <a href="../../index.html">all classes</a>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    99.3%
+    100%
   </span>
   <span class="absValue">
-    (133/134)
+    (134/134)
   </span>
 </td>
 </tr>
@@ -234,11 +234,12 @@ Current scope:     <a href="../../index.html">all classes</a>
 <b class="fc">&nbsp;            int playerTurnCurrentIndex = this.playerTurnQueue.indexOf(playerId);</b>
 &nbsp;
 <b class="fc">&nbsp;            if (playerTurnCurrentIndex == this.playerTurnQueue.size() - 1)</b>
-<b class="nc">&nbsp;                playerTurnCurrentIndex = -1;</b>
+<b class="fc">&nbsp;                playerTurnCurrentIndex = -1;</b>
 &nbsp;
 <b class="fc">&nbsp;            this.firstPlayer = this.playerTurnQueue.get(playerTurnCurrentIndex + 1);</b>
 &nbsp;        }
 &nbsp;
+&nbsp;        /* If the number of currently connected player is 1 then suspend the game */
 <b class="fc">&nbsp;        int online = this.players.size() - this.availablePlayers.size();</b>
 &nbsp;
 <b class="fc">&nbsp;        if (online == 1) {</b>
@@ -515,7 +516,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2023-06-28 10:19</div>
+    <div style="float:right;">generated on 2023-06-28 19:27</div>
 </div>
 </body>
 </html>

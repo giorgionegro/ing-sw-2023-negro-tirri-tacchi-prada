@@ -4,7 +4,7 @@
 <!DOCTYPE html>
 <html id="htmlId">
 <head>
-  <title>Coverage Report > ServerInterface</title>
+  <title>Coverage Report > AppServer</title>
   <style type="text/css">
     @import "../../css/coverage.css";
     @import "../../css/idea.min.css";
@@ -21,14 +21,14 @@ Current scope:     <a href="../../index.html">all classes</a>
     <a href="../index.html">distibuted.interfaces</a>
 </div>
 
-<h1>Coverage Summary for Class: ServerInterface (distibuted.interfaces)</h1>
+<h1>Coverage Summary for Class: AppServer (distibuted.interfaces)</h1>
 
 <table class="coverageStats">
 <tr>
   <th class="name">Class</th>
 </tr>
 <tr>
-  <td class="name">ServerInterface</td>
+  <td class="name">AppServer</td>
 </tr>
 
 </table>
@@ -40,20 +40,27 @@ Current scope:     <a href="../../index.html">all classes</a>
 <pre>
 <code class="sourceCode" id="sourceCode">&nbsp;package distibuted.interfaces;
 &nbsp;
-&nbsp;import controller.interfaces.GameController;
-&nbsp;import controller.interfaces.ServerController;
 &nbsp;import java.rmi.Remote;
 &nbsp;import java.rmi.RemoteException;
 &nbsp;
 &nbsp;/**
-&nbsp; * This interface is a collection of interfaces and contains all the methods a client can call on server
+&nbsp; * This is the interface of a service-provider server to which a client can connect and disconnect
 &nbsp; */
-&nbsp;public interface ServerInterface extends Remote, ServerController, GameController{
+&nbsp;public interface AppServer extends Remote {
 &nbsp;    /**
-&nbsp;     * This method is used to ping the server
-&nbsp;     * @throws RemoteException if the ping fails
+&nbsp;     * This method connects a client to the server
+&nbsp;     * @param client The client that asked to be connected
+&nbsp;     * @return the service provider interface this server manages
+&nbsp;     * @throws RemoteException If an error occurred reaching the remote object
 &nbsp;     */
-&nbsp;    void ping() throws RemoteException;
+&nbsp;    ServerInterface connect(ClientInterface client) throws RemoteException;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method disconnects a client from the server
+&nbsp;     * @param client The client that asked to be disconnected
+&nbsp;     * @throws RemoteException If an error occurred reaching the remote object
+&nbsp;     */
+&nbsp;    void disconnect(ClientInterface client) throws RemoteException;
 &nbsp;}
 </code>
 </pre>
@@ -78,7 +85,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2023-06-28 10:19</div>
+    <div style="float:right;">generated on 2023-06-28 19:27</div>
 </div>
 </body>
 </html>

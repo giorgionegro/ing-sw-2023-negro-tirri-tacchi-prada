@@ -4,7 +4,7 @@
 <!DOCTYPE html>
 <html id="htmlId">
 <head>
-  <title>Coverage Report > PlayerChatView</title>
+  <title>Coverage Report > GameView</title>
   <style type="text/css">
     @import "../../css/coverage.css";
     @import "../../css/idea.min.css";
@@ -21,14 +21,14 @@ Current scope:     <a href="../../index.html">all classes</a>
     <a href="../index.html">view.interfaces</a>
 </div>
 
-<h1>Coverage Summary for Class: PlayerChatView (view.interfaces)</h1>
+<h1>Coverage Summary for Class: GameView (view.interfaces)</h1>
 
 <table class="coverageStats">
 <tr>
   <th class="name">Class</th>
 </tr>
 <tr>
-  <td class="name">PlayerChatView</td>
+  <td class="name">GameView</td>
 </tr>
 
 </table>
@@ -40,24 +40,24 @@ Current scope:     <a href="../../index.html">all classes</a>
 <pre>
 <code class="sourceCode" id="sourceCode">&nbsp;package view.interfaces;
 &nbsp;
-&nbsp;import model.abstractModel.PlayerChat;
-&nbsp;import modelView.PlayerChatInfo;
+&nbsp;import model.abstractModel.Game;
+&nbsp;import modelView.GameInfo;
 &nbsp;
 &nbsp;import java.rmi.Remote;
 &nbsp;import java.rmi.RemoteException;
 &nbsp;
 &nbsp;/**
-&nbsp; * This is the view interface of a {@link PlayerChat}
+&nbsp; * This is the view interface of a {@link Game}
 &nbsp; */
 &nbsp;@FunctionalInterface
-&nbsp;public interface PlayerChatView extends Remote {
+&nbsp;public interface GameView extends Remote {
 &nbsp;    /**
-&nbsp;     * This method updates the view based on given info and event
-&nbsp;     * @param o the playerChat info
+&nbsp;     * This method updates the view based on vien info and event
+&nbsp;     * @param o the gameInfo
 &nbsp;     * @param evt the event that has generated this update
 &nbsp;     * @throws RemoteException if an error occurred reaching the remote object
 &nbsp;     */
-&nbsp;    void update(PlayerChatInfo o, PlayerChat.Event evt) throws RemoteException;
+&nbsp;    void update(GameInfo o, Game.Event evt) throws RemoteException;
 &nbsp;}
 </code>
 </pre>
@@ -82,7 +82,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2023-06-28 10:19</div>
+    <div style="float:right;">generated on 2023-06-28 19:27</div>
 </div>
 </body>
 </html>

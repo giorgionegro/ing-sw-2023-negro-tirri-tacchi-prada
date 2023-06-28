@@ -82,7 +82,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;import java.util.Arrays;
 &nbsp;
 &nbsp;/**
-&nbsp; * This class is the goal evaluator for the standard game mode.
+&nbsp; * This class is the goal evaluator for the Standard3ColumnsMax3Types or Standard4RowMax3Types goal.
 &nbsp; * It checks if the player has at least 3 columns , or 4 rows, of at most 3 different tiles.
 &nbsp; */
 &nbsp;public class Standard3or4ColumnsRowMax3Types extends GoalEvaluator {
@@ -113,6 +113,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 <b class="fc">&nbsp;    private final String standard4RowsMax3TypesId = &quot;Standard4RowsMax3Types&quot;;</b>
 &nbsp;
 &nbsp;    /**
+&nbsp;     * Constructor of Standard3or4ColumnsRowMax3Types
 &nbsp;     * @param column true if the goal is to have 3 columns of at most 3 different tiles, false if the goal is to have 4 rows of at most 3 different tiles
 &nbsp;     */
 &nbsp;    public Standard3or4ColumnsRowMax3Types(boolean column) {
@@ -141,6 +142,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;    }
 &nbsp;
 &nbsp;    /**
+&nbsp;     * {@inheritDoc}
 &nbsp;     * @param playerShelf the player&#39;s shelf to evaluate
 &nbsp;     * @return true if the player has at least 3 columns , or 4 rows, of at most 3 different tiles
 &nbsp;     */
@@ -192,7 +194,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2023-06-28 10:19</div>
+    <div style="float:right;">generated on 2023-06-28 19:27</div>
 </div>
 </body>
 </html>

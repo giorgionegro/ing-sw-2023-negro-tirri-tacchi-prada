@@ -4,7 +4,7 @@
 <!DOCTYPE html>
 <html id="htmlId">
 <head>
-  <title>Coverage Report > PlayerChatGraphics</title>
+  <title>Coverage Report > AppGraphics</title>
   <style type="text/css">
     @import "../../css/coverage.css";
     @import "../../css/idea.min.css";
@@ -21,14 +21,14 @@ Current scope:     <a href="../../index.html">all classes</a>
     <a href="../index.html">view.graphicInterfaces</a>
 </div>
 
-<h1>Coverage Summary for Class: PlayerChatGraphics (view.graphicInterfaces)</h1>
+<h1>Coverage Summary for Class: AppGraphics (view.graphicInterfaces)</h1>
 
 <table class="coverageStats">
 <tr>
   <th class="name">Class</th>
 </tr>
 <tr>
-  <td class="name">PlayerChatGraphics</td>
+  <td class="name">AppGraphics</td>
 </tr>
 
 </table>
@@ -40,22 +40,60 @@ Current scope:     <a href="../../index.html">all classes</a>
 <pre>
 <code class="sourceCode" id="sourceCode">&nbsp;package view.graphicInterfaces;
 &nbsp;
-&nbsp;import model.abstractModel.Message;
 &nbsp;
-&nbsp;import java.util.List;
+&nbsp;import java.awt.event.ActionListener;
 &nbsp;
 &nbsp;/**
-&nbsp; * This interface represents the graphics for the user&#39;s chat.
-&nbsp; * It provides a method to update the information of the chat when users communicate with each other by sending messages.
+&nbsp; * This interface represents the graphics functionalities of the application.
 &nbsp; */
-&nbsp;@FunctionalInterface
-&nbsp;public interface PlayerChatGraphics {
+&nbsp;public interface AppGraphics {
 &nbsp;    /**
-&nbsp;     * This method updates the information of the chat with the specified parameter:
-&nbsp;     *
-&nbsp;     * @param chat list of messages sent to a player
+&nbsp;     * Sets an action listener for the application graphics.
+&nbsp;     * @param actionListener the action listener to be set
 &nbsp;     */
-&nbsp;    void updatePlayerChatGraphics(List&lt;? extends Message&gt; chat);
+&nbsp;    void setActionListener(ActionListener actionListener);
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method recovers the game graphics associated with the application
+&nbsp;     * @return the GameGraphics object representing the game graphics
+&nbsp;     */
+&nbsp;    GameGraphics getGameGraphics();
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method asks graphics to show the connection page, showing an error if necessary
+&nbsp;     * @param error the error message to be displayed
+&nbsp;     */
+&nbsp;    void showConnection(String error);
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method asks graphics to show the server-interaction page, showing a message if necessary
+&nbsp;     * @param message the message to be displayed
+&nbsp;     */
+&nbsp;    void showServerInteraction(String message);
+&nbsp;
+&nbsp;    /**
+&nbsp;     This method asks graphics to show the join game page, showing an error if necessary
+&nbsp;     * @param error the error message to be displayed
+&nbsp;     *
+&nbsp;     */
+&nbsp;    void showJoin(String error);
+&nbsp;
+&nbsp;    /**
+&nbsp;     This method asks graphics to show the crete game page, showing an error if necessary
+&nbsp;     * @param error the error message to be displayed
+&nbsp;     */
+&nbsp;    void showCreate(String error);
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method asks graphics to show the Game page, showing a message if necessary
+&nbsp;     * @param message the message to be displayed
+&nbsp;     */
+&nbsp;    void showGame(String message);
+&nbsp;
+&nbsp;    /**
+&nbsp;     *This method asks graphics to close
+&nbsp;     */
+&nbsp;    void exit();
 &nbsp;}
 </code>
 </pre>
@@ -80,7 +118,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2023-06-28 10:19</div>
+    <div style="float:right;">generated on 2023-06-28 19:27</div>
 </div>
 </body>
 </html>

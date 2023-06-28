@@ -118,9 +118,8 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;public class Observable&lt;Event extends Enum&lt;Event&gt;&gt; {
 &nbsp;
 &nbsp;    /**
-&nbsp;     * Thread pool used to notify observers
+&nbsp;     * Thread used to notify observers
 &nbsp;     */
-&nbsp;    //TODO
 <b class="fc">&nbsp;    private final ExecutorService executorService = Executors.newFixedThreadPool(1);</b>
 &nbsp;    /**
 &nbsp;     * Vector of observers
@@ -134,7 +133,6 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;    /**
 &nbsp;     * Construct an Observable with zero Observers.
 &nbsp;     */
-&nbsp;
 &nbsp;    public Observable() {
 <b class="fc">&nbsp;        super();</b>
 <b class="fc">&nbsp;        this.obs = new Vector&lt;&gt;();</b>
@@ -145,7 +143,8 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;     * that it is not the same as some observer already in the set.
 &nbsp;     * The order in which notifications will be delivered to multiple
 &nbsp;     * observers is not specified. See the class comment.
-&nbsp;     *
+&nbsp;     * &lt;p&gt;
+&nbsp;     * It immediately notifies the observer of a null event
 &nbsp;     * @param o an observer to be added.
 &nbsp;     * @throws NullPointerException if the parameter o is null.
 &nbsp;     */
@@ -309,7 +308,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2023-06-28 10:19</div>
+    <div style="float:right;">generated on 2023-06-28 19:27</div>
 </div>
 </body>
 </html>

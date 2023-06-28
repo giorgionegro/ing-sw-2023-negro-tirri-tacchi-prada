@@ -76,14 +76,12 @@ Current scope:     <a href="../../index.html">all classes</a>
 <pre>
 <code class="sourceCode" id="sourceCode">&nbsp;package view.GUI.buttons;
 &nbsp;
-&nbsp;
-&nbsp;
 &nbsp;import javax.swing.*;
 &nbsp;import java.awt.*;
 &nbsp;import java.util.Objects;
 &nbsp;
 &nbsp;/**
-&nbsp; * This class extends JButton and represents a graphical component that allows the user to choose a column
+&nbsp; * This class extends JButton and represents a graphical component that allows the user to choose a shelf column
 &nbsp; */
 &nbsp;public class ColumnChooserButton extends JButton {
 &nbsp;
@@ -92,11 +90,12 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;     */
 <b class="nc">&nbsp;    private final ImageIcon insertArrow = new ImageIcon(Objects.requireNonNull(this.getClass().getResource(&quot;/insert.png&quot;)));</b>
 &nbsp;    /**
-&nbsp;     * Image of filter for the button
+&nbsp;     * Image of filter for the disabled button
 &nbsp;     */
 <b class="nc">&nbsp;    private final Image disabledImage = new ImageIcon(Objects.requireNonNull(this.getClass().getResource(&quot;/ForegroundFilter.png&quot;))).getImage();</b>
 &nbsp;
 &nbsp;    /**
+&nbsp;     * Constructor of an instance of this class that has the given column value as action command
 &nbsp;     * @param column the column to be associated with this button
 &nbsp;     */
 &nbsp;    public ColumnChooserButton(int column) {
@@ -141,7 +140,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2023-06-28 10:19</div>
+    <div style="float:right;">generated on 2023-06-28 19:27</div>
 </div>
 </body>
 </html>

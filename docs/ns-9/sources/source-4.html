@@ -81,8 +81,6 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;
 &nbsp;/**
 &nbsp; * This class is the goal evaluator for the Standard5TileDiagonal goal.
-&nbsp; * It implements the GoalEvaluator abstract class.
-&nbsp; * It is used by the CommonGoal class.
 &nbsp; **/
 <b class="fc">&nbsp;public class Standard5TileDiagonal extends GoalEvaluator {</b>
 &nbsp;
@@ -117,6 +115,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;    }
 &nbsp;
 &nbsp;    /**
+&nbsp;     * {@inheritDoc}
 &nbsp;     * @param playerShelf the player&#39;s shelf to evaluate
 &nbsp;     * @return true if the player has at least 5 tiles of the same type that form a diagonal
 &nbsp;     */
@@ -151,8 +150,6 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;        }
 &nbsp;
 <b class="fc">&nbsp;        return false;</b>
-&nbsp;
-&nbsp;
 &nbsp;    }
 &nbsp;}
 </code>
@@ -178,7 +175,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2023-06-28 10:19</div>
+    <div style="float:right;">generated on 2023-06-28 19:27</div>
 </div>
 </body>
 </html>

@@ -4,7 +4,7 @@
 <!DOCTYPE html>
 <html id="htmlId">
 <head>
-  <title>Coverage Report > UserView</title>
+  <title>Coverage Report > ViewCollection</title>
   <style type="text/css">
     @import "../../css/coverage.css";
     @import "../../css/idea.min.css";
@@ -21,14 +21,14 @@ Current scope:     <a href="../../index.html">all classes</a>
     <a href="../index.html">view.interfaces</a>
 </div>
 
-<h1>Coverage Summary for Class: UserView (view.interfaces)</h1>
+<h1>Coverage Summary for Class: ViewCollection (view.interfaces)</h1>
 
 <table class="coverageStats">
 <tr>
   <th class="name">Class</th>
 </tr>
 <tr>
-  <td class="name">UserView</td>
+  <td class="name">ViewCollection</td>
 </tr>
 
 </table>
@@ -40,25 +40,13 @@ Current scope:     <a href="../../index.html">all classes</a>
 <pre>
 <code class="sourceCode" id="sourceCode">&nbsp;package view.interfaces;
 &nbsp;
-&nbsp;import model.User;
-&nbsp;import modelView.UserInfo;
-&nbsp;
 &nbsp;import java.rmi.Remote;
-&nbsp;import java.rmi.RemoteException;
 &nbsp;
 &nbsp;/**
-&nbsp; * This is the view interface of a {@link User}
+&nbsp; * This is a collection of interfaces that contains all the necessary methods to update the application view
 &nbsp; */
-&nbsp;@FunctionalInterface
-&nbsp;public interface UserView extends Remote {
-&nbsp;    /**
-&nbsp;     * This method updates the view based on given info and event
-&nbsp;     * @param o the user info
-&nbsp;     * @param evt the event that has generated this update
-&nbsp;     * @throws RemoteException if an error occurred reaching the remote object
-&nbsp;     */
-&nbsp;    void update(UserInfo o, User.Event evt) throws RemoteException;
-&nbsp;}
+&nbsp;public interface ViewCollection extends Remote, CommonGoalView, LivingRoomView, PersonalGoalView,
+&nbsp;        PlayerChatView, PlayerView, ShelfView, GameView, UserView{}
 </code>
 </pre>
 </div>
@@ -82,7 +70,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2023-06-28 10:19</div>
+    <div style="float:right;">generated on 2023-06-28 19:27</div>
 </div>
 </body>
 </html>

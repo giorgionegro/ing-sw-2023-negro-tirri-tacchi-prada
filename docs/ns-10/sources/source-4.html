@@ -125,7 +125,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp; */
 &nbsp;public class GamePanel extends JComponent implements GameGraphics {
 &nbsp;    /**
-&nbsp;     * The ActionListener that used to send game actions
+&nbsp;     * The ActionListener used to send game actions
 &nbsp;     */
 &nbsp;    private final ActionListener listener;
 &nbsp;    /**
@@ -200,7 +200,6 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;     * The label associated to the player&#39;s playerID
 &nbsp;     */
 <b class="nc">&nbsp;    private final JLabel playerLabel = new JLabel(&quot;YOU&quot;);</b>
-&nbsp;
 &nbsp;    /**
 &nbsp;     * The label that shows a waiting message during matchmaking
 &nbsp;     */
@@ -217,7 +216,6 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;     * The playerID of the player that is on turn
 &nbsp;     */
 &nbsp;    private String playerOnTurn;
-&nbsp;
 &nbsp;    /**
 &nbsp;     * The playerID of the first player on turn
 &nbsp;     */
@@ -226,7 +224,6 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;     * Panel that displays the chat
 &nbsp;     */
 &nbsp;    private ChatPanel chatPanel;
-&nbsp;
 &nbsp;    /** Construct an {@link GamePanel} instance that uses the given {@link ActionListener} as listener for game actions
 &nbsp;     * @param listener the ActionListener to be notified when a game action need to be sent
 &nbsp;     */
@@ -507,7 +504,6 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;    /**
 &nbsp;     * This method updates player on turn graphics
 &nbsp;     */
-&nbsp;
 &nbsp;    private void updatePlayerOnTurn(){
 <b class="nc">&nbsp;        this.playerShelf.setIsFirstPlayer(this.thisPlayerId.equals(this.firstPlayer));</b>
 <b class="nc">&nbsp;        for (String s : this.opponentShelfBoards.keySet()) {</b>
@@ -602,7 +598,8 @@ Current scope:     <a href="../../index.html">all classes</a>
 <b class="nc">&nbsp;        this.repaint();</b>
 &nbsp;    }
 &nbsp;
-&nbsp;    /**{@inheritDoc}
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
 &nbsp;     * @param chat list of messages sent to a player
 &nbsp;     */
 &nbsp;    @Override
@@ -623,7 +620,8 @@ Current scope:     <a href="../../index.html">all classes</a>
 <b class="nc">&nbsp;        this.repaint();</b>
 &nbsp;    }
 &nbsp;
-&nbsp;    /**{@inheritDoc}
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
 &nbsp;     * @param reportedError message of en error encountered during gameplay
 &nbsp;     */
 &nbsp;    @Override
@@ -648,7 +646,8 @@ Current scope:     <a href="../../index.html">all classes</a>
 <b class="nc">&nbsp;        this.repaint();</b>
 &nbsp;    }
 &nbsp;
-&nbsp;    /**{@inheritDoc}
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
 &nbsp;     * @param playerId id of the player that owns the shelf
 &nbsp;     * @param shelf    shelf representation of the player
 &nbsp;     */
@@ -754,7 +753,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2023-06-28 10:19</div>
+    <div style="float:right;">generated on 2023-06-28 19:27</div>
 </div>
 </body>
 </html>

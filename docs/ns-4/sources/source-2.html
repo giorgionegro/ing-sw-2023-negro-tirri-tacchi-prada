@@ -59,10 +59,10 @@ Current scope:     <a href="../../index.html">all classes</a>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    28.9%
+    29.2%
   </span>
   <span class="absValue">
-    (13/45)
+    (14/48)
   </span>
 </td>
 </tr>
@@ -115,7 +115,8 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;    /**
 &nbsp;     * This is the lock used to wait for the ping
 &nbsp;     */
-<b class="fc">&nbsp;    private final TimedLock&lt;Boolean&gt; pingWaiter = new TimedLock&lt;&gt;(false);</b>
+<b class="fc">&nbsp;    private final TimedLock&lt;Boolean&gt; pingWaiter = new TimedLock&lt;&gt;(true);</b>
+&nbsp;
 &nbsp;
 &nbsp;    /**
 &nbsp;     * This class constructor crates an instance of this class with a given {@link controller.interfaces.ServerController}, {@link controller.interfaces.GameManagerController} and null {@link controller.interfaces.GameController}
@@ -130,20 +131,21 @@ Current scope:     <a href="../../index.html">all classes</a>
 <b class="fc">&nbsp;        this.gameManagerController = gameManagerController;</b>
 <b class="fc">&nbsp;        this.gameController = null;</b>
 &nbsp;
+&nbsp;        /* Run a thread that wait 5 seconds for a ping to be received, if not then disconnect the client */
 <b class="fc">&nbsp;        new Thread(()-&gt;{</b>
 &nbsp;            try {
 <b class="fc">&nbsp;                Thread.sleep(2000);</b>
-&nbsp;
 &nbsp;                do {
-<b class="fc">&nbsp;                    this.pingWaiter.reset(false);</b>
+<b class="fc">&nbsp;                    this.pingWaiter.reset(true);</b>
 &nbsp;
-<b class="fc">&nbsp;                    this.pingWaiter.lock(2000);</b>
+<b class="fc">&nbsp;                    this.pingWaiter.lock(5000);</b>
 &nbsp;
 <b class="fc">&nbsp;                } while (this.pingWaiter.hasBeenUnlocked());</b>
 &nbsp;
 <b class="nc">&nbsp;            } catch (InterruptedException e) {</b>
 <b class="nc">&nbsp;                System.err.println(&quot;Error: Ping thread had been interrupted&quot;);</b>
 &nbsp;            } finally {
+<b class="fc">&nbsp;                this.pingWaiter.reset(false);</b>
 <b class="fc">&nbsp;                disconnectionCallback.accept(&quot;Ping timeout&quot;);</b>
 <b class="fc">&nbsp;            }</b>
 <b class="fc">&nbsp;        }).start();</b>
@@ -171,7 +173,9 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;    @Override
 &nbsp;    public void joinGame(ClientInterface client, LoginInfo loginInfo) {
 &nbsp;        try {
+&nbsp;            /* Try to join a game */
 <b class="nc">&nbsp;            this.serverController.joinGame(client, loginInfo);</b>
+&nbsp;            /* Retrieves the gameController of the game it has joined */
 <b class="nc">&nbsp;            this.gameController = this.gameManagerController.getGame(loginInfo.gameId());</b>
 <b class="nc">&nbsp;        } catch (RemoteException e) {</b>
 <b class="nc">&nbsp;            this.printError(&quot;JoinGame&quot;, e.getMessage());</b>
@@ -245,6 +249,10 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;     */
 &nbsp;    @Override
 &nbsp;    public void ping() throws RemoteException {
+&nbsp;        /* If client is not connected anymore then throw an exception */
+<b class="nc">&nbsp;        if (!this.pingWaiter.getValue())</b>
+<b class="nc">&nbsp;            throw new RemoteException();</b>
+&nbsp;        /* Else notify the ping thread */
 <b class="nc">&nbsp;        this.pingWaiter.unlock(true);</b>
 &nbsp;    }
 &nbsp;}
@@ -271,7 +279,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2023-06-28 10:19</div>
+    <div style="float:right;">generated on 2023-06-28 19:27</div>
 </div>
 </body>
 </html>

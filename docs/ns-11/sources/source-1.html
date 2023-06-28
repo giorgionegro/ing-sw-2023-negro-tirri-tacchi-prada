@@ -243,7 +243,6 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;     * players points
 &nbsp;     */
 &nbsp;    private Map&lt;String, Integer&gt; pointsValues;
-&nbsp;
 &nbsp;    /**
 &nbsp;     * is the last turn of the game
 &nbsp;     */
@@ -260,18 +259,14 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;     * current common goals of the game
 &nbsp;     */
 &nbsp;    private Map&lt;String, Token&gt; commonGoals;
-&nbsp;
 &nbsp;    /**
 &nbsp;     *  player achieved common goals
 &nbsp;     */
-&nbsp;
 &nbsp;    private Map&lt;String, Token&gt; achievedCommonGoals;
-&nbsp;
 &nbsp;    /**
 &nbsp;     * personal goal description
 &nbsp;     */
 &nbsp;    private Tile[][] personalGoalsDescription;
-&nbsp;
 &nbsp;    /**
 &nbsp;     * Thread used to read the input from the TUI
 &nbsp;     */
@@ -738,7 +733,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;     */
 &nbsp;    @Override
 &nbsp;    public void resetGameGraphics(String playerId) {
-&nbsp;        //we reset the game graphics for a new game9
+&nbsp;        //we reset the game graphics for a new game
 <b class="nc">&nbsp;        synchronized (this.updateLock) {</b>
 <b class="nc">&nbsp;            this.playerId = playerId;</b>
 <b class="nc">&nbsp;            this.playerOnTurn = &quot;&quot;;</b>
@@ -1052,7 +1047,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2023-06-28 10:19</div>
+    <div style="float:right;">generated on 2023-06-28 19:27</div>
 </div>
 </body>
 </html>

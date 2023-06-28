@@ -97,11 +97,10 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;    }
 &nbsp;
 &nbsp;    /**
-&nbsp;     * //TODO controllare
 &nbsp;     * This method creates a new Game instance based on the type of game the user wants to create.
 &nbsp;     * @param newGameInfo record containing information of a {@link model.abstractModel.Game} creation request
-&nbsp;     * @return a new Game instance
-&nbsp;     * @throws IllegalArgumentException if newGameInfo type is not supported
+&nbsp;     * @return a new {@link Game} instance
+&nbsp;     * @throws IllegalArgumentException if newGameInfo contains unsupported or unknown info
 &nbsp;     */
 &nbsp;    public static Game build(NewGameInfo newGameInfo) throws IllegalArgumentException {
 <b class="fc">&nbsp;        if (newGameInfo.type().equals(&quot;STANDARD&quot;)) {</b>
@@ -211,7 +210,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2023-06-28 10:19</div>
+    <div style="float:right;">generated on 2023-06-28 19:27</div>
 </div>
 </body>
 </html>

@@ -4,7 +4,7 @@
 <!DOCTYPE html>
 <html id="htmlId">
 <head>
-  <title>Coverage Report > LivingRoomGraphics</title>
+  <title>Coverage Report > CommonGoalGraphics</title>
   <style type="text/css">
     @import "../../css/coverage.css";
     @import "../../css/idea.min.css";
@@ -21,14 +21,14 @@ Current scope:     <a href="../../index.html">all classes</a>
     <a href="../index.html">view.graphicInterfaces</a>
 </div>
 
-<h1>Coverage Summary for Class: LivingRoomGraphics (view.graphicInterfaces)</h1>
+<h1>Coverage Summary for Class: CommonGoalGraphics (view.graphicInterfaces)</h1>
 
 <table class="coverageStats">
 <tr>
   <th class="name">Class</th>
 </tr>
 <tr>
-  <td class="name">LivingRoomGraphics</td>
+  <td class="name">CommonGoalGraphics</td>
 </tr>
 
 </table>
@@ -40,20 +40,19 @@ Current scope:     <a href="../../index.html">all classes</a>
 <pre>
 <code class="sourceCode" id="sourceCode">&nbsp;package view.graphicInterfaces;
 &nbsp;
-&nbsp;import model.Tile;
-&nbsp;
 &nbsp;/**
-&nbsp; * This interface represents the graphics for living room board
-&nbsp; * It provides a method to update the information of the board when the users are playing the game.
+&nbsp; * This interface represents the graphics for a common goal.
+&nbsp; * It provides a method to update the information of the common goal.
 &nbsp; */
 &nbsp;@FunctionalInterface
-&nbsp;public interface LivingRoomGraphics {
+&nbsp;public interface CommonGoalGraphics {
 &nbsp;    /**
-&nbsp;     * This method updates the information of the board with the specified parameter:
-&nbsp;     *
-&nbsp;     * @param board board of the living room
+&nbsp;     * This method updates the information of the common goal with the specified parameters:
+&nbsp;     * @param id          the unique id of the common goal
+&nbsp;     * @param description the description of common goal specs
+&nbsp;     * @param tokenState  the current token value of the common goal
 &nbsp;     */
-&nbsp;    void updateBoardGraphics(Tile[][] board);
+&nbsp;    void updateCommonGoalGraphics(String id, String description, model.Token tokenState);
 &nbsp;}
 </code>
 </pre>
@@ -78,7 +77,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2023-06-28 10:19</div>
+    <div style="float:right;">generated on 2023-06-28 19:27</div>
 </div>
 </body>
 </html>

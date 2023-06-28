@@ -139,14 +139,14 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;public class ChatPanel extends JPanel implements PlayerChatGraphics {
 &nbsp;
 &nbsp;    /**
-&nbsp;     * This map contains associations between player names and player ids
+&nbsp;     * This map contains associations between opponents names and opponents ids
 &nbsp;     */
 <b class="nc">&nbsp;    private final Map&lt;String, String&gt; subjects = new HashMap&lt;&gt;() {{</b>
 <b class="nc">&nbsp;        this.put(&quot;Everyone&quot;, &quot;&quot;);</b>
 &nbsp;    }};
 &nbsp;
 &nbsp;    /**
-&nbsp;     * The player ID of this client
+&nbsp;     * The playerID
 &nbsp;     */
 &nbsp;    private final String playerId;
 &nbsp;    /**
@@ -156,14 +156,12 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;
 &nbsp;
 &nbsp;    /*----------------- GRAPHICS LAYOUT ----------------*/
-&nbsp;
-&nbsp;
 &nbsp;    /**
 &nbsp;     * This is the background image of {@link #Send}
 &nbsp;     */
 <b class="nc">&nbsp;    private final Image buttonBackground = new ImageIcon(Objects.requireNonNull(this.getClass().getResource(&quot;/img.png&quot;))).getImage();</b>
 &nbsp;    /**
-&nbsp;     * The scrollable text area component used for displaying the messages from the other players.
+&nbsp;     * The scrollable text area component used for displaying the messages from opponents.
 &nbsp;     */
 <b class="nc">&nbsp;    private final JScrollPane scrollTextArea = new JScrollPane(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);</b>
 &nbsp;    /**
@@ -190,9 +188,9 @@ Current scope:     <a href="../../index.html">all classes</a>
 <b class="nc">&nbsp;    private final JTextField mex = new JTextField();</b>
 &nbsp;
 &nbsp;
-&nbsp;    /** Construct an {@link CreateGamePanel} instance that uses the given {@link ActionListener} as listener for buttons events
-&nbsp;     * @param viewLogic the ActionListener to be notified when a button is pressed
-&nbsp;     * @param playerId player id of the receiver of the message
+&nbsp;    /** Construct an {@link CreateGamePanel} instance that uses the given {@link ActionListener} as listener for sending messages
+&nbsp;     * @param viewLogic the ActionListener to be notified when a {@link #Send} is pressed
+&nbsp;     * @param playerId the playerID
 &nbsp;     */
 &nbsp;    public ChatPanel(ActionListener viewLogic, String playerId) {
 <b class="nc">&nbsp;        super();</b>
@@ -208,7 +206,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;    }
 &nbsp;
 &nbsp;    /**
-&nbsp;     * This method adds a subject to the list of subjects (which are the receiver of the messages) and updates the subjects combo box.
+&nbsp;     * This method adds a subject to the list of subjects (opponents) and updates the subjects combo box.
 &nbsp;     * @param subjectID player id
 &nbsp;     */
 &nbsp;    public void addSubject(String subjectID) {
@@ -219,7 +217,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;    }
 &nbsp;    /**
 &nbsp;     * {@inheritDoc}
-&nbsp;     * @param chat list of messages sent to a player.
+&nbsp;     * @param chat list of messages sent to the player.
 &nbsp;     */
 &nbsp;    @Override
 &nbsp;    public void updatePlayerChatGraphics(List&lt;? extends Message&gt; chat) {
@@ -325,7 +323,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2023-06-28 10:19</div>
+    <div style="float:right;">generated on 2023-06-28 19:27</div>
 </div>
 </body>
 </html>

@@ -48,10 +48,10 @@ Current scope:     <a href="../../index.html">all classes</a>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    90.8%
+    90.2%
   </span>
   <span class="absValue">
-    (216/238)
+    (221/245)
   </span>
 </td>
 </tr>
@@ -200,10 +200,10 @@ Current scope:     <a href="../../index.html">all classes</a>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    92.1%
+    91.6%
   </span>
   <span class="absValue">
-    (256/278)
+    (261/285)
   </span>
 </td>
 </tr>
@@ -243,6 +243,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp; * &lt;p&gt;
 &nbsp; * The game rules implemented follow the standard rules
 &nbsp; */
+&nbsp;@SuppressWarnings(&quot;rawtypes&quot;)
 &nbsp;public class StandardGameController implements GameController, LobbyController {
 &nbsp;    /**
 &nbsp;     * The model of the game this controller is interacting with
@@ -264,6 +265,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;     * the observable they are attached to.
 &nbsp;     * This object is mainly used when a client needs to be detached from the game
 &nbsp;     */
+&nbsp;    @SuppressWarnings(&quot;rawtypes&quot;)
 &nbsp;    private final Map&lt;ClientInterface, Map&lt;Observable, Observer&gt;&gt; observerAssociation;
 &nbsp;
 &nbsp;    /**
@@ -313,18 +315,18 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;                /* Try to join the player */
 <b class="fc">&nbsp;                this.game.addPlayer(playerId);</b>
 &nbsp;
-&nbsp;                /* Authorize the client to use this controller*/
-<b class="fc">&nbsp;                this.userAssociation.put(newClient, newUser);</b>
-&nbsp;
-&nbsp;                /* Put newUser into known users */
-<b class="fc">&nbsp;                this.playerAssociation.put(newUser, playerId);</b>
-&nbsp;
 &nbsp;                /* Attach all the observers to the client */
 &nbsp;                try {
 <b class="fc">&nbsp;                    this.addObservers(newClient, playerId);</b>
 <b class="nc">&nbsp;                } catch (PlayerNotExistsException e) {</b>
 <b class="nc">&nbsp;                    this.printModelError(&quot;Player that should exists does not exists, warning due to possible malfunctions&quot;);</b>
 <b class="fc">&nbsp;                }</b>
+&nbsp;
+&nbsp;                /* Authorize the client to use this controller*/
+<b class="fc">&nbsp;                this.userAssociation.put(newClient, newUser);</b>
+&nbsp;
+&nbsp;                /* Put newUser into known users */
+<b class="fc">&nbsp;                this.playerAssociation.put(newUser, playerId);</b>
 &nbsp;
 &nbsp;                /* Get model status after the player has joined */
 <b class="fc">&nbsp;                Game.GameStatus newStatus = this.game.getGameStatus();</b>
@@ -354,6 +356,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;     * @param newPlayerId new player&#39;s id
 &nbsp;     * @throws PlayerNotExistsException if the player does not exists
 &nbsp;     */
+&nbsp;    @SuppressWarnings(&quot;rawtypes&quot;)
 &nbsp;    private void addObservers(ClientInterface newClient, String newPlayerId) throws PlayerNotExistsException {
 &nbsp;        /* Creates a map to associate each observer to his observable */
 <b class="fc">&nbsp;        Map&lt;Observable, Observer&gt; newObserverAssociation = new HashMap&lt;&gt;();</b>
@@ -406,9 +409,13 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;        /* Add Shelf status observer of new player to all already joined players */
 &nbsp;        /* Add Shelf status observer of all already joined players to new player */
 <b class="fc">&nbsp;        for (Map.Entry&lt;ClientInterface, User&gt; association : this.userAssociation.entrySet()) {</b>
-<b class="fc">&nbsp;            newPlayerShelf.addObserver(this.getShelfObserver(association.getKey(), newPlayerId));</b>
+<b class="fc">&nbsp;            Observer&lt;Shelf, Shelf.Event&gt; newPlayerShelfEventObserver = this.getShelfObserver(association.getKey(), newPlayerId);</b>
+<b class="fc">&nbsp;            newPlayerShelf.addObserver(newPlayerShelfEventObserver);</b>
+<b class="fc">&nbsp;            this.observerAssociation.get(association.getKey()).put(newPlayerShelf,newPlayerShelfEventObserver);</b>
+&nbsp;
 <b class="fc">&nbsp;            String joinedPlayerId = this.playerAssociation.get(association.getValue());</b>
 <b class="fc">&nbsp;            Shelf joinedPlayerShelf = this.game.getPlayer(joinedPlayerId).getShelf();</b>
+&nbsp;
 <b class="fc">&nbsp;            Observer&lt;Shelf, Shelf.Event&gt; joinedPlayerShelfEventObserver = this.getShelfObserver(newClient, joinedPlayerId);</b>
 <b class="fc">&nbsp;            newObserverAssociation.put(joinedPlayerShelf, joinedPlayerShelfEventObserver);</b>
 <b class="fc">&nbsp;            joinedPlayerShelf.addObserver(joinedPlayerShelfEventObserver);</b>
@@ -568,6 +575,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;     * @param client {@inheritDoc}
 &nbsp;     * @throws GameAccessDeniedException if client has not joined this game
 &nbsp;     */
+&nbsp;    @SuppressWarnings(&quot;rawtypes&quot;)
 &nbsp;    @Override
 &nbsp;    public void leavePlayer(ClientInterface client) throws GameAccessDeniedException {
 &nbsp;        /* Check if client is allowed */
@@ -581,6 +589,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;
 &nbsp;            /* remove all observer associated with this user */
 <b class="fc">&nbsp;            Map&lt;Observable, Observer&gt; playerObserverAssociation = this.observerAssociation.get(client);</b>
+&nbsp;
 <b class="fc">&nbsp;            playerObserverAssociation.forEach(Observable::deleteObserver);</b>
 &nbsp;
 &nbsp;            /* Reports to the user it has leaved the game */
@@ -621,6 +630,17 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;                            /* If nobody has rejoined then close the game */
 <b class="fc">&nbsp;                            if (!this.lobbyLock.getValue())</b>
 <b class="fc">&nbsp;                                this.closeTheGame(&quot;Game closed due to reconnection timeout&quot;);</b>
+&nbsp;                            else
+&nbsp;                            {
+<b class="fc">&nbsp;                                if (skipNeeded) {</b>
+&nbsp;                                    try {
+<b class="fc">&nbsp;                                        this.game.updatePlayersTurn();</b>
+<b class="nc">&nbsp;                                    } catch (GameEndedException e) {</b>
+&nbsp;                                        /* If skipping the turn makes game end, then close the game */
+<b class="nc">&nbsp;                                        this.closeTheGame(&quot;Game Ended&quot;);</b>
+<b class="fc">&nbsp;                                    }</b>
+&nbsp;                                }
+&nbsp;                            }
 <b class="fc">&nbsp;                        }).start();</b>
 &nbsp;                    }
 &nbsp;                    /* If a skip was needed then skip the turn */
@@ -982,7 +1002,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2023-06-28 10:19</div>
+    <div style="float:right;">generated on 2023-06-28 19:27</div>
 </div>
 </body>
 </html>

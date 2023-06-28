@@ -103,7 +103,6 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;     * The ActionListener that will be notified when the user confirms the selection
 &nbsp;     */
 &nbsp;    private final ActionListener moveSender;
-&nbsp;
 &nbsp;    /**
 &nbsp;     * Code that represents the action of selecting a tile
 &nbsp;     */
@@ -112,7 +111,6 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;     * Code that represents the action of resetting the selection
 &nbsp;     */
 &nbsp;    public static final int RESET = 1;
-&nbsp;
 &nbsp;    /**
 &nbsp;     * Code that represents the action of switching the first and the second tile
 &nbsp;     */
@@ -139,7 +137,6 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;     * Swap button that allows the user to switch the second and the third tile
 &nbsp;     */
 <b class="nc">&nbsp;    private final SwapButton swapButton2 = new SwapButton();</b>
-&nbsp;
 &nbsp;    /**
 &nbsp;     * Define a zero dimension
 &nbsp;     */
@@ -179,14 +176,17 @@ Current scope:     <a href="../../index.html">all classes</a>
 <b class="nc">&nbsp;            }</b>
 <b class="nc">&nbsp;            this.pickedTiles.clear();</b>
 <b class="nc">&nbsp;        } else if (e.getID() == this.SWITCH_ONE_TWO) {</b>
+&nbsp;            /* If there are 3 tiles selected then pick the middle one and put it on end */
 <b class="nc">&nbsp;            if (this.pickedTiles.size() == 3) {</b>
 <b class="nc">&nbsp;                this.pickedTiles.add(this.pickedTiles.remove(1));</b>
 &nbsp;            }
 <b class="nc">&nbsp;        } else if (e.getID() == this.SWITCH_TWO_THREE) {</b>
+&nbsp;            /* If there is almost two tiles then pick the middle one and put it on top */
 <b class="nc">&nbsp;            if (this.pickedTiles.size() &gt; 1) {</b>
 <b class="nc">&nbsp;                this.pickedTiles.add(0, this.pickedTiles.remove(1));</b>
 &nbsp;            }
 <b class="nc">&nbsp;        } else if (e.getID() == CONFIRM) {</b>
+&nbsp;            /* If a move is confirmed then checks if there is almost one tile picked and builds a command as ViewLogic requests*/
 <b class="nc">&nbsp;            if (this.pickedTiles.size() &gt; 0) {</b>
 <b class="nc">&nbsp;                String columnInShelf = e.getActionCommand();</b>
 <b class="nc">&nbsp;                StringBuilder picked = new StringBuilder();</b>
@@ -199,11 +199,14 @@ Current scope:     <a href="../../index.html">all classes</a>
 <b class="nc">&nbsp;                this.moveSender.actionPerformed(new ActionEvent(this, ViewLogic.SEND_MOVE, move));</b>
 <b class="nc">&nbsp;            }</b>
 <b class="nc">&nbsp;        } else if (e.getID() == SELECT_TILE &amp;&amp; e.getSource() instanceof TileButton button) {</b>
+&nbsp;            /* If the calling object is an TileButton then ...*/
 <b class="nc">&nbsp;            boolean selected = button.isSelected();</b>
 <b class="nc">&nbsp;            if (selected) {</b>
+&nbsp;                /* ... if it has been already selected deselect */
 <b class="nc">&nbsp;                button.setSelected(false);</b>
 <b class="nc">&nbsp;                this.pickedTiles.remove(button);</b>
 &nbsp;            } else {
+&nbsp;                /* ... otherwise check if is pickable and select it*/
 <b class="nc">&nbsp;                if (this.pickedTiles.size() &lt; 3 &amp;&amp; this.isPickable(button)) {</b>
 <b class="nc">&nbsp;                    button.setSelected(true);</b>
 <b class="nc">&nbsp;                    this.pickedTiles.add(button);</b>
@@ -213,7 +216,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;
 <b class="nc">&nbsp;        this.revalidate();</b>
 <b class="nc">&nbsp;        this.repaint();</b>
-&nbsp;
+&nbsp;        /* Notify columnChooser of how many tiles has been picked in order to disable column chooser buttons if shelf column is too empty */
 <b class="nc">&nbsp;        this.columnChooser.actionPerformed(new ActionEvent(this, 0, String.valueOf(this.pickedTiles.size())));</b>
 &nbsp;    }
 &nbsp;
@@ -224,7 +227,6 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;     * @return true if the tile is pickable, false otherwise
 &nbsp;     */
 &nbsp;    private boolean isPickable(TileButton Tile) {
-&nbsp;
 <b class="nc">&nbsp;        List&lt;PickedTile&gt; temp = new ArrayList&lt;&gt;();</b>
 <b class="nc">&nbsp;        for (TileButton t : this.pickedTiles) {</b>
 <b class="nc">&nbsp;            temp.add(new PickedTile(t.getTileX(), t.getTileY()));</b>
@@ -234,19 +236,16 @@ Current scope:     <a href="../../index.html">all classes</a>
 <b class="nc">&nbsp;        return this.pickable(temp);</b>
 &nbsp;    }
 &nbsp;
-&nbsp;
 &nbsp;    /**
 &nbsp;     * This method checks if a list of {@link PickedTile}s is pickable
 &nbsp;     *
 &nbsp;     * @param pickedTiles the tiles to be checked
 &nbsp;     * @return true if the tiles are pickable, false otherwise
 &nbsp;     */
-&nbsp;    public boolean pickable(List&lt;PickedTile&gt; pickedTiles) {
+&nbsp;    private boolean pickable(List&lt;PickedTile&gt; pickedTiles) {
 <b class="nc">&nbsp;        if (!this.areTilesDifferent(new ArrayList&lt;&gt;(pickedTiles))) {</b>
-&nbsp;            // print error this(&quot;Tiles are not different&quot;, RED);
 <b class="nc">&nbsp;            return false;</b>
 &nbsp;        }
-&nbsp;        // print error  this.printCommandLine(&quot;Tiles are not aligned&quot;, RED);
 <b class="nc">&nbsp;        return this.areTilesAligned(new ArrayList&lt;&gt;(pickedTiles));</b>
 &nbsp;    }
 &nbsp;
@@ -421,7 +420,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2023-06-28 10:19</div>
+    <div style="float:right;">generated on 2023-06-28 19:27</div>
 </div>
 </body>
 </html>

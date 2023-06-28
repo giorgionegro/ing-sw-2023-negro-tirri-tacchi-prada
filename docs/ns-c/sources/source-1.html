@@ -70,7 +70,7 @@ Current scope:     <a href="../../index.html">all classes</a>
     0%
   </span>
   <span class="absValue">
-    (0/2)
+    (0/1)
   </span>
 </td>
   </tr>
@@ -89,7 +89,7 @@ Current scope:     <a href="../../index.html">all classes</a>
     0%
   </span>
   <span class="absValue">
-    (0/189)
+    (0/188)
   </span>
 </td>
 </tr>
@@ -183,21 +183,21 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;    public static final int LEAVE_GAME = 10;
 &nbsp;
 &nbsp;    /**
-&nbsp;     * update Thread pool
+&nbsp;     * Updates Thread
 &nbsp;     */
 <b class="nc">&nbsp;    private final ExecutorService updateService = Executors.newFixedThreadPool(1);</b>
 &nbsp;
 &nbsp;    /**
-&nbsp;     * RMI action
+&nbsp;     * RMI connection choice
 &nbsp;     */
 &nbsp;    public static final String CONNECT_RMI = &quot;RMI&quot;;
 &nbsp;    /**
-&nbsp;     * Socket action
+&nbsp;     * Socket connection choice
 &nbsp;     */
 &nbsp;    public static final String CONNECT_SOCKET = &quot;SOCKET&quot;;
 &nbsp;
 &nbsp;    /**
-&nbsp;     * This action performed is used to exchange messages between the view logic and the view
+&nbsp;     * This action performed manages interactions between the view logic and the graphic components
 &nbsp;     *
 &nbsp;     * @param e the event to be processed by the view
 &nbsp;     */
@@ -260,12 +260,12 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;     */
 &nbsp;    private final ClientInterface clientEndPoint;
 &nbsp;    /**
-&nbsp;     * time of the current session, used to check if incoming messages are valid
+&nbsp;     * current session ID, used to check if incoming messages are valid
 &nbsp;     */
-<b class="nc">&nbsp;    private long currentSessionTime = -1;</b>
+<b class="nc">&nbsp;    private long currentSessionID = -1;</b>
 &nbsp;
 &nbsp;    /**
-&nbsp;     * field used to check if the client is connected to the server
+&nbsp;     * Field used to check if the client is connected to the server
 &nbsp;     */
 &nbsp;    private boolean connected;
 &nbsp;
@@ -304,7 +304,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;    }
 &nbsp;
 &nbsp;    /**
-&nbsp;     * disconnects the client from the server and returns to the connection screen
+&nbsp;     * This method disconnects the client from the server and returns to the connection screen
 &nbsp;     *
 &nbsp;     * @param message the message to be sent to the view
 &nbsp;     */
@@ -317,7 +317,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 <b class="nc">&nbsp;        }</b>
 <b class="nc">&nbsp;        this.updateService.submit(() -&gt; {</b>
 <b class="nc">&nbsp;            this.connected = false;</b>
-<b class="nc">&nbsp;            this.currentSessionTime = -1;</b>
+<b class="nc">&nbsp;            this.currentSessionID = -1;</b>
 <b class="nc">&nbsp;            this.serverEndpoint = null;</b>
 <b class="nc">&nbsp;            this.server = null;</b>
 <b class="nc">&nbsp;            this.actionPerformed(new ActionEvent(this.appGraphics,ROUTE_CONNECT,message));</b>
@@ -403,8 +403,8 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;     *
 &nbsp;     * @param joinInfo the info to be sent to the server
 &nbsp;     */
-&nbsp;    // take PLAYERID GAMEID spaced
 &nbsp;    private void joinGame(String joinInfo) {
+&nbsp;        // take PLAYERID GAMEID spaced
 &nbsp;        //check if the join info is valid
 <b class="nc">&nbsp;        if(joinInfo==null)</b>
 <b class="nc">&nbsp;            this.actionPerformed(new ActionEvent(this.appGraphics,ROUTE_JOIN,&quot;Null info value&quot;));</b>
@@ -417,10 +417,10 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;                try {
 <b class="nc">&nbsp;                    this.gameGraphics.resetGameGraphics(joinInfoParts[0]);</b>
 &nbsp;
-<b class="nc">&nbsp;                    this.currentSessionTime = System.currentTimeMillis();</b>
+<b class="nc">&nbsp;                    this.currentSessionID = System.currentTimeMillis();</b>
 <b class="nc">&nbsp;                    this.serverWaiter.reset(true);</b>
 &nbsp;
-<b class="nc">&nbsp;                    this.serverEndpoint.joinGame(this.clientEndPoint, new LoginInfo(joinInfoParts[0], joinInfoParts[1], this.currentSessionTime));</b>
+<b class="nc">&nbsp;                    this.serverEndpoint.joinGame(this.clientEndPoint, new LoginInfo(joinInfoParts[0], joinInfoParts[1], this.currentSessionID));</b>
 &nbsp;                    //wait for server response or for timeout
 <b class="nc">&nbsp;                    if (!this.serverWaiter.hasBeenUnlocked()) {</b>
 &nbsp;                        try {
@@ -450,8 +450,8 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;     *
 &nbsp;     * @param gameInfo the info to be sent to the server
 &nbsp;     */
-&nbsp;    //TAKE GAMETYPE GAMEID PLAYERNUMBER spaced
 &nbsp;    private void createGame(String gameInfo){
+&nbsp;        //TAKE GAMETYPE GAMEID PLAYERNUMBER spaced
 &nbsp;        //if the gameInfo is null, the user is notified and the method returns
 <b class="nc">&nbsp;        if(gameInfo==null)</b>
 <b class="nc">&nbsp;            this.actionPerformed(new ActionEvent(this.appGraphics,ROUTE_CREATE,&quot;Null info value&quot;));</b>
@@ -463,10 +463,10 @@ Current scope:     <a href="../../index.html">all classes</a>
 <b class="nc">&nbsp;            else if(!(gameInfoParts[0].isBlank() || gameInfoParts[1].isBlank() || gameInfoParts[2].isBlank())){</b>
 &nbsp;                try {
 <b class="nc">&nbsp;                    int playerNumber = Integer.parseInt(gameInfoParts[gameInfoParts.length-1]);</b>
-<b class="nc">&nbsp;                    this.currentSessionTime = System.currentTimeMillis();</b>
+<b class="nc">&nbsp;                    this.currentSessionID = System.currentTimeMillis();</b>
 <b class="nc">&nbsp;                    this.serverWaiter.reset(true);</b>
 &nbsp;
-<b class="nc">&nbsp;                    this.serverEndpoint.createGame(this.clientEndPoint, new NewGameInfo(gameInfoParts[1], gameInfoParts[0], playerNumber, this.currentSessionTime));</b>
+<b class="nc">&nbsp;                    this.serverEndpoint.createGame(this.clientEndPoint, new NewGameInfo(gameInfoParts[1], gameInfoParts[0], playerNumber, this.currentSessionID));</b>
 &nbsp;                    //waiting for the server to respond or the timeout to expire
 <b class="nc">&nbsp;                    if (!this.serverWaiter.hasBeenUnlocked()) {</b>
 &nbsp;                        try {
@@ -494,7 +494,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;
 &nbsp;    /**
 &nbsp;     *  This method is used to parse login info and send it to the server
-&nbsp;     *  When the server thows an exception the client is notified
+&nbsp;     *  When the server throws an exception the client is notified
 &nbsp;     *
 &nbsp;     * @param messageInfo the info to be sent to the server
 &nbsp;     */
@@ -523,7 +523,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;
 &nbsp;    /**
 &nbsp;     * This method is used to parse move info and send it to the server
-&nbsp;     * When the server thows an exception the client is notified
+&nbsp;     * When the server throws an exception the client is notified
 &nbsp;     *
 &nbsp;     * @param moveInfo the info to be sent to the server
 &nbsp;     */
@@ -683,10 +683,10 @@ Current scope:     <a href="../../index.html">all classes</a>
 <b class="nc">&nbsp;            if (evt == null) {</b>
 &nbsp;                return;
 &nbsp;            }
-<b class="nc">&nbsp;            switch (evt) {</b>
-<b class="nc">&nbsp;                case ERROR_REPORTED -&gt; this.gameGraphics.updateErrorState(o.errorMessage());</b>
-<b class="nc">&nbsp;                case COMMON_GOAL_ACHIEVED -&gt; this.gameGraphics.updateAchievedCommonGoals(o.achievedCommonGoals());</b>
+<b class="nc">&nbsp;            if(evt == Player.Event.ERROR_REPORTED) {</b>
+<b class="nc">&nbsp;                this.gameGraphics.updateErrorState(o.errorMessage());</b>
 &nbsp;            }
+<b class="nc">&nbsp;            this.gameGraphics.updateAchievedCommonGoals(o.achievedCommonGoals());</b>
 &nbsp;        });
 &nbsp;    }
 &nbsp;
@@ -721,7 +721,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;    public void update(UserInfo o, User.Event evt) throws RemoteException {
 <b class="nc">&nbsp;        this.updateService.submit(() -&gt;{</b>
 &nbsp;            //if the session is not the current one, the update is ignored
-<b class="nc">&nbsp;            if (o.sessionID() != this.currentSessionTime)</b>
+<b class="nc">&nbsp;            if (o.sessionID() != this.currentSessionID)</b>
 &nbsp;                return;
 &nbsp;            //if the event is null, we unlock the server waiter and return
 <b class="nc">&nbsp;            if (evt == null) {</b>
@@ -763,7 +763,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2023-06-28 10:19</div>
+    <div style="float:right;">generated on 2023-06-28 19:27</div>
 </div>
 </body>
 </html>

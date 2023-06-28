@@ -62,7 +62,7 @@ Current scope:     <a href="../../index.html">all classes</a>
     0%
   </span>
   <span class="absValue">
-    (0/79)
+    (0/83)
   </span>
 </td>
 </tr>
@@ -317,6 +317,11 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;                }
 <b class="nc">&nbsp;            } catch (RemoteException e) {</b>
 <b class="nc">&nbsp;                System.err.println(&quot;Cannot receive from client: &quot; + e.getMessage() + &quot;.\n-&gt; Closing this connection...&quot;);</b>
+&nbsp;                try {
+<b class="nc">&nbsp;                    super.close();</b>
+<b class="nc">&nbsp;                } catch (RemoteException ex) {</b>
+<b class="nc">&nbsp;                    throw new RuntimeException(&quot;Error on socket disconnection&quot;);</b>
+<b class="nc">&nbsp;                }</b>
 &nbsp;            }
 <b class="nc">&nbsp;        }).start();</b>
 &nbsp;    }
@@ -344,7 +349,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2023-06-28 10:19</div>
+    <div style="float:right;">generated on 2023-06-28 19:27</div>
 </div>
 </body>
 </html>

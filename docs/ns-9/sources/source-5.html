@@ -83,9 +83,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;import java.util.concurrent.atomic.AtomicBoolean;
 &nbsp;
 &nbsp;/**
-&nbsp; * This class is the goal evaluator for the Standard8TilesSameType goal.
-&nbsp; * It implements the GoalEvaluator abstract class.
-&nbsp; * It is used by the CommonGoal class.
+&nbsp; * This class is the goal evaluator for the Standard8TilesSameType goal
 &nbsp; */
 <b class="fc">&nbsp;public class Standard8TilesSameType extends GoalEvaluator {</b>
 &nbsp;    /**
@@ -124,7 +122,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;    }
 &nbsp;
 &nbsp;    /**
-&nbsp;     * This method evaluates if the goal is achieved
+&nbsp;     * {@inheritDoc}
 &nbsp;     *
 &nbsp;     * @param playerShelf the player&#39;s shelf
 &nbsp;     * @return boolean true if 8 tiles of the same type are in the player&#39;s shelf
@@ -148,7 +146,6 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;            }
 &nbsp;        });
 <b class="fc">&nbsp;        return flag.get();</b>
-&nbsp;
 &nbsp;    }
 &nbsp;}
 </code>
@@ -174,7 +171,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2023-06-28 10:19</div>
+    <div style="float:right;">generated on 2023-06-28 19:27</div>
 </div>
 </body>
 </html>

@@ -4,7 +4,7 @@
 <!DOCTYPE html>
 <html id="htmlId">
 <head>
-  <title>Coverage Report > PersonalGoalGraphics</title>
+  <title>Coverage Report > GameGraphics</title>
   <style type="text/css">
     @import "../../css/coverage.css";
     @import "../../css/idea.min.css";
@@ -21,14 +21,14 @@ Current scope:     <a href="../../index.html">all classes</a>
     <a href="../index.html">view.graphicInterfaces</a>
 </div>
 
-<h1>Coverage Summary for Class: PersonalGoalGraphics (view.graphicInterfaces)</h1>
+<h1>Coverage Summary for Class: GameGraphics (view.graphicInterfaces)</h1>
 
 <table class="coverageStats">
 <tr>
   <th class="name">Class</th>
 </tr>
 <tr>
-  <td class="name">PersonalGoalGraphics</td>
+  <td class="name">GameGraphics</td>
 </tr>
 
 </table>
@@ -39,21 +39,16 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <pre>
 <code class="sourceCode" id="sourceCode">&nbsp;package view.graphicInterfaces;
-&nbsp;import model.Tile;
 &nbsp;
 &nbsp;/**
-&nbsp; * This interface represents the graphics for a personal goal.
-&nbsp; * It provides a method to update the information of the personal goal.
+&nbsp; * This interface represents the graphics functionalities of the game
 &nbsp; */
-&nbsp;@FunctionalInterface
-&nbsp;public interface PersonalGoalGraphics {
+&nbsp;public interface GameGraphics extends LivingRoomGraphics, PlayerShelfGraphics, GameInfoGraphics, PlayerChatGraphics, CommonGoalGraphics, PlayerInfoGraphics, PersonalGoalGraphics {
 &nbsp;    /**
-&nbsp;     * This method updates the information of the personal goal with the specified parameters:
-&nbsp;     * @param id the id of this goal, unique among others player personal goal
-&nbsp;     * @param hasBeenAchieved true if the goal is achieved
-&nbsp;     * @param description     matrix representation of the goal
+&nbsp;     * This method asks the game graphic to reset, in order to prepare for a new game
+&nbsp;     * @param playerId the player ID used in the next game
 &nbsp;     */
-&nbsp;    void updatePersonalGoalGraphics(int id, boolean hasBeenAchieved, Tile[][] description);
+&nbsp;    void resetGameGraphics(String playerId);
 &nbsp;}
 </code>
 </pre>
@@ -78,7 +73,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2023-06-28 10:19</div>
+    <div style="float:right;">generated on 2023-06-28 19:27</div>
 </div>
 </body>
 </html>
