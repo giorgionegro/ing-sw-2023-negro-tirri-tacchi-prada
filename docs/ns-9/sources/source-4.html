@@ -1,0 +1,184 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > Standard5TileDiagonal</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">model.goalEvaluators</a>
+</div>
+
+<h1>Coverage Summary for Class: Standard5TileDiagonal (model.goalEvaluators)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Standard5TileDiagonal</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (4/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (20/20)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package model.goalEvaluators;
+&nbsp;
+&nbsp;import model.Tile;
+&nbsp;import model.abstractModel.GoalEvaluator;
+&nbsp;
+&nbsp;/**
+&nbsp; * This class is the goal evaluator for the Standard5TileDiagonal goal.
+&nbsp; * It implements the GoalEvaluator abstract class.
+&nbsp; * It is used by the CommonGoal class.
+&nbsp; **/
+<b class="fc">&nbsp;public class Standard5TileDiagonal extends GoalEvaluator {</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This string contains the description of the commonGoal 5TileDiagonal
+&nbsp;     */
+<b class="fc">&nbsp;    private final String standard5TileDiagonalDescription = &quot;Five tiles of the same type that form a diagonal.&quot;;</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This string contains the id of the commonGoal 5TileDiagonal
+&nbsp;     */
+<b class="fc">&nbsp;    private final String standard5TileDiagonalId = &quot;Standard5TileDiagonal&quot;;</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     *
+&nbsp;     * @return {@link #standard5TileDiagonalDescription}
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public String getDescription() {
+<b class="fc">&nbsp;        return this.standard5TileDiagonalDescription;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     *
+&nbsp;     * @return {@link #standard5TileDiagonalId}
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public String getId() {
+<b class="fc">&nbsp;        return this.standard5TileDiagonalId;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * @param playerShelf the player&#39;s shelf to evaluate
+&nbsp;     * @return true if the player has at least 5 tiles of the same type that form a diagonal
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public boolean evaluate(Tile[][] playerShelf) {
+&nbsp;        // check diagonal win from top left to bottom right
+&nbsp;
+&nbsp;        // first we check the diagonal from top left to bottom right
+<b class="fc">&nbsp;        for (int i = 0; i &lt; playerShelf.length - 4; i++) {</b>
+<b class="fc">&nbsp;            for (int j = 0; j &lt; playerShelf[0].length - 4; j++) {</b>
+<b class="fc">&nbsp;                if (playerShelf[i][j].getColor().equals(playerShelf[i + 1][j + 1].getColor()) &amp;&amp;</b>
+<b class="fc">&nbsp;                        playerShelf[i][j].getColor().equals(playerShelf[i + 2][j + 2].getColor()) &amp;&amp;</b>
+<b class="fc">&nbsp;                        playerShelf[i][j].getColor().equals(playerShelf[i + 3][j + 3].getColor()) &amp;&amp;</b>
+<b class="fc">&nbsp;                        playerShelf[i][j].getColor().equals(playerShelf[i + 4][j + 4].getColor()) &amp;&amp;</b>
+&nbsp;                        (playerShelf[i][j] != Tile.EMPTY)
+&nbsp;                ) {
+<b class="fc">&nbsp;                    return true;</b>
+&nbsp;                }
+&nbsp;            }
+&nbsp;        }
+&nbsp;        // then we check the diagonal from top right to bottom left
+<b class="fc">&nbsp;        for (int i = 0; i &lt; playerShelf.length - 4; i++) {</b>
+<b class="fc">&nbsp;            for (int j = 4; j &lt; playerShelf[0].length; j++) {</b>
+<b class="fc">&nbsp;                if (playerShelf[i][j].getColor().equals(playerShelf[i + 1][j - 1].getColor()) &amp;&amp;</b>
+<b class="fc">&nbsp;                        playerShelf[i][j].getColor().equals(playerShelf[i + 2][j - 2].getColor()) &amp;&amp;</b>
+<b class="fc">&nbsp;                        playerShelf[i][j].getColor().equals(playerShelf[i + 3][j - 3].getColor()) &amp;&amp;</b>
+<b class="fc">&nbsp;                        playerShelf[i][j].getColor().equals(playerShelf[i + 4][j - 4].getColor()) &amp;&amp;</b>
+&nbsp;                        (playerShelf[i][j] != Tile.EMPTY)) {
+<b class="fc">&nbsp;                    return true;</b>
+&nbsp;                }
+&nbsp;            }
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        return false;</b>
+&nbsp;
+&nbsp;
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-28 10:19</div>
+</div>
+</body>
+</html>

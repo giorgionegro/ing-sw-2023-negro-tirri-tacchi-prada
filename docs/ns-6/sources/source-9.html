@@ -1,0 +1,165 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > StandardShelf</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">model</a>
+</div>
+
+<h1>Coverage Summary for Class: StandardShelf (model)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">StandardShelf</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (4/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (9/9)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package model;
+&nbsp;
+&nbsp;import model.abstractModel.Shelf;
+&nbsp;import modelView.ShelfInfo;
+&nbsp;
+&nbsp;import java.util.Arrays;
+&nbsp;
+&nbsp;/**
+&nbsp; * This class is an implementation of {@link Shelf}
+&nbsp; * &lt;p&gt;
+&nbsp; * It defines shelf as a 6 by 5 2d array of Tiles
+&nbsp; */
+&nbsp;public class StandardShelf extends Shelf {
+&nbsp;
+&nbsp;    /**
+&nbsp;     * 2d array of Tiles that represents the shelf
+&nbsp;     */
+&nbsp;    private Tile[][] tiles;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Class constructor, initializes shelf with an empty 6 by 5 2d array of Tiles
+&nbsp;     */
+&nbsp;    public StandardShelf() {
+<b class="fc">&nbsp;        super();</b>
+<b class="fc">&nbsp;        this.tiles = new Tile[6][5];</b>
+<b class="fc">&nbsp;        for (Tile[] a : this.tiles)</b>
+<b class="fc">&nbsp;            Arrays.fill(a, Tile.EMPTY);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method returns a copy of {@link #tiles}
+&nbsp;     *
+&nbsp;     * @return a 2d array representing the shelf
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public Tile[][] getTiles() {
+<b class="fc">&nbsp;        return Arrays.stream(this.tiles).map(Tile[]::clone).toArray(Tile[][]::new);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method sets the shelf as a copy of modifiedShelf, calls the {@link #setChanged()} and notifies the observers that the shelf has changed
+&nbsp;     *
+&nbsp;     * @param modifiedShelf the new representation of the shelf
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void setTiles(Tile[][] modifiedShelf) {
+<b class="fc">&nbsp;        this.tiles = Arrays.stream(modifiedShelf).map(Tile[]::clone).toArray(Tile[][]::new);</b>
+<b class="fc">&nbsp;        this.setChanged();</b>
+<b class="fc">&nbsp;        this.notifyObservers(Event.SHELF_MODIFIED);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     *
+&nbsp;     * @param playerId the player id associated with this {@link StandardShelf} instance
+&nbsp;     * @return A {@link ShelfInfo} representing this object instance
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public ShelfInfo getInfo(String playerId) {
+<b class="fc">&nbsp;        return new ShelfInfo(playerId, this.getTiles());</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-28 10:19</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,678 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > TUIdraw</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">view.TUI</a>
+</div>
+
+<h1>Coverage Summary for Class: TUIdraw (view.TUI)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">TUIdraw</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/15)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/249)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package view.TUI;
+&nbsp;
+&nbsp;import model.Tile;
+&nbsp;import model.Token;
+&nbsp;import model.abstractModel.Message;
+&nbsp;
+&nbsp;import java.io.IOException;
+&nbsp;import java.io.InputStream;
+&nbsp;import java.net.URL;
+&nbsp;import java.nio.charset.StandardCharsets;
+&nbsp;import java.util.*;
+&nbsp;import java.util.stream.Collectors;
+&nbsp;
+&nbsp;import static view.TUI.TUI.*;
+&nbsp;import static view.TUI.TUIutils.*;
+&nbsp;
+&nbsp;/**
+&nbsp; * This class contains all the methods used to draw the TUI
+&nbsp; */
+&nbsp;final class TUIdraw {
+&nbsp;
+&nbsp;    /**
+&nbsp;     * width of command line
+&nbsp;     */
+&nbsp;    static final int commandLineWidth = 75;
+&nbsp;    /**
+&nbsp;     * height of command line
+&nbsp;     */
+&nbsp;
+&nbsp;    static final int commandLineHeight = 10;
+&nbsp;    /**
+&nbsp;     * horizontal coordinate of command line
+&nbsp;     */
+&nbsp;    static final int commandLineX = 1;
+&nbsp;    /**
+&nbsp;     * vertical coordinate of command line
+&nbsp;     */
+&nbsp;    static final int commandLineY = 41;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * @hidden
+&nbsp;     * Constructor is private because this class is not meant to be instantiated
+&nbsp;     */
+&nbsp;    private TUIdraw() {
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method is used to draw grids of different shape and size based on its parameters
+&nbsp;     *
+&nbsp;     * @param startX        integer representing start horizontal coordinate
+&nbsp;     * @param startY        integer representing start vertical coordinate
+&nbsp;     * @param gridRowDim    integer representing row dimension of the grid
+&nbsp;     * @param gridColDim    integer representing column dimension of the grid
+&nbsp;     * @param canvas      2d array of characters representing the pixels
+&nbsp;     * @param canvasColor 2d array of integers representing the color of the pixels
+&nbsp;     */
+&nbsp;    static void drawGrid(int startX, int startY, int gridRowDim, int gridColDim, char[][] canvas, int[][] canvasColor) {
+&nbsp;        //first we draw a template for a line of cells&#39; middle part
+<b class="nc">&nbsp;        String middle = &quot;?   &quot;.repeat(gridRowDim) + &quot;?&quot;;</b>
+&nbsp;        //then we draw the top line
+<b class="nc">&nbsp;        for (int i = 0; i &lt; gridColDim; i++) {</b>
+&nbsp;            String pattern;
+<b class="nc">&nbsp;            if (i == 0)</b>
+<b class="nc">&nbsp;                pattern = &quot;????&quot;;</b>
+&nbsp;            else
+<b class="nc">&nbsp;                pattern = &quot;????&quot;;</b>
+&nbsp;
+&nbsp;            //draw them to the canvas
+<b class="nc">&nbsp;            drawString(pattern.repeat(gridRowDim), startY + i * 2, startX, DEFAULT, 60, canvas, canvasColor);</b>
+<b class="nc">&nbsp;            drawString(middle, startY + i * 2 + 1, startX, DEFAULT, 60, canvas, canvasColor);</b>
+&nbsp;        }
+&nbsp;        //then we draw the bottom line
+<b class="nc">&nbsp;        drawString(&quot;????&quot;.repeat(gridRowDim), startY + gridColDim * 2, startX, DEFAULT, 60, canvas, canvasColor);</b>
+&nbsp;
+&nbsp;        //then we correct the corners
+&nbsp;        char s;
+&nbsp;        char t;
+<b class="nc">&nbsp;        for (int i = 0; i &lt; gridColDim + 1; i++) {</b>
+<b class="nc">&nbsp;            if (i == 0) {</b>
+<b class="nc">&nbsp;                s = &#39;?&#39;;</b>
+<b class="nc">&nbsp;                t = &#39;?&#39;;</b>
+<b class="nc">&nbsp;            } else if (i == gridColDim) {</b>
+<b class="nc">&nbsp;                s = &#39;?&#39;;</b>
+<b class="nc">&nbsp;                t = &#39;?&#39;;</b>
+&nbsp;            } else {
+<b class="nc">&nbsp;                s = &#39;?&#39;;</b>
+<b class="nc">&nbsp;                t = &#39;?&#39;;</b>
+&nbsp;            }
+<b class="nc">&nbsp;            canvas[startY + i * 2][startX] = s;</b>
+<b class="nc">&nbsp;            canvasColor[startY + i * 2][startX] = DEFAULT;</b>
+<b class="nc">&nbsp;            canvas[startY + i * 2][startX + gridRowDim * 4] = t;</b>
+<b class="nc">&nbsp;            canvasColor[startY + i * 2][startX + gridRowDim * 4] = DEFAULT;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * @param startX x coordinate of the start of the grid
+&nbsp;     * @param startY y coordinate of the start of the grid
+&nbsp;     * @param contents 2d array of tiles representing the contents of the grid
+&nbsp;     * @param canvas 2d array of characters representing the pixels
+&nbsp;     * @param canvasColor 2d array of integers representing the color of the pixels
+&nbsp;     */
+&nbsp;    static void drawGridContents(int startX, int startY, Tile[][] contents, char[][] canvas, int[][] canvasColor) {
+<b class="nc">&nbsp;        startX = startX + 1;</b>
+<b class="nc">&nbsp;        startY = startY + 1;</b>
+&nbsp;        //draw the contents of a grid
+<b class="nc">&nbsp;        for (int i = 0; i &lt; contents.length; i++) {</b>
+<b class="nc">&nbsp;            for (int j = 0; j &lt; contents[i].length; j++) {</b>
+<b class="nc">&nbsp;                int color = getColour(contents[i][j].getColor());</b>
+<b class="nc">&nbsp;                char c = &#39;?&#39;;</b>
+<b class="nc">&nbsp;                if (color == DEFAULT)</b>
+<b class="nc">&nbsp;                    c = &#39; &#39;;</b>
+&nbsp;
+<b class="nc">&nbsp;                for (int k = 0; k &lt; 3; k++) {</b>
+<b class="nc">&nbsp;                    canvas[startY + i * 2][k + startX + j * 4] = c;</b>
+<b class="nc">&nbsp;                    canvasColor[startY + i * 2][k + startX + j * 4] = color;</b>
+&nbsp;                }
+&nbsp;            }
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method draws a String from the start coordinates
+&nbsp;     *
+&nbsp;     * @param toDraw        String to draw
+&nbsp;     * @param row           integer representing start row coordinate
+&nbsp;     * @param startCol      integer representing start column coordinate
+&nbsp;     * @param colour        integer representing color of the String to be drawn
+&nbsp;     * @param size          size the drawn String can occupy
+&nbsp;     * @param canvas      2d array of characters representing the pixels
+&nbsp;     * @param canvasColor 2d array of integers representing the color of the pixels
+&nbsp;     */
+&nbsp;    //draw String from start coordinate
+&nbsp;    static void drawString(String toDraw, int row, int startCol, int colour, int size, char[][] canvas, int[][] canvasColor) {
+<b class="nc">&nbsp;        if (row &lt; 0 || row &gt;= renderHeight || startCol &lt; 0 || startCol &gt;= renderWidth)</b>
+&nbsp;            return;
+&nbsp;        //if the string is too long, we cut it
+<b class="nc">&nbsp;        if (toDraw.length() &gt; size)</b>
+<b class="nc">&nbsp;            toDraw = toDraw.substring(0, size);</b>
+&nbsp;        //we draw the string up to the end of the canvas or the end of the string
+<b class="nc">&nbsp;        for (int i = 0; (i &lt; toDraw.length() &amp;&amp; (i + startCol) &lt; (renderWidth - 2)); i++) {</b>
+<b class="nc">&nbsp;            canvas[row][startCol + i] = toDraw.charAt(i);</b>
+<b class="nc">&nbsp;            canvasColor[row][startCol + i] = colour;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method draws the endgame screen
+&nbsp;     *
+&nbsp;     * @param points        Map that associates Player ID to its points
+&nbsp;     * @param canvas      2d array of characters representing the pixels
+&nbsp;     * @param canvasColor 2d array of integers representing the color of the pixels
+&nbsp;     */
+&nbsp;    static void drawGameEnd(Map&lt;String, Integer&gt; points, char[][] canvas, int[][] canvasColor) {
+<b class="nc">&nbsp;        final int gameEndY = 14;</b>
+<b class="nc">&nbsp;        final int gameEndX = 50;</b>
+<b class="nc">&nbsp;        final int gameEndWidth = 36;</b>
+&nbsp;        //we sort and group the players by points
+<b class="nc">&nbsp;        Map&lt;Integer, List&lt;Map.Entry&lt;String, Integer&gt;&gt;&gt; grouped = points.entrySet().stream().collect(Collectors.groupingBy(Map.Entry::getValue));</b>
+<b class="nc">&nbsp;        List&lt;Map.Entry&lt;Integer, List&lt;Map.Entry&lt;String, Integer&gt;&gt;&gt;&gt; sorted = new ArrayList&lt;&gt;(grouped.entrySet().stream().sorted(Map.Entry.comparingByKey()).toList());</b>
+<b class="nc">&nbsp;        Collections.reverse(sorted);</b>
+&nbsp;
+<b class="nc">&nbsp;        drawCenteredString(&quot;LEADERBOARD&quot;, gameEndX, gameEndY, gameEndWidth, DEFAULT, canvas, canvasColor);</b>
+&nbsp;
+<b class="nc">&nbsp;        String positionTitle = &quot; POSITION &quot;;</b>
+<b class="nc">&nbsp;        String idTitle = &quot;      ID      &quot;;</b>
+<b class="nc">&nbsp;        String pointsTitle = &quot;  POINTS  &quot;;</b>
+&nbsp;
+<b class="nc">&nbsp;        drawCenteredString(positionTitle + &quot;?&quot; + idTitle + &quot;?&quot; + pointsTitle, gameEndX, gameEndY + 1, gameEndWidth, DEFAULT, canvas, canvasColor);</b>
+&nbsp;        //we draw the leaderboard by group of players with the same points
+<b class="nc">&nbsp;        int leaderBoardY = gameEndY + 2;</b>
+<b class="nc">&nbsp;        int line = 0;</b>
+<b class="nc">&nbsp;        int position = 1;</b>
+<b class="nc">&nbsp;        for (Map.Entry&lt;Integer, List&lt;Map.Entry&lt;String, Integer&gt;&gt;&gt; group : sorted) {</b>
+<b class="nc">&nbsp;            boolean firstOfTheGroup = true;</b>
+<b class="nc">&nbsp;            for (Map.Entry&lt;String, Integer&gt; player : group.getValue()) {</b>
+&nbsp;                String pos;
+&nbsp;                String pPoints;
+<b class="nc">&nbsp;                if (firstOfTheGroup) {</b>
+<b class="nc">&nbsp;                    pos = String.valueOf(position);</b>
+<b class="nc">&nbsp;                    firstOfTheGroup = false;</b>
+&nbsp;                } else {
+<b class="nc">&nbsp;                    pos = &quot;|&quot;;</b>
+&nbsp;                }
+<b class="nc">&nbsp;                pPoints = String.valueOf(player.getValue());</b>
+<b class="nc">&nbsp;                drawCenteredString(pos, gameEndX, leaderBoardY + line, positionTitle.length(), DEFAULT, canvas, canvasColor);</b>
+<b class="nc">&nbsp;                drawCenteredString(player.getKey(), gameEndX + positionTitle.length() + 1, leaderBoardY + line, idTitle.length(), DEFAULT, canvas, canvasColor);</b>
+<b class="nc">&nbsp;                drawCenteredString(pPoints, gameEndX + positionTitle.length() + idTitle.length() + 2, leaderBoardY + line, pointsTitle.length(), DEFAULT, canvas, canvasColor);</b>
+<b class="nc">&nbsp;                line++;</b>
+<b class="nc">&nbsp;            }</b>
+<b class="nc">&nbsp;            position++;</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method draws a String centered in a certain space
+&nbsp;     *
+&nbsp;     * @param text          String to draw centered
+&nbsp;     * @param startX        integer representing start horizontal coordinate
+&nbsp;     * @param startY        integer representing start vertical coordinate
+&nbsp;     * @param spaceWidth    integer representing width of space that the String can occupy
+&nbsp;     * @param colour        colour of the String to draw
+&nbsp;     * @param canvas      2d array of characters representing the pixels
+&nbsp;     * @param canvasColor 2d array of integers representing the color of the pixels
+&nbsp;     */
+&nbsp;    @SuppressWarnings(&quot;SameParameterValue&quot;)
+&nbsp;    static void drawCenteredString(String text, int startX, int startY, int spaceWidth, int colour, char[][] canvas, int[][] canvasColor) {
+<b class="nc">&nbsp;        StringBuilder title = new StringBuilder();</b>
+<b class="nc">&nbsp;        int spaceBefore = (spaceWidth - text.length()) / 2;</b>
+<b class="nc">&nbsp;        title.append(&quot; &quot;.repeat(spaceBefore)).append(text);</b>
+<b class="nc">&nbsp;        drawString(title.toString(), startY, startX, colour, title.length(), canvas, canvasColor);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method draws a box based on the parameters
+&nbsp;     *
+&nbsp;     * @param row           integer representing start row of the box
+&nbsp;     * @param col           integer representing start column of the box
+&nbsp;     * @param height        integer representing height of the box
+&nbsp;     * @param width         integer representing width of the box
+&nbsp;     * @param colour        integer representing color of the box
+&nbsp;     * @param canvas      2d array of characters representing the pixels
+&nbsp;     * @param canvasColor 2d array of integers representing the color of the pixels
+&nbsp;     */
+&nbsp;    @SuppressWarnings(&quot;SameParameterValue&quot;)
+&nbsp;    static void drawBox(int row, int col, int height, int width, int colour, char[][] canvas, int[][] canvasColor) {
+&nbsp;        //we draw the box pixel by pixel
+<b class="nc">&nbsp;        for (int i = 0; i &lt; height; i++) {</b>
+<b class="nc">&nbsp;            for (int j = 0; j &lt; width; j++) {</b>
+<b class="nc">&nbsp;                if (i == 0 &amp;&amp; j == 0) canvas[row + i][col + j] = &#39;?&#39;;</b>
+<b class="nc">&nbsp;                else if (i == 0 &amp;&amp; j == width - 1) canvas[row + i][col + j] = &#39;?&#39;;</b>
+<b class="nc">&nbsp;                else if (i == height - 1 &amp;&amp; j == 0) {</b>
+<b class="nc">&nbsp;                    canvas[row + i][col + j] = &#39;?&#39;;</b>
+<b class="nc">&nbsp;                    canvasColor[row + i][col + j] = colour;</b>
+<b class="nc">&nbsp;                } else if (i == height - 1 &amp;&amp; j == width - 1) {</b>
+<b class="nc">&nbsp;                    canvas[row + i][col + j] = &#39;?&#39;;</b>
+<b class="nc">&nbsp;                    canvasColor[row + i][col + j] = colour;</b>
+<b class="nc">&nbsp;                } else if (i == 0) {</b>
+<b class="nc">&nbsp;                    canvas[row + i][col + j] = &#39;?&#39;;</b>
+<b class="nc">&nbsp;                    canvasColor[row + i][col + j] = colour;</b>
+<b class="nc">&nbsp;                } else if (i == height - 1) {</b>
+<b class="nc">&nbsp;                    canvas[row + i][col + j] = &#39;?&#39;;</b>
+<b class="nc">&nbsp;                    canvasColor[row + i][col + j] = colour;</b>
+<b class="nc">&nbsp;                } else if (j == 0) {</b>
+<b class="nc">&nbsp;                    canvas[row + i][col + j] = &#39;?&#39;;</b>
+<b class="nc">&nbsp;                    canvasColor[row + i][col + j] = colour;</b>
+<b class="nc">&nbsp;                } else if (j == width - 1) {</b>
+<b class="nc">&nbsp;                    canvas[row + i][col + j] = &#39;?&#39;;</b>
+<b class="nc">&nbsp;                    canvasColor[row + i][col + j] = colour;</b>
+&nbsp;                }
+&nbsp;                //if not in the border we leave the pixel unchanged
+&nbsp;            }
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * this method draws the player chat
+&nbsp;     *
+&nbsp;     * @param thisPlayerId      String representing the id of the player
+&nbsp;     * @param currentPlayerChat object containing List of messages of one player
+&nbsp;     * @param canvas          2d array of characters representing the pixels
+&nbsp;     * @param canvasColor     2d array of integers representing the color of the pixels
+&nbsp;     */
+&nbsp;    static void drawChat(String thisPlayerId, List&lt;? extends Message&gt; currentPlayerChat, char[][] canvas, int[][] canvasColor) {
+<b class="nc">&nbsp;        final int chatX = 80;</b>
+<b class="nc">&nbsp;        final int chatY = 23;</b>
+<b class="nc">&nbsp;        final int chatBoxWidth = 58;</b>
+<b class="nc">&nbsp;        final int chatBoxHeight = 28;</b>
+<b class="nc">&nbsp;        if (currentPlayerChat != null) {</b>
+&nbsp;            //we reverse the list so that the last message is the first to be drawn
+<b class="nc">&nbsp;            Collections.reverse(currentPlayerChat);</b>
+&nbsp;            //we draw the box
+<b class="nc">&nbsp;            drawBox(chatY + 1, chatX, chatBoxHeight, chatBoxWidth, DEFAULT, canvas, canvasColor);</b>
+<b class="nc">&nbsp;            int chatContentsX = chatX + 1;</b>
+<b class="nc">&nbsp;            int chatContentsY = chatY + 2;</b>
+<b class="nc">&nbsp;            int chatContentsHeight = chatBoxHeight - 2;</b>
+<b class="nc">&nbsp;            int chatContentsWidth = chatBoxWidth - 4;</b>
+<b class="nc">&nbsp;            String[] chatBuffer = new String[chatContentsHeight];</b>
+<b class="nc">&nbsp;            Arrays.fill(chatBuffer, &quot;&quot;);</b>
+&nbsp;            //we fill the buffer with the messages to be subsequently drawn
+<b class="nc">&nbsp;            int pointer = chatContentsHeight - 1;</b>
+<b class="nc">&nbsp;            for (Message m : currentPlayerChat) {</b>
+<b class="nc">&nbsp;                String sender = m.getSender();</b>
+<b class="nc">&nbsp;                String receiver = m.getReceiver();</b>
+<b class="nc">&nbsp;                String text = (sender.equals(thisPlayerId) ? &quot;YOU&quot; : sender) + &quot; to &quot; + (receiver.isBlank() ? &quot;Everyone&quot; : receiver.equals(thisPlayerId) ? &quot;YOU&quot; : receiver) + &quot;: &quot; + m.getText();</b>
+<b class="nc">&nbsp;                List&lt;String&gt; temp = new ArrayList&lt;&gt;();</b>
+&nbsp;                do {
+<b class="nc">&nbsp;                    int size = Math.min(text.length(), chatContentsWidth);</b>
+<b class="nc">&nbsp;                    String s = text.substring(0, size);</b>
+<b class="nc">&nbsp;                    temp.add(s);</b>
+<b class="nc">&nbsp;                    text = &quot;    &quot; + text.substring(size);</b>
+<b class="nc">&nbsp;                } while (!text.isBlank());</b>
+<b class="nc">&nbsp;                for (int i = temp.size() - 1; i &gt;= 0; i--) {</b>
+<b class="nc">&nbsp;                    chatBuffer[pointer] = temp.get(i);</b>
+<b class="nc">&nbsp;                    pointer--;</b>
+<b class="nc">&nbsp;                    if (pointer &lt; 0)</b>
+<b class="nc">&nbsp;                        break;</b>
+&nbsp;                }
+&nbsp;
+<b class="nc">&nbsp;                if (pointer &lt; 0)</b>
+<b class="nc">&nbsp;                    break;</b>
+<b class="nc">&nbsp;            }</b>
+&nbsp;            //we draw the buffer
+<b class="nc">&nbsp;            for (int i = 0; i &lt; chatBuffer.length; i++) {</b>
+<b class="nc">&nbsp;                drawString(chatBuffer[i], chatContentsY + i, chatContentsX + 1, DEFAULT, chatBuffer[i].length(), canvas, canvasColor);</b>
+&nbsp;            }
+&nbsp;
+<b class="nc">&nbsp;            drawCenteredString(&quot;CHAT&quot;, chatX, chatY, chatBoxWidth, DEFAULT, canvas, canvasColor);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * this method draws the living room board
+&nbsp;     *
+&nbsp;     * @param currentLivingRoom object containing the living room game board
+&nbsp;     * @param canvas          2d array of characters representing the pixels
+&nbsp;     * @param canvasColor     2d array of integers representing the color of the pixels
+&nbsp;     */
+&nbsp;    static void drawLivingRoom(Tile[][] currentLivingRoom, char[][] canvas, int[][] canvasColor) {
+<b class="nc">&nbsp;        final int livingRoomX = 1;</b>
+<b class="nc">&nbsp;        final int livingRoomY = 1;</b>
+<b class="nc">&nbsp;        if (currentLivingRoom != null) {</b>
+&nbsp;            //we draw the grid
+<b class="nc">&nbsp;            drawGrid(livingRoomX + 2, livingRoomY + 2, currentLivingRoom[0].length, currentLivingRoom.length, canvas, canvasColor);</b>
+&nbsp;            //we draw the contents
+<b class="nc">&nbsp;            drawGridContents(livingRoomX + 2, livingRoomY + 2, currentLivingRoom, canvas, canvasColor);</b>
+&nbsp;
+&nbsp;            //draw numbers on the top
+<b class="nc">&nbsp;            for (int i = 0; i &lt; currentLivingRoom.length; i++) {</b>
+<b class="nc">&nbsp;                String number = String.valueOf(i);</b>
+<b class="nc">&nbsp;                if (i &lt; 10) {</b>
+<b class="nc">&nbsp;                    number = &quot;  &quot; + number + &quot; &quot;;</b>
+&nbsp;                } else {
+<b class="nc">&nbsp;                    number = &quot; &quot; + number + &quot; &quot;;</b>
+&nbsp;                }
+<b class="nc">&nbsp;                for (int c = 0; c &lt; number.length(); c++) {</b>
+<b class="nc">&nbsp;                    canvas[livingRoomY + 1][livingRoomX + 2 + i * 4 + c] = number.charAt(c);</b>
+<b class="nc">&nbsp;                    canvasColor[livingRoomY + 1][livingRoomX + 2 + i * 4 + c] = DEFAULT;</b>
+&nbsp;                }
+&nbsp;            }
+&nbsp;            //draw numbers on the side
+<b class="nc">&nbsp;            for (int i = 0; i &lt; currentLivingRoom.length; i++) {</b>
+<b class="nc">&nbsp;                String number = String.valueOf(i);</b>
+<b class="nc">&nbsp;                if (i &lt; 10) {</b>
+<b class="nc">&nbsp;                    number = &quot;0&quot; + number;</b>
+&nbsp;                }
+<b class="nc">&nbsp;                for (int c = 0; c &lt; number.length(); c++) {</b>
+<b class="nc">&nbsp;                    canvas[livingRoomY + 3 + i * 2][livingRoomX] = number.charAt(c);</b>
+<b class="nc">&nbsp;                    canvasColor[livingRoomY + 3 + i * 2][livingRoomX] = DEFAULT;</b>
+&nbsp;                }
+&nbsp;            }
+&nbsp;
+<b class="nc">&nbsp;            drawCenteredString(&quot;LIVING ROOM BOARD&quot;, livingRoomX + 2, livingRoomY, currentLivingRoom[0].length * 4 + 1, DEFAULT, canvas, canvasColor);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * this method draws the command line
+&nbsp;     *
+&nbsp;     * @param cursor        starting string of the command line
+&nbsp;     * @param oldCommands       list of old commands
+&nbsp;     * @param canvas      2d array of characters representing the pixels
+&nbsp;     * @param canvasColor 2d array of integers representing the color of the pixels
+&nbsp;     */
+&nbsp;    static void drawCommandLine(String cursor, List&lt;Pair&gt; oldCommands, char[][] canvas, int[][] canvasColor) {
+&nbsp;
+&nbsp;
+<b class="nc">&nbsp;        drawBox(commandLineY + 1, commandLineX, commandLineHeight, commandLineWidth, DEFAULT, canvas, canvasColor);</b>
+<b class="nc">&nbsp;        drawCenteredString(&quot;COMMAND LINE&quot;, commandLineX, commandLineY, commandLineWidth, DEFAULT, canvas, canvasColor);</b>
+<b class="nc">&nbsp;        drawString(cursor, commandLineY + commandLineHeight - 1, commandLineX + 2, DEFAULT, commandLineWidth - 3, canvas, canvasColor);</b>
+&nbsp;        //we draw the commands history
+<b class="nc">&nbsp;        drawCommandsHistory(oldCommands, canvas, canvasColor);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * this method draws the old commands
+&nbsp;     *
+&nbsp;     * @param oldCmds       list of old commands
+&nbsp;     * @param canvas      2d array of characters representing the pixels
+&nbsp;     * @param canvasColor 2d array of integers representing the color of the pixels
+&nbsp;     */
+&nbsp;    private static void drawCommandsHistory(List&lt;Pair&gt; oldCmds, char[][] canvas, int[][] canvasColor) {
+&nbsp;        //we remove the old commands that don&#39;t fit in the command line starting from the oldest
+<b class="nc">&nbsp;        while (oldCmds.size() &gt; (commandLineHeight - 4))</b>
+<b class="nc">&nbsp;            oldCmds.remove(0);</b>
+&nbsp;
+<b class="nc">&nbsp;        for (int i = 0; i &lt; oldCmds.size(); i++) {</b>
+<b class="nc">&nbsp;            drawString(oldCmds.get(i).string(), commandLineY + 2 + i, commandLineX + 1, oldCmds.get(i).colour(), commandLineWidth - 2, canvas, canvasColor);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * this method draws the shelves of the players in the game
+&nbsp;     *
+&nbsp;     * @param currentShelves map that associates each playerId to its shelf
+&nbsp;     * @param firstPlayerId  ID of the first player
+&nbsp;     * @param thisPlayerId   ID of the player who is
+&nbsp;     * @param playerOnTurn   ID of the player on turn
+&nbsp;     * @param pointsValue    map that associates each playerId to its points
+&nbsp;     * @param canvas       2d array of characters representing the pixels
+&nbsp;     * @param canvasColor  2d array of integers representing the color of the pixels
+&nbsp;     */
+&nbsp;    static void drawShelves(Map&lt;String, Tile[][]&gt; currentShelves, String firstPlayerId, String thisPlayerId, String playerOnTurn, Map&lt;String, ? super Integer&gt; pointsValue, char[][] canvas, int[][] canvasColor) {
+<b class="nc">&nbsp;        final int shelvesX = 43;</b>
+&nbsp;
+<b class="nc">&nbsp;        final int shelvesY = 3;</b>
+<b class="nc">&nbsp;        final int shelvesPadding = 3;</b>
+<b class="nc">&nbsp;        if (!currentShelves.isEmpty()) {</b>
+<b class="nc">&nbsp;            int shelvesGridY = shelvesY + 2;</b>
+&nbsp;
+<b class="nc">&nbsp;            int shelvesHeight = 0;</b>
+<b class="nc">&nbsp;            int shelvesWidth = 0;</b>
+&nbsp;
+<b class="nc">&nbsp;            int shelfDrawn = 0;</b>
+&nbsp;
+<b class="nc">&nbsp;            StringBuilder playersName = new StringBuilder();</b>
+<b class="nc">&nbsp;            StringBuilder playersPoints = new StringBuilder();</b>
+&nbsp;
+<b class="nc">&nbsp;            for (String playerId : currentShelves.keySet()) {</b>
+<b class="nc">&nbsp;                Tile[][] shelf = currentShelves.get(playerId);</b>
+&nbsp;
+<b class="nc">&nbsp;                shelvesHeight = shelf.length;</b>
+<b class="nc">&nbsp;                shelvesWidth = shelf[0].length * 4 + 1;</b>
+&nbsp;
+<b class="nc">&nbsp;                int shelfX = shelvesX + (shelvesWidth + shelvesPadding) * shelfDrawn;</b>
+<b class="nc">&nbsp;                drawGrid(shelfX, shelvesGridY, shelf[0].length, shelf.length, canvas, canvasColor);</b>
+<b class="nc">&nbsp;                drawGridContents(shelfX, shelvesGridY, shelf, canvas, canvasColor);</b>
+&nbsp;
+<b class="nc">&nbsp;                String tempPlayerId = playerId;</b>
+&nbsp;                //if the player is the one who is playing we write YOU instead of the ID
+<b class="nc">&nbsp;                if (playerId.equals(thisPlayerId)) {</b>
+<b class="nc">&nbsp;                    tempPlayerId = &quot;YOU&quot;;</b>
+<b class="nc">&nbsp;                    drawString(&quot;  0   1   2   3   4  &quot;, shelvesY + 1, shelfX, DEFAULT, 21, canvas, canvasColor);</b>
+&nbsp;                }
+&nbsp;
+<b class="nc">&nbsp;                if (tempPlayerId.length() &gt; shelvesWidth - 4)</b>
+<b class="nc">&nbsp;                    tempPlayerId = tempPlayerId.substring(0, shelvesWidth - 4);</b>
+&nbsp;
+&nbsp;
+&nbsp;                //if the player is the one who is playing we write &lt;ID&gt; instead of ID
+<b class="nc">&nbsp;                if (playerId.equals(playerOnTurn))</b>
+<b class="nc">&nbsp;                    tempPlayerId = &#39;&gt;&#39; + tempPlayerId + &#39;&lt;&#39;;</b>
+&nbsp;
+&nbsp;                //we need to equalize the length of the string to the length of the shelf to not leave old characters
+<b class="nc">&nbsp;                int spaceBefore = (shelvesWidth - tempPlayerId.length()) / 2;</b>
+<b class="nc">&nbsp;                int spaceAfter = shelvesWidth - spaceBefore - tempPlayerId.length();</b>
+&nbsp;
+<b class="nc">&nbsp;                if (playerId.equals(firstPlayerId)) {</b>
+<b class="nc">&nbsp;                    spaceBefore -= 2;</b>
+<b class="nc">&nbsp;                    playersName.append(&quot; ?&quot;);</b>
+&nbsp;                }
+<b class="nc">&nbsp;                playersName.append(&quot; &quot;.repeat(spaceBefore));</b>
+<b class="nc">&nbsp;                playersName.append(tempPlayerId);</b>
+<b class="nc">&nbsp;                playersName.append(&quot; &quot;.repeat(spaceAfter));</b>
+<b class="nc">&nbsp;                playersName.append(&quot; &quot;.repeat(shelvesPadding));</b>
+&nbsp;
+<b class="nc">&nbsp;                String points = &quot;Points: &quot; + pointsValue.getOrDefault(playerId, 0);</b>
+<b class="nc">&nbsp;                spaceBefore = (shelvesWidth - points.length()) / 2;</b>
+<b class="nc">&nbsp;                spaceAfter = shelvesWidth - spaceBefore - points.length();</b>
+<b class="nc">&nbsp;                playersPoints.append(&quot; &quot;.repeat(spaceBefore));</b>
+<b class="nc">&nbsp;                playersPoints.append(points);</b>
+<b class="nc">&nbsp;                playersPoints.append(&quot; &quot;.repeat(spaceAfter));</b>
+<b class="nc">&nbsp;                playersPoints.append(&quot; &quot;.repeat(shelvesPadding));</b>
+&nbsp;
+<b class="nc">&nbsp;                shelfDrawn++;</b>
+<b class="nc">&nbsp;            }</b>
+&nbsp;
+<b class="nc">&nbsp;            drawString(playersName.toString(), shelvesGridY + shelvesHeight * 2 + 1, shelvesX, DEFAULT, playersName.length(), canvas, canvasColor);</b>
+<b class="nc">&nbsp;            drawString(playersPoints.toString(), shelvesGridY + shelvesHeight * 2 + 2, shelvesX, DEFAULT, playersPoints.length(), canvas, canvasColor);</b>
+&nbsp;
+<b class="nc">&nbsp;            int maxSize = currentShelves.size() * shelvesWidth + shelvesPadding * (currentShelves.size() - 1);</b>
+<b class="nc">&nbsp;            drawCenteredString(&quot;PLAYERS SHELVES&quot;, shelvesX, shelvesY, maxSize, DEFAULT, canvas, canvasColor);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * this method draws the common goal
+&nbsp;     *
+&nbsp;     * @param commonGoals         map containing common goal id and common goal info
+&nbsp;     * @param achievedCommonGoals map containing achieved common goals id and token
+&nbsp;     * @param canvas            2d array of characters representing the pixels
+&nbsp;     * @param canvasColor       2d array of integers representing the color of the pixels
+&nbsp;     */
+&nbsp;    static void drawCommonGoals(Map&lt;String, Token&gt; commonGoals, Map&lt;String, Token&gt; achievedCommonGoals, char[][] canvas, int[][] canvasColor) {
+<b class="nc">&nbsp;        final int commonGoalsY = 23;</b>
+<b class="nc">&nbsp;        final int commonGoalsX = 3;</b>
+&nbsp;
+<b class="nc">&nbsp;        final int commonGoalsPadding = 3;</b>
+<b class="nc">&nbsp;        final int commonGoalBoxWidth = 23;</b>
+<b class="nc">&nbsp;        final int commonGoalBoxHeight = 15;</b>
+&nbsp;
+<b class="nc">&nbsp;        if (!commonGoals.isEmpty()) {</b>
+<b class="nc">&nbsp;            int boxesStartY = commonGoalsY + 1;</b>
+<b class="nc">&nbsp;            StringBuilder points = new StringBuilder();</b>
+<b class="nc">&nbsp;            int drawnCommonGoals = 0;</b>
+<b class="nc">&nbsp;            for (String id : commonGoals.keySet()) {</b>
+<b class="nc">&nbsp;                int boxStartX = commonGoalsX + drawnCommonGoals * (commonGoalBoxWidth + commonGoalsPadding);</b>
+<b class="nc">&nbsp;                drawBox(boxesStartY, boxStartX, commonGoalBoxHeight, commonGoalBoxWidth, DEFAULT, canvas, canvasColor);</b>
+&nbsp;                //we draw the common goal from the resources file
+<b class="nc">&nbsp;                String[] res = getCommonGoalRes(id);</b>
+<b class="nc">&nbsp;                for (int j = 0; j &lt; res.length; j++) {</b>
+<b class="nc">&nbsp;                    drawString(res[j], boxesStartY + 1 + j, boxStartX + 1, DEFAULT, 60, canvas, canvasColor);</b>
+&nbsp;                }
+&nbsp;                //we write the points of the common goal or if it is achieved we write ACHIEVED
+&nbsp;                String temp;
+<b class="nc">&nbsp;                if (achievedCommonGoals.containsKey(id))</b>
+<b class="nc">&nbsp;                    temp = &quot;ACHIEVED: &quot; + achievedCommonGoals.get(id).getPoints();</b>
+&nbsp;                else
+<b class="nc">&nbsp;                    temp = &quot;Points: &quot; + commonGoals.get(id).getPoints();</b>
+&nbsp;
+&nbsp;                //we need to equalize the length of the string to the length of the box to not leave old characters
+<b class="nc">&nbsp;                int spaceBefore = (commonGoalBoxWidth - temp.length()) / 2;</b>
+<b class="nc">&nbsp;                int spaceAfter = commonGoalBoxWidth - spaceBefore - temp.length();</b>
+<b class="nc">&nbsp;                points.append(&quot; &quot;.repeat(spaceBefore));</b>
+<b class="nc">&nbsp;                points.append(temp);</b>
+<b class="nc">&nbsp;                points.append(&quot; &quot;.repeat(spaceAfter));</b>
+<b class="nc">&nbsp;                points.append(&quot; &quot;.repeat(commonGoalsPadding));</b>
+&nbsp;
+<b class="nc">&nbsp;                drawnCommonGoals++;</b>
+<b class="nc">&nbsp;            }</b>
+<b class="nc">&nbsp;            drawString(points.toString(), boxesStartY + commonGoalBoxHeight, commonGoalsX, DEFAULT, points.length(), canvas, canvasColor);</b>
+&nbsp;
+<b class="nc">&nbsp;            int maxSize = commonGoals.size() * commonGoalBoxWidth + commonGoalsPadding * (commonGoals.size() - 1);</b>
+<b class="nc">&nbsp;            drawCenteredString(&quot;COMMON GOALS&quot;, commonGoalsX, commonGoalsY, maxSize, DEFAULT, canvas, canvasColor);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * this method retrieves the resource of the common goal
+&nbsp;     *  @param id   id of the common goal
+&nbsp;     * @return   array of strings representing the resource
+&nbsp;     */
+&nbsp;    private static String[] getCommonGoalRes(String id) {
+<b class="nc">&nbsp;        String[] ris = new String[0];</b>
+<b class="nc">&nbsp;        URL p = Objects.requireNonNull(Objects.requireNonNull(TUIdraw.class).getResource(&quot;/CommonGoals/CLI/&quot; + id + &quot;.txt&quot;));</b>
+<b class="nc">&nbsp;        try (InputStream stream = p.openStream()) {</b>
+<b class="nc">&nbsp;            String img = new String(stream.readAllBytes(), StandardCharsets.UTF_8);</b>
+<b class="nc">&nbsp;            ris = img.split(&quot;\r\n&quot;);</b>
+<b class="nc">&nbsp;        } catch (IOException e) {</b>
+<b class="nc">&nbsp;            System.err.println(&quot;error while reading resources&quot;);</b>
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        return ris;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * this method draws that it is the last turn if it is the last turn
+&nbsp;     *
+&nbsp;     * @param isLastTurn    is this the last turn?
+&nbsp;     * @param canvas      2d array of characters representing the pixels
+&nbsp;     * @param canvasColor 2d array of integers representing the color of the pixels
+&nbsp;     */
+&nbsp;    static void drawLastTurn(boolean isLastTurn, char[][] canvas, int[][] canvasColor) {
+<b class="nc">&nbsp;        if (isLastTurn) {</b>
+<b class="nc">&nbsp;            drawString(&quot;LAST TURN&quot;, 21, 43, GREEN, 50 - 2, canvas, canvasColor);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * this method draws the personal goal
+&nbsp;     *
+&nbsp;     * @param currentPersonalGoals list of personal goals info
+&nbsp;     * @param canvas             2d array of characters representing the pixels
+&nbsp;     * @param canvasColor        2d array of integers representing the color of the pixels
+&nbsp;     */
+&nbsp;    static void drawPersonalGoal(Tile[][] currentPersonalGoals, char[][] canvas, int[][] canvasColor) {
+<b class="nc">&nbsp;        final int personalGoalsX = 55;</b>
+<b class="nc">&nbsp;        final int personalGoalsY = 24;</b>
+<b class="nc">&nbsp;        drawGrid(personalGoalsX, personalGoalsY + 1, currentPersonalGoals[0].length, currentPersonalGoals.length, canvas, canvasColor);</b>
+<b class="nc">&nbsp;        drawGridContents(personalGoalsX, personalGoalsY + 1, currentPersonalGoals, canvas, canvasColor);</b>
+<b class="nc">&nbsp;        drawCenteredString(&quot;PERSONAL GOAL&quot;, personalGoalsX, personalGoalsY, currentPersonalGoals[0].length * 4 + 1, DEFAULT, canvas, canvasColor);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-28 10:19</div>
+</div>
+</body>
+</html>

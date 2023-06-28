@@ -1,0 +1,196 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > TUIutils</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">view.TUI</a>
+</div>
+
+<h1>Coverage Summary for Class: TUIutils (view.TUI)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">TUIutils</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/21)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package view.TUI;
+&nbsp;
+&nbsp;import java.util.concurrent.TimeUnit;
+&nbsp;import java.util.function.Consumer;
+&nbsp;
+&nbsp;/**
+&nbsp; * This class contains utility methods for the TUI
+&nbsp; */
+&nbsp;final class TUIutils {
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This is the ANSI codes for white
+&nbsp;     */
+&nbsp;    public static final int WHITE = 37;
+&nbsp;    /**
+&nbsp;     * This is the ANSI codes for green
+&nbsp;     */
+&nbsp;    public static final int GREEN = 32;
+&nbsp;    /**
+&nbsp;     * This is the ANSI codes for yellow
+&nbsp;     */
+&nbsp;    public static final int YELLOW = 33;
+&nbsp;    /**
+&nbsp;     * This is the ANSI codes for blue
+&nbsp;     */
+&nbsp;    public static final int BLUE = 34;
+&nbsp;    /**
+&nbsp;     * This is the ANSI codes for magenta
+&nbsp;     */
+&nbsp;    public static final int MAGENTA = 35;
+&nbsp;    /**
+&nbsp;     * This is the ANSI codes for cyan
+&nbsp;     */
+&nbsp;    public static final int CYAN = 36;
+&nbsp;    /**
+&nbsp;     * This is the ANSI codes for red
+&nbsp;     */
+&nbsp;    public static final int RED = 31;
+&nbsp;    /**
+&nbsp;     * This is the ANSI codes for default
+&nbsp;     */
+&nbsp;    public static final int DEFAULT = 39;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * @hidden
+&nbsp;     */
+&nbsp;    private TUIutils() {
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method returns the numeric value of a String that represents a color
+&nbsp;     *
+&nbsp;     * @param color String of a certain color
+&nbsp;     * @return integer value of said color
+&nbsp;     */
+&nbsp;    public static int getColour(String color) {
+&nbsp;        int colour;
+<b class="nc">&nbsp;        switch (color) {</b>
+<b class="nc">&nbsp;            case &quot;Green&quot; -&gt; colour = GREEN;</b>
+<b class="nc">&nbsp;            case &quot;White&quot; -&gt; colour = WHITE;</b>
+<b class="nc">&nbsp;            case &quot;Yellow&quot; -&gt; colour = YELLOW;</b>
+<b class="nc">&nbsp;            case &quot;Blue&quot; -&gt; colour = BLUE;</b>
+<b class="nc">&nbsp;            case &quot;LightBlue&quot; -&gt; colour = CYAN;</b>
+<b class="nc">&nbsp;            case &quot;Magenta&quot; -&gt; colour = MAGENTA;</b>
+<b class="nc">&nbsp;            default -&gt; colour = DEFAULT;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return colour;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method clears the terminal.
+&nbsp;     *
+&nbsp;     * @param function callback to be run on screen cleaning error
+&nbsp;     */
+&nbsp;    public static void ClearScreen(Consumer&lt;? super String&gt; function) {
+&nbsp;        try {
+<b class="nc">&nbsp;            String operatingSystem = System.getProperty(&quot;os.name&quot;); //Check the current operating system</b>
+&nbsp;
+<b class="nc">&nbsp;            if (operatingSystem.contains(&quot;Windows&quot;)) {</b>
+<b class="nc">&nbsp;                ProcessBuilder pb = new ProcessBuilder(&quot;cmd&quot;, &quot;/c&quot;, &quot;cls&quot;);</b>
+<b class="nc">&nbsp;                Process startProcess = pb.inheritIO().start();</b>
+<b class="nc">&nbsp;                startProcess.waitFor(10, TimeUnit.MILLISECONDS);</b>
+<b class="nc">&nbsp;            } else {</b>
+<b class="nc">&nbsp;                ProcessBuilder pb = new ProcessBuilder(&quot;clear&quot;);</b>
+<b class="nc">&nbsp;                Process startProcess = pb.inheritIO().start();</b>
+<b class="nc">&nbsp;                startProcess.waitFor(10, TimeUnit.MILLISECONDS);</b>
+&nbsp;            }
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+<b class="nc">&nbsp;            function.accept(&quot;Error: &quot; + e.getMessage());</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-28 10:19</div>
+</div>
+</body>
+</html>

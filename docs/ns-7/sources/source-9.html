@@ -1,0 +1,105 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > Message</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">model.abstractModel</a>
+</div>
+
+<h1>Coverage Summary for Class: Message (model.abstractModel)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">Message</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package model.abstractModel;
+&nbsp;
+&nbsp;import java.io.Serializable;
+&nbsp;
+&nbsp;/**
+&nbsp; * This interface defines the methods to access to message data
+&nbsp; */
+&nbsp;public interface Message extends Serializable {
+&nbsp;    /**
+&nbsp;     * This method returns the id of the sender of the message
+&nbsp;     *
+&nbsp;     * @return the id of the sender of the message
+&nbsp;     */
+&nbsp;    String getSender();
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method returns the id of the receiver of the message
+&nbsp;     * &lt;p&gt;
+&nbsp;     * If {@code receiver.isEmpty()==true} then the message is supposed to be sent broadcast
+&nbsp;     *
+&nbsp;     * @return the MessageReceiver of the message
+&nbsp;     */
+&nbsp;    String getReceiver();
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method returns the text-content of the message
+&nbsp;     *
+&nbsp;     * @return the text-content of the message
+&nbsp;     */
+&nbsp;    String getText();
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method returns the string representation of the timestamp when message has been created
+&nbsp;     *
+&nbsp;     * @return the string representation of the timestamp when message has been created
+&nbsp;     */
+&nbsp;    String getTimestamp();
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-28 10:19</div>
+</div>
+</body>
+</html>

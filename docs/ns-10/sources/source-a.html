@@ -1,0 +1,333 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > PlayerShelfPanel</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">view.GUI.panels</a>
+</div>
+
+<h1>Coverage Summary for Class: PlayerShelfPanel (view.GUI.panels)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">PlayerShelfPanel</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/65)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package view.GUI.panels;
+&nbsp;
+&nbsp;import model.Tile;
+&nbsp;
+&nbsp;import view.GUI.buttons.ColumnChooserButton;
+&nbsp;import view.graphicInterfaces.PlayerShelfGraphics;
+&nbsp;
+&nbsp;import javax.swing.*;
+&nbsp;import java.awt.*;
+&nbsp;import java.awt.event.ActionEvent;
+&nbsp;import java.awt.event.ActionListener;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.Arrays;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Objects;
+&nbsp;
+&nbsp;/**
+&nbsp; * This class extends JPanel and represents a graphical component that shows the player shelf
+&nbsp; */
+&nbsp;public class PlayerShelfPanel extends JPanel implements PlayerShelfGraphics, ActionListener {
+&nbsp;    /**
+&nbsp;     * Matrix of tiles that represents the player&#39;s shelf
+&nbsp;     */
+<b class="nc">&nbsp;    private Tile[][] shelfState = new Tile[6][5];</b>
+&nbsp;    /**
+&nbsp;     * List of column selector buttons
+&nbsp;     */
+<b class="nc">&nbsp;    private final List&lt;JButton&gt; columnSelectorList = new ArrayList&lt;&gt;();</b>
+&nbsp;    /**
+&nbsp;     * Boolean that represents if the player is the first player
+&nbsp;     */
+&nbsp;    private boolean isFirstPlayer;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Update choices event code
+&nbsp;     */
+&nbsp;    public static final int UPDATE_CHOICES = 0;
+&nbsp;
+&nbsp;    /** Construct an {@link PlayerShelfPanel} instance that uses the given {@link ActionListener} as listener for the column buttons
+&nbsp;     * @param orderingTable ActionListener used to send column selector events
+&nbsp;     */
+&nbsp;    public PlayerShelfPanel(ActionListener orderingTable) {
+<b class="nc">&nbsp;        super();</b>
+<b class="nc">&nbsp;        this.setOpaque(false);</b>
+<b class="nc">&nbsp;        this.setLayout(new GridBagLayout());</b>
+&nbsp;
+<b class="nc">&nbsp;        for (Tile[] r : this.shelfState)</b>
+<b class="nc">&nbsp;            Arrays.fill(r, Tile.EMPTY);</b>
+&nbsp;
+<b class="nc">&nbsp;        this.initializeLayout(orderingTable);</b>
+&nbsp;
+<b class="nc">&nbsp;        this.isFirstPlayer = false;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**{@inheritDoc}
+&nbsp;     * @param e the event to be processed
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void actionPerformed(ActionEvent e) {
+<b class="nc">&nbsp;        if(e.getID() == UPDATE_CHOICES) {</b>
+<b class="nc">&nbsp;            int n_picked = Integer.parseInt(e.getActionCommand());</b>
+<b class="nc">&nbsp;            for (int i = 0; i &lt; this.columnSelectorList.size(); i++) {</b>
+<b class="nc">&nbsp;                this.columnSelectorList.get(i).setEnabled(this.countEmpty(i) &gt;= n_picked);</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     This method counts the number of empty tiles in a specific column of the shelf state.
+&nbsp;     @param column the column index to count the empty tiles in.
+&nbsp;     @return the number of empty tiles in the specified column.
+&nbsp;     */
+&nbsp;    private int countEmpty(int column){
+<b class="nc">&nbsp;        int count = 0;</b>
+<b class="nc">&nbsp;        for (Tile[] tiles : this.shelfState) {</b>
+<b class="nc">&nbsp;            if (tiles[column] == Tile.EMPTY)</b>
+<b class="nc">&nbsp;                count++;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return count;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method enable or disable the column chooser buttons based on parameter value
+&nbsp;     * @param enable if enable or not the buttons
+&nbsp;     */
+&nbsp;    public void enableButtons(boolean enable){
+<b class="nc">&nbsp;        for(JButton b : this.columnSelectorList){</b>
+<b class="nc">&nbsp;            b.setVisible(enable);</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /** {@inheritDoc}
+&nbsp;     * @param playerId id of the player that owns the shelf
+&nbsp;     * @param shelf    shelf representation of the player
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void updatePlayerShelfGraphics(String playerId, Tile[][] shelf) {
+<b class="nc">&nbsp;        this.shelfState = shelf;</b>
+<b class="nc">&nbsp;        this.revalidate();</b>
+<b class="nc">&nbsp;        this.repaint();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method sets whether the player is the first player.
+&nbsp;     * @param isFirstPlayer true if the player is the first player, false otherwise.
+&nbsp;     */
+&nbsp;    public void setIsFirstPlayer(boolean isFirstPlayer){
+<b class="nc">&nbsp;        this.isFirstPlayer = isFirstPlayer;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /* ------------------ GRAPHIC LAYOUT ---------------------*/
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This is the background image of this component, it is used into {@link #paintComponent(Graphics)}
+&nbsp;     **/
+<b class="nc">&nbsp;    private final Image foreground = new ImageIcon(Objects.requireNonNull(this.getClass().getResource(&quot;/BookshelfForeground.png&quot;))).getImage();</b>
+&nbsp;    /**
+&nbsp;     * This is the background image of this component, it is used into {@link #paintComponent(Graphics)}
+&nbsp;     **/
+<b class="nc">&nbsp;    private final Image background = new ImageIcon(Objects.requireNonNull(this.getClass().getResource(&quot;/BookshelfBackground.png&quot;))).getImage();</b>
+&nbsp;    /**
+&nbsp;     * This is the background image of this component, it is used into {@link #paintComponent(Graphics)}
+&nbsp;     **/
+<b class="nc">&nbsp;    private final Image firstPlayerOverlay = new ImageIcon(Objects.requireNonNull(this.getClass().getResource(&quot;/FirstPlayerOverlay.png&quot;))).getImage();</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     This method initializes the layout and the contents of the panel;
+&nbsp;     * The positions and dimensions of components within the grid are set.
+&nbsp;     * @param orderingTable ActionListener used to send column selector events
+&nbsp;     */
+&nbsp;    private void initializeLayout(ActionListener orderingTable){
+<b class="nc">&nbsp;        GridBagConstraints leftSpacerConstraints = new GridBagConstraints(</b>
+&nbsp;                0,0,
+&nbsp;                1,1,
+&nbsp;                144,1,
+&nbsp;                GridBagConstraints.NORTHWEST,
+&nbsp;                GridBagConstraints.BOTH,
+&nbsp;                new Insets(0,0,0,0),
+&nbsp;                0,0
+&nbsp;        );
+&nbsp;
+<b class="nc">&nbsp;        GridBagConstraints rightSpacerConstraints = new GridBagConstraints(</b>
+&nbsp;                7,0,
+&nbsp;                1,1,
+&nbsp;                144,1,
+&nbsp;                GridBagConstraints.NORTHWEST,
+&nbsp;                GridBagConstraints.BOTH,
+&nbsp;                new Insets(0,0,0,0),
+&nbsp;                0,0
+&nbsp;        );
+&nbsp;
+<b class="nc">&nbsp;        GridBagConstraints buttonsConstraints = new GridBagConstraints(</b>
+&nbsp;                0,0,
+&nbsp;                1,1,
+&nbsp;                270,1,
+&nbsp;                GridBagConstraints.NORTHWEST,
+&nbsp;                GridBagConstraints.BOTH,
+&nbsp;                new Insets(0,0,0,0),
+&nbsp;                0,0
+&nbsp;        );
+&nbsp;
+<b class="nc">&nbsp;        this.add(new Container(),leftSpacerConstraints);</b>
+&nbsp;
+<b class="nc">&nbsp;        for (int i = 0; i &lt; 5; i++) {</b>
+<b class="nc">&nbsp;            buttonsConstraints.gridx = 1+i;</b>
+&nbsp;
+<b class="nc">&nbsp;            ColumnChooserButton insert = new ColumnChooserButton(i);</b>
+<b class="nc">&nbsp;            insert.addActionListener(orderingTable);</b>
+<b class="nc">&nbsp;            this.columnSelectorList.add(insert);</b>
+<b class="nc">&nbsp;            this.add(insert,buttonsConstraints);</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        this.add(new Container(),rightSpacerConstraints);</b>
+&nbsp;
+<b class="nc">&nbsp;        Container shelfSpacer = new Container();</b>
+<b class="nc">&nbsp;        GridBagConstraints spacerConstraints = new GridBagConstraints(</b>
+&nbsp;                0,1,
+&nbsp;                7,1,
+&nbsp;                1,7.4,
+&nbsp;                GridBagConstraints.NORTHWEST,
+&nbsp;                GridBagConstraints.BOTH,
+&nbsp;                new Insets(0,0,0,0),
+&nbsp;                0,0
+&nbsp;        );
+&nbsp;
+<b class="nc">&nbsp;        this.add(shelfSpacer,spacerConstraints);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method overrides {@link JComponent#paintComponent(Graphics)} drawing the {@link #shelfState} on background
+&nbsp;     * @param g the &lt;code&gt;Graphics&lt;/code&gt; object to protect
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    protected void paintComponent(Graphics g) {
+<b class="nc">&nbsp;        super.paintComponent(g);</b>
+&nbsp;
+<b class="nc">&nbsp;        double ratio = (double) this.getWidth()/ this.foreground.getWidth(null);</b>
+<b class="nc">&nbsp;        int buttonPadding = (int)Math.round(171*ratio);</b>
+<b class="nc">&nbsp;        int topPadding = (int)Math.round(79*ratio) + buttonPadding;</b>
+<b class="nc">&nbsp;        int leftPadding = (int)Math.round(144*ratio);</b>
+<b class="nc">&nbsp;        int size = (int) Math.round((145+18)*ratio);</b>
+<b class="nc">&nbsp;        int vHorizontal = (int) Math.round(34*ratio);</b>
+<b class="nc">&nbsp;        int vVertical = (int) Math.round(6*ratio);</b>
+&nbsp;
+<b class="nc">&nbsp;        int horizontalSkip = size + vHorizontal;</b>
+<b class="nc">&nbsp;        int verticalSkip = size + vVertical;</b>
+&nbsp;
+<b class="nc">&nbsp;        g.drawImage(this.background,0,buttonPadding, this.getWidth(), this.getHeight()-buttonPadding,null);</b>
+&nbsp;
+<b class="nc">&nbsp;        int y = topPadding;</b>
+<b class="nc">&nbsp;        for (Tile[] tiles : this.shelfState) {</b>
+<b class="nc">&nbsp;            int x = leftPadding;</b>
+<b class="nc">&nbsp;            for (int j = 0; j &lt; this.shelfState[0].length; j++) {</b>
+<b class="nc">&nbsp;                if (tiles[j] != Tile.EMPTY) {</b>
+<b class="nc">&nbsp;                    Image tileImage = new ImageIcon(Objects.requireNonNull(this.getClass().getResource(&quot;/Tile/&quot; + tiles[j].name() + &quot;.png&quot;))).getImage();</b>
+<b class="nc">&nbsp;                    g.drawImage(tileImage, x, y, size, size, null);</b>
+&nbsp;                }
+<b class="nc">&nbsp;                x += horizontalSkip;</b>
+&nbsp;            }
+<b class="nc">&nbsp;            y += verticalSkip;</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        g.drawImage(this.foreground,0,buttonPadding, this.getWidth(), this.getHeight()-buttonPadding,null);</b>
+&nbsp;
+<b class="nc">&nbsp;        if(this.isFirstPlayer){</b>
+<b class="nc">&nbsp;            g.drawImage(this.firstPlayerOverlay,0,buttonPadding, this.getWidth(), this.getHeight()-buttonPadding,null);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-28 10:19</div>
+</div>
+</body>
+</html>

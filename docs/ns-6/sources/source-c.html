@@ -1,0 +1,263 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > User</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">model</a>
+</div>
+
+<h1>Coverage Summary for Class: User (model)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">User</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (5/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (12/12)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">User$Event</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (5/5)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">User$Status</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (3/3)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (9/9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (20/20)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package model;
+&nbsp;
+&nbsp;import modelView.UserInfo;
+&nbsp;import util.Observable;
+&nbsp;
+&nbsp;/**
+&nbsp; * This class represent a user of the server
+&nbsp; * &lt;p&gt;
+&nbsp; * It defines all the methods required to access and manage user information
+&nbsp; */
+&nbsp;public class User extends Observable&lt;User.Event&gt; {
+&nbsp;    /**
+&nbsp;     * The current status of the user
+&nbsp;     */
+&nbsp;    private Status status;
+&nbsp;    /**
+&nbsp;     * The last error user encountered during server interaction
+&nbsp;     */
+&nbsp;    private String eventMessage;
+&nbsp;    /**
+&nbsp;     * ID of the last user interaction with server
+&nbsp;     */
+&nbsp;    private long sessionID;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Construct a User instance with no error reported and {@link #status} = NOT_JOINED
+&nbsp;     */
+&nbsp;    public User() {
+<b class="fc">&nbsp;        super();</b>
+<b class="fc">&nbsp;        this.status = Status.NOT_JOINED;</b>
+<b class="fc">&nbsp;        this.eventMessage = &quot;&quot;;</b>
+<b class="fc">&nbsp;        this.sessionID = -1;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method returns the current status of the user
+&nbsp;     *
+&nbsp;     * @return {@link #status}
+&nbsp;     */
+&nbsp;    public Status getStatus() {
+<b class="fc">&nbsp;        return this.status;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method reports an event to the user, not modifying the sessionID
+&nbsp;     *
+&nbsp;     * @param status       the new status of the user
+&nbsp;     * @param eventMessage the description of the event
+&nbsp;     * @param eventType    the type of the event
+&nbsp;     */
+&nbsp;    public void reportEvent(Status status, String eventMessage, User.Event eventType) {
+<b class="fc">&nbsp;        this.reportEvent(status, eventMessage, eventType, this.sessionID);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method reports an event to the user, modifying the sessionID
+&nbsp;     *
+&nbsp;     * @param status       the new status of the user
+&nbsp;     * @param eventMessage the description of the event
+&nbsp;     * @param sessionID    the new sessionID
+&nbsp;     * @param eventType    the type of the event
+&nbsp;     */
+&nbsp;    public void reportEvent(Status status, String eventMessage, User.Event eventType, long sessionID) {
+<b class="fc">&nbsp;        this.status = status;</b>
+<b class="fc">&nbsp;        this.sessionID = sessionID;</b>
+<b class="fc">&nbsp;        this.eventMessage = eventMessage;</b>
+<b class="fc">&nbsp;        this.setChanged();</b>
+<b class="fc">&nbsp;        this.notifyObservers(eventType);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method returns a {@link UserInfo} representing this object instance
+&nbsp;     *
+&nbsp;     * @return A {@link UserInfo} representing this object instance
+&nbsp;     */
+&nbsp;    public UserInfo getInfo() {
+<b class="fc">&nbsp;        return new UserInfo(this.status, this.eventMessage, this.sessionID);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This enumeration contains all the events that can be sent to observers
+&nbsp;     */
+<b class="fc">&nbsp;    public enum Event {</b>
+&nbsp;        /**
+&nbsp;         * This event is sent when an error is reported
+&nbsp;         */
+<b class="fc">&nbsp;        ERROR_REPORTED,</b>
+&nbsp;        /**
+&nbsp;         * This event is sent when a game is created
+&nbsp;         */
+<b class="fc">&nbsp;        GAME_CREATED,</b>
+&nbsp;        /**
+&nbsp;         * This event is sent when a game is joined
+&nbsp;         */
+<b class="fc">&nbsp;        GAME_JOINED,</b>
+&nbsp;        /**
+&nbsp;         * This event is sent when a game is leaved
+&nbsp;         */
+<b class="fc">&nbsp;        GAME_LEAVED</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This enumeration contains all the statuses a user can be
+&nbsp;     */
+<b class="fc">&nbsp;    public enum Status {</b>
+&nbsp;        /**
+&nbsp;         * This status is set when the user is in a game
+&nbsp;         */
+<b class="fc">&nbsp;        JOINED,</b>
+&nbsp;        /**
+&nbsp;         * This status is set when the user is not in a game
+&nbsp;         */
+<b class="fc">&nbsp;        NOT_JOINED,</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-28 10:19</div>
+</div>
+</body>
+</html>

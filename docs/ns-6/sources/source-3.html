@@ -1,0 +1,521 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > StandardGame</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">model</a>
+</div>
+
+<h1>Coverage Summary for Class: StandardGame (model)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">StandardGame</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (18/18)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    99.3%
+  </span>
+  <span class="absValue">
+    (133/134)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package model;
+&nbsp;
+&nbsp;import model.abstractModel.*;
+&nbsp;import model.exceptions.GameEndedException;
+&nbsp;import model.exceptions.MatchmakingClosedException;
+&nbsp;import model.exceptions.PlayerAlreadyExistsException;
+&nbsp;import model.exceptions.PlayerNotExistsException;
+&nbsp;import modelView.GameInfo;
+&nbsp;
+&nbsp;import java.util.*;
+&nbsp;
+&nbsp;
+&nbsp;/**
+&nbsp; * This class is an implementation of {@link Game}
+&nbsp; */
+&nbsp;public class StandardGame extends Game {
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Players that are playing in this game (map of playerId -&gt; Player)
+&nbsp;     */
+&nbsp;    private final Map&lt;String, Player&gt; players;
+&nbsp;    /**
+&nbsp;     * Common goals associated to this game (list of CommonGoal)
+&nbsp;     */
+&nbsp;    private final List&lt;CommonGoal&gt; commonGoals;
+&nbsp;    /**
+&nbsp;     * Living room associated to this game
+&nbsp;     */
+&nbsp;    private final LivingRoom livingRoom;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Round player turn sequence of the game
+&nbsp;     * &lt;p&gt;
+&nbsp;     * It is used as a &quot;circular queue&quot;, every time turn is given to the next
+&nbsp;     * player the Player on the bottom of the list (element 0) is put on the top of the list (last element)
+&nbsp;     * &lt;p&gt;
+&nbsp;     * Top Player of the list (last element) is assumed to be the player that currently has the turn
+&nbsp;     */
+&nbsp;    private final List&lt;String&gt; playerTurnQueue;
+&nbsp;    /**
+&nbsp;     * List of player objects that aren&#39;t associated with a connected player
+&nbsp;     * &lt;p&gt;
+&nbsp;     * It is used as available player on Matchmaking and as list of disconnected player when a player exit game during Gameplay
+&nbsp;     */
+&nbsp;    private final List&lt;Player&gt; availablePlayers;
+&nbsp;    /**
+&nbsp;     * First player that ever had the turn, it is assumed to be also the first player of every round
+&nbsp;     */
+<b class="fc">&nbsp;    private String firstPlayer = &quot;&quot;;</b>
+&nbsp;    /**
+&nbsp;     * Signal of last round of turns
+&nbsp;     */
+&nbsp;    private boolean lastTurn;
+&nbsp;    /**
+&nbsp;     * Current status of the game
+&nbsp;     */
+&nbsp;    private GameStatus status;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Construct an {@link StandardGame} instance with given players information, living room information and common goals information
+&nbsp;     *
+&nbsp;     * @param players     players information
+&nbsp;     * @param livingRoom  living room information
+&nbsp;     * @param commonGoals common goals information
+&nbsp;     */
+&nbsp;    protected StandardGame(List&lt;Player&gt; players, LivingRoom livingRoom, List&lt;CommonGoal&gt; commonGoals) {
+<b class="fc">&nbsp;        super();</b>
+<b class="fc">&nbsp;        this.availablePlayers = new ArrayList&lt;&gt;(players);</b>
+<b class="fc">&nbsp;        this.livingRoom = livingRoom;</b>
+<b class="fc">&nbsp;        this.players = new HashMap&lt;&gt;();</b>
+<b class="fc">&nbsp;        this.commonGoals = new ArrayList&lt;&gt;(commonGoals);</b>
+<b class="fc">&nbsp;        this.playerTurnQueue = new ArrayList&lt;&gt;();</b>
+<b class="fc">&nbsp;        this.status = GameStatus.MATCHMAKING;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     *
+&nbsp;     * @param playerId the new id that has to be associated to the new Player
+&nbsp;     * @throws PlayerAlreadyExistsException if {@link #players} key-set already contains playerId
+&nbsp;     * @throws MatchmakingClosedException   if {@link #status} is not matchmaking
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void addPlayer(String playerId) throws PlayerAlreadyExistsException, MatchmakingClosedException {
+<b class="fc">&nbsp;        if (this.status == GameStatus.MATCHMAKING) {</b>
+<b class="fc">&nbsp;            if (this.players.containsKey(playerId))</b>
+<b class="fc">&nbsp;                throw new PlayerAlreadyExistsException();</b>
+&nbsp;
+&nbsp;            /* Get Player model */
+<b class="fc">&nbsp;            Player newPlayer = this.availablePlayers.remove(0);</b>
+&nbsp;
+&nbsp;            /* Associate Player with playerId */
+<b class="fc">&nbsp;            this.players.put(playerId, newPlayer);</b>
+&nbsp;
+&nbsp;            /* Add Player to turnQueue */
+<b class="fc">&nbsp;            this.playerTurnQueue.add(playerId);</b>
+&nbsp;
+&nbsp;            /* Notify that a new player has joined the game*/
+<b class="fc">&nbsp;            this.setChanged();</b>
+<b class="fc">&nbsp;            this.notifyObservers(Event.PLAYER_JOINED);</b>
+&nbsp;
+&nbsp;            /* If we have now reached the max playerNumber we set game ready to be started */
+<b class="fc">&nbsp;            if (this.availablePlayers.isEmpty()) {</b>
+&nbsp;                /* Update turn sequence and firstPlayer */
+<b class="fc">&nbsp;                Collections.shuffle(this.playerTurnQueue);</b>
+<b class="fc">&nbsp;                this.firstPlayer = this.playerTurnQueue.get(0);</b>
+&nbsp;
+<b class="fc">&nbsp;                this.status = GameStatus.STARTED;</b>
+<b class="fc">&nbsp;                this.setChanged();</b>
+<b class="fc">&nbsp;                this.notifyObservers(Event.GAME_STARTED);</b>
+&nbsp;            }
+<b class="fc">&nbsp;        } else if (this.status == GameStatus.STARTED || this.status == GameStatus.SUSPENDED) {</b>
+&nbsp;            /*If a player is trying to reconnect then...*/
+&nbsp;
+&nbsp;            /* If it&#39;s trying to reconnect with a different player id then discard request */
+<b class="fc">&nbsp;            if (!this.players.containsKey(playerId))</b>
+<b class="fc">&nbsp;                throw new MatchmakingClosedException();</b>
+&nbsp;
+<b class="fc">&nbsp;            Player requestedPlayer = this.players.get(playerId);</b>
+&nbsp;
+&nbsp;            /* If player referred by playerId is available for reconnection */
+<b class="fc">&nbsp;            if (this.availablePlayers.contains(requestedPlayer)) {</b>
+&nbsp;                /* Remove player from available */
+<b class="fc">&nbsp;                this.availablePlayers.remove(requestedPlayer);</b>
+&nbsp;            } else {
+<b class="fc">&nbsp;                throw new PlayerAlreadyExistsException();</b>
+&nbsp;            }
+&nbsp;
+<b class="fc">&nbsp;            this.setChanged();</b>
+<b class="fc">&nbsp;            this.notifyObservers(Event.PLAYER_JOINED);</b>
+&nbsp;
+<b class="fc">&nbsp;            if (this.status == GameStatus.SUSPENDED) {</b>
+<b class="fc">&nbsp;                this.status = GameStatus.STARTED;</b>
+<b class="fc">&nbsp;                this.setChanged();</b>
+<b class="fc">&nbsp;                this.notifyObservers(Event.GAME_RESUMED);</b>
+&nbsp;            }
+&nbsp;
+<b class="fc">&nbsp;        } else if (this.status == GameStatus.ENDED) {</b>
+<b class="fc">&nbsp;            throw new MatchmakingClosedException();</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     *
+&nbsp;     * @param playerId the id of the player that needs to be removed
+&nbsp;     * @throws PlayerNotExistsException when no player is associated with playerId
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void removePlayer(String playerId) throws PlayerNotExistsException {
+<b class="fc">&nbsp;        if (!this.players.containsKey(playerId))</b>
+<b class="fc">&nbsp;            throw new PlayerNotExistsException();</b>
+&nbsp;
+<b class="fc">&nbsp;        this.availablePlayers.add(this.players.get(playerId));</b>
+&nbsp;
+&nbsp;        /* If firstPlayer then the next one player became the new firstPlayer */
+<b class="fc">&nbsp;        if (this.firstPlayer.equals(playerId)) {</b>
+<b class="fc">&nbsp;            int playerTurnCurrentIndex = this.playerTurnQueue.indexOf(playerId);</b>
+&nbsp;
+<b class="fc">&nbsp;            if (playerTurnCurrentIndex == this.playerTurnQueue.size() - 1)</b>
+<b class="nc">&nbsp;                playerTurnCurrentIndex = -1;</b>
+&nbsp;
+<b class="fc">&nbsp;            this.firstPlayer = this.playerTurnQueue.get(playerTurnCurrentIndex + 1);</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        int online = this.players.size() - this.availablePlayers.size();</b>
+&nbsp;
+<b class="fc">&nbsp;        if (online == 1) {</b>
+<b class="fc">&nbsp;            this.setChanged();</b>
+<b class="fc">&nbsp;            this.status = GameStatus.SUSPENDED;</b>
+<b class="fc">&nbsp;            this.notifyObservers(Event.GAME_SUSPENDED);</b>
+<b class="fc">&nbsp;        } else if (online == 0) {</b>
+<b class="fc">&nbsp;            this.close();</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     *
+&nbsp;     * @param playerId the id of the Player requested
+&nbsp;     * @return Player of {@link #players} associated to playerId
+&nbsp;     * @throws PlayerNotExistsException if {@link #players} key-set does not contain playerId
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public Player getPlayer(String playerId) throws PlayerNotExistsException {
+<b class="fc">&nbsp;        if (!this.players.containsKey(playerId))</b>
+<b class="fc">&nbsp;            throw new PlayerNotExistsException();</b>
+&nbsp;
+<b class="fc">&nbsp;        return this.players.get(playerId);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     *
+&nbsp;     * @return a copy of {@link #commonGoals}
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public List&lt;CommonGoal&gt; getCommonGoals() {
+<b class="fc">&nbsp;        return new ArrayList&lt;&gt;(this.commonGoals);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     *
+&nbsp;     * @return {@link #livingRoom}
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public LivingRoom getLivingRoom() {
+<b class="fc">&nbsp;        return this.livingRoom;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     * &lt;p&gt;
+&nbsp;     * Set {@link #lastTurn} true
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void setLastTurn() {
+<b class="fc">&nbsp;        this.lastTurn = true;</b>
+<b class="fc">&nbsp;        this.setChanged();</b>
+<b class="fc">&nbsp;        this.notifyObservers(Event.LAST_TURN);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     *
+&nbsp;     * @return {@link #lastTurn}
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public boolean isLastTurn() {
+<b class="fc">&nbsp;        return this.lastTurn;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     *
+&nbsp;     * @return {@link #playerTurnQueue} last element {@link Player} id
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public String getTurnPlayerId() {
+<b class="fc">&nbsp;        return this.playerTurnQueue.get(this.playerTurnQueue.size() - 1);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void close() {
+<b class="fc">&nbsp;        this.status = GameStatus.ENDED;</b>
+<b class="fc">&nbsp;        this.setChanged();</b>
+<b class="fc">&nbsp;        this.notifyObservers(Event.GAME_ENDED);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     *
+&nbsp;     * @return {@link #status}
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public GameStatus getGameStatus() {
+<b class="fc">&nbsp;        return this.status;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void updatePlayersTurn() throws GameEndedException {
+<b class="fc">&nbsp;        if (this.status == GameStatus.ENDED)</b>
+<b class="fc">&nbsp;            throw new GameEndedException();</b>
+&nbsp;
+<b class="fc">&nbsp;        String p = this.playerTurnQueue.remove(0);</b>
+<b class="fc">&nbsp;        this.playerTurnQueue.add(p);</b>
+<b class="fc">&nbsp;        while (this.availablePlayers.contains(this.players.get(p))) {</b>
+<b class="fc">&nbsp;            p = this.playerTurnQueue.remove(0);</b>
+<b class="fc">&nbsp;            this.playerTurnQueue.add(p);</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        this.setChanged();</b>
+<b class="fc">&nbsp;        this.notifyObservers(Event.NEXT_TURN);</b>
+&nbsp;
+<b class="fc">&nbsp;        if (p.equals(this.firstPlayer) &amp;&amp; this.lastTurn)</b>
+<b class="fc">&nbsp;            throw new GameEndedException();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     *
+&nbsp;     * @return An {@link GameInfo} representing this object instance
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public GameInfo getInfo() {
+<b class="fc">&nbsp;        Map&lt;String, Integer&gt; points = new HashMap&lt;&gt;();</b>
+<b class="fc">&nbsp;        this.players.forEach((s, player) -&gt; {</b>
+&nbsp;            /* If a player is disconnected does not send points */
+<b class="fc">&nbsp;            if (this.availablePlayers.contains(player))</b>
+&nbsp;                return;
+&nbsp;
+&nbsp;            /*  Points earned by each player are the sum of points earned by
+&nbsp;                achieving common goals and by forming groups of tiles       */
+<b class="fc">&nbsp;            int playerPoints = this.getCommonGoalPoints(player.getAchievedCommonGoals().values().stream().toList())</b>
+<b class="fc">&nbsp;                    + this.getShelfTilesGroupsPoints(player.getShelf().getTiles());</b>
+&nbsp;
+&nbsp;
+&nbsp;            /* Show points earned from personal goals only at game end */
+<b class="fc">&nbsp;            if (this.status == GameStatus.ENDED)</b>
+<b class="fc">&nbsp;                playerPoints += this.getPersonalGoalPoints(player.getPersonalGoals());</b>
+&nbsp;
+<b class="fc">&nbsp;            points.put(s, playerPoints);</b>
+&nbsp;        });
+<b class="fc">&nbsp;        return new GameInfo(this.status, this.lastTurn, this.firstPlayer, this.getTurnPlayerId(), points);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method returns an amount of points based on the number of personalGoals achieved
+&nbsp;     *
+&nbsp;     * @param personalGoals list of all personal goals
+&nbsp;     * @return the amount of points earned by personal goals
+&nbsp;     */
+&nbsp;    private int getPersonalGoalPoints(List&lt;? extends PersonalGoal&gt; personalGoals) {
+<b class="fc">&nbsp;        int achieved = 0;</b>
+<b class="fc">&nbsp;        for (PersonalGoal p : personalGoals)</b>
+<b class="fc">&nbsp;            if (p.isAchieved())</b>
+<b class="fc">&nbsp;                achieved++;</b>
+&nbsp;
+<b class="fc">&nbsp;        return switch (achieved) {</b>
+<b class="fc">&nbsp;            case 0 -&gt; 0;</b>
+<b class="fc">&nbsp;            case 1 -&gt; 1;</b>
+<b class="fc">&nbsp;            case 2 -&gt; 2;</b>
+<b class="fc">&nbsp;            case 3 -&gt; 4;</b>
+<b class="fc">&nbsp;            case 4 -&gt; 6;</b>
+<b class="fc">&nbsp;            case 5 -&gt; 9;</b>
+<b class="fc">&nbsp;            default -&gt; 12;</b>
+&nbsp;        };
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method returns an amount of points equivalent to the sum of provided tokens
+&nbsp;     *
+&nbsp;     * @param tokens the list of earned tokens
+&nbsp;     * @return the amount of points equivalent to the sum of provided tokens
+&nbsp;     */
+&nbsp;    private int getCommonGoalPoints(List&lt;Token&gt; tokens) {
+<b class="fc">&nbsp;        int ris = 0;</b>
+&nbsp;
+<b class="fc">&nbsp;        for (Token t : tokens)</b>
+<b class="fc">&nbsp;            ris += t.getPoints();</b>
+&nbsp;
+<b class="fc">&nbsp;        return ris;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method returns an amount of points based on evaluation of how many and how big are groups of tiles in a shelf
+&nbsp;     *
+&nbsp;     * @param shelf the shelf to be evaluated
+&nbsp;     * @return the amount of points the shelf is worth
+&nbsp;     */
+&nbsp;    private int getShelfTilesGroupsPoints(Tile[][] shelf) {
+<b class="fc">&nbsp;        int ris = 0;</b>
+&nbsp;
+<b class="fc">&nbsp;        boolean[][] checked = new boolean[shelf.length][shelf[0].length];</b>
+&nbsp;
+<b class="fc">&nbsp;        for (int i = 0; i &lt; shelf.length; i++)</b>
+<b class="fc">&nbsp;            for (int j = 0; j &lt; shelf[0].length; j++)</b>
+<b class="fc">&nbsp;                checked[i][j] = false;</b>
+&nbsp;
+<b class="fc">&nbsp;        for (int i = 0; i &lt; shelf.length; i++)</b>
+<b class="fc">&nbsp;            for (int j = 0; j &lt; shelf[0].length; j++)</b>
+<b class="fc">&nbsp;                if (shelf[i][j] != Tile.EMPTY) {</b>
+<b class="fc">&nbsp;                    int groupSize = this.depthSearch(i, j, shelf, checked, shelf[i][j].getColor());</b>
+&nbsp;
+<b class="fc">&nbsp;                    if (groupSize &gt;= 6)</b>
+<b class="fc">&nbsp;                        ris += 8;</b>
+<b class="fc">&nbsp;                    else if (groupSize == 5)</b>
+<b class="fc">&nbsp;                        ris += 6;</b>
+<b class="fc">&nbsp;                    else if (groupSize == 4)</b>
+<b class="fc">&nbsp;                        ris += 3;</b>
+<b class="fc">&nbsp;                    else if (groupSize == 3)</b>
+<b class="fc">&nbsp;                        ris += 2;</b>
+&nbsp;                }
+&nbsp;
+<b class="fc">&nbsp;        return ris;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This function provides support for {@code getShelfTilesGroupPoints()} and provide a recursive depth search on tile groups
+&nbsp;     * @param i         row index
+&nbsp;     * @param j        column index
+&nbsp;     * @param shelf    the shelf to be evaluated
+&nbsp;     * @param checked  the matrix of checked tiles
+&nbsp;     * @param tileColor the color of the tile group
+&nbsp;     * @return the size of the tile group
+&nbsp;     */
+&nbsp;    private int depthSearch(int i, int j, Tile[][] shelf, boolean[][] checked, String tileColor) {
+<b class="fc">&nbsp;        if (i &lt; 0 || i &gt;= checked.length || j &lt; 0 || j &gt;= checked[0].length)</b>
+<b class="fc">&nbsp;            return 0;</b>
+&nbsp;
+<b class="fc">&nbsp;        if (shelf[i][j] == Tile.EMPTY)</b>
+<b class="fc">&nbsp;            return 0;</b>
+&nbsp;
+<b class="fc">&nbsp;        if (checked[i][j])</b>
+<b class="fc">&nbsp;            return 0;</b>
+&nbsp;
+<b class="fc">&nbsp;        if (!shelf[i][j].getColor().equals(tileColor))</b>
+<b class="fc">&nbsp;            return 0;</b>
+&nbsp;
+<b class="fc">&nbsp;        checked[i][j] = true;</b>
+&nbsp;
+<b class="fc">&nbsp;        return 1</b>
+<b class="fc">&nbsp;                + this.depthSearch(i - 1, j, shelf, checked, tileColor)</b>
+<b class="fc">&nbsp;                + this.depthSearch(i + 1, j, shelf, checked, tileColor)</b>
+<b class="fc">&nbsp;                + this.depthSearch(i, j + 1, shelf, checked, tileColor)</b>
+<b class="fc">&nbsp;                + this.depthSearch(i, j - 1, shelf, checked, tileColor);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-28 10:19</div>
+</div>
+</body>
+</html>

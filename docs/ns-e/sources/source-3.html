@@ -1,0 +1,192 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > TileButton</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">view.GUI.buttons</a>
+</div>
+
+<h1>Coverage Summary for Class: TileButton (view.GUI.buttons)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">TileButton</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/14)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package view.GUI.buttons;
+&nbsp;
+&nbsp;import javax.swing.*;
+&nbsp;import model.Tile;
+&nbsp;
+&nbsp;
+&nbsp;import java.awt.*;
+&nbsp;import java.util.Objects;
+&nbsp;
+&nbsp;/**
+&nbsp; * This class extends JButton and represents a graphical component that shows the tile button for selecting tiles in {@link view.GUI.panels.LivingRoomPanel}
+&nbsp; */
+&nbsp;public class TileButton extends JButton {
+&nbsp;    /**
+&nbsp;     * This int contains the x coordinate of the tile
+&nbsp;     */
+&nbsp;    private final int tileX;
+&nbsp;    /**
+&nbsp;     * This int contains the y coordinate of the tile
+&nbsp;     */
+&nbsp;    private final int tileY;
+&nbsp;    /**
+&nbsp;     * The Tile that this button represents
+&nbsp;     */
+&nbsp;    private final Tile tile;
+&nbsp;    /**
+&nbsp;     * This image contains the image of the tile
+&nbsp;     */
+&nbsp;    private final Image image;
+&nbsp;    /**
+&nbsp;     * This image contains the image of the selected tile
+&nbsp;     */
+<b class="nc">&nbsp;    private final Image selectedImage = new ImageIcon(Objects.requireNonNull(this.getClass().getResource(&quot;/ForegroundFilter.png&quot;))).getImage();</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Construct an {@link TileButton} instance
+&nbsp;     * @param x the x coordinate of the tile
+&nbsp;     * @param y the y coordinate of the tile
+&nbsp;     * @param tile the tile that this button represents
+&nbsp;     */
+&nbsp;    public TileButton(int x, int y, Tile tile) {
+<b class="nc">&nbsp;        super();</b>
+<b class="nc">&nbsp;        this.tileX = x;</b>
+<b class="nc">&nbsp;        this.tileY = y;</b>
+<b class="nc">&nbsp;        this.tile = tile;</b>
+&nbsp;
+<b class="nc">&nbsp;        this.setPreferredSize(new Dimension(0, 0));</b>
+<b class="nc">&nbsp;        this.image = new ImageIcon(Objects.requireNonNull(this.getClass().getResource(&quot;/Tile/&quot; + tile.name() + &quot;.png&quot;))).getImage();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method overrides {@link JButton#paintComponent(Graphics)} and draws the image of the tile
+&nbsp;     * @param g the &lt;code&gt;Graphics&lt;/code&gt; object to protect
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    protected void paintComponent(Graphics g) {
+<b class="nc">&nbsp;        super.paintComponent(g);</b>
+<b class="nc">&nbsp;        g.drawImage(this.image, 0, 0, this.getWidth(), this.getHeight(), null);</b>
+<b class="nc">&nbsp;        if (this.isSelected()) {</b>
+<b class="nc">&nbsp;            g.drawImage(this.selectedImage, 0, 0, this.getWidth(), this.getHeight(), null);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method returns the x coordinate of the tile
+&nbsp;     * @return the x coordinate of the tile
+&nbsp;     */
+&nbsp;    public int getTileX() {
+<b class="nc">&nbsp;        return this.tileX;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method returns the y coordinate of the tile
+&nbsp;     * @return the y coordinate of the tile
+&nbsp;     */
+&nbsp;    public int getTileY() {
+<b class="nc">&nbsp;        return this.tileY;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method returns the tile that this button represents
+&nbsp;     * @return the tile that this button represents
+&nbsp;     */
+&nbsp;    public Tile getTile() {
+<b class="nc">&nbsp;        return this.tile;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-28 10:19</div>
+</div>
+</body>
+</html>

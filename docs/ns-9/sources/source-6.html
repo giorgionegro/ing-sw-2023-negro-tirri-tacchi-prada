@@ -1,0 +1,163 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > StandardCorners</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">model.goalEvaluators</a>
+</div>
+
+<h1>Coverage Summary for Class: StandardCorners (model.goalEvaluators)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">StandardCorners</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (4/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (12/12)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package model.goalEvaluators;
+&nbsp;
+&nbsp;import model.Tile;
+&nbsp;import model.abstractModel.GoalEvaluator;
+&nbsp;
+&nbsp;/**
+&nbsp; * This class is the goal evaluator for the StandardCorners goal.
+&nbsp; * It implements the GoalEvaluator abstract class.
+&nbsp; * It is used by the CommonGoal class.
+&nbsp; **/
+<b class="fc">&nbsp;public class StandardCorners extends GoalEvaluator {</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This string contains the description of the commonGoal Corners
+&nbsp;     */
+<b class="fc">&nbsp;    private final String standardCornersDescription = &quot;4 tiles of the same type in the 4 corners of the library.&quot;;</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This string contains the id of the commonGoal Corners
+&nbsp;     */
+<b class="fc">&nbsp;    private final String standardCornersId = &quot;StandardCorners&quot;;</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     *
+&nbsp;     * @return {@link #standardCornersDescription}
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public String getDescription() {
+<b class="fc">&nbsp;        return this.standardCornersDescription;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     *
+&nbsp;     * @return {@link #standardCornersId}
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public String getId() {
+<b class="fc">&nbsp;        return this.standardCornersId;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method evaluates if the player has reached the goal
+&nbsp;     *
+&nbsp;     * @param playerShelf the player&#39;s shelf
+&nbsp;     * @return true if the 4 corners of the library are of the same type
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public boolean evaluate(Tile[][] playerShelf) {
+<b class="fc">&nbsp;        Tile topLeft = playerShelf[0][0];</b>
+<b class="fc">&nbsp;        Tile topRight = playerShelf[0][playerShelf[0].length - 1];</b>
+<b class="fc">&nbsp;        Tile bottomLeft = playerShelf[playerShelf.length - 1][0];</b>
+<b class="fc">&nbsp;        Tile bottomRight = playerShelf[playerShelf.length - 1][playerShelf[0].length - 1];</b>
+<b class="fc">&nbsp;        return topLeft.getColor().equals(topRight.getColor()) &amp;&amp;</b>
+<b class="fc">&nbsp;                topLeft.getColor().equals(bottomLeft.getColor()) &amp;&amp;</b>
+<b class="fc">&nbsp;                topLeft.getColor().equals(bottomRight.getColor()) &amp;&amp;</b>
+&nbsp;                topLeft != Tile.EMPTY;
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-28 10:19</div>
+</div>
+</body>
+</html>

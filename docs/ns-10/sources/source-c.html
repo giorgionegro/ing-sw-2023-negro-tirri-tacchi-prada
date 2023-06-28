@@ -1,0 +1,427 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > TilesOrderingPanel</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">view.GUI.panels</a>
+</div>
+
+<h1>Coverage Summary for Class: TilesOrderingPanel (view.GUI.panels)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">TilesOrderingPanel</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/131)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package view.GUI.panels;
+&nbsp;
+&nbsp;import modelView.PickedTile;
+&nbsp;import view.GUI.buttons.SwapButton;
+&nbsp;import view.GUI.buttons.TileButton;
+&nbsp;import view.ViewLogic;
+&nbsp;
+&nbsp;import javax.swing.*;
+&nbsp;import java.awt.*;
+&nbsp;import java.awt.event.ActionEvent;
+&nbsp;import java.awt.event.ActionListener;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.Comparator;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Objects;
+&nbsp;
+&nbsp;/**
+&nbsp; * This class extends JPanel and represents a graphical component whose purpose is to allow the user to choose the order of the tiles
+&nbsp; */
+&nbsp;//TODO
+&nbsp;public class TilesOrderingPanel extends JPanel implements ActionListener{
+&nbsp;    /**
+&nbsp;     * List of the tiles that have been picked by the user
+&nbsp;     */
+<b class="nc">&nbsp;    private final List&lt;TileButton&gt; pickedTiles = new ArrayList&lt;&gt;();</b>
+&nbsp;    /**
+&nbsp;     * The ActionListener that will be notified when the user confirms the selection
+&nbsp;     */
+&nbsp;    private final ActionListener moveSender;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Code that represents the action of selecting a tile
+&nbsp;     */
+&nbsp;    public static final int SELECT_TILE = 0;
+&nbsp;    /**
+&nbsp;     * Code that represents the action of resetting the selection
+&nbsp;     */
+&nbsp;    public static final int RESET = 1;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Code that represents the action of switching the first and the second tile
+&nbsp;     */
+<b class="nc">&nbsp;    private final int SWITCH_ONE_TWO = 3;</b>
+&nbsp;    /**
+&nbsp;     * Code that represents the action of switching the second and the third tile
+&nbsp;     */
+<b class="nc">&nbsp;    private final int SWITCH_TWO_THREE = 4;</b>
+&nbsp;    /**
+&nbsp;     * Code that represents the action of confirming the selection and sending the move
+&nbsp;     */
+&nbsp;    public static final int CONFIRM = 2;
+&nbsp;
+&nbsp;    /*------------------ GRAPHIC LAYOUT ---------------------*/
+&nbsp;    /**
+&nbsp;     * Background image of the panel
+&nbsp;     */
+<b class="nc">&nbsp;    private final Image background = new ImageIcon(Objects.requireNonNull(this.getClass().getResource(&quot;/TilesOrderingTableBackground.png&quot;))).getImage();</b>
+&nbsp;    /**
+&nbsp;     * Swap button that allows the user to switch the first and the second tile
+&nbsp;     */
+<b class="nc">&nbsp;    private final SwapButton swapButton1 = new SwapButton();</b>
+&nbsp;    /**
+&nbsp;     * Swap button that allows the user to switch the second and the third tile
+&nbsp;     */
+<b class="nc">&nbsp;    private final SwapButton swapButton2 = new SwapButton();</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Define a zero dimension
+&nbsp;     */
+<b class="nc">&nbsp;    private final Dimension zeroDimension = new Dimension(0, 0);</b>
+&nbsp;    /**
+&nbsp;     * Action listener that allows the user to choose the column of the tile
+&nbsp;     */
+&nbsp;    private final ActionListener columnChooser;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Constructs a {@link TilesOrderingPanel} instance
+&nbsp;     *
+&nbsp;     * @param moveSender  the ActionListener that will be notified when the user confirms the selection
+&nbsp;     * @param columnChooser the ActionListener that will be notified when the user chooses the column of the tile
+&nbsp;     */
+&nbsp;    public TilesOrderingPanel(ActionListener moveSender, ActionListener columnChooser) {
+<b class="nc">&nbsp;        super();</b>
+<b class="nc">&nbsp;        this.columnChooser = columnChooser;</b>
+<b class="nc">&nbsp;        this.moveSender = moveSender;</b>
+&nbsp;
+<b class="nc">&nbsp;        this.initializeLayout();</b>
+&nbsp;
+<b class="nc">&nbsp;        this.swapButton1.addActionListener(e -&gt; this.actionPerformed(new ActionEvent(this.swapButton1,this.SWITCH_ONE_TWO,e.getActionCommand())));</b>
+<b class="nc">&nbsp;        this.swapButton2.addActionListener(e -&gt; this.actionPerformed(new ActionEvent(this.swapButton2,this.SWITCH_TWO_THREE,e.getActionCommand())));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     * @param e the event to be processed
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void actionPerformed(ActionEvent e) {
+<b class="nc">&nbsp;        if (e.getID() == RESET) {</b>
+&nbsp;            //Resets the selection if there is an update of livingRoom
+<b class="nc">&nbsp;            for (TileButton t : this.pickedTiles) {</b>
+<b class="nc">&nbsp;                t.setSelected(false);</b>
+<b class="nc">&nbsp;            }</b>
+<b class="nc">&nbsp;            this.pickedTiles.clear();</b>
+<b class="nc">&nbsp;        } else if (e.getID() == this.SWITCH_ONE_TWO) {</b>
+<b class="nc">&nbsp;            if (this.pickedTiles.size() == 3) {</b>
+<b class="nc">&nbsp;                this.pickedTiles.add(this.pickedTiles.remove(1));</b>
+&nbsp;            }
+<b class="nc">&nbsp;        } else if (e.getID() == this.SWITCH_TWO_THREE) {</b>
+<b class="nc">&nbsp;            if (this.pickedTiles.size() &gt; 1) {</b>
+<b class="nc">&nbsp;                this.pickedTiles.add(0, this.pickedTiles.remove(1));</b>
+&nbsp;            }
+<b class="nc">&nbsp;        } else if (e.getID() == CONFIRM) {</b>
+<b class="nc">&nbsp;            if (this.pickedTiles.size() &gt; 0) {</b>
+<b class="nc">&nbsp;                String columnInShelf = e.getActionCommand();</b>
+<b class="nc">&nbsp;                StringBuilder picked = new StringBuilder();</b>
+<b class="nc">&nbsp;                for (TileButton t : this.pickedTiles) {</b>
+<b class="nc">&nbsp;                    picked.append(t.getTileY()).append(&quot;,&quot;).append(t.getTileX()).append(&quot; &quot;);</b>
+<b class="nc">&nbsp;                    t.setSelected(false);</b>
+<b class="nc">&nbsp;                }</b>
+<b class="nc">&nbsp;                this.pickedTiles.clear();</b>
+<b class="nc">&nbsp;                String move = picked + &quot;\n&quot; + columnInShelf;</b>
+<b class="nc">&nbsp;                this.moveSender.actionPerformed(new ActionEvent(this, ViewLogic.SEND_MOVE, move));</b>
+<b class="nc">&nbsp;            }</b>
+<b class="nc">&nbsp;        } else if (e.getID() == SELECT_TILE &amp;&amp; e.getSource() instanceof TileButton button) {</b>
+<b class="nc">&nbsp;            boolean selected = button.isSelected();</b>
+<b class="nc">&nbsp;            if (selected) {</b>
+<b class="nc">&nbsp;                button.setSelected(false);</b>
+<b class="nc">&nbsp;                this.pickedTiles.remove(button);</b>
+&nbsp;            } else {
+<b class="nc">&nbsp;                if (this.pickedTiles.size() &lt; 3 &amp;&amp; this.isPickable(button)) {</b>
+<b class="nc">&nbsp;                    button.setSelected(true);</b>
+<b class="nc">&nbsp;                    this.pickedTiles.add(button);</b>
+&nbsp;                }
+&nbsp;            }
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        this.revalidate();</b>
+<b class="nc">&nbsp;        this.repaint();</b>
+&nbsp;
+<b class="nc">&nbsp;        this.columnChooser.actionPerformed(new ActionEvent(this, 0, String.valueOf(this.pickedTiles.size())));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method check if a tile is pickable in relation to the tiles that have already been picked
+&nbsp;     *
+&nbsp;     * @param Tile {@link TileButton} to be checked
+&nbsp;     * @return true if the tile is pickable, false otherwise
+&nbsp;     */
+&nbsp;    private boolean isPickable(TileButton Tile) {
+&nbsp;
+<b class="nc">&nbsp;        List&lt;PickedTile&gt; temp = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;        for (TileButton t : this.pickedTiles) {</b>
+<b class="nc">&nbsp;            temp.add(new PickedTile(t.getTileX(), t.getTileY()));</b>
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        temp.add(new PickedTile(Tile.getTileX(), Tile.getTileY()));</b>
+&nbsp;
+<b class="nc">&nbsp;        return this.pickable(temp);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method checks if a list of {@link PickedTile}s is pickable
+&nbsp;     *
+&nbsp;     * @param pickedTiles the tiles to be checked
+&nbsp;     * @return true if the tiles are pickable, false otherwise
+&nbsp;     */
+&nbsp;    public boolean pickable(List&lt;PickedTile&gt; pickedTiles) {
+<b class="nc">&nbsp;        if (!this.areTilesDifferent(new ArrayList&lt;&gt;(pickedTiles))) {</b>
+&nbsp;            // print error this(&quot;Tiles are not different&quot;, RED);
+<b class="nc">&nbsp;            return false;</b>
+&nbsp;        }
+&nbsp;        // print error  this.printCommandLine(&quot;Tiles are not aligned&quot;, RED);
+<b class="nc">&nbsp;        return this.areTilesAligned(new ArrayList&lt;&gt;(pickedTiles));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method checks if a list of {@link PickedTile}s are adjacent and aligned
+&nbsp;     *
+&nbsp;     * @param pickedTiles the tiles to be checked
+&nbsp;     * @return true if the tiles are aligned and adjacent, false otherwise
+&nbsp;     */
+&nbsp;    private boolean areTilesAligned(List&lt;PickedTile&gt; pickedTiles) {
+&nbsp;
+<b class="nc">&nbsp;        boolean rowAligned = true;</b>
+<b class="nc">&nbsp;        boolean colAligned = true;</b>
+&nbsp;
+<b class="nc">&nbsp;        for (int i = 1; i &lt; pickedTiles.size(); i++) {</b>
+<b class="nc">&nbsp;            rowAligned = rowAligned &amp;&amp; (pickedTiles.get(i - 1).row() == pickedTiles.get(i).row());</b>
+<b class="nc">&nbsp;            colAligned = colAligned &amp;&amp; (pickedTiles.get(i - 1).col() == pickedTiles.get(i).col());</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        if (rowAligned) {</b>
+<b class="nc">&nbsp;            pickedTiles.sort(Comparator.comparingInt(PickedTile::col));</b>
+<b class="nc">&nbsp;            for (int i = 0; i &lt; pickedTiles.size() - 1; i++)</b>
+<b class="nc">&nbsp;                if (pickedTiles.get(i).col() + 1 != pickedTiles.get(i + 1).col())</b>
+<b class="nc">&nbsp;                    return false;</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        if (colAligned) {</b>
+<b class="nc">&nbsp;            pickedTiles.sort(Comparator.comparingInt(PickedTile::row));</b>
+<b class="nc">&nbsp;            for (int i = 0; i &lt; pickedTiles.size() - 1; i++)</b>
+<b class="nc">&nbsp;                if (pickedTiles.get(i).row() + 1 != pickedTiles.get(i + 1).row())</b>
+<b class="nc">&nbsp;                    return false;</b>
+&nbsp;        }
+&nbsp;
+&nbsp;
+<b class="nc">&nbsp;        return rowAligned || colAligned;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method checks if a list of {@link PickedTile}s are different
+&nbsp;     *
+&nbsp;     * @param pickedTiles list of picked tiles
+&nbsp;     * @return true if tiles are different, false otherwise
+&nbsp;     */
+&nbsp;    private boolean areTilesDifferent(List&lt;PickedTile&gt; pickedTiles) {
+<b class="nc">&nbsp;        for (int i = 0; i &lt; pickedTiles.size() - 1; i++) {</b>
+<b class="nc">&nbsp;            for (int j = i + 1; j &lt; pickedTiles.size(); j++) {</b>
+<b class="nc">&nbsp;                if (pickedTiles.get(i).row() == pickedTiles.get(j).row())</b>
+<b class="nc">&nbsp;                    if (pickedTiles.get(i).col() == pickedTiles.get(j).col())</b>
+<b class="nc">&nbsp;                        return false;</b>
+&nbsp;            }
+&nbsp;        }
+<b class="nc">&nbsp;        return true;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method initializes the layout of the panel
+&nbsp;     */
+&nbsp;    private void initializeLayout() {
+<b class="nc">&nbsp;        this.setLayout(new GridBagLayout());</b>
+<b class="nc">&nbsp;        GridBagConstraints constraints = new GridBagConstraints(</b>
+&nbsp;                0, 0,
+&nbsp;                1, 1,
+&nbsp;                1, 1,
+&nbsp;                GridBagConstraints.NORTHWEST,
+&nbsp;                GridBagConstraints.BOTH,
+&nbsp;                new Insets(0, 0, 0, 0),
+&nbsp;                0, 0
+&nbsp;        );
+&nbsp;        /* up space */
+<b class="nc">&nbsp;        constraints.gridwidth = 3;</b>
+<b class="nc">&nbsp;        constraints.weighty = 30;</b>
+<b class="nc">&nbsp;        this.add(new Container(), constraints);</b>
+&nbsp;
+&nbsp;        /* tile space */
+<b class="nc">&nbsp;        constraints.gridy++;</b>
+<b class="nc">&nbsp;        constraints.weighty = 146;</b>
+<b class="nc">&nbsp;        this.add(new Container(), constraints);</b>
+&nbsp;
+&nbsp;        /* swap button 1 */
+<b class="nc">&nbsp;        constraints.gridy++;</b>
+<b class="nc">&nbsp;        constraints.gridwidth = 1;</b>
+<b class="nc">&nbsp;        constraints.weighty = 70;</b>
+<b class="nc">&nbsp;        this.add(new Container(), constraints);</b>
+&nbsp;
+<b class="nc">&nbsp;        constraints.gridx++;</b>
+<b class="nc">&nbsp;        this.swapButton1.setPreferredSize(this.zeroDimension);</b>
+<b class="nc">&nbsp;        this.add(this.swapButton1, constraints);</b>
+&nbsp;
+<b class="nc">&nbsp;        constraints.gridx++;</b>
+<b class="nc">&nbsp;        this.add(new Container(), constraints);</b>
+&nbsp;
+&nbsp;        /* tile space */
+<b class="nc">&nbsp;        constraints.gridx = 0;</b>
+<b class="nc">&nbsp;        constraints.gridy++;</b>
+<b class="nc">&nbsp;        constraints.gridwidth = 3;</b>
+<b class="nc">&nbsp;        constraints.weighty = 146;</b>
+<b class="nc">&nbsp;        this.add(new Container(), constraints);</b>
+&nbsp;
+&nbsp;        /* swap button 2 */
+<b class="nc">&nbsp;        constraints.gridy++;</b>
+<b class="nc">&nbsp;        constraints.gridwidth = 1;</b>
+<b class="nc">&nbsp;        constraints.weighty = 70;</b>
+<b class="nc">&nbsp;        this.add(new Container(), constraints);</b>
+&nbsp;
+<b class="nc">&nbsp;        constraints.gridx++;</b>
+<b class="nc">&nbsp;        this.swapButton2.setPreferredSize(this.zeroDimension);</b>
+<b class="nc">&nbsp;        this.add(this.swapButton2, constraints);</b>
+&nbsp;
+<b class="nc">&nbsp;        constraints.gridx++;</b>
+<b class="nc">&nbsp;        this.add(new Container(), constraints);</b>
+&nbsp;
+&nbsp;        /* tile space */
+<b class="nc">&nbsp;        constraints.gridx = 0;</b>
+<b class="nc">&nbsp;        constraints.gridy++;</b>
+<b class="nc">&nbsp;        constraints.gridwidth = 3;</b>
+<b class="nc">&nbsp;        constraints.weighty = 146;</b>
+<b class="nc">&nbsp;        this.add(new Container(), constraints);</b>
+&nbsp;
+&nbsp;        /* bottom space */
+<b class="nc">&nbsp;        constraints.gridy++;</b>
+<b class="nc">&nbsp;        constraints.weighty = 30;</b>
+<b class="nc">&nbsp;        this.add(new Container(), constraints);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method overrides {@link  JComponent#paintComponent(Graphics)} drawing an image as background
+&nbsp;     * @param g the &lt;code&gt;Graphics&lt;/code&gt; object to protect
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    protected void paintComponent(Graphics g) {
+<b class="nc">&nbsp;        super.paintComponent(g);</b>
+&nbsp;
+<b class="nc">&nbsp;        double ratio = (double) this.getWidth() / this.background.getWidth(null);</b>
+<b class="nc">&nbsp;        int topPadding = (int) Math.round(30 * ratio);</b>
+<b class="nc">&nbsp;        int leftPadding = (int) Math.round(30 * ratio);</b>
+<b class="nc">&nbsp;        int size = (int) Math.round(145 * ratio);</b>
+<b class="nc">&nbsp;        int vVertical = (int) Math.round(70 * ratio);</b>
+&nbsp;
+<b class="nc">&nbsp;        int verticalSkip = size + vVertical;</b>
+&nbsp;
+<b class="nc">&nbsp;        g.drawImage(this.background, 0, 0, this.getWidth(), this.getHeight(), null);</b>
+&nbsp;
+<b class="nc">&nbsp;        int y = topPadding + 2 * verticalSkip;</b>
+<b class="nc">&nbsp;        for (TileButton t : this.pickedTiles) {</b>
+<b class="nc">&nbsp;            Image tileImage = new ImageIcon(Objects.requireNonNull(this.getClass().getResource(&quot;/Tile/&quot; + t.getTile().name() + &quot;.png&quot;))).getImage();</b>
+<b class="nc">&nbsp;            g.drawImage(tileImage, leftPadding, y, size, size, null);</b>
+<b class="nc">&nbsp;            y -= verticalSkip;</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-28 10:19</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,760 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > GamePanel</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">view.GUI.panels</a>
+</div>
+
+<h1>Coverage Summary for Class: GamePanel (view.GUI.panels)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">GamePanel</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/26)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/209)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">GamePanel$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/3)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/28)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/212)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package view.GUI.panels;
+&nbsp;
+&nbsp;import model.Tile;
+&nbsp;import model.Token;
+&nbsp;import model.abstractModel.Game;
+&nbsp;import model.abstractModel.Message;
+&nbsp;import view.GUI.layouts.AspectRatioLayout;
+&nbsp;import view.ViewLogic;
+&nbsp;import view.graphicInterfaces.GameGraphics;
+&nbsp;
+&nbsp;import javax.swing.*;
+&nbsp;import java.awt.*;
+&nbsp;import java.awt.event.ActionEvent;
+&nbsp;import java.awt.event.ActionListener;
+&nbsp;import java.util.HashMap;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Map;
+&nbsp;import java.util.Objects;
+&nbsp;
+&nbsp;
+&nbsp;/**
+&nbsp; *  This class extends JComponent manage game play graphics
+&nbsp; */
+&nbsp;public class GamePanel extends JComponent implements GameGraphics {
+&nbsp;    /**
+&nbsp;     * The ActionListener that used to send game actions
+&nbsp;     */
+&nbsp;    private final ActionListener listener;
+&nbsp;    /**
+&nbsp;     * This container is the layout placeholder for {@link #livingRoomBoard}
+&nbsp;     */
+<b class="nc">&nbsp;    private final Container livingRoomContainer = new Container();</b>
+&nbsp;    /**
+&nbsp;     * This container is the layout placeholder for {@link #opponentShelfBoards}
+&nbsp;     */
+<b class="nc">&nbsp;    private final Container opponentsShelvesContainer = new Container();</b>
+&nbsp;    /**
+&nbsp;     * This container is the layout placeholder for {@link #opponentLabels}
+&nbsp;     */
+<b class="nc">&nbsp;    private final Container opponentLabelsContainer = new Container();</b>
+&nbsp;    /**
+&nbsp;     * This container is the layout placeholder for {@link #tilesOrderingPanel}
+&nbsp;     */
+<b class="nc">&nbsp;    private final Container tableContainer = new Container();</b>
+&nbsp;    /**
+&nbsp;     * This container is the layout placeholder for {@link #playerShelf}
+&nbsp;     */
+<b class="nc">&nbsp;    private final Container playerShelfContainer = new Container();</b>
+&nbsp;    /**
+&nbsp;     * This container is the layout placeholder for {@link #personalGoalPanel}
+&nbsp;     */
+<b class="nc">&nbsp;    private final Container personalGoalContainer = new Container();</b>
+&nbsp;    /**
+&nbsp;     * This container is the layout placeholder for {@link #chatPanel}
+&nbsp;     */
+<b class="nc">&nbsp;    private final Container chatContainer = new Container();</b>
+&nbsp;    /**
+&nbsp;     * This container is the layout placeholder for {@link #commonGoalsPanel}
+&nbsp;     */
+<b class="nc">&nbsp;    private final Container commonGoalContainer = new Container();</b>
+&nbsp;    /**
+&nbsp;     * This container is the layout placeholder for {@link #errorLabel}
+&nbsp;     */
+<b class="nc">&nbsp;    private final Container interactionContainer = new Container();</b>
+&nbsp;    /**
+&nbsp;     * This is the background image of this component, it is used into {@link #paintComponent(Graphics)}
+&nbsp;     **/
+<b class="nc">&nbsp;    private final Image parquet = new ImageIcon(Objects.requireNonNull(this.getClass().getResource(&quot;/parquet.jpg&quot;))).getImage();</b>
+&nbsp;    /**
+&nbsp;     * The panel which displays living room board
+&nbsp;     */
+&nbsp;    private LivingRoomPanel livingRoomBoard;
+&nbsp;    /**
+&nbsp;     * Map that associates opponents playerID to the panel which displays his shelf
+&nbsp;     */
+<b class="nc">&nbsp;    private final Map&lt;String, ShelfPanel&gt; opponentShelfBoards = new HashMap&lt;&gt;();</b>
+&nbsp;    /**
+&nbsp;     * Map that associates opponents playerID to the panel which displays his PlayerID
+&nbsp;     */
+<b class="nc">&nbsp;    private final Map&lt;String, JLabel&gt; opponentLabels = new HashMap&lt;&gt;();</b>
+&nbsp;    /**
+&nbsp;     * The panel which displays this player shelf
+&nbsp;     */
+&nbsp;    private PlayerShelfPanel playerShelf;
+&nbsp;    /**
+&nbsp;     * The panel which allows to order picked tiles
+&nbsp;     */
+&nbsp;    private TilesOrderingPanel tilesOrderingPanel;
+&nbsp;    /**
+&nbsp;     * The panel that displays the player&#39;s personal goal
+&nbsp;     */
+&nbsp;    private PersonalGoalPanel personalGoalPanel;
+&nbsp;    /**
+&nbsp;     * The panel that displays the game&#39;s common goals
+&nbsp;     */
+&nbsp;    private CommonGoalsPanel commonGoalsPanel;
+&nbsp;    /**
+&nbsp;     * The label associated to the player&#39;s playerID
+&nbsp;     */
+<b class="nc">&nbsp;    private final JLabel playerLabel = new JLabel(&quot;YOU&quot;);</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * The label that shows a waiting message during matchmaking
+&nbsp;     */
+<b class="nc">&nbsp;    private final JLabel waitingLabel = new JLabel(&quot;WAITING FOR PLAYERS TO JOIN&quot;);</b>
+&nbsp;    /**
+&nbsp;     * Label that shows an error when occurred
+&nbsp;     */
+<b class="nc">&nbsp;    private final JLabel errorLabel = new JLabel(&quot;&quot;);</b>
+&nbsp;    /**
+&nbsp;     * This player&#39;s playerID
+&nbsp;     */
+&nbsp;    private String thisPlayerId;
+&nbsp;    /**
+&nbsp;     * The playerID of the player that is on turn
+&nbsp;     */
+&nbsp;    private String playerOnTurn;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * The playerID of the first player on turn
+&nbsp;     */
+&nbsp;    private String firstPlayer;
+&nbsp;    /**
+&nbsp;     * Panel that displays the chat
+&nbsp;     */
+&nbsp;    private ChatPanel chatPanel;
+&nbsp;
+&nbsp;    /** Construct an {@link GamePanel} instance that uses the given {@link ActionListener} as listener for game actions
+&nbsp;     * @param listener the ActionListener to be notified when a game action need to be sent
+&nbsp;     */
+&nbsp;    public GamePanel(ActionListener listener) {
+<b class="nc">&nbsp;        super();</b>
+<b class="nc">&nbsp;        this.listener = listener;</b>
+&nbsp;
+<b class="nc">&nbsp;        this.setLayout(new GridBagLayout());</b>
+&nbsp;
+<b class="nc">&nbsp;        this.initializeGameContainers();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method initializes the layout placeholders
+&nbsp;     */
+&nbsp;    private void initializeGameContainers() {
+<b class="nc">&nbsp;        this.livingRoomContainer.setLayout(new AspectRatioLayout(1));</b>
+<b class="nc">&nbsp;        this.opponentsShelvesContainer.setLayout(new GridBagLayout());</b>
+<b class="nc">&nbsp;        this.tableContainer.setLayout(new AspectRatioLayout((float) 205 / 635));</b>
+<b class="nc">&nbsp;        this.playerShelfContainer.setLayout(new AspectRatioLayout((float) 1218 / 1389));</b>
+<b class="nc">&nbsp;        this.personalGoalContainer.setLayout(new AspectRatioLayout((float) 756 / 1110));</b>
+<b class="nc">&nbsp;        this.chatContainer.setLayout(new BorderLayout());</b>
+<b class="nc">&nbsp;        this.commonGoalContainer.setLayout(new BorderLayout());</b>
+<b class="nc">&nbsp;        this.opponentLabelsContainer.setLayout(new GridBagLayout());</b>
+<b class="nc">&nbsp;        this.interactionContainer.setLayout(new GridBagLayout());</b>
+&nbsp;
+&nbsp;
+<b class="nc">&nbsp;        Font font = new Font(&quot;Century&quot;, Font.BOLD, 15);</b>
+&nbsp;
+<b class="nc">&nbsp;        this.playerLabel.setFont(font);</b>
+<b class="nc">&nbsp;        this.playerLabel.setHorizontalAlignment(SwingConstants.CENTER);</b>
+<b class="nc">&nbsp;        this.playerLabel.setPreferredSize(new Dimension(0,0));</b>
+<b class="nc">&nbsp;        this.errorLabel.setFont(font);</b>
+<b class="nc">&nbsp;        this.errorLabel.setHorizontalAlignment(SwingConstants.CENTER);</b>
+<b class="nc">&nbsp;        this.errorLabel.setPreferredSize(new Dimension(0,0));</b>
+<b class="nc">&nbsp;        this.waitingLabel.setFont(font);</b>
+<b class="nc">&nbsp;        this.waitingLabel.setHorizontalAlignment(SwingConstants.CENTER);</b>
+<b class="nc">&nbsp;        this.waitingLabel.setPreferredSize(new Dimension(0,0));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method initializes the layout
+&nbsp;     */
+&nbsp;    private void initializeGameLayout() {
+<b class="nc">&nbsp;        this.removeAll();</b>
+&nbsp;
+<b class="nc">&nbsp;        GridBagConstraints livingRoomConstraints = new GridBagConstraints(</b>
+&nbsp;                0, 0,
+&nbsp;                1, 5,
+&nbsp;                16, 16,
+&nbsp;                GridBagConstraints.NORTHWEST, GridBagConstraints.BOTH,
+&nbsp;                new Insets(0, 0, 0, 0),
+&nbsp;                0, 0
+&nbsp;        );
+<b class="nc">&nbsp;        this.add(this.livingRoomContainer, livingRoomConstraints);</b>
+&nbsp;
+<b class="nc">&nbsp;        GridBagConstraints opponentsShelvesConstraints = new GridBagConstraints(</b>
+&nbsp;                1, 0,
+&nbsp;                3, 1,
+&nbsp;                18, 5,
+&nbsp;                GridBagConstraints.NORTHWEST, GridBagConstraints.BOTH,
+&nbsp;                new Insets(0, 0, 0, 0),
+&nbsp;                0, 0
+&nbsp;        );
+<b class="nc">&nbsp;        this.add(this.opponentsShelvesContainer, opponentsShelvesConstraints);</b>
+&nbsp;
+<b class="nc">&nbsp;        GridBagConstraints tableConstraints = new GridBagConstraints(</b>
+&nbsp;                1, 2,
+&nbsp;                1, 1,
+&nbsp;                4, 8,
+&nbsp;                GridBagConstraints.NORTHWEST, GridBagConstraints.BOTH,
+&nbsp;                new Insets(0, 0, 0, 0),
+&nbsp;                0, 0
+&nbsp;        );
+<b class="nc">&nbsp;        this.add(this.tableContainer, tableConstraints);</b>
+&nbsp;
+&nbsp;
+<b class="nc">&nbsp;        GridBagConstraints playerShelfConstraints = new GridBagConstraints(</b>
+&nbsp;                2, 2,
+&nbsp;                1, 1,
+&nbsp;                8, 8,
+&nbsp;                GridBagConstraints.NORTHWEST, GridBagConstraints.BOTH,
+&nbsp;                new Insets(0, 0, 0, 0),
+&nbsp;                0, 0
+&nbsp;        );
+<b class="nc">&nbsp;        this.add(this.playerShelfContainer, playerShelfConstraints);</b>
+&nbsp;
+<b class="nc">&nbsp;        GridBagConstraints personalGoalConstraints = new GridBagConstraints(</b>
+&nbsp;                3, 2,
+&nbsp;                1, 1,
+&nbsp;                6, 8,
+&nbsp;                GridBagConstraints.NORTHWEST, GridBagConstraints.BOTH,
+&nbsp;                new Insets(0, 0, 0, 0),
+&nbsp;                0, 0
+&nbsp;        );
+<b class="nc">&nbsp;        this.add(this.personalGoalContainer, personalGoalConstraints);</b>
+&nbsp;
+<b class="nc">&nbsp;        GridBagConstraints chatConstraints = new GridBagConstraints(</b>
+&nbsp;                0, 5,
+&nbsp;                1, 2,
+&nbsp;                16, 6,
+&nbsp;                GridBagConstraints.NORTHWEST, GridBagConstraints.BOTH,
+&nbsp;                new Insets(10, 10, 10, 10),
+&nbsp;                0, 0
+&nbsp;        );
+<b class="nc">&nbsp;        this.add(this.chatContainer, chatConstraints);</b>
+&nbsp;
+<b class="nc">&nbsp;        GridBagConstraints commonGoalConstraints = new GridBagConstraints(</b>
+&nbsp;                1, 5,
+&nbsp;                3, 1,
+&nbsp;                18, 6,
+&nbsp;                GridBagConstraints.NORTHWEST, GridBagConstraints.BOTH,
+&nbsp;                new Insets(0, 0, 0, 0),
+&nbsp;                0, 0
+&nbsp;        );
+<b class="nc">&nbsp;        this.add(this.commonGoalContainer, commonGoalConstraints);</b>
+&nbsp;
+&nbsp;
+<b class="nc">&nbsp;        GridBagConstraints playerLabelConstraints = new GridBagConstraints(</b>
+&nbsp;                2, 4,
+&nbsp;                1, 1,
+&nbsp;                8, 1,
+&nbsp;                GridBagConstraints.NORTHWEST, GridBagConstraints.BOTH,
+&nbsp;                new Insets(0, 0, 0, 0),
+&nbsp;                0, 0
+&nbsp;        );
+<b class="nc">&nbsp;        this.add(this.playerLabel, playerLabelConstraints);</b>
+&nbsp;
+<b class="nc">&nbsp;        GridBagConstraints opponentLabelsConstraints = new GridBagConstraints(</b>
+&nbsp;                1, 1,
+&nbsp;                3, 1,
+&nbsp;                16, 1,
+&nbsp;                GridBagConstraints.NORTHWEST, GridBagConstraints.BOTH,
+&nbsp;                new Insets(0, 0, 0, 0),
+&nbsp;                0, 0
+&nbsp;        );
+<b class="nc">&nbsp;        this.add(this.opponentLabelsContainer, opponentLabelsConstraints);</b>
+&nbsp;
+&nbsp;
+<b class="nc">&nbsp;        GridBagConstraints interactionConstraints = new GridBagConstraints(</b>
+&nbsp;                1, 6,
+&nbsp;                3, 1,
+&nbsp;                1, 1,
+&nbsp;                GridBagConstraints.NORTHWEST,
+&nbsp;                GridBagConstraints.BOTH,
+&nbsp;                new Insets(0, 0, 0, 0),
+&nbsp;                0, 0
+&nbsp;        );
+<b class="nc">&nbsp;        this.add(this.interactionContainer, interactionConstraints);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method resets the gameplay graphic
+&nbsp;     */
+&nbsp;    private void resetGameLayout() {
+<b class="nc">&nbsp;        this.opponentShelfBoards.clear();</b>
+<b class="nc">&nbsp;        this.opponentLabels.clear();</b>
+<b class="nc">&nbsp;        this.initializeGameLayout();</b>
+&nbsp;
+<b class="nc">&nbsp;        this.livingRoomContainer.removeAll();</b>
+<b class="nc">&nbsp;        this.opponentsShelvesContainer.removeAll();</b>
+<b class="nc">&nbsp;        this.opponentLabelsContainer.removeAll();</b>
+<b class="nc">&nbsp;        this.tableContainer.removeAll();</b>
+<b class="nc">&nbsp;        this.playerShelfContainer.removeAll();</b>
+<b class="nc">&nbsp;        this.personalGoalContainer.removeAll();</b>
+<b class="nc">&nbsp;        this.chatContainer.removeAll();</b>
+<b class="nc">&nbsp;        this.commonGoalContainer.removeAll();</b>
+<b class="nc">&nbsp;        this.commonGoalContainer.removeAll();</b>
+<b class="nc">&nbsp;        this.interactionContainer.removeAll();</b>
+&nbsp;
+<b class="nc">&nbsp;        this.tilesOrderingPanel = new TilesOrderingPanel(</b>
+<b class="nc">&nbsp;                e -&gt; this.listener.actionPerformed(new ActionEvent(this, e.getID(), e.getActionCommand())),</b>
+<b class="nc">&nbsp;                e -&gt; this.playerShelf.actionPerformed(new ActionEvent(e.getSource(), PlayerShelfPanel.UPDATE_CHOICES, e.getActionCommand()))</b>
+&nbsp;        );
+&nbsp;
+<b class="nc">&nbsp;        this.playerShelf = new PlayerShelfPanel(</b>
+<b class="nc">&nbsp;                e -&gt; this.tilesOrderingPanel.actionPerformed(new ActionEvent(e.getSource(), TilesOrderingPanel.CONFIRM, e.getActionCommand()))</b>
+&nbsp;        );
+&nbsp;
+<b class="nc">&nbsp;        this.playerShelfContainer.add(this.playerShelf);</b>
+&nbsp;
+<b class="nc">&nbsp;        this.livingRoomBoard = new LivingRoomPanel(</b>
+<b class="nc">&nbsp;                e -&gt; this.tilesOrderingPanel.actionPerformed(new ActionEvent(e.getSource(), TilesOrderingPanel.SELECT_TILE, e.getActionCommand()))</b>
+&nbsp;        );
+&nbsp;
+<b class="nc">&nbsp;        this.chatPanel = new ChatPanel(</b>
+<b class="nc">&nbsp;                e -&gt; this.listener.actionPerformed(new ActionEvent(this, e.getID(), e.getActionCommand())),</b>
+&nbsp;                this.thisPlayerId
+&nbsp;        );
+<b class="nc">&nbsp;        this.chatContainer.add(this.chatPanel);</b>
+&nbsp;
+<b class="nc">&nbsp;        this.personalGoalPanel = new PersonalGoalPanel();</b>
+&nbsp;
+<b class="nc">&nbsp;        this.commonGoalsPanel = new CommonGoalsPanel();</b>
+&nbsp;
+<b class="nc">&nbsp;        this.errorLabel.setText(&quot;&quot;);</b>
+<b class="nc">&nbsp;        this.errorLabel.setHorizontalAlignment(SwingConstants.CENTER);</b>
+<b class="nc">&nbsp;        GridBagConstraints errorLabelConstraints = new GridBagConstraints(</b>
+&nbsp;                0, 0,
+&nbsp;                1, 1,
+&nbsp;                6, 1,
+&nbsp;                GridBagConstraints.NORTHWEST,
+&nbsp;                GridBagConstraints.BOTH,
+&nbsp;                new Insets(0, 0, 0, 0),
+&nbsp;                0, 0
+&nbsp;        );
+<b class="nc">&nbsp;        this.interactionContainer.add(this.errorLabel, errorLabelConstraints);</b>
+&nbsp;
+<b class="nc">&nbsp;        Image buttonBackground = new ImageIcon(Objects.requireNonNull(this.getClass().getResource(&quot;/img.png&quot;))).getImage();</b>
+<b class="nc">&nbsp;        JButton exitButton = new JButton(&quot;EXIT&quot;) {</b>
+&nbsp;            protected void paintComponent(Graphics g) {
+<b class="nc">&nbsp;                g.drawImage(buttonBackground, 0, 0, this.getWidth(), this.getHeight(), null);</b>
+<b class="nc">&nbsp;                super.paintComponent(g);</b>
+&nbsp;            }
+&nbsp;        };
+<b class="nc">&nbsp;        exitButton.setBackground(new Color(0, 0, 0, 0));</b>
+<b class="nc">&nbsp;        exitButton.addActionListener(e -&gt;</b>
+<b class="nc">&nbsp;                this.listener.actionPerformed(new ActionEvent(this, ViewLogic.LEAVE_GAME, &quot;&quot;))</b>
+&nbsp;        );
+<b class="nc">&nbsp;        exitButton.setPreferredSize(new Dimension(0, 0));</b>
+<b class="nc">&nbsp;        GridBagConstraints exitButtonConstraint = new GridBagConstraints(</b>
+&nbsp;                1, 0,
+&nbsp;                1, 1,
+&nbsp;                1, 1,
+&nbsp;                GridBagConstraints.NORTHWEST,
+&nbsp;                GridBagConstraints.BOTH,
+&nbsp;                new Insets(0, 0, 0, 0),
+&nbsp;                0, 0
+&nbsp;        );
+<b class="nc">&nbsp;        this.interactionContainer.add(exitButton, exitButtonConstraint);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method modifies the graphic in order to display a waiting scene
+&nbsp;     */
+&nbsp;    private void showMatchmakingScene(){
+<b class="nc">&nbsp;        this.tableContainer.removeAll();</b>
+<b class="nc">&nbsp;        this.livingRoomContainer.removeAll();</b>
+<b class="nc">&nbsp;        this.personalGoalContainer.removeAll();</b>
+<b class="nc">&nbsp;        this.commonGoalContainer.removeAll();</b>
+&nbsp;
+<b class="nc">&nbsp;        this.playerShelf.enableButtons(false);</b>
+<b class="nc">&nbsp;        this.livingRoomContainer.add(this.waitingLabel, BorderLayout.CENTER);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method modifies the graphic in order to display gameplay scene
+&nbsp;     */
+&nbsp;    private void showGameScene(){
+<b class="nc">&nbsp;        this.tableContainer.removeAll();</b>
+<b class="nc">&nbsp;        this.livingRoomContainer.removeAll();</b>
+<b class="nc">&nbsp;        this.personalGoalContainer.removeAll();</b>
+<b class="nc">&nbsp;        this.commonGoalContainer.removeAll();</b>
+&nbsp;
+<b class="nc">&nbsp;        this.playerShelf.enableButtons(true);</b>
+<b class="nc">&nbsp;        this.tableContainer.add(this.tilesOrderingPanel);</b>
+<b class="nc">&nbsp;        this.livingRoomContainer.add(this.livingRoomBoard);</b>
+<b class="nc">&nbsp;        this.personalGoalContainer.add(this.personalGoalPanel);</b>
+<b class="nc">&nbsp;        this.commonGoalContainer.add(this.commonGoalsPanel);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method updates first player graphics
+&nbsp;     */
+&nbsp;    private void updateFirstPlayer(){
+<b class="nc">&nbsp;        this.playerLabel.setForeground(Color.BLACK);</b>
+<b class="nc">&nbsp;        for (JLabel label : this.opponentLabels.values())</b>
+<b class="nc">&nbsp;            label.setForeground(Color.BLACK);</b>
+&nbsp;
+&nbsp;
+<b class="nc">&nbsp;        if (this.playerOnTurn.equals(this.thisPlayerId)) {</b>
+<b class="nc">&nbsp;            this.playerLabel.setForeground(Color.RED);</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;            if(this.opponentLabels.containsKey(this.playerOnTurn))</b>
+<b class="nc">&nbsp;                this.opponentLabels.get(this.playerOnTurn).setForeground(Color.RED);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;    /**
+&nbsp;     * This method updates player on turn graphics
+&nbsp;     */
+&nbsp;
+&nbsp;    private void updatePlayerOnTurn(){
+<b class="nc">&nbsp;        this.playerShelf.setIsFirstPlayer(this.thisPlayerId.equals(this.firstPlayer));</b>
+<b class="nc">&nbsp;        for (String s : this.opponentShelfBoards.keySet()) {</b>
+<b class="nc">&nbsp;            this.opponentShelfBoards.get(s).setIsFirstPlayer(s.equals(this.firstPlayer));</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     * @param id          the unique id of the common goal
+&nbsp;     * @param description the description of common goal specs
+&nbsp;     * @param tokenState  the current token value of the common goal
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void updateCommonGoalGraphics(String id, String description, Token tokenState) {
+<b class="nc">&nbsp;        this.commonGoalsPanel.updateCommonGoalGraphics(id, description, tokenState);</b>
+<b class="nc">&nbsp;        this.revalidate();</b>
+<b class="nc">&nbsp;        this.repaint();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     * @param playerId the player ID used in the next game
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void resetGameGraphics(String playerId) {
+<b class="nc">&nbsp;        this.thisPlayerId = playerId;</b>
+<b class="nc">&nbsp;        this.resetGameLayout();</b>
+<b class="nc">&nbsp;        this.showMatchmakingScene();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     * @param status          status of the game
+&nbsp;     * @param firstTurnPlayer id of the player that has the first turn
+&nbsp;     * @param playerOnTurn    id of the player on turn
+&nbsp;     * @param isLastTurn      true if the game is in the last round of turns
+&nbsp;     * @param pointsValues    points amount of each player
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void updateGameInfoGraphics(Game.GameStatus status, String firstTurnPlayer, String playerOnTurn, boolean isLastTurn, Map&lt;String, Integer&gt; pointsValues) {
+<b class="nc">&nbsp;        if (status == Game.GameStatus.ENDED) {</b>
+<b class="nc">&nbsp;            this.removeAll();</b>
+<b class="nc">&nbsp;            WinnerGamePanel winnerPanel = new WinnerGamePanel(e -&gt; this.listener.actionPerformed(new ActionEvent(this, e.getID(), e.getActionCommand())), pointsValues, this.thisPlayerId);</b>
+<b class="nc">&nbsp;            GridBagConstraints winnerConstraints = new GridBagConstraints(</b>
+&nbsp;                    0, 0,
+&nbsp;                    10, 10,
+&nbsp;                    1, 1,
+&nbsp;                    GridBagConstraints.NORTHWEST,
+&nbsp;                    GridBagConstraints.BOTH,
+&nbsp;                    new Insets(0, 0, 0, 0),
+&nbsp;                    0, 0
+&nbsp;            );
+<b class="nc">&nbsp;            this.add(winnerPanel, winnerConstraints);</b>
+<b class="nc">&nbsp;        } else if (status == Game.GameStatus.STARTED) {</b>
+<b class="nc">&nbsp;            this.playerOnTurn = playerOnTurn;</b>
+<b class="nc">&nbsp;            this.firstPlayer = firstTurnPlayer;</b>
+<b class="nc">&nbsp;            this.livingRoomBoard.setIsLastTurn(isLastTurn);</b>
+<b class="nc">&nbsp;            this.tilesOrderingPanel.actionPerformed(new ActionEvent(this,TilesOrderingPanel.RESET,&quot;&quot;));</b>
+<b class="nc">&nbsp;            this.showGameScene();</b>
+<b class="nc">&nbsp;            this.updatePlayerOnTurn();</b>
+<b class="nc">&nbsp;            this.updateFirstPlayer();</b>
+<b class="nc">&nbsp;        } else if (status == Game.GameStatus.MATCHMAKING || status == Game.GameStatus.SUSPENDED) {</b>
+<b class="nc">&nbsp;            this.showMatchmakingScene();</b>
+&nbsp;        }
+<b class="nc">&nbsp;        this.revalidate();</b>
+<b class="nc">&nbsp;        this.repaint();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     * @param board board of the living room
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void updateBoardGraphics(Tile[][] board) {
+<b class="nc">&nbsp;        this.livingRoomBoard.updateBoardGraphics(board);</b>
+<b class="nc">&nbsp;        this.tilesOrderingPanel.actionPerformed(new ActionEvent(this, 0, &quot;CLEAR SELECTION&quot;));</b>
+<b class="nc">&nbsp;        this.revalidate();</b>
+<b class="nc">&nbsp;        this.repaint();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     * @param id              the id of this goal, unique among others player personal goal
+&nbsp;     * @param hasBeenAchieved true if the goal is achieved
+&nbsp;     * @param description     matrix representation of the goal
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void updatePersonalGoalGraphics(int id, boolean hasBeenAchieved, Tile[][] description) {
+<b class="nc">&nbsp;        this.personalGoalPanel.updatePersonalGoalGraphics(id, hasBeenAchieved, description);</b>
+<b class="nc">&nbsp;        this.revalidate();</b>
+<b class="nc">&nbsp;        this.repaint();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**{@inheritDoc}
+&nbsp;     * @param chat list of messages sent to a player
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void updatePlayerChatGraphics(List&lt;? extends Message&gt; chat) {
+<b class="nc">&nbsp;        this.chatPanel.updatePlayerChatGraphics(chat);</b>
+<b class="nc">&nbsp;        this.revalidate();</b>
+<b class="nc">&nbsp;        this.repaint();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     * @param achievedCommonGoals map of achieved common goals with earned token
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void updateAchievedCommonGoals(Map&lt;String, Token&gt; achievedCommonGoals) {
+<b class="nc">&nbsp;        this.commonGoalsPanel.setAchievedCommonGoals(achievedCommonGoals);</b>
+<b class="nc">&nbsp;        this.revalidate();</b>
+<b class="nc">&nbsp;        this.repaint();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**{@inheritDoc}
+&nbsp;     * @param reportedError message of en error encountered during gameplay
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void updateErrorState(String reportedError) {
+<b class="nc">&nbsp;        synchronized (this.errorLabel) {</b>
+<b class="nc">&nbsp;            this.errorLabel.setText(reportedError);</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;        //expire error message after 3 seconds
+<b class="nc">&nbsp;        new Thread(() -&gt; {</b>
+&nbsp;            try {
+<b class="nc">&nbsp;                Thread.sleep(3000);</b>
+<b class="nc">&nbsp;            } catch (InterruptedException e) {</b>
+<b class="nc">&nbsp;                e.printStackTrace();</b>
+<b class="nc">&nbsp;            }</b>
+<b class="nc">&nbsp;            synchronized (this.errorLabel) {</b>
+<b class="nc">&nbsp;                this.errorLabel.setText(&quot;&quot;);</b>
+<b class="nc">&nbsp;                this.revalidate();</b>
+<b class="nc">&nbsp;                this.repaint();</b>
+<b class="nc">&nbsp;            }</b>
+<b class="nc">&nbsp;        }).start();</b>
+<b class="nc">&nbsp;        this.revalidate();</b>
+<b class="nc">&nbsp;        this.repaint();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**{@inheritDoc}
+&nbsp;     * @param playerId id of the player that owns the shelf
+&nbsp;     * @param shelf    shelf representation of the player
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void updatePlayerShelfGraphics(String playerId, Tile[][] shelf) {
+<b class="nc">&nbsp;        this.chatPanel.addSubject(playerId);</b>
+&nbsp;
+<b class="nc">&nbsp;        if (playerId.equals(this.thisPlayerId)) {</b>
+<b class="nc">&nbsp;            this.playerShelf.updatePlayerShelfGraphics(playerId, shelf);</b>
+&nbsp;        } else {
+&nbsp;            ShelfPanel shelfPanel;
+<b class="nc">&nbsp;            if (!this.opponentShelfBoards.containsKey(playerId)) {</b>
+<b class="nc">&nbsp;                shelfPanel = new ShelfPanel();</b>
+<b class="nc">&nbsp;                this.addPlayerShelf(shelfPanel, playerId);</b>
+<b class="nc">&nbsp;                this.opponentShelfBoards.put(playerId, shelfPanel);</b>
+&nbsp;            } else {
+<b class="nc">&nbsp;                shelfPanel = this.opponentShelfBoards.get(playerId);</b>
+&nbsp;            }
+<b class="nc">&nbsp;            shelfPanel.updatePlayerShelfGraphics(playerId, shelf);</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        this.updatePlayerOnTurn();</b>
+<b class="nc">&nbsp;        this.updateFirstPlayer();</b>
+&nbsp;
+<b class="nc">&nbsp;        this.revalidate();</b>
+<b class="nc">&nbsp;        this.repaint();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method adds an opponent shelf to the graphics
+&nbsp;     * @param shelfPanel opponent shelf panel
+&nbsp;     * @param playerId opponent playerID
+&nbsp;     */
+&nbsp;    private void addPlayerShelf(JPanel shelfPanel, String playerId) {
+<b class="nc">&nbsp;        Container shelfContainer = new Container();</b>
+<b class="nc">&nbsp;        shelfContainer.setLayout(new AspectRatioLayout((float) 1218 / 1218));</b>
+<b class="nc">&nbsp;        shelfContainer.add(shelfPanel);</b>
+&nbsp;
+<b class="nc">&nbsp;        Font font = new Font(&quot;Century&quot;, Font.BOLD, 15);</b>
+<b class="nc">&nbsp;        JLabel playerLabel = new JLabel(playerId);</b>
+<b class="nc">&nbsp;        playerLabel.setHorizontalAlignment(SwingConstants.CENTER);</b>
+<b class="nc">&nbsp;        playerLabel.setFont(font);</b>
+<b class="nc">&nbsp;        playerLabel.setPreferredSize(new Dimension(0,0));</b>
+&nbsp;
+&nbsp;
+<b class="nc">&nbsp;        GridBagConstraints shelfConstraints = new GridBagConstraints(</b>
+&nbsp;                -1, -1,
+&nbsp;                1, 1,
+&nbsp;                1, 1,
+&nbsp;                GridBagConstraints.NORTHWEST,
+&nbsp;                GridBagConstraints.BOTH,
+&nbsp;                new Insets(0, 0, 0, 0),
+&nbsp;                0, 0
+&nbsp;        );
+&nbsp;
+<b class="nc">&nbsp;        this.opponentsShelvesContainer.add(shelfContainer, shelfConstraints);</b>
+<b class="nc">&nbsp;        this.opponentLabelsContainer.add(playerLabel, shelfConstraints);</b>
+<b class="nc">&nbsp;        this.opponentLabels.put(playerId, playerLabel);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method overrides {@link  JComponent#paintComponent(Graphics)} drawing an image as background
+&nbsp;     * @param g the &lt;code&gt;Graphics&lt;/code&gt; object to protect
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    protected void paintComponent(Graphics g) {
+<b class="nc">&nbsp;        super.paintComponent(g);</b>
+<b class="nc">&nbsp;        double ratio = 1.765;</b>
+<b class="nc">&nbsp;        double windowRatio = (double) this.getWidth() / this.getHeight();</b>
+&nbsp;        int width;
+&nbsp;        int height;
+<b class="nc">&nbsp;        if (windowRatio &gt; ratio) {</b>
+<b class="nc">&nbsp;            width = this.getWidth();</b>
+<b class="nc">&nbsp;            height = (int) (this.getWidth() / ratio);</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;            height = this.getHeight();</b>
+<b class="nc">&nbsp;            width = (int) (this.getHeight() * ratio);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        g.drawImage(this.parquet, 0, 0, width, height, null);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-28 10:19</div>
+</div>
+</body>
+</html>

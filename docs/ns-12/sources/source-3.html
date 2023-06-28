@@ -1,0 +1,96 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > GameManagerController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">controller.interfaces</a>
+</div>
+
+<h1>Coverage Summary for Class: GameManagerController (controller.interfaces)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">GameManagerController</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package controller.interfaces;
+&nbsp;
+&nbsp;import model.exceptions.GameAlreadyExistsException;
+&nbsp;import model.exceptions.GameNotExistsException;
+&nbsp;import modelView.NewGameInfo;
+&nbsp;
+&nbsp;/**
+&nbsp; * This is the interface of a game manager controller
+&nbsp; * &lt;p&gt;
+&nbsp; * It defines all the methods needed to manage {@link GameController}s
+&nbsp; */
+&nbsp;public interface GameManagerController {
+&nbsp;    /**
+&nbsp;     * This method returns a {@link GameController} associated with the given ID, the returned {@link GameController}
+&nbsp;     * has been built during a {@link #createGame(NewGameInfo)} call and has been associated to the given {@link NewGameInfo} gameID
+&nbsp;     * @param gameId the ID of the game
+&nbsp;     * @return the {@link GameController} associated with the given ID
+&nbsp;     * @throws GameNotExistsException if there is no {@link GameController} associated with the given ID
+&nbsp;     */
+&nbsp;    GameController getGame(String gameId) throws GameNotExistsException;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method builds a {@link GameController} on the given {@link NewGameInfo}
+&nbsp;     * @param newGameInfo the new-game info that needs to be used
+&nbsp;     * @throws GameAlreadyExistsException if there already is an {@link GameController} associated with the given {@link NewGameInfo} gameID
+&nbsp;     * @throws IllegalArgumentException if the given {@link NewGameInfo} contains illegal or unknown parameters
+&nbsp;     */
+&nbsp;    void createGame(NewGameInfo newGameInfo) throws GameAlreadyExistsException, IllegalArgumentException;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-28 10:19</div>
+</div>
+</body>
+</html>

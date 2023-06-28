@@ -1,0 +1,201 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > Standard2ColumnsRowOfDifferentTiles</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">model.goalEvaluators</a>
+</div>
+
+<h1>Coverage Summary for Class: Standard2ColumnsRowOfDifferentTiles (model.goalEvaluators)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Standard2ColumnsRowOfDifferentTiles</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (4/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (20/20)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package model.goalEvaluators;
+&nbsp;
+&nbsp;import model.Tile;
+&nbsp;import model.abstractModel.GoalEvaluator;
+&nbsp;
+&nbsp;import java.util.Arrays;
+&nbsp;import java.util.Objects;
+&nbsp;
+&nbsp;/**
+&nbsp; * This class is the goal evaluator for the Standard2ColumnsRowOfDifferentTiles goal.
+&nbsp; * It implements the GoalEvaluator abstract class.
+&nbsp; * It is used by the CommonGoal class.
+&nbsp; */
+&nbsp;public class Standard2ColumnsRowOfDifferentTiles extends GoalEvaluator {
+&nbsp;
+&nbsp;    /**
+&nbsp;     * true if the goal is to have 2 columns of 6 different tiles, false if the goal is to have 2 rows of 6 different tiles
+&nbsp;     *
+&nbsp;     * @see #evaluate(Tile[][])
+&nbsp;     */
+&nbsp;    private final boolean column;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This string contains the description of the commonGoal 2ColumnsOfDifferentTiles
+&nbsp;     */
+<b class="fc">&nbsp;    private final String standard2ColumnsOfDifferentTilesDescription = &quot;Two columns formed each from 6 different types of tiles&quot;;</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This string contains the description of the commonGoal 2RowsOfDifferentTiles
+&nbsp;     */
+<b class="fc">&nbsp;    private final String standard2RowsOfDifferentTilesDescription = &quot;Two lines formed each from 5 different types of tiles&quot;;</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This string contains the id of the commonGoal 2ColumnsOfDifferentTiles
+&nbsp;     */
+<b class="fc">&nbsp;    private final String standard2ColumnsOfDifferentTilesId = &quot;Standard2ColumnsOfDifferentTiles&quot;;</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This string contains the id of the commonGoal 2RowsOfDifferentTiles
+&nbsp;     */
+<b class="fc">&nbsp;    private final String standard2RowsOfDifferentTilesId = &quot;Standard2RowsOfDifferentTiles&quot;;</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Constructor for Standard2ColumnsRowOfDifferentTiles
+&nbsp;     *
+&nbsp;     * @param column true if the goal is to have 2 columns of 6 different tiles, false if the goal is to have 2 rows of 6 different tiles
+&nbsp;     */
+&nbsp;    public Standard2ColumnsRowOfDifferentTiles(boolean column) {
+<b class="fc">&nbsp;        super();</b>
+<b class="fc">&nbsp;        this.column = column;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     *
+&nbsp;     * @return {@link #standard2ColumnsOfDifferentTilesDescription} or {@link #standard2RowsOfDifferentTilesDescription} based on {@link #column} value
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public String getDescription() {
+<b class="fc">&nbsp;        return (this.column) ? this.standard2ColumnsOfDifferentTilesDescription : this.standard2RowsOfDifferentTilesDescription;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     *
+&nbsp;     * @return {@link #standard2ColumnsOfDifferentTilesId} or {@link #standard2RowsOfDifferentTilesId} based on {@link #column} value
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public String getId() {
+<b class="fc">&nbsp;        return (this.column) ? this.standard2ColumnsOfDifferentTilesId : this.standard2RowsOfDifferentTilesId;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * @param playerShelf the player&#39;s shelf to evaluate
+&nbsp;     * @return true if the player has at least 2 columns , or 2 rows, of 6 different tiles
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public boolean evaluate(Tile[][] playerShelf) {
+<b class="fc">&nbsp;        int counter = 0;</b>
+<b class="fc">&nbsp;        int columnLength = playerShelf[0].length;</b>
+<b class="fc">&nbsp;        int rowLength = playerShelf.length;</b>
+<b class="fc">&nbsp;        int imax = (this.column) ? columnLength : rowLength;</b>
+<b class="fc">&nbsp;        int jmax = (this.column) ? rowLength : columnLength;</b>
+&nbsp;
+<b class="fc">&nbsp;        for (int i = 0; i &lt; imax; i++) {</b>
+&nbsp;            //check if every line is different
+<b class="fc">&nbsp;            String[] colours = new String[(this.column) ? rowLength : columnLength];</b>
+<b class="fc">&nbsp;            for (int j = 0; j &lt; jmax; j++) {</b>
+<b class="fc">&nbsp;                colours[j] = (this.column) ? playerShelf[j][i].getColor() : playerShelf[i][j].getColor();</b>
+&nbsp;            }
+&nbsp;            //remove Empty tiles
+<b class="fc">&nbsp;            if (Arrays.stream(colours).filter(Objects::nonNull).filter(colour -&gt; !colour.equals(Tile.EMPTY.getColor())).distinct().count() == colours.length) {//check if every line is different by comparing the number of distinct colours</b>
+<b class="fc">&nbsp;                counter++;</b>
+&nbsp;            }
+&nbsp;        }
+<b class="fc">&nbsp;        return counter &gt;= 2;</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-28 10:19</div>
+</div>
+</body>
+</html>

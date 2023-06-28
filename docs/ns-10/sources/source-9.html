@@ -1,0 +1,198 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > PersonalGoalPanel</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">view.GUI.panels</a>
+</div>
+
+<h1>Coverage Summary for Class: PersonalGoalPanel (view.GUI.panels)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">PersonalGoalPanel</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/34)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package view.GUI.panels;
+&nbsp;
+&nbsp;import model.Tile;
+&nbsp;
+&nbsp;import view.graphicInterfaces.PersonalGoalGraphics;
+&nbsp;
+&nbsp;import javax.swing.*;
+&nbsp;import java.awt.*;
+&nbsp;import java.util.Arrays;
+&nbsp;import java.util.HashMap;
+&nbsp;import java.util.Map;
+&nbsp;import java.util.Objects;
+&nbsp;/**
+&nbsp; * This class extends JPanel and represents a graphical component that represents the player personal goal
+&nbsp; */
+&nbsp;public class PersonalGoalPanel extends JPanel implements PersonalGoalGraphics {
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This map contains information whether a personalGoal has been achieved or not
+&nbsp;     * &lt;p&gt;
+&nbsp;     * It associates the ID of a personalGoal to its achieved status
+&nbsp;     */
+<b class="nc">&nbsp;    private final Map&lt;Integer,Boolean&gt; personalGoals = new HashMap&lt;&gt;();</b>
+&nbsp;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Matrix of tiles that represents the player&#39;s personal goal
+&nbsp;     */
+<b class="nc">&nbsp;    private final Tile[][] merged = new Tile[6][5];</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Construct an {@link PersonalGoalPanel} instance that sets the layout of the panel
+&nbsp;     */
+<b class="nc">&nbsp;    public PersonalGoalPanel(){</b>
+<b class="nc">&nbsp;        this.setOpaque(false);</b>
+<b class="nc">&nbsp;        for(Tile[] r : this.merged)</b>
+<b class="nc">&nbsp;            Arrays.fill(r,Tile.EMPTY);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     * @param id              the id of this goal, unique among others player personal goal
+&nbsp;     * @param hasBeenAchieved true if the goal is achieved
+&nbsp;     * @param description     matrix representation of the goal
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void updatePersonalGoalGraphics(int id, boolean hasBeenAchieved, Tile[][] description) {
+<b class="nc">&nbsp;        if(!this.personalGoals.containsKey(id)){</b>
+<b class="nc">&nbsp;            for(int i=0;i&lt;description.length; i++)</b>
+<b class="nc">&nbsp;                for(int j=0;j&lt;description[i].length;j++) {</b>
+<b class="nc">&nbsp;                    if (description[i][j] != Tile.EMPTY) {</b>
+<b class="nc">&nbsp;                        this.merged[i][j] = description[i][j];</b>
+&nbsp;                    }
+&nbsp;                }
+&nbsp;        }
+<b class="nc">&nbsp;        this.personalGoals.put(id,hasBeenAchieved);</b>
+<b class="nc">&nbsp;        this.revalidate();</b>
+<b class="nc">&nbsp;        this.repaint();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method overrides {@link  JComponent#paintComponent(Graphics)} drawing an image as background
+&nbsp;     * @param g the &lt;code&gt;Graphics&lt;/code&gt; object to protect
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    protected void paintComponent(Graphics g) {
+<b class="nc">&nbsp;        super.paintComponent(g);</b>
+&nbsp;
+<b class="nc">&nbsp;        Image personalGoalImage = new ImageIcon(Objects.requireNonNull(this.getClass().getResource(&quot;/PersonalGoalBackground.jpg&quot;))).getImage();</b>
+<b class="nc">&nbsp;        double ratio = (double) this.getWidth()/personalGoalImage.getWidth(null);</b>
+<b class="nc">&nbsp;        int topPadding = (int)Math.round(86*ratio);</b>
+<b class="nc">&nbsp;        int leftPadding = (int)Math.round(90*ratio);</b>
+<b class="nc">&nbsp;        int size = (int) Math.round(102*ratio);</b>
+<b class="nc">&nbsp;        int vHorizontal = (int) Math.round(17*ratio);</b>
+<b class="nc">&nbsp;        int vVertical = (int) Math.round(12*ratio);</b>
+&nbsp;
+<b class="nc">&nbsp;        int horizontalSkip = size + vHorizontal;</b>
+<b class="nc">&nbsp;        int verticalSkip = size + vVertical;</b>
+&nbsp;
+<b class="nc">&nbsp;        g.drawImage(personalGoalImage,0,0, this.getWidth(), this.getHeight(),null);</b>
+&nbsp;
+<b class="nc">&nbsp;        int y = topPadding;</b>
+<b class="nc">&nbsp;        for(int i=0;i&lt;6; i++){</b>
+<b class="nc">&nbsp;            int x = leftPadding;</b>
+<b class="nc">&nbsp;            for(int j=0;j&lt;5;j++){</b>
+<b class="nc">&nbsp;                if(this.merged[i][j]!=Tile.EMPTY) {</b>
+<b class="nc">&nbsp;                    Image tileImage = new ImageIcon(Objects.requireNonNull(this.getClass().getResource(&quot;/Tile/&quot; + this.merged[i][j].name() + &quot;.png&quot;))).getImage();</b>
+<b class="nc">&nbsp;                    g.drawImage(tileImage, x+1, y+1, size-1, size-1, null);</b>
+&nbsp;                }
+<b class="nc">&nbsp;                x+=horizontalSkip;</b>
+&nbsp;            }
+<b class="nc">&nbsp;            y+=verticalSkip;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-28 10:19</div>
+</div>
+</body>
+</html>

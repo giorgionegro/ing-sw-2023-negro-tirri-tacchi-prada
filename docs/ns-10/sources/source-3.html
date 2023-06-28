@@ -1,0 +1,474 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > CreateGamePanel</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">view.GUI.panels</a>
+</div>
+
+<h1>Coverage Summary for Class: CreateGamePanel (view.GUI.panels)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">CreateGamePanel</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/109)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">CreateGamePanel$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/3)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">CreateGamePanel$2</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/3)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">CreateGamePanel$3</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/3)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">CreateGamePanel$4</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/3)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">CreateGamePanel$5</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/3)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/17)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/124)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package view.GUI.panels;
+&nbsp;
+&nbsp;import view.ViewLogic;
+&nbsp;
+&nbsp;import javax.swing.*;
+&nbsp;import java.awt.*;
+&nbsp;import java.awt.event.ActionEvent;
+&nbsp;import java.awt.event.ActionListener;
+&nbsp;import java.util.Objects;
+&nbsp;
+&nbsp;/**
+&nbsp; * This class extends JPanel and represents a graphical component that allows to create a new game inserting a GameId and a PlayerId
+&nbsp; */
+&nbsp;public class CreateGamePanel extends JPanel {
+&nbsp;
+&nbsp;    /** Construct an {@link CreateGamePanel} instance that uses the given {@link ActionListener} as listener for buttons events
+&nbsp;     * @param listener the ActionListener to be notified when a button is pressed
+&nbsp;     */
+<b class="nc">&nbsp;    public CreateGamePanel(ActionListener listener){</b>
+&nbsp;
+<b class="nc">&nbsp;        this.initializeLayout();</b>
+&nbsp;
+<b class="nc">&nbsp;        this.createButton.addActionListener(e -&gt; {</b>
+<b class="nc">&nbsp;            String gameId = this.gameIdTextField.getText();</b>
+<b class="nc">&nbsp;            String k = (String) this.playerNumberCombo.getSelectedItem();</b>
+<b class="nc">&nbsp;            if(k==null)</b>
+<b class="nc">&nbsp;                k = &quot;&quot;;</b>
+&nbsp;
+<b class="nc">&nbsp;            listener.actionPerformed(new ActionEvent(this, ViewLogic.CREATE,&quot;STANDARD &quot;+gameId+&quot; &quot;+k));</b>
+&nbsp;        });
+<b class="nc">&nbsp;        this.exitButton.addActionListener(e -&gt;  listener.actionPerformed(new ActionEvent(this,ViewLogic.ROUTE_HOME,&quot;&quot;)));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**This method prints out an error message
+&nbsp;     * @param error the error message to be displayed.
+&nbsp;     */
+&nbsp;    public void setMessage(String error){
+<b class="nc">&nbsp;        if(!error.isBlank()){</b>
+<b class="nc">&nbsp;            this.errorLabel.setVisible(true);</b>
+<b class="nc">&nbsp;            this.errorLabel.setText(error);</b>
+&nbsp;        }else{
+<b class="nc">&nbsp;            this.errorLabel.setVisible(false);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        this.revalidate();</b>
+<b class="nc">&nbsp;        this.repaint();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /*---------------------- GRAPHICS COMPONENTS and GRAPHICS INITIALIZATION -------------------------*/
+&nbsp;    /**
+&nbsp;     * This is the background image of this component, it is used into {@link #paintComponent(Graphics)}
+&nbsp;     **/
+<b class="nc">&nbsp;    private final Image backgroundImage = new ImageIcon (Objects.requireNonNull(this.getClass().getResource(&quot;/desktop.png&quot;))).getImage();</b>
+&nbsp;    /**
+&nbsp;     *  This is the background image of this component, it is used into {@link #paintComponent(Graphics)}
+&nbsp;     *
+&nbsp;     */
+<b class="nc">&nbsp;    private final Image errorBackground = new ImageIcon(Objects.requireNonNull(this.getClass().getResource(&quot;/BackgroundFilter.png&quot;))).getImage();</b>
+&nbsp;    /**
+&nbsp;     *  This is the background image of {@link #createButton} {@link #exitButton}
+&nbsp;     */
+<b class="nc">&nbsp;    private final Image buttonBackground = new ImageIcon(Objects.requireNonNull(this.getClass().getResource(&quot;/img.png&quot;))).getImage();</b>
+&nbsp;    /**
+&nbsp;     * This is the label with the written &quot;PLAYER ID:&quot;
+&nbsp;     */
+<b class="nc">&nbsp;    private final JLabel playerNumberLabel = new JLabel() {</b>
+&nbsp;        protected void paintComponent(Graphics g) {
+<b class="nc">&nbsp;            g.drawImage(CreateGamePanel.this.buttonBackground, 0, 0, this.getWidth(), this.getHeight(), null);</b>
+<b class="nc">&nbsp;            super.paintComponent(g);</b>
+&nbsp;        }
+&nbsp;    };
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This is the label with the written &quot;GAME ID:&quot;
+&nbsp;     */
+<b class="nc">&nbsp;    private final JLabel gameIDLabel = new JLabel() {</b>
+&nbsp;        protected void paintComponent(Graphics g) {
+<b class="nc">&nbsp;            g.drawImage(CreateGamePanel.this.buttonBackground, 0, 0, this.getWidth(), this.getHeight(), null);</b>
+<b class="nc">&nbsp;            super.paintComponent(g);</b>
+&nbsp;        }
+&nbsp;    };
+&nbsp;    /**
+&nbsp;     * This is the TextField where the user inserts the GameId
+&nbsp;     */
+<b class="nc">&nbsp;    private final JTextField gameIdTextField = new JTextField();</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This is the ComboBox where the user chooses the number of players&#39; game
+&nbsp;     */
+<b class="nc">&nbsp;    private final JComboBox&lt;String&gt; playerNumberCombo = new JComboBox&lt;&gt;(new String[]{&quot;2&quot;,&quot;3&quot;,&quot;4&quot;});</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This is the button that allows the user to create the new game
+&nbsp;     */
+<b class="nc">&nbsp;    private final JButton createButton = new JButton() {</b>
+&nbsp;        protected void paintComponent(Graphics g) {
+<b class="nc">&nbsp;            g.drawImage(CreateGamePanel.this.buttonBackground, 0, 0, this.getWidth(), this.getHeight(), null);</b>
+<b class="nc">&nbsp;            super.paintComponent(g);</b>
+&nbsp;        }
+&nbsp;    };
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This is the button that allows the user to exit from the application
+&nbsp;     */
+<b class="nc">&nbsp;    private final JButton exitButton = new JButton() {</b>
+&nbsp;        protected void paintComponent(Graphics g) {
+<b class="nc">&nbsp;            g.drawImage(CreateGamePanel.this.buttonBackground, 0, 0, this.getWidth(), this.getHeight(), null);</b>
+<b class="nc">&nbsp;            super.paintComponent(g);</b>
+&nbsp;        }
+&nbsp;    };
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This label shows an error if occurred
+&nbsp;     */
+<b class="nc">&nbsp;    private final JLabel errorLabel = new JLabel() {</b>
+&nbsp;        protected void paintComponent(Graphics g) {
+<b class="nc">&nbsp;            g.drawImage(CreateGamePanel.this.errorBackground, 0, 0, this.getWidth(), this.getHeight(), null);</b>
+<b class="nc">&nbsp;            super.paintComponent(g);</b>
+&nbsp;        }
+&nbsp;    };
+&nbsp;
+&nbsp;
+&nbsp;    /**
+&nbsp;     *  This method initializes the layout of the component
+&nbsp;     */
+&nbsp;    private void initializeLayout(){
+<b class="nc">&nbsp;        this.setLayout(new GridBagLayout());</b>
+<b class="nc">&nbsp;        this.initializeBorders();</b>
+<b class="nc">&nbsp;        this.initializeContents();</b>
+<b class="nc">&nbsp;        this.revalidate();</b>
+<b class="nc">&nbsp;        this.repaint();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     *  This method initializes the Borders of the panel
+&nbsp;     */
+&nbsp;    private void initializeBorders(){
+<b class="nc">&nbsp;        GridBagConstraints constraints = new GridBagConstraints(</b>
+&nbsp;                0,0,
+&nbsp;                1,1,
+&nbsp;                1,1,
+&nbsp;                GridBagConstraints.NORTHWEST,
+&nbsp;                GridBagConstraints.BOTH,
+&nbsp;                new Insets(10,5,10,5),
+&nbsp;                0,0
+&nbsp;        );
+<b class="nc">&nbsp;        constraints.weightx=1;</b>
+<b class="nc">&nbsp;        constraints.weighty=2;</b>
+&nbsp;
+<b class="nc">&nbsp;        constraints.gridx=0;</b>
+<b class="nc">&nbsp;        constraints.gridy=0;</b>
+<b class="nc">&nbsp;        constraints.gridwidth=4;</b>
+<b class="nc">&nbsp;        this.add(new Container(),constraints);</b>
+&nbsp;
+<b class="nc">&nbsp;        constraints.gridy=5;</b>
+<b class="nc">&nbsp;        this.add(new Container(),constraints);</b>
+&nbsp;
+<b class="nc">&nbsp;        constraints.gridy=1;</b>
+<b class="nc">&nbsp;        constraints.gridwidth = 1;</b>
+<b class="nc">&nbsp;        constraints.gridheight = 4;</b>
+<b class="nc">&nbsp;        constraints.weighty = 1;</b>
+<b class="nc">&nbsp;        this.add(new Container(),constraints);</b>
+&nbsp;
+<b class="nc">&nbsp;        constraints.gridx = 3;</b>
+<b class="nc">&nbsp;        constraints.gridheight = 1;</b>
+<b class="nc">&nbsp;        this.add(new Container(),constraints);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     This method initializes the contents of the panel: 2 buttons (EXIT, CREATE), 2 labels, the comboBox and the TextField
+&nbsp;     * The positions and dimensions of components within the grid are set.
+&nbsp;     */
+&nbsp;    private void initializeContents(){
+<b class="nc">&nbsp;        Font textFont = new Font(&quot;Century&quot;, Font.BOLD, 20);</b>
+&nbsp;
+<b class="nc">&nbsp;        GridBagConstraints constraints = new GridBagConstraints(</b>
+&nbsp;                0,0,
+&nbsp;                1,1,
+&nbsp;                1,1,
+&nbsp;                GridBagConstraints.NORTHWEST,
+&nbsp;                GridBagConstraints.BOTH,
+&nbsp;                new Insets(10,5,10,5),
+&nbsp;                0,0
+&nbsp;        );
+&nbsp;
+<b class="nc">&nbsp;        final Dimension zeroDimension = new Dimension(0,0);</b>
+<b class="nc">&nbsp;        constraints.gridy=1;</b>
+<b class="nc">&nbsp;        constraints.gridx=1;</b>
+<b class="nc">&nbsp;        constraints.gridwidth=1;</b>
+<b class="nc">&nbsp;        constraints.gridheight=1;</b>
+<b class="nc">&nbsp;        constraints.weighty=1;</b>
+<b class="nc">&nbsp;        constraints.weightx=1;</b>
+&nbsp;
+<b class="nc">&nbsp;        this.gameIDLabel.setText(&quot;GameID&quot;);</b>
+<b class="nc">&nbsp;        this.gameIDLabel.setFont(textFont);</b>
+<b class="nc">&nbsp;        this.gameIDLabel.setPreferredSize(zeroDimension);</b>
+<b class="nc">&nbsp;        this.gameIDLabel.setHorizontalAlignment(SwingConstants.CENTER);</b>
+<b class="nc">&nbsp;        this.add(this.gameIDLabel,constraints);</b>
+&nbsp;
+<b class="nc">&nbsp;        constraints.gridx++;</b>
+<b class="nc">&nbsp;        this.gameIdTextField.setFont(textFont);</b>
+<b class="nc">&nbsp;        this.gameIdTextField.setPreferredSize(zeroDimension);</b>
+<b class="nc">&nbsp;        this.gameIdTextField.setHorizontalAlignment(SwingConstants.CENTER);</b>
+<b class="nc">&nbsp;        this.add(this.gameIdTextField,constraints);</b>
+&nbsp;
+<b class="nc">&nbsp;        constraints.gridy++;</b>
+<b class="nc">&nbsp;        this.playerNumberCombo.setFont(textFont);</b>
+<b class="nc">&nbsp;        this.playerNumberCombo.setPreferredSize(zeroDimension);</b>
+<b class="nc">&nbsp;        this.add(this.playerNumberCombo,constraints);</b>
+&nbsp;
+<b class="nc">&nbsp;        constraints.gridx--;</b>
+&nbsp;
+<b class="nc">&nbsp;        this.playerNumberLabel.setText(&quot;Player N°&quot;);</b>
+<b class="nc">&nbsp;        this.playerNumberLabel.setFont(textFont);</b>
+<b class="nc">&nbsp;        this.playerNumberLabel.setPreferredSize(zeroDimension);</b>
+<b class="nc">&nbsp;        this.playerNumberLabel.setHorizontalAlignment(SwingConstants.CENTER);</b>
+<b class="nc">&nbsp;        this.add(this.playerNumberLabel,constraints);</b>
+&nbsp;
+<b class="nc">&nbsp;        constraints.gridy++;</b>
+<b class="nc">&nbsp;        this.exitButton.setText(&quot;EXIT&quot;);</b>
+<b class="nc">&nbsp;        this.exitButton.setFont(textFont);</b>
+<b class="nc">&nbsp;        this.exitButton.setPreferredSize(zeroDimension);</b>
+<b class="nc">&nbsp;        this.exitButton.setBackground(new Color(0,0,0,0));</b>
+<b class="nc">&nbsp;        this.exitButton.setHorizontalAlignment(SwingConstants.CENTER);</b>
+<b class="nc">&nbsp;        this.add(this.exitButton,constraints);</b>
+&nbsp;
+<b class="nc">&nbsp;        constraints.gridx++;</b>
+<b class="nc">&nbsp;        this.createButton.setText(&quot;CREATE&quot;);</b>
+<b class="nc">&nbsp;        this.createButton.setFont(textFont);</b>
+<b class="nc">&nbsp;        this.createButton.setPreferredSize(zeroDimension);</b>
+<b class="nc">&nbsp;        this.createButton.setBackground(new Color(0,0,0,0));</b>
+<b class="nc">&nbsp;        this.createButton.setHorizontalAlignment(SwingConstants.CENTER);</b>
+<b class="nc">&nbsp;        this.add(this.createButton,constraints);</b>
+&nbsp;
+&nbsp;
+<b class="nc">&nbsp;        constraints.gridy++;</b>
+<b class="nc">&nbsp;        constraints.gridx--;</b>
+<b class="nc">&nbsp;        constraints.gridwidth=2;</b>
+<b class="nc">&nbsp;        this.errorLabel.setFont(textFont);</b>
+<b class="nc">&nbsp;        this.errorLabel.setPreferredSize(zeroDimension);</b>
+<b class="nc">&nbsp;        this.errorLabel.setHorizontalAlignment(SwingConstants.CENTER);</b>
+<b class="nc">&nbsp;        this.errorLabel.setForeground(Color.RED);</b>
+<b class="nc">&nbsp;        this.errorLabel.setVisible(false);</b>
+<b class="nc">&nbsp;        this.add(this.errorLabel,constraints);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method overrides {@link  JComponent#paintComponent(Graphics)} drawing an image as background
+&nbsp;     * @param g the &lt;code&gt;Graphics&lt;/code&gt; object to protect
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    protected void paintComponent(Graphics g) {
+<b class="nc">&nbsp;        super.paintComponent(g);</b>
+<b class="nc">&nbsp;        if(this.backgroundImage !=null){</b>
+<b class="nc">&nbsp;            double ratio = 1.765;</b>
+<b class="nc">&nbsp;            double windowRatio = (double) this.getWidth()/ this.getHeight();</b>
+&nbsp;            int width;
+&nbsp;            int height;
+<b class="nc">&nbsp;            if(windowRatio&gt;ratio) {</b>
+<b class="nc">&nbsp;                width = this.getWidth();</b>
+<b class="nc">&nbsp;                height = (int) (this.getWidth()/ratio);</b>
+&nbsp;            }else{
+<b class="nc">&nbsp;                height = this.getHeight();</b>
+<b class="nc">&nbsp;                width = (int) (this.getHeight()*ratio);</b>
+&nbsp;            }
+<b class="nc">&nbsp;            g.drawImage(this.backgroundImage, 0, 0, width, height, null);</b>
+&nbsp;
+&nbsp;        }
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-28 10:19</div>
+</div>
+</body>
+</html>

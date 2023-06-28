@@ -1,0 +1,1058 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > TUI</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">view.TUI</a>
+</div>
+
+<h1>Coverage Summary for Class: TUI (view.TUI)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">TUI</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/32)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/316)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">TUI$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">TUI$Pair</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">TUI$Scene</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/7)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/36)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/325)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package view.TUI;
+&nbsp;
+&nbsp;import model.Tile;
+&nbsp;import model.Token;
+&nbsp;import model.abstractModel.Game.GameStatus;
+&nbsp;import model.abstractModel.Message;
+&nbsp;import modelView.PickedTile;
+&nbsp;import view.ViewLogic;
+&nbsp;import view.graphicInterfaces.AppGraphics;
+&nbsp;import view.graphicInterfaces.GameGraphics;
+&nbsp;
+&nbsp;import java.awt.event.ActionEvent;
+&nbsp;import java.awt.event.ActionListener;
+&nbsp;import java.io.PrintStream;
+&nbsp;import java.util.*;
+&nbsp;
+&nbsp;import static view.TUI.TUIdraw.*;
+&nbsp;import static view.TUI.TUIutils.*;
+&nbsp;
+&nbsp;
+&nbsp;/**
+&nbsp; * This class is the Text User Interface of the game.
+&nbsp; */
+&nbsp;public class TUI implements AppGraphics, GameGraphics {
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Render height of the TUI
+&nbsp;     */
+&nbsp;    static final int renderHeight = 53;
+&nbsp;    /**
+&nbsp;     * Render width of the TUI
+&nbsp;     */
+&nbsp;    static final int renderWidth = 140;
+&nbsp;    /**
+&nbsp;     * X Position of the cursor on the TUI
+&nbsp;     */
+&nbsp;    static final int cursorX = 3;
+&nbsp;    /**
+&nbsp;     * Y Position of the cursor on the TUI
+&nbsp;     */
+&nbsp;    static final int cursorY = 51;
+&nbsp;    /**
+&nbsp;     * Stream used to print on the TUI
+&nbsp;     */
+<b class="nc">&nbsp;    private final PrintStream out = System.out;</b>
+&nbsp;    /**
+&nbsp;     * Scanner used to read from the TUI
+&nbsp;     */
+<b class="nc">&nbsp;    private final Scanner scanner = new Scanner(System.in);</b>
+&nbsp;    /**
+&nbsp;     * History of the commands executed and printed on the TUI
+&nbsp;     */
+<b class="nc">&nbsp;    private final List&lt;Pair&gt; oldCmds = new ArrayList&lt;&gt;();</b>
+&nbsp;    /**
+&nbsp;     * Canvas of the TUI, tile matrix of chars
+&nbsp;     */
+<b class="nc">&nbsp;    private final char[][] canvas = new char[renderHeight][renderWidth];</b>
+&nbsp;    /**
+&nbsp;     * color canvas of the TUI, tile matrix of int
+&nbsp;     */
+<b class="nc">&nbsp;    private final int[][] canvasColors = new int[renderHeight][renderWidth];</b>
+&nbsp;    /**
+&nbsp;     * Lock used to synchronize the render of the TUI
+&nbsp;     */
+<b class="nc">&nbsp;    private final Object renderLock = new Object();</b>
+&nbsp;    /**
+&nbsp;     * Lock used to synchronize the updates of the fields of the TUI
+&nbsp;     */
+<b class="nc">&nbsp;    private final Object updateLock = new Object();</b>
+&nbsp;    /**
+&nbsp;     * Current cursor of the TUI
+&nbsp;     */
+<b class="nc">&nbsp;    private String cursor = &quot;&quot;;</b>
+&nbsp;    /**
+&nbsp;     * Current scene of the TUI
+&nbsp;     */
+&nbsp;    private Scene scene;
+&nbsp;    /**
+&nbsp;     * Action listener of the TUI for handling events
+&nbsp;     */
+&nbsp;    private ActionListener actionListener;
+&nbsp;    /**
+&nbsp;     * current player id of the game
+&nbsp;     */
+&nbsp;    private String playerId;
+&nbsp;    /**
+&nbsp;     * current board state of the game
+&nbsp;     */
+&nbsp;    private Tile[][] boardState;
+&nbsp;    /**
+&nbsp;     * current players shelf of the game
+&nbsp;     */
+&nbsp;    private Map&lt;String, Tile[][]&gt; playerShelves;
+&nbsp;    /**
+&nbsp;     * current player on turn
+&nbsp;     */
+&nbsp;    private String playerOnTurn;
+&nbsp;    /**
+&nbsp;     * player that had the first turn
+&nbsp;     */
+&nbsp;    private String firstTurnPlayer;
+&nbsp;    /**
+&nbsp;     * players points
+&nbsp;     */
+&nbsp;    private Map&lt;String, Integer&gt; pointsValues;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * is the last turn of the game
+&nbsp;     */
+&nbsp;    private boolean isLastTurn;
+&nbsp;    /**
+&nbsp;     * current game status
+&nbsp;     */
+&nbsp;    private GameStatus status;
+&nbsp;    /**
+&nbsp;     * current chat of the game
+&nbsp;     */
+&nbsp;    private List&lt;? extends Message&gt; chat;
+&nbsp;    /**
+&nbsp;     * current common goals of the game
+&nbsp;     */
+&nbsp;    private Map&lt;String, Token&gt; commonGoals;
+&nbsp;
+&nbsp;    /**
+&nbsp;     *  player achieved common goals
+&nbsp;     */
+&nbsp;
+&nbsp;    private Map&lt;String, Token&gt; achievedCommonGoals;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * personal goal description
+&nbsp;     */
+&nbsp;    private Tile[][] personalGoalsDescription;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Thread used to read the input from the TUI
+&nbsp;     */
+<b class="nc">&nbsp;    private final Thread inputThread = new Thread(() -&gt; {</b>
+&nbsp;        while (true) {
+<b class="nc">&nbsp;            String cmd = this.scanner.nextLine();</b>
+&nbsp;            //we print this command on the command line to preserve it in the history
+<b class="nc">&nbsp;            this.printCommandLine(this.cursor + &quot; &quot; + cmd);</b>
+&nbsp;            //we dispatch the command to react to it
+<b class="nc">&nbsp;            this.dispatchInput(cmd);</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    });
+&nbsp;    /**
+&nbsp;     * personal goals
+&nbsp;     */
+&nbsp;    private Map&lt;Integer, Boolean&gt; personalGoals;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Constructor of the TUI
+&nbsp;     */
+&nbsp;    public TUI() {
+<b class="nc">&nbsp;        super();</b>
+<b class="nc">&nbsp;        this.inputThread.start();</b>
+<b class="nc">&nbsp;        this.resetGameGraphics(&quot;&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * execute read command
+&nbsp;     * @param cmd command read from the TUI
+&nbsp;     */
+&nbsp;    private void dispatchInput(String cmd) {
+<b class="nc">&nbsp;        switch (this.scene) {</b>
+&nbsp;            case CONNECTION -&gt; {
+<b class="nc">&nbsp;                if (cmd.isBlank())</b>
+<b class="nc">&nbsp;                    this.actionListener.actionPerformed(new ActionEvent(this, ViewLogic.EXIT, &quot;&quot;));</b>
+&nbsp;                else {
+&nbsp;                    //we read if the command is a valid connection command, then we notify the view logic of the network choice
+<b class="nc">&nbsp;                    if (cmd.equals(&quot;rmi&quot;) || cmd.equals(&quot;r&quot;))</b>
+<b class="nc">&nbsp;                        cmd = ViewLogic.CONNECT_RMI;</b>
+<b class="nc">&nbsp;                    else if (cmd.equals(&quot;socket&quot;) || cmd.equals(&quot;s&quot;)) {</b>
+<b class="nc">&nbsp;                        cmd = ViewLogic.CONNECT_SOCKET;</b>
+&nbsp;                    }
+<b class="nc">&nbsp;                    this.actionListener.actionPerformed(new ActionEvent(this, ViewLogic.CONNECT, cmd));</b>
+&nbsp;                }
+<b class="nc">&nbsp;            }</b>
+&nbsp;            case INTERACTION -&gt; {
+<b class="nc">&nbsp;                switch (cmd) {</b>
+&nbsp;                    //we read if the command is a valid interaction command, then we notify the view logic of the interaction choice via an action event
+&nbsp;
+&nbsp;                    //but if help command is read, we show the hints without notifying the view logic
+&nbsp;                    case &quot;h&quot; -&gt; {
+<b class="nc">&nbsp;                        this.showHints();</b>
+<b class="nc">&nbsp;                        this.render();</b>
+<b class="nc">&nbsp;                    }</b>
+<b class="nc">&nbsp;                    case &quot;c&quot; -&gt; this.actionListener.actionPerformed(new ActionEvent(this, ViewLogic.ROUTE_CREATE, &quot;&quot;));</b>
+<b class="nc">&nbsp;                    case &quot;j&quot; -&gt; this.actionListener.actionPerformed(new ActionEvent(this, ViewLogic.ROUTE_JOIN, &quot;&quot;));</b>
+<b class="nc">&nbsp;                    case &quot;e&quot; -&gt; this.actionListener.actionPerformed(new ActionEvent(this, ViewLogic.EXIT, &quot;&quot;));</b>
+<b class="nc">&nbsp;                    default -&gt; this.render();</b>
+&nbsp;                }
+<b class="nc">&nbsp;            }</b>
+&nbsp;            case CREATE -&gt; {
+&nbsp;
+<b class="nc">&nbsp;                if (cmd.isBlank()) { // if the command is blank, we ask the view logic to go back to the home scene</b>
+<b class="nc">&nbsp;                    this.actionListener.actionPerformed(new ActionEvent(this, ViewLogic.ROUTE_HOME, &quot;&quot;));</b>
+&nbsp;                } else {
+&nbsp;                    //we read if the command is a valid creation command, then we send the relevant parameters to the view logic
+&nbsp;
+<b class="nc">&nbsp;                    if (cmd.split(&quot; &quot;).length != 2) {</b>
+<b class="nc">&nbsp;                        this.actionListener.actionPerformed(new ActionEvent(this, ViewLogic.ROUTE_CREATE, &quot;Wrong number of parameter (2 required)&quot;));</b>
+&nbsp;                    } else {
+<b class="nc">&nbsp;                        this.actionListener.actionPerformed(new ActionEvent(this, ViewLogic.CREATE, &quot;STANDARD &quot; + cmd));</b>
+&nbsp;                    }
+&nbsp;                }
+<b class="nc">&nbsp;            }</b>
+&nbsp;            case JOIN -&gt; {
+<b class="nc">&nbsp;                if (cmd.isBlank()) { // if the command is blank, we ask the view logic to go back to the home scene</b>
+<b class="nc">&nbsp;                    this.actionListener.actionPerformed(new ActionEvent(this, ViewLogic.ROUTE_HOME, &quot;&quot;));</b>
+&nbsp;                } else {
+&nbsp;                    //we read if the command is a valid join command, then we send the relevant parameters to the view logic
+<b class="nc">&nbsp;                    this.actionListener.actionPerformed(new ActionEvent(this, ViewLogic.JOIN, cmd));</b>
+&nbsp;                }
+<b class="nc">&nbsp;            }</b>
+&nbsp;            case GAME -&gt; {
+<b class="nc">&nbsp;                switch (cmd) {</b>
+&nbsp;                    case &quot;h&quot; -&gt; { // if the command is help, we show the hints without notifying the view logic
+<b class="nc">&nbsp;                        this.showHints();</b>
+<b class="nc">&nbsp;                        this.render();</b>
+<b class="nc">&nbsp;                    }</b>
+&nbsp;                    //if the command is pick, we handle the pick routine, then we notify the view logic
+<b class="nc">&nbsp;                    case &quot;p&quot; -&gt; this.doMoveRoutine();</b>
+&nbsp;                    //same for the place command
+<b class="nc">&nbsp;                    case &quot;s&quot; -&gt; this.sendMessageRoutine();</b>
+&nbsp;                    //for the leave command, we notify the view logic to leave the game
+<b class="nc">&nbsp;                    case &quot;e&quot; -&gt; this.actionListener.actionPerformed(new ActionEvent(this, ViewLogic.LEAVE_GAME, &quot;&quot;));</b>
+&nbsp;                    //else we just render the game scene
+<b class="nc">&nbsp;                    default -&gt; this.render();</b>
+&nbsp;                }
+<b class="nc">&nbsp;            }</b>
+&nbsp;            //if the scene is the leaderboard, we just return to the home scene
+<b class="nc">&nbsp;            case LEADERBOARD -&gt; this.actionListener.actionPerformed(new ActionEvent(this, ViewLogic.ROUTE_HOME, &quot;&quot;));</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * start routine to send a message
+&nbsp;     */
+&nbsp;    private void sendMessageRoutine() {
+&nbsp;        String receiver;
+&nbsp;        String content;
+<b class="nc">&nbsp;        synchronized (this.renderLock) {</b>
+<b class="nc">&nbsp;            this.cursor = &quot;To (empty for everyone): &quot;;</b>
+<b class="nc">&nbsp;            this.render();</b>
+<b class="nc">&nbsp;            receiver = this.scanner.nextLine();</b>
+&nbsp;            //we print this command on the command line to preserve it in the history
+<b class="nc">&nbsp;            this.printCommandLine(this.cursor + &quot; &quot; + receiver);</b>
+<b class="nc">&nbsp;            this.cursor = &quot;Message content (empty to abort): &quot;;</b>
+<b class="nc">&nbsp;            this.render();</b>
+<b class="nc">&nbsp;            content = this.scanner.nextLine();</b>
+&nbsp;            //we reset the cursor to the default one
+<b class="nc">&nbsp;            this.cursor = &quot;(h for commands) -&gt;&quot;;</b>
+<b class="nc">&nbsp;            this.render();</b>
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        if (!content.isBlank())//if the content is not blank, we notify the view logic of the message to send</b>
+<b class="nc">&nbsp;            this.actionListener.actionPerformed(new ActionEvent(this, ViewLogic.SEND_MESSAGE,</b>
+&nbsp;                    this.playerId + &quot;\n&quot; + receiver + &quot;\n&quot; + content
+&nbsp;            ));
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * start routine to do a move
+&nbsp;     */
+&nbsp;    private void doMoveRoutine() {
+&nbsp;        String pickedTiles;
+<b class="nc">&nbsp;        String sCol = &quot;&quot;;</b>
+<b class="nc">&nbsp;        boolean choosing = true;</b>
+<b class="nc">&nbsp;        boolean exit = false;</b>
+<b class="nc">&nbsp;        List&lt;PickedTile&gt; tTiles = new ArrayList&lt;&gt;();</b>
+&nbsp;
+<b class="nc">&nbsp;        synchronized (this.renderLock) {</b>
+&nbsp;            do {
+<b class="nc">&nbsp;                tTiles.clear();</b>
+<b class="nc">&nbsp;                this.printCommandLine(&quot;Write row,col r2,c2 ... to pick up to three tiles (empty to abort)&quot;);</b>
+<b class="nc">&nbsp;                this.cursor = &quot;-&gt;&quot;;</b>
+<b class="nc">&nbsp;                this.render();</b>
+<b class="nc">&nbsp;                pickedTiles = this.scanner.nextLine();</b>
+&nbsp;
+<b class="nc">&nbsp;                if (pickedTiles.isBlank()) {</b>
+<b class="nc">&nbsp;                    exit = true;</b>
+<b class="nc">&nbsp;                    break;</b>
+&nbsp;                }
+&nbsp;
+<b class="nc">&nbsp;                String[] split = pickedTiles.split(&quot; &quot;);</b>
+&nbsp;                //if more than 3 tiles are picked ignores the rest
+&nbsp;
+&nbsp;                try {
+<b class="nc">&nbsp;                    for (int i = 0; i &lt; split.length &amp;&amp; i &lt; 3; i++) {</b>
+<b class="nc">&nbsp;                        String[] split1 = split[i].split(&quot;,&quot;);</b>
+<b class="nc">&nbsp;                        var x = Integer.parseInt(split1[0]);</b>
+<b class="nc">&nbsp;                        var y = Integer.parseInt(split1[1]);</b>
+&nbsp;                        //we add the picked tile to the list of picked tiles for the checks
+<b class="nc">&nbsp;                        tTiles.add(new PickedTile(x, y));</b>
+&nbsp;                    }
+<b class="nc">&nbsp;                    if (this.pickable(tTiles, this.boardState)) {</b>
+&nbsp;                        //if the tiles are pickable, we move on
+<b class="nc">&nbsp;                        choosing = false;</b>
+&nbsp;                    }
+&nbsp;
+<b class="nc">&nbsp;                } catch (NumberFormatException e) {</b>
+<b class="nc">&nbsp;                    this.printCommandLine(&quot;Illegal character in the sequence&quot;, RED);</b>
+<b class="nc">&nbsp;                }</b>
+&nbsp;
+<b class="nc">&nbsp;            } while (choosing);</b>
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        if (!exit) {</b>
+<b class="nc">&nbsp;            synchronized (this.renderLock) {</b>
+<b class="nc">&nbsp;                choosing = true;</b>
+&nbsp;                do {
+&nbsp;                    try {
+<b class="nc">&nbsp;                        this.printCommandLine(&quot;Write the column of the shelf (empty to abort)&quot;);</b>
+<b class="nc">&nbsp;                        this.render();</b>
+<b class="nc">&nbsp;                        sCol = this.scanner.nextLine();</b>
+&nbsp;
+<b class="nc">&nbsp;                        if (sCol.isBlank()) {</b>
+<b class="nc">&nbsp;                            exit = true;</b>
+<b class="nc">&nbsp;                            break;</b>
+&nbsp;                        }
+&nbsp;
+<b class="nc">&nbsp;                        var sC = Integer.parseInt(sCol);</b>
+&nbsp;                        //we check if there is enough space in the shelf
+<b class="nc">&nbsp;                        int emptyTiles = Arrays.stream(this.playerShelves.get(this.playerId)).mapToInt(row -&gt; row[sC] == Tile.EMPTY ? 1 : 0).sum();</b>
+<b class="nc">&nbsp;                        if (emptyTiles &lt; tTiles.size()) {</b>
+<b class="nc">&nbsp;                            this.printCommandLine(&quot;Not enough space in the shelf&quot;, RED);</b>
+<b class="nc">&nbsp;                            continue;</b>
+&nbsp;                        }
+&nbsp;                        //if there is enough space, we move on
+<b class="nc">&nbsp;                        choosing = false;</b>
+<b class="nc">&nbsp;                    } catch (NumberFormatException e) {</b>
+<b class="nc">&nbsp;                        this.printCommandLine(&quot;Shelf chosen column is not a number&quot;, RED);</b>
+<b class="nc">&nbsp;                    }</b>
+<b class="nc">&nbsp;                } while (choosing);</b>
+<b class="nc">&nbsp;            }</b>
+&nbsp;        }
+&nbsp;        //if the user did not abort, we notify the view logic of the move
+<b class="nc">&nbsp;        if (!exit) {</b>
+<b class="nc">&nbsp;            this.actionListener.actionPerformed(new ActionEvent(this, ViewLogic.SEND_MOVE, pickedTiles + &quot;\n&quot; + sCol));</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        synchronized (this.renderLock) {</b>
+&nbsp;            //we reset the cursor to the default one
+<b class="nc">&nbsp;            this.cursor = &quot;(h for commands)-&gt;&quot;;</b>
+<b class="nc">&nbsp;            this.render();</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Shows hints for the current scene
+&nbsp;     */
+&nbsp;    private void showHints() {
+<b class="nc">&nbsp;        synchronized (this.updateLock) {</b>
+<b class="nc">&nbsp;            switch (this.scene) {</b>
+<b class="nc">&nbsp;                case INTERACTION -&gt; this.printCommandLine(&quot;c: Create a game\nj: Join a game\ne: Exit\nu: Update view&quot;);</b>
+<b class="nc">&nbsp;                case GAME -&gt; this.printCommandLine(&quot;p: Pick tiles\ns: Send message\ne: Leave game\nu: Update view&quot;);</b>
+&nbsp;            }
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Update and render the canvas
+&nbsp;     */
+&nbsp;    private void render() {
+&nbsp;        /* Current values of gameplay info */
+&nbsp;        Tile[][] currentBoardState;
+&nbsp;        List&lt;Pair&gt; currentOldCmd;
+&nbsp;        Map&lt;String, Tile[][]&gt; currentPlayerShelves;
+&nbsp;        String currentPlayerId;
+&nbsp;        String currentFirstPlayer;
+&nbsp;        String currentPlayerOnTurn;
+&nbsp;        Map&lt;String, Integer&gt; currentPointsValues;
+&nbsp;        String currentCursor;
+&nbsp;        boolean currentIsLastTurn;
+&nbsp;        List&lt;Message&gt; currentChat;
+&nbsp;        Map&lt;String, Token&gt; currentCommonGoals;
+&nbsp;        Map&lt;String, Token&gt; currentAchievedCommonGoals;
+&nbsp;        Tile[][] currentPersonalGoals;
+&nbsp;        GameStatus currentGameStatus;
+&nbsp;
+&nbsp;        /* Retrieve current values of gameplay info */
+<b class="nc">&nbsp;        synchronized (this.updateLock) {</b>
+<b class="nc">&nbsp;            currentCursor = this.cursor;</b>
+<b class="nc">&nbsp;            currentOldCmd = new ArrayList&lt;&gt;(this.oldCmds);</b>
+<b class="nc">&nbsp;            currentPlayerId = this.playerId;</b>
+<b class="nc">&nbsp;            currentBoardState = this.boardState;</b>
+<b class="nc">&nbsp;            currentPlayerShelves = new HashMap&lt;&gt;(this.playerShelves);</b>
+<b class="nc">&nbsp;            currentPlayerOnTurn = this.playerOnTurn;</b>
+<b class="nc">&nbsp;            currentFirstPlayer = this.firstTurnPlayer;</b>
+<b class="nc">&nbsp;            currentPointsValues = new HashMap&lt;&gt;(this.pointsValues);</b>
+<b class="nc">&nbsp;            currentIsLastTurn = this.isLastTurn;</b>
+<b class="nc">&nbsp;            currentChat = new ArrayList&lt;&gt;(this.chat);</b>
+<b class="nc">&nbsp;            currentCommonGoals = new HashMap&lt;&gt;(this.commonGoals);</b>
+<b class="nc">&nbsp;            currentAchievedCommonGoals = new HashMap&lt;&gt;(this.achievedCommonGoals);</b>
+<b class="nc">&nbsp;            currentPersonalGoals = this.personalGoalsDescription;</b>
+<b class="nc">&nbsp;            currentGameStatus = this.status;</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;
+&nbsp;        /* Then update graphics on retrieved values */
+<b class="nc">&nbsp;        synchronized (this.renderLock) {</b>
+&nbsp;
+&nbsp;            //clear the canvases
+<b class="nc">&nbsp;            Arrays.stream(this.canvas).forEach(a -&gt; Arrays.fill(a, &#39; &#39;));</b>
+<b class="nc">&nbsp;            Arrays.stream(this.canvasColors).forEach(a -&gt; Arrays.fill(a, DEFAULT));</b>
+&nbsp;            //we draw to the canvases the relevant information for the current scene
+<b class="nc">&nbsp;            if (this.scene == Scene.GAME) {</b>
+<b class="nc">&nbsp;                if (currentGameStatus == GameStatus.MATCHMAKING || currentGameStatus == GameStatus.STARTED || currentGameStatus == GameStatus.SUSPENDED) {</b>
+<b class="nc">&nbsp;                    drawChat(this.playerId, currentChat, this.canvas, this.canvasColors);</b>
+<b class="nc">&nbsp;                    drawShelves(currentPlayerShelves, currentFirstPlayer, currentPlayerId, currentPlayerOnTurn, currentPointsValues, this.canvas, this.canvasColors);</b>
+&nbsp;                }
+<b class="nc">&nbsp;                if (currentGameStatus == GameStatus.MATCHMAKING || currentGameStatus == GameStatus.SUSPENDED) {</b>
+<b class="nc">&nbsp;                    drawCenteredString(&quot;WAITING FOR OTHER PLAYERS TO JOIN&quot;, 0, 32, 80, GREEN, this.canvas, this.canvasColors);</b>
+&nbsp;                }
+<b class="nc">&nbsp;                if (currentGameStatus == GameStatus.STARTED) {</b>
+<b class="nc">&nbsp;                    drawLastTurn(currentIsLastTurn, this.canvas, this.canvasColors);</b>
+<b class="nc">&nbsp;                    drawLivingRoom(currentBoardState, this.canvas, this.canvasColors);</b>
+<b class="nc">&nbsp;                    drawCommonGoals(currentCommonGoals, currentAchievedCommonGoals, this.canvas, this.canvasColors);</b>
+<b class="nc">&nbsp;                    drawPersonalGoal(currentPersonalGoals, this.canvas, this.canvasColors);</b>
+&nbsp;                }
+<b class="nc">&nbsp;            } else if (this.scene == Scene.LEADERBOARD) {</b>
+<b class="nc">&nbsp;                drawGameEnd(currentPointsValues, this.canvas, this.canvasColors);</b>
+&nbsp;            }
+&nbsp;
+<b class="nc">&nbsp;            drawBox(0, 0, renderHeight, renderWidth, DEFAULT, this.canvas, this.canvasColors);</b>
+<b class="nc">&nbsp;            drawCommandLine(currentCursor, currentOldCmd, this.canvas, this.canvasColors);</b>
+&nbsp;            //we clear the screen and print the canvases
+<b class="nc">&nbsp;            ClearScreen(s -&gt; this.printCommandLine(s, RED));</b>
+&nbsp;            //we print the canvases
+<b class="nc">&nbsp;            this.renderCanvases();</b>
+&nbsp;
+&nbsp;            //we move the cursor to the correct position
+<b class="nc">&nbsp;            this.out.print(&quot;\033[&quot; + (cursorY) + &quot;;&quot; + (cursorX + this.cursor.length() + 2) + &quot;H&quot;);</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Render the canvases
+&nbsp;     */
+&nbsp;    private void renderCanvases() {
+<b class="nc">&nbsp;        for (int i = 0; i &lt; this.canvas.length; i++) {</b>
+<b class="nc">&nbsp;            for (int j = 0; j &lt; this.canvas[0].length; j++) {</b>
+<b class="nc">&nbsp;                this.out.print(this.renderPixel(i, j));</b>
+&nbsp;            }
+<b class="nc">&nbsp;            this.out.println();</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    /*------------------- OTHER GRAPHICS ----------------------*/
+&nbsp;
+&nbsp;    /**
+&nbsp;     * render single pixel
+&nbsp;     * @param x     x coordinate of the pixel
+&nbsp;     * @param y    y coordinate of the pixel
+&nbsp;     * @return String representing the pixel at the given coordinates
+&nbsp;     */
+&nbsp;    private String renderPixel(int x, int y) {
+<b class="nc">&nbsp;        return &quot;\u001B[&quot; + this.canvasColors[x][y] + &quot;m&quot; + this.canvas[x][y] + &quot;\u001B[0m&quot;;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Print a string in the command line
+&nbsp;     * @param toPrint  String to print
+&nbsp;     */
+&nbsp;    private void printCommandLine(String toPrint) {
+<b class="nc">&nbsp;        this.printCommandLine(toPrint, DEFAULT);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Print a string in the command line with a given colour
+&nbsp;     * @param toPrint  String to print
+&nbsp;     * @param colour  Colour of the string
+&nbsp;     */
+&nbsp;    private void printCommandLine(String toPrint, int colour) {
+<b class="nc">&nbsp;        String[] lines = toPrint.split(&quot;\n&quot;);</b>
+&nbsp;
+<b class="nc">&nbsp;        synchronized (this.updateLock) {</b>
+&nbsp;            //we add the new commands to the old ones
+<b class="nc">&nbsp;            for (String s : lines)</b>
+<b class="nc">&nbsp;                this.oldCmds.add(new Pair(s, colour));</b>
+&nbsp;
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     * @param actionListener {@inheritDoc}
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void setActionListener(ActionListener actionListener) {
+<b class="nc">&nbsp;        this.actionListener = actionListener;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     * @return {@inheritDoc}
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public GameGraphics getGameGraphics() {
+<b class="nc">&nbsp;        return this;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     *
+&nbsp;     * @param error {@inheritDoc}
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void showConnection(String error) {
+<b class="nc">&nbsp;        synchronized (this.renderLock) {</b>
+<b class="nc">&nbsp;            this.scene = Scene.CONNECTION;</b>
+<b class="nc">&nbsp;            this.cursor = &quot;Connect with RMI (r) or SOCKET (s)?, empty to exit:&quot;;</b>
+&nbsp;
+<b class="nc">&nbsp;            if (!error.isBlank())</b>
+<b class="nc">&nbsp;                this.printCommandLine(error, RED);</b>
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        this.render();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     *
+&nbsp;     * @param message {@inheritDoc}
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void showServerInteraction(String message) {
+<b class="nc">&nbsp;        synchronized (this.renderLock) {</b>
+<b class="nc">&nbsp;            this.scene = Scene.INTERACTION;</b>
+<b class="nc">&nbsp;            this.cursor = &quot;(h for commands)-&gt;&quot;;</b>
+&nbsp;
+<b class="nc">&nbsp;            if (!message.isBlank())</b>
+<b class="nc">&nbsp;                this.printCommandLine(message);</b>
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        this.render();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     * @param error {@inheritDoc}
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void showJoin(String error) {
+<b class="nc">&nbsp;        synchronized (this.renderLock) {</b>
+<b class="nc">&nbsp;            this.scene = Scene.JOIN;</b>
+<b class="nc">&nbsp;            this.cursor = &quot;Write playerId and gameId (empty to exit):&quot;;</b>
+&nbsp;
+<b class="nc">&nbsp;            if (!error.isBlank())</b>
+<b class="nc">&nbsp;                this.printCommandLine(error, RED);</b>
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        this.render();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     * @param error eventual error message to be printed
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void showCreate(String error) {
+<b class="nc">&nbsp;        synchronized (this.renderLock) {</b>
+<b class="nc">&nbsp;            this.scene = Scene.CREATE;</b>
+<b class="nc">&nbsp;            this.cursor = &quot;Write gameId and playerNumber (empty to exit):&quot;;</b>
+&nbsp;
+<b class="nc">&nbsp;            if (!error.isBlank())</b>
+<b class="nc">&nbsp;                this.printCommandLine(error, RED);</b>
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        this.render();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     * @param message eventual message to be printed
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void showGame(String message) {
+<b class="nc">&nbsp;        synchronized (this.updateLock) {</b>
+<b class="nc">&nbsp;            this.scene = Scene.GAME;</b>
+<b class="nc">&nbsp;            this.cursor = &quot;(h for commands)-&gt;&quot;;</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;
+<b class="nc">&nbsp;        if (!message.isBlank())</b>
+<b class="nc">&nbsp;            this.printCommandLine(message);</b>
+&nbsp;
+<b class="nc">&nbsp;        this.render();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Exit the game
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void exit() {
+<b class="nc">&nbsp;        this.inputThread.interrupt();</b>
+<b class="nc">&nbsp;        System.exit(0);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * reset the game graphics for a new game
+&nbsp;     * @param playerId {@inheritDoc}
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void resetGameGraphics(String playerId) {
+&nbsp;        //we reset the game graphics for a new game9
+<b class="nc">&nbsp;        synchronized (this.updateLock) {</b>
+<b class="nc">&nbsp;            this.playerId = playerId;</b>
+<b class="nc">&nbsp;            this.playerOnTurn = &quot;&quot;;</b>
+<b class="nc">&nbsp;            this.boardState = new Tile[9][9];</b>
+<b class="nc">&nbsp;            for (Tile[] row : this.boardState)</b>
+<b class="nc">&nbsp;                Arrays.fill(row, Tile.EMPTY);</b>
+<b class="nc">&nbsp;            this.personalGoalsDescription = new Tile[6][5];</b>
+<b class="nc">&nbsp;            for (Tile[] row : this.personalGoalsDescription)</b>
+<b class="nc">&nbsp;                Arrays.fill(row, Tile.EMPTY);</b>
+<b class="nc">&nbsp;            this.playerShelves = new HashMap&lt;&gt;();</b>
+<b class="nc">&nbsp;            this.pointsValues = new HashMap&lt;&gt;();</b>
+<b class="nc">&nbsp;            this.isLastTurn = false;</b>
+<b class="nc">&nbsp;            this.chat = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;            this.commonGoals = new HashMap&lt;&gt;();</b>
+<b class="nc">&nbsp;            this.achievedCommonGoals = new HashMap&lt;&gt;();</b>
+<b class="nc">&nbsp;            this.personalGoals = new HashMap&lt;&gt;();</b>
+<b class="nc">&nbsp;            this.status = GameStatus.MATCHMAKING;</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     * @param board board of the living room
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void updateBoardGraphics(Tile[][] board) {
+<b class="nc">&nbsp;        synchronized (this.updateLock) {</b>
+<b class="nc">&nbsp;            this.boardState = Arrays.stream(board).map(Tile[]::clone).toArray(Tile[][]::new);</b>
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        this.render();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     * @param playerId id of the player that owns the shelf
+&nbsp;     * @param shelf    shelf representation of the player
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void updatePlayerShelfGraphics(String playerId, Tile[][] shelf) {
+<b class="nc">&nbsp;        synchronized (this.updateLock) {</b>
+<b class="nc">&nbsp;            this.playerShelves.put(playerId, Arrays.stream(shelf).map(Tile[]::clone).toArray(Tile[][]::new));</b>
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        this.render();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     * @param status          status of the game
+&nbsp;     * @param firstTurnPlayer id of the player that has the first turn
+&nbsp;     * @param playerOnTurn    id of the player on turn
+&nbsp;     * @param isLastTurn      true if the game is in the last round of turns
+&nbsp;     * @param pointsValues    points amount of each player
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void updateGameInfoGraphics(GameStatus status, String firstTurnPlayer, String playerOnTurn, boolean isLastTurn, Map&lt;String, Integer&gt; pointsValues) {
+<b class="nc">&nbsp;        synchronized (this.updateLock) {</b>
+<b class="nc">&nbsp;            this.status = status;</b>
+<b class="nc">&nbsp;            this.firstTurnPlayer = firstTurnPlayer;</b>
+<b class="nc">&nbsp;            this.playerOnTurn = playerOnTurn;</b>
+<b class="nc">&nbsp;            this.pointsValues = new HashMap&lt;&gt;(pointsValues);</b>
+<b class="nc">&nbsp;            this.isLastTurn = isLastTurn;</b>
+&nbsp;
+<b class="nc">&nbsp;            if (status == GameStatus.ENDED) {</b>
+<b class="nc">&nbsp;                this.cursor = &quot;Press enter to go back to the home page&quot;;</b>
+<b class="nc">&nbsp;                this.scene = Scene.LEADERBOARD;</b>
+&nbsp;            }
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        this.render();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     * @param chat list of messages sent to a player
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void updatePlayerChatGraphics(List&lt;? extends Message&gt; chat) {
+<b class="nc">&nbsp;        synchronized (this.updateLock) {</b>
+<b class="nc">&nbsp;            this.chat = chat;</b>
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        this.render();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     * @param id          the unique id of the common goal
+&nbsp;     * @param description the description of common goal specs
+&nbsp;     * @param tokenState  the current token value of the common goal
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void updateCommonGoalGraphics(String id, String description, Token tokenState) {
+<b class="nc">&nbsp;        synchronized (this.updateLock) {</b>
+<b class="nc">&nbsp;            this.commonGoals.put(id, tokenState);</b>
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        this.render();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     * @param achievedCommonGoals map of achieved common goals with earned token
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void updateAchievedCommonGoals(Map&lt;String, Token&gt; achievedCommonGoals) {
+<b class="nc">&nbsp;        synchronized (this.updateLock) {</b>
+<b class="nc">&nbsp;            this.achievedCommonGoals = achievedCommonGoals;</b>
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        this.render();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     * @param reportedError message of en error encountered during gameplay
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void updateErrorState(String reportedError) {
+<b class="nc">&nbsp;        synchronized (this.updateLock) {</b>
+<b class="nc">&nbsp;            if (!reportedError.isBlank())</b>
+<b class="nc">&nbsp;                this.printCommandLine(reportedError, RED);</b>
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        this.render();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     * @param id              the id of this goal, unique among others player personal goal
+&nbsp;     * @param hasBeenAchieved true if the goal is achieved
+&nbsp;     * @param description     matrix representation of the goal
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void updatePersonalGoalGraphics(int id, boolean hasBeenAchieved, Tile[][] description) {
+&nbsp;        //we receive the personal goal description Tile by Tile, so we have to update the description matrix to sum up the received objectives
+<b class="nc">&nbsp;        synchronized (this.updateLock) {</b>
+<b class="nc">&nbsp;            if (!this.personalGoals.containsKey(id)) {</b>
+<b class="nc">&nbsp;                Tile[][] temp = new Tile[6][5];</b>
+<b class="nc">&nbsp;                for (int i = 0; i &lt; description.length; i++)</b>
+<b class="nc">&nbsp;                    for (int j = 0; j &lt; description[i].length; j++) {</b>
+<b class="nc">&nbsp;                        if (description[i][j] != Tile.EMPTY) {</b>
+<b class="nc">&nbsp;                            temp[i][j] = description[i][j];</b>
+&nbsp;                        } else {
+<b class="nc">&nbsp;                            temp[i][j] = this.personalGoalsDescription[i][j];</b>
+&nbsp;                        }
+&nbsp;                    }
+<b class="nc">&nbsp;                this.personalGoalsDescription = temp;</b>
+&nbsp;            }
+&nbsp;
+<b class="nc">&nbsp;            this.personalGoals.put(id, hasBeenAchieved);</b>
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        this.render();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Method that determines if a list of tiles are pickable
+&nbsp;     * @param pickedTiles list of tiles picked by the player
+&nbsp;     * @param board board of the living room
+&nbsp;     * @return true if the tile is pickable
+&nbsp;     */
+&nbsp;    public boolean pickable(List&lt;PickedTile&gt; pickedTiles, Tile[][] board) {
+<b class="nc">&nbsp;        if (!this.areTilesDifferent(new ArrayList&lt;&gt;(pickedTiles))) {</b>
+<b class="nc">&nbsp;            this.printCommandLine(&quot;Tiles are not different&quot;, RED);</b>
+<b class="nc">&nbsp;            return false;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        if (!this.areTilesAligned(new ArrayList&lt;&gt;(pickedTiles))) {</b>
+<b class="nc">&nbsp;            this.printCommandLine(&quot;Tiles are not aligned&quot;, RED);</b>
+<b class="nc">&nbsp;            return false;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        for (PickedTile tile : pickedTiles)</b>
+<b class="nc">&nbsp;            if (!this.isTilePickable(tile.row(), tile.col(), board)) {</b>
+<b class="nc">&nbsp;                this.printCommandLine(&quot;Tile not pickable&quot;, RED);</b>
+<b class="nc">&nbsp;                return false;</b>
+&nbsp;            }
+<b class="nc">&nbsp;        return true;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Method that determines if tiles are aligned
+&nbsp;     * @param pickedTiles list of tiles picked by the player
+&nbsp;     * @return true if the tiles are aligned
+&nbsp;     */
+&nbsp;    private boolean areTilesAligned(List&lt;PickedTile&gt; pickedTiles) {
+&nbsp;
+<b class="nc">&nbsp;        boolean rowAligned = true;</b>
+<b class="nc">&nbsp;        boolean colAligned = true;</b>
+&nbsp;        //first check if tiles are aligned and to which axis
+<b class="nc">&nbsp;        for (int i = 1; i &lt; pickedTiles.size(); i++) {</b>
+<b class="nc">&nbsp;            rowAligned = rowAligned &amp;&amp; (pickedTiles.get(i - 1).row() == pickedTiles.get(i).row());</b>
+<b class="nc">&nbsp;            colAligned = colAligned &amp;&amp; (pickedTiles.get(i - 1).col() == pickedTiles.get(i).col());</b>
+&nbsp;        }
+&nbsp;
+&nbsp;
+<b class="nc">&nbsp;        if (colAligned) {</b>
+<b class="nc">&nbsp;            pickedTiles.sort(Comparator.comparingInt(PickedTile::row));</b>
+<b class="nc">&nbsp;            for (int i = 0; i &lt; pickedTiles.size() - 1; i++)</b>
+<b class="nc">&nbsp;                if (pickedTiles.get(i).row() + 1 != pickedTiles.get(i + 1).row())</b>
+<b class="nc">&nbsp;                    return false;</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        //for each axis, check if tiles are adjacent
+<b class="nc">&nbsp;        if (rowAligned) {</b>
+<b class="nc">&nbsp;            pickedTiles.sort(Comparator.comparingInt(PickedTile::col));</b>
+<b class="nc">&nbsp;            for (int i = 0; i &lt; pickedTiles.size() - 1; i++)</b>
+<b class="nc">&nbsp;                if (pickedTiles.get(i).col() + 1 != pickedTiles.get(i + 1).col())</b>
+<b class="nc">&nbsp;                    return false;</b>
+&nbsp;        }
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;        //if we pass the adjacent check, we return true if at least one axis is aligned
+<b class="nc">&nbsp;        return rowAligned || colAligned;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Method that determines if tiles are different
+&nbsp;     * @param pickedTiles list of picked tiles
+&nbsp;     * @return true if tiles are different, false otherwise
+&nbsp;     */
+&nbsp;    private boolean areTilesDifferent(List&lt;PickedTile&gt; pickedTiles) {
+<b class="nc">&nbsp;        for (int i = 0; i &lt; pickedTiles.size() - 1; i++) {</b>
+<b class="nc">&nbsp;            for (int j = i + 1; j &lt; pickedTiles.size(); j++) {</b>
+<b class="nc">&nbsp;                if (pickedTiles.get(i).row() == pickedTiles.get(j).row())</b>
+<b class="nc">&nbsp;                    if (pickedTiles.get(i).col() == pickedTiles.get(j).col())</b>
+<b class="nc">&nbsp;                        return false;</b>
+&nbsp;            }
+&nbsp;        }
+<b class="nc">&nbsp;        return true;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Method that determines if a tile is in a pickable position
+&nbsp;     * @param row    row of the tile
+&nbsp;     * @param column column of the tile
+&nbsp;     * @param board  board to check
+&nbsp;     * @return true if tile is pickable, false otherwise
+&nbsp;     */
+&nbsp;    private boolean isTilePickable(int row, int column, Tile[][] board) {
+&nbsp;        //if the tile is empty or null, it is not pickable
+<b class="nc">&nbsp;        if (row &lt; 0 || column &lt; 0 || row &gt; board.length - 1 || column &gt; board[row].length - 1 || board[row][column] == Tile.EMPTY || board[row][column] == null)</b>
+<b class="nc">&nbsp;            return false;</b>
+&nbsp;
+&nbsp;        //if is to the edge of the board it is pickable
+<b class="nc">&nbsp;        if (row == 0 || column == 0 || row == board.length - 1 || column == board[0].length - 1)</b>
+<b class="nc">&nbsp;            return true;</b>
+&nbsp;
+&nbsp;        //if at least one of the adjacent tiles is empty, it is pickable
+<b class="nc">&nbsp;        return board[row - 1][column] == Tile.EMPTY</b>
+&nbsp;                || board[row + 1][column] == Tile.EMPTY
+&nbsp;                || board[row][column - 1] == Tile.EMPTY
+&nbsp;                || board[row][column + 1] == Tile.EMPTY;
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Enum that represents the scenes of the game
+&nbsp;     */
+<b class="nc">&nbsp;    private enum Scene {</b>
+&nbsp;        /**
+&nbsp;         * Scene of the connection
+&nbsp;         */
+<b class="nc">&nbsp;        CONNECTION,</b>
+&nbsp;        /**
+&nbsp;         * Scene of the interaction
+&nbsp;         */
+<b class="nc">&nbsp;        INTERACTION,</b>
+&nbsp;        /**
+&nbsp;         * Scene of the joining
+&nbsp;         */
+<b class="nc">&nbsp;        JOIN,</b>
+&nbsp;        /**
+&nbsp;         * Scene of the creation
+&nbsp;         */
+<b class="nc">&nbsp;        CREATE,</b>
+&nbsp;        /**
+&nbsp;         * Scene of the main game menu
+&nbsp;         */
+<b class="nc">&nbsp;        GAME,</b>
+&nbsp;        /**
+&nbsp;         * Scene of the end game
+&nbsp;         */
+<b class="nc">&nbsp;        LEADERBOARD,</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Class that represents a pair of string and colour
+&nbsp;     * @param string string to be stored
+&nbsp;     * @param colour int that represents the colour
+&nbsp;     */
+<b class="nc">&nbsp;    record Pair(String string, int colour) {</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-28 10:19</div>
+</div>
+</body>
+</html>

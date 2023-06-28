@@ -1,0 +1,147 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > ColumnChooserButton</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">view.GUI.buttons</a>
+</div>
+
+<h1>Coverage Summary for Class: ColumnChooserButton (view.GUI.buttons)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ColumnChooserButton</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/9)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package view.GUI.buttons;
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;import javax.swing.*;
+&nbsp;import java.awt.*;
+&nbsp;import java.util.Objects;
+&nbsp;
+&nbsp;/**
+&nbsp; * This class extends JButton and represents a graphical component that allows the user to choose a column
+&nbsp; */
+&nbsp;public class ColumnChooserButton extends JButton {
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Image of the arrow for the button
+&nbsp;     */
+<b class="nc">&nbsp;    private final ImageIcon insertArrow = new ImageIcon(Objects.requireNonNull(this.getClass().getResource(&quot;/insert.png&quot;)));</b>
+&nbsp;    /**
+&nbsp;     * Image of filter for the button
+&nbsp;     */
+<b class="nc">&nbsp;    private final Image disabledImage = new ImageIcon(Objects.requireNonNull(this.getClass().getResource(&quot;/ForegroundFilter.png&quot;))).getImage();</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * @param column the column to be associated with this button
+&nbsp;     */
+&nbsp;    public ColumnChooserButton(int column) {
+<b class="nc">&nbsp;        super();</b>
+<b class="nc">&nbsp;        this.setActionCommand(String.valueOf(column));</b>
+<b class="nc">&nbsp;        this.setPreferredSize(new Dimension(0, 0));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method overrides {@link  JComponent#paintComponent(Graphics)} drawing an image based on the button state
+&nbsp;     * @param g the &lt;code&gt;Graphics&lt;/code&gt; object to protect
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    protected void paintComponent(Graphics g) {
+<b class="nc">&nbsp;        super.paintComponent(g);</b>
+<b class="nc">&nbsp;        g.drawImage(this.insertArrow.getImage(), 0, 0, this.getWidth(), this.getHeight(), null);</b>
+<b class="nc">&nbsp;        if(!this.isEnabled()){</b>
+<b class="nc">&nbsp;            g.drawImage(this.disabledImage,0,0, this.getWidth(), this.getHeight(),null);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-28 10:19</div>
+</div>
+</body>
+</html>

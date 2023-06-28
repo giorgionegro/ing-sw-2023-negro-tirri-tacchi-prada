@@ -1,0 +1,391 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > StandardServerController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">controller</a>
+</div>
+
+<h1>Coverage Summary for Class: StandardServerController (controller)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">StandardServerController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (9/9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (60/60)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">StandardServerController$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (6/6)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (11/11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (66/66)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package controller;
+&nbsp;
+&nbsp;import controller.exceptions.GameAccessDeniedException;
+&nbsp;import controller.interfaces.GameController;
+&nbsp;import controller.interfaces.GameManagerController;
+&nbsp;import controller.interfaces.LobbyController;
+&nbsp;import controller.interfaces.ServerController;
+&nbsp;import distibuted.ServerEndpoint;
+&nbsp;import distibuted.interfaces.AppServer;
+&nbsp;import distibuted.interfaces.ClientInterface;
+&nbsp;import distibuted.interfaces.ServerInterface;
+&nbsp;import model.GameBuilder;
+&nbsp;import model.User;
+&nbsp;import model.abstractModel.Game;
+&nbsp;import model.exceptions.GameAlreadyExistsException;
+&nbsp;import model.exceptions.GameNotExistsException;
+&nbsp;import modelView.LoginInfo;
+&nbsp;import modelView.NewGameInfo;
+&nbsp;import util.Observer;
+&nbsp;
+&nbsp;import java.rmi.RemoteException;
+&nbsp;import java.rmi.server.UnicastRemoteObject;
+&nbsp;import java.util.HashMap;
+&nbsp;import java.util.Map;
+&nbsp;
+&nbsp;/**
+&nbsp; * This class is a combined implementation of a {@link ServerController} a {@link GameManagerController} and a {@link AppServer}
+&nbsp; */
+&nbsp;public class StandardServerController extends UnicastRemoteObject implements ServerController, GameManagerController, AppServer {
+&nbsp;    /**
+&nbsp;     * The association between a client and a user on the server, it is assumed that only well authenticated clients have a user association
+&nbsp;     */
+&nbsp;    private final Map&lt;ClientInterface, User&gt; users;
+&nbsp;    /**
+&nbsp;     * The association between a user and the lobby it has joined
+&nbsp;     */
+&nbsp;    private final Map&lt;User, LobbyController&gt; activeUsers;
+&nbsp;    /**
+&nbsp;     * The association between a lobby and its ID
+&nbsp;     */
+&nbsp;    private final Map&lt;String, LobbyController&gt; lobbies;
+&nbsp;    /**
+&nbsp;     * The association between a lobby and the corresponding game controller
+&nbsp;     */
+&nbsp;    private final Map&lt;LobbyController, GameController&gt; gameControllers;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This constructor builds an instance with no lobbies, game controller, users and active users
+&nbsp;     *
+&nbsp;     * @throws RemoteException If an error occurred on remote object construction or export
+&nbsp;     */
+&nbsp;    public StandardServerController() throws RemoteException {
+<b class="fc">&nbsp;        super();</b>
+<b class="fc">&nbsp;        this.lobbies = new HashMap&lt;&gt;();</b>
+<b class="fc">&nbsp;        this.gameControllers = new HashMap&lt;&gt;();</b>
+<b class="fc">&nbsp;        this.users = new HashMap&lt;&gt;();</b>
+<b class="fc">&nbsp;        this.activeUsers = new HashMap&lt;&gt;();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    ///APP SERVER//////////////////////////////
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     *
+&nbsp;     * @param client {@inheritDoc}
+&nbsp;     * @return a {@link ServerEndpoint} that represents client on the server side
+&nbsp;     * @throws RemoteException {@inheritDoc}
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public synchronized ServerInterface connect(ClientInterface client) throws RemoteException {
+&nbsp;        // Generate a User for the client
+<b class="fc">&nbsp;        User user = new User();</b>
+<b class="fc">&nbsp;        user.addObserver(new Observer&lt;User, User.Event&gt;() {</b>
+&nbsp;            @Override
+&nbsp;            public void update(User o, User.Event arg) {
+&nbsp;                try {
+<b class="fc">&nbsp;                    client.update(o.getInfo(), arg);</b>
+<b class="fc">&nbsp;                } catch (RemoteException e) {</b>
+<b class="fc">&nbsp;                    System.err.println(&quot;Distribution: unable to update observer -&gt;...detaching user observer&quot;);</b>
+<b class="fc">&nbsp;                    o.deleteObserver(this);</b>
+<b class="fc">&nbsp;                }</b>
+&nbsp;            }
+&nbsp;        });
+&nbsp;
+&nbsp;        // Authorize the client
+<b class="fc">&nbsp;        this.users.put(client, user);</b>
+&nbsp;
+&nbsp;        // Generate the serverEndpoint of the connection
+<b class="fc">&nbsp;        ServerInterface server = new ServerEndpoint(this, this, s -&gt; this.disconnect(client));</b>
+&nbsp;
+&nbsp;        // Binds serverEndpoint and clientEndpoint
+<b class="fc">&nbsp;        client.bind(server);</b>
+&nbsp;
+<b class="fc">&nbsp;        System.out.println(&quot;CLIENT CONNECTED, currently connected users: &quot; + this.users.size());</b>
+&nbsp;
+<b class="fc">&nbsp;        return server;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     *
+&nbsp;     * @param client {@inheritDoc}
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public synchronized void disconnect(ClientInterface client) {
+&nbsp;        /* Checks if the client has been authenticated */
+<b class="fc">&nbsp;        if (!this.users.containsKey(client))</b>
+<b class="fc">&nbsp;            System.err.println(&quot;ServerController: Command from unauthenticated client&quot;);</b>
+&nbsp;        else {
+&nbsp;            /* Tries to make client leave a game if it is connected to one*/
+<b class="fc">&nbsp;            this.leaveGame(client);</b>
+&nbsp;            /* Un-authenticate the client and remove user observers */
+<b class="fc">&nbsp;            User user = this.users.remove(client);</b>
+<b class="fc">&nbsp;            user.deleteObservers();</b>
+&nbsp;
+<b class="fc">&nbsp;            System.out.println(&quot;CLIENT DISCONNECTED, connected user: &quot; + this.users.size());</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    ///SERVER CONTROLLER//////////////////
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     *
+&nbsp;     * @param client The client asking to join
+&nbsp;     * @param info   The join-info
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public synchronized void joinGame(ClientInterface client, LoginInfo info) {
+&nbsp;        /* Checks if the client has been authenticated */
+<b class="fc">&nbsp;        if (!this.users.containsKey(client))</b>
+<b class="fc">&nbsp;            System.err.println(&quot;ServerController: Command from unauthenticated client&quot;);</b>
+&nbsp;        else {
+&nbsp;            /* Get User associated with the client */
+<b class="fc">&nbsp;            User user = this.users.get(client);</b>
+&nbsp;            try {
+&nbsp;                /* Try to find a lobby associated with the given gameID */
+<b class="fc">&nbsp;                if (!this.lobbies.containsKey(info.gameId()))</b>
+<b class="fc">&nbsp;                    throw new GameAccessDeniedException(&quot;Game does not exists&quot;);</b>
+&nbsp;
+&nbsp;                /* If User is already into a lobby then discard the request.... */
+<b class="fc">&nbsp;                if (user.getStatus() == User.Status.JOINED)</b>
+<b class="fc">&nbsp;                    throw new GameAccessDeniedException(&quot;User already joined&quot;);</b>
+&nbsp;
+&nbsp;                /* .... else add the Client to the requested lobby */
+<b class="fc">&nbsp;                LobbyController lobbyController = this.lobbies.get(info.gameId());</b>
+&nbsp;
+<b class="fc">&nbsp;                lobbyController.joinPlayer(client, user, info.playerId());</b>
+&nbsp;
+&nbsp;                /* Associates user to the lobby it&#39;s connected to */
+<b class="fc">&nbsp;                this.activeUsers.put(user, lobbyController);</b>
+&nbsp;
+&nbsp;                /* Reports user it has joined the lobby */
+<b class="fc">&nbsp;                user.reportEvent(User.Status.JOINED, &quot;Joined game, you are:&quot; + info.playerId(), User.Event.GAME_JOINED, info.sessionID());</b>
+&nbsp;
+<b class="fc">&nbsp;                System.out.println(&quot;PLAYER: &quot; + info.playerId() + &quot; JOINED: &quot; + info.gameId());</b>
+&nbsp;
+<b class="fc">&nbsp;            } catch (GameAccessDeniedException e) {</b>
+<b class="fc">&nbsp;                user.reportEvent(User.Status.NOT_JOINED, e.getMessage(), User.Event.ERROR_REPORTED, info.sessionID());</b>
+<b class="fc">&nbsp;            }</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     *
+&nbsp;     * @param client The client asking to leave
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public synchronized void leaveGame(ClientInterface client) {
+&nbsp;        /* Check if client has been authenticated */
+<b class="fc">&nbsp;        if (!this.users.containsKey(client))</b>
+<b class="fc">&nbsp;            System.err.println(&quot;ServerController: Command from unauthenticated client&quot;);</b>
+&nbsp;        else {
+&nbsp;            /* Get user associated with client */
+<b class="fc">&nbsp;            User user = this.users.get(client);</b>
+&nbsp;            try {
+&nbsp;                /* Remove association between user and lobby and then let user leave the lobby */
+<b class="fc">&nbsp;                this.activeUsers.remove(user).leavePlayer(client);</b>
+<b class="fc">&nbsp;            } catch (NullPointerException | GameAccessDeniedException e) {</b>
+<b class="fc">&nbsp;                user.reportEvent(User.Status.NOT_JOINED, &quot;Client is not connected to any game&quot;, User.Event.GAME_LEAVED);</b>
+<b class="fc">&nbsp;            }</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     *
+&nbsp;     * @param client   The client asking to create the game
+&nbsp;     * @param gameInfo The new-game info
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public synchronized void createGame(ClientInterface client, NewGameInfo gameInfo) {
+&nbsp;        /* Check if client has been authenticated */
+<b class="fc">&nbsp;        if (!this.users.containsKey(client))</b>
+<b class="fc">&nbsp;            System.err.println(&quot;ServerController: Command from unauthenticated client&quot;);</b>
+&nbsp;        else
+&nbsp;            try {
+&nbsp;                /* Create a game using gameManager controller */
+<b class="fc">&nbsp;                this.createGame(gameInfo);</b>
+&nbsp;
+&nbsp;                /* Reports user it created successfully a game*/
+<b class="fc">&nbsp;                this.users.get(client).reportEvent(User.Status.NOT_JOINED, &quot;Game created&quot;, User.Event.GAME_CREATED, gameInfo.sessionID());</b>
+&nbsp;
+<b class="fc">&nbsp;                System.out.println(&quot;GAME CREATED: &quot; + gameInfo.gameId());</b>
+<b class="fc">&nbsp;            } catch (GameAlreadyExistsException | IllegalArgumentException e) {</b>
+<b class="fc">&nbsp;                this.users.get(client).reportEvent(User.Status.NOT_JOINED, e.getMessage(), User.Event.ERROR_REPORTED, gameInfo.sessionID());</b>
+<b class="fc">&nbsp;            }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    ///GAMES MANAGER CONTROLLER/////////////////
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     *
+&nbsp;     * @param gameId the ID of the game
+&nbsp;     * @return the {@link GameController} associated with the {@link LobbyController} associated with the given gameID
+&nbsp;     * @throws GameNotExistsException if there is not {@link LobbyController} associated with the given gameID
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public GameController getGame(String gameId) throws GameNotExistsException {
+&nbsp;        /* If a lobby with the given name exists... */
+<b class="fc">&nbsp;        if (!this.lobbies.containsKey(gameId))</b>
+<b class="fc">&nbsp;            throw new GameNotExistsException();</b>
+&nbsp;
+&nbsp;        /* ... then return the gameController associated to that lobby */
+<b class="fc">&nbsp;        return this.gameControllers.get(this.lobbies.get(gameId));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     *
+&nbsp;     * @param newGameInfo the new-game info that needs to be used
+&nbsp;     * @throws GameAlreadyExistsException If there is already a {@link LobbyController} associated with the given gameID
+&nbsp;     * @throws IllegalArgumentException   If {@link GameBuilder} couldn&#39;t build a game on given new-game info
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void createGame(NewGameInfo newGameInfo) throws GameAlreadyExistsException, IllegalArgumentException {
+&nbsp;        /* If a lobby with the given id does not already exists ... */
+<b class="fc">&nbsp;        if (this.lobbies.containsKey(newGameInfo.gameId()))</b>
+<b class="fc">&nbsp;            throw new GameAlreadyExistsException();</b>
+&nbsp;
+&nbsp;        /* ... then build game model using Game Factory ... */
+<b class="fc">&nbsp;        Game newGame = GameBuilder.build(newGameInfo);</b>
+&nbsp;
+&nbsp;        /* ... and creates a controller that manages the game model we have just created */
+<b class="fc">&nbsp;        StandardGameController controller = new StandardGameController(</b>
+&nbsp;                newGame,
+&nbsp;                lobbyController -&gt; {
+&nbsp;                    /* gameClosedCallback remove the lobby and the gameController from the known list */
+<b class="fc">&nbsp;                    this.lobbies.remove(newGameInfo.gameId());</b>
+<b class="fc">&nbsp;                    this.gameControllers.remove(lobbyController);</b>
+<b class="fc">&nbsp;                    System.out.println(&quot;GAME DELETED : &quot; + newGameInfo.gameId());</b>
+&nbsp;                }
+&nbsp;        );
+&nbsp;
+&nbsp;        /* Put lobby into known list */
+<b class="fc">&nbsp;        this.lobbies.put(newGameInfo.gameId(), controller);</b>
+&nbsp;        /* Associate gameController to the lobby created */
+<b class="fc">&nbsp;        this.gameControllers.put(controller, controller);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-28 10:19</div>
+</div>
+</body>
+</html>

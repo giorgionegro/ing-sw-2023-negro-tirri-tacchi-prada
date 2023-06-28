@@ -1,0 +1,331 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > ChatPanel</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">view.GUI.panels</a>
+</div>
+
+<h1>Coverage Summary for Class: ChatPanel (view.GUI.panels)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ChatPanel</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/62)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">ChatPanel$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">ChatPanel$2</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/3)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/67)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package view.GUI.panels;
+&nbsp;
+&nbsp;import model.abstractModel.Message;
+&nbsp;import view.ViewLogic;
+&nbsp;import view.graphicInterfaces.PlayerChatGraphics;
+&nbsp;
+&nbsp;import javax.swing.*;
+&nbsp;import java.awt.*;
+&nbsp;import java.awt.event.ActionEvent;
+&nbsp;import java.awt.event.ActionListener;
+&nbsp;import java.util.List;
+&nbsp;import java.util.*;
+&nbsp;
+&nbsp;
+&nbsp;/**
+&nbsp; * This class extends JPanel and represents a graphical component that shows the chat
+&nbsp; */
+&nbsp;public class ChatPanel extends JPanel implements PlayerChatGraphics {
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This map contains associations between player names and player ids
+&nbsp;     */
+<b class="nc">&nbsp;    private final Map&lt;String, String&gt; subjects = new HashMap&lt;&gt;() {{</b>
+<b class="nc">&nbsp;        this.put(&quot;Everyone&quot;, &quot;&quot;);</b>
+&nbsp;    }};
+&nbsp;
+&nbsp;    /**
+&nbsp;     * The player ID of this client
+&nbsp;     */
+&nbsp;    private final String playerId;
+&nbsp;    /**
+&nbsp;     * List of messages
+&nbsp;     */
+<b class="nc">&nbsp;    private final List&lt;Message&gt; messages = new ArrayList&lt;&gt;();</b>
+&nbsp;
+&nbsp;
+&nbsp;    /*----------------- GRAPHICS LAYOUT ----------------*/
+&nbsp;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This is the background image of {@link #Send}
+&nbsp;     */
+<b class="nc">&nbsp;    private final Image buttonBackground = new ImageIcon(Objects.requireNonNull(this.getClass().getResource(&quot;/img.png&quot;))).getImage();</b>
+&nbsp;    /**
+&nbsp;     * The scrollable text area component used for displaying the messages from the other players.
+&nbsp;     */
+<b class="nc">&nbsp;    private final JScrollPane scrollTextArea = new JScrollPane(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);</b>
+&nbsp;    /**
+&nbsp;     * The combo box component used for selecting the receiver of the message
+&nbsp;     */
+<b class="nc">&nbsp;    private final JComboBox&lt;String&gt; subjectsCombo = new JComboBox&lt;&gt;(new String[]{&quot;Everyone&quot;});</b>
+&nbsp;    /**
+&nbsp;     * This is the button that allows the user to send a message
+&nbsp;     */
+<b class="nc">&nbsp;    private final JButton Send = new JButton(&quot;?&quot;) {</b>
+&nbsp;        /**
+&nbsp;         * This method overrides {@link  JComponent#paintComponent(Graphics)} drawing an image as background
+&nbsp;         * @param g the &lt;code&gt;Graphics&lt;/code&gt; object to protect
+&nbsp;         */
+&nbsp;        protected void paintComponent(Graphics g) {
+<b class="nc">&nbsp;            g.drawImage(ChatPanel.this.buttonBackground, 0, 0, this.getWidth(), this.getHeight(), null);</b>
+<b class="nc">&nbsp;            super.paintComponent(g);</b>
+&nbsp;        }
+&nbsp;    };
+&nbsp;
+&nbsp;    /**
+&nbsp;     * The text field component used for entering text message to send
+&nbsp;     */
+<b class="nc">&nbsp;    private final JTextField mex = new JTextField();</b>
+&nbsp;
+&nbsp;
+&nbsp;    /** Construct an {@link CreateGamePanel} instance that uses the given {@link ActionListener} as listener for buttons events
+&nbsp;     * @param viewLogic the ActionListener to be notified when a button is pressed
+&nbsp;     * @param playerId player id of the receiver of the message
+&nbsp;     */
+&nbsp;    public ChatPanel(ActionListener viewLogic, String playerId) {
+<b class="nc">&nbsp;        super();</b>
+<b class="nc">&nbsp;        this.playerId = playerId;</b>
+&nbsp;
+<b class="nc">&nbsp;        this.initializeLayout();</b>
+&nbsp;
+<b class="nc">&nbsp;        this.Send.addActionListener(e -&gt; {</b>
+<b class="nc">&nbsp;            String message = this.mex.getText();</b>
+<b class="nc">&nbsp;            String subject = this.subjects.get((String) this.subjectsCombo.getSelectedItem());</b>
+<b class="nc">&nbsp;            viewLogic.actionPerformed(new ActionEvent(this, ViewLogic.SEND_MESSAGE, playerId + &quot;\n&quot; + subject + &quot;\n&quot; + message));</b>
+&nbsp;        });
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method adds a subject to the list of subjects (which are the receiver of the messages) and updates the subjects combo box.
+&nbsp;     * @param subjectID player id
+&nbsp;     */
+&nbsp;    public void addSubject(String subjectID) {
+<b class="nc">&nbsp;        if (!this.subjects.containsKey(subjectID) &amp;&amp; !subjectID.equals(this.playerId)) {</b>
+<b class="nc">&nbsp;            this.subjects.put(subjectID, subjectID);</b>
+<b class="nc">&nbsp;            this.subjectsCombo.addItem(subjectID);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     * @param chat list of messages sent to a player.
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void updatePlayerChatGraphics(List&lt;? extends Message&gt; chat) {
+<b class="nc">&nbsp;        this.messages.clear();</b>
+<b class="nc">&nbsp;        this.messages.addAll(chat);</b>
+<b class="nc">&nbsp;        this.updateText();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method updates the text in the JTextArea with the messages stored in the &#39;messages&#39; list.
+&nbsp;     * It scrolls to the end of the text area after updating.
+&nbsp;     */
+&nbsp;    private void updateText() {
+<b class="nc">&nbsp;        JTextArea textarea = new JTextArea();</b>
+<b class="nc">&nbsp;        textarea.setBackground(new Color(255, 255, 200));</b>
+<b class="nc">&nbsp;        textarea.setEditable(false);</b>
+&nbsp;
+<b class="nc">&nbsp;        textarea.setLineWrap(true);</b>
+<b class="nc">&nbsp;        for (Message m : this.messages) {</b>
+<b class="nc">&nbsp;            String sender = m.getSender();</b>
+<b class="nc">&nbsp;            String receiver = m.getReceiver();</b>
+<b class="nc">&nbsp;            String text = (sender.equals(this.playerId) ? &quot;YOU&quot; : sender) + &quot; to &quot; + (receiver.isBlank() ? &quot;Everyone&quot; : receiver.equals(this.playerId) ? &quot;YOU&quot; : receiver) + &quot;: &quot; + m.getText() + &quot;\n&quot;;</b>
+<b class="nc">&nbsp;            textarea.append(text);</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;
+<b class="nc">&nbsp;        this.scrollTextArea.setViewportView(textarea);</b>
+&nbsp;
+&nbsp;        //Scrolls to the end
+<b class="nc">&nbsp;        this.scrollTextArea.revalidate();</b>
+<b class="nc">&nbsp;        JScrollBar verticalScrollBar = this.scrollTextArea.getVerticalScrollBar();</b>
+<b class="nc">&nbsp;        verticalScrollBar.setValue(verticalScrollBar.getMaximum());</b>
+<b class="nc">&nbsp;        this.scrollTextArea.revalidate();</b>
+<b class="nc">&nbsp;        this.scrollTextArea.repaint();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    /**
+&nbsp;     *  This method initializes the layout of the component
+&nbsp;     */
+&nbsp;    private void initializeLayout() {
+<b class="nc">&nbsp;        GridBagConstraints constraints = new GridBagConstraints(</b>
+&nbsp;                0, 0,
+&nbsp;                1, 1,
+&nbsp;                1, 1,
+&nbsp;                GridBagConstraints.NORTHWEST,
+&nbsp;                GridBagConstraints.BOTH,
+&nbsp;                new Insets(0, 0, 0, 0),
+&nbsp;                0, 0
+&nbsp;        );
+&nbsp;        
+<b class="nc">&nbsp;        this.setLayout(new GridBagLayout());</b>
+&nbsp;
+<b class="nc">&nbsp;        Dimension zeroDimension = new Dimension(0, 0);</b>
+&nbsp;
+<b class="nc">&nbsp;        constraints.gridwidth = 2;</b>
+<b class="nc">&nbsp;        constraints.weighty = 3;</b>
+<b class="nc">&nbsp;        this.scrollTextArea.setPreferredSize(zeroDimension);</b>
+<b class="nc">&nbsp;        this.add(this.scrollTextArea, constraints);</b>
+&nbsp;
+<b class="nc">&nbsp;        constraints.gridwidth = 1;</b>
+<b class="nc">&nbsp;        constraints.gridheight = 2;</b>
+<b class="nc">&nbsp;        constraints.weighty = 0;</b>
+<b class="nc">&nbsp;        constraints.gridx++;</b>
+<b class="nc">&nbsp;        constraints.gridy++;</b>
+<b class="nc">&nbsp;        constraints.ipady=60;</b>
+<b class="nc">&nbsp;        this.Send.setPreferredSize(zeroDimension);</b>
+<b class="nc">&nbsp;        this.Send.setBackground(new Color(0, 0, 0, 0));</b>
+<b class="nc">&nbsp;        this.add(this.Send, constraints);</b>
+&nbsp;
+<b class="nc">&nbsp;        constraints.gridheight = 1;</b>
+<b class="nc">&nbsp;        constraints.weightx = 6;</b>
+<b class="nc">&nbsp;        constraints.gridx--;</b>
+<b class="nc">&nbsp;        constraints.gridy++;</b>
+<b class="nc">&nbsp;        constraints.ipady = 30;</b>
+<b class="nc">&nbsp;        this.mex.setPreferredSize(zeroDimension);</b>
+<b class="nc">&nbsp;        this.add(this.mex, constraints);</b>
+&nbsp;
+<b class="nc">&nbsp;        constraints.gridy--;</b>
+<b class="nc">&nbsp;        this.subjectsCombo.setPreferredSize(zeroDimension);</b>
+<b class="nc">&nbsp;        this.add(this.subjectsCombo, constraints);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-28 10:19</div>
+</div>
+</body>
+</html>

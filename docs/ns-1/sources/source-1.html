@@ -1,0 +1,240 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > Client</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">&lt;empty package name&gt;</a>
+</div>
+
+<h1>Coverage Summary for Class: Client (&lt;empty package name&gt;)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Client</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/18)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">Client$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/6)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/24)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;import view.GUI.GUI;
+&nbsp;import view.TUI.TUI;
+&nbsp;import view.ViewLogic;
+&nbsp;import view.graphicInterfaces.AppGraphics;
+&nbsp;
+&nbsp;import java.rmi.RemoteException;
+&nbsp;import java.rmi.registry.Registry;
+&nbsp;import java.util.HashMap;
+&nbsp;import java.util.Map;
+&nbsp;
+&nbsp;import static util.Parser.argumentsParser;
+&nbsp;
+&nbsp;/**
+&nbsp; * This class is the entry point of the client
+&nbsp; */
+&nbsp;public final class Client {
+&nbsp;    /**
+&nbsp;     * Private constructor to hide the implicit public one
+&nbsp;     */
+&nbsp;    private Client() {
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * UI type
+&nbsp;     */
+&nbsp;    private static final String UI_type = &quot;TUI&quot;;
+&nbsp;    /**
+&nbsp;     * Default host ip
+&nbsp;     */
+&nbsp;    private static final String DEFAULT_hostIp = &quot;localhost&quot;;
+&nbsp;    /**
+&nbsp;     * Default client ip
+&nbsp;     */
+&nbsp;    private static final String DEFAULT_clientIp = &quot;localhost&quot;;
+&nbsp;    /**
+&nbsp;     * Default RMI host port
+&nbsp;     */
+&nbsp;    private static final int DEFAULT_RMI_hostPort = Registry.REGISTRY_PORT;
+&nbsp;    /**
+&nbsp;     * Default SOCKET host port
+&nbsp;     */
+&nbsp;    private static final int DEFAULT_SOCKET_hostPort = 10101;
+&nbsp;    /**
+&nbsp;     * This map contains the parameters passed that can be optionally specified
+&nbsp;     */
+<b class="nc">&nbsp;    private static final Map&lt;String, String&gt; parameters = new HashMap&lt;&gt;() {{</b>
+<b class="nc">&nbsp;        this.put(&quot;-ui&quot;, UI_type);</b>
+<b class="nc">&nbsp;        this.put(&quot;-hip&quot;, DEFAULT_hostIp);</b>
+<b class="nc">&nbsp;        this.put(&quot;-cip&quot;, DEFAULT_clientIp);</b>
+<b class="nc">&nbsp;        this.put(&quot;-rP&quot;, String.valueOf(DEFAULT_RMI_hostPort));</b>
+<b class="nc">&nbsp;        this.put(&quot;-sP&quot;, String.valueOf(DEFAULT_SOCKET_hostPort));</b>
+&nbsp;    }};
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method is the entry point of the client, it reads the parameters and starts the client
+&nbsp;     *
+&nbsp;     * @param args command line arguments
+&nbsp;     * @throws RemoteException if there are connection problems
+&nbsp;     */
+&nbsp;    public static void main(String[] args) throws RemoteException {
+&nbsp;        //parse arguments
+<b class="nc">&nbsp;        if (argumentsParser(args, parameters)) return;</b>
+&nbsp;
+&nbsp;        //show help if requested
+<b class="nc">&nbsp;        if (parameters.containsKey(&quot;-h&quot;)) {</b>
+<b class="nc">&nbsp;            System.out.println(&quot;-ui -&gt; specifies UI type:\n&quot; +</b>
+&nbsp;                    &quot;\t(Default = &quot; + UI_type + &quot;)\n&quot; +
+&nbsp;                    &quot;\t\tTUI for Textual User Interface\n&quot; +
+&nbsp;                    &quot;\t\tGUI for Graphical User Interface\n&quot; +
+&nbsp;                    &quot;-hip -&gt; specifies host Ip\n\t(Default = &quot; + DEFAULT_hostIp + &quot;)\n&quot; +
+&nbsp;                    &quot;-cip -&gt; specifies client RMI Ip\n\t(Default = &quot; + DEFAULT_clientIp + &quot;)\n&quot; +
+&nbsp;                    &quot;-rP -&gt; specifies host RMI port\n\t(Default = &quot; + DEFAULT_RMI_hostPort + &quot;)\n&quot; +
+&nbsp;                    &quot;-rP -&gt; specifies host SOCKET port\n\t(Default = &quot; + DEFAULT_SOCKET_hostPort + &quot;)\n&quot; +
+&nbsp;                    &quot;-h -&gt; show this message&quot;);
+&nbsp;            return;
+&nbsp;        }
+&nbsp;
+&nbsp;        int RMIhostPort;
+&nbsp;        int SockethostPort;
+&nbsp;        //check if the arguments are valid
+&nbsp;        try {
+<b class="nc">&nbsp;            RMIhostPort = Integer.parseInt(parameters.get(&quot;-rP&quot;));</b>
+<b class="nc">&nbsp;        } catch (NumberFormatException e) {</b>
+<b class="nc">&nbsp;            System.err.println(&quot;Host RMI port is not a number&quot;);</b>
+&nbsp;            return;
+<b class="nc">&nbsp;        }</b>
+&nbsp;        try {
+<b class="nc">&nbsp;            SockethostPort = Integer.parseInt(parameters.get(&quot;-sP&quot;));</b>
+<b class="nc">&nbsp;        } catch (NumberFormatException e) {</b>
+<b class="nc">&nbsp;            System.err.println(&quot;Host RMI port is not a number&quot;);</b>
+&nbsp;            return;
+<b class="nc">&nbsp;        }</b>
+&nbsp;
+&nbsp;        AppGraphics appGraphics;
+&nbsp;        //check if the arguments are valid and create the UI accordingly
+<b class="nc">&nbsp;        switch (parameters.get(&quot;-ui&quot;)) {</b>
+<b class="nc">&nbsp;            case &quot;GUI&quot; -&gt; appGraphics = new GUI();</b>
+<b class="nc">&nbsp;            case &quot;TUI&quot; -&gt; appGraphics = new TUI();</b>
+&nbsp;            default -&gt; {
+<b class="nc">&nbsp;                System.err.println(&quot;Parameter -ui has unknown value: &quot; + parameters.get(&quot;-ui&quot;));</b>
+&nbsp;                return;
+&nbsp;            }
+&nbsp;        }
+&nbsp;        //set the client ip for RMI
+<b class="nc">&nbsp;        System.setProperty(&quot;java.rmi.server.hostname&quot;, parameters.get(&quot;-cip&quot;));</b>
+&nbsp;        //start the client
+<b class="nc">&nbsp;        new ViewLogic(appGraphics, parameters.get(&quot;-hip&quot;), RMIhostPort, SockethostPort).start();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-28 10:19</div>
+</div>
+</body>
+</html>

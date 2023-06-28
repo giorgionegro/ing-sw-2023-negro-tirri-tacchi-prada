@@ -1,0 +1,506 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > WinnerGamePanel</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">view.GUI.panels</a>
+</div>
+
+<h1>Coverage Summary for Class: WinnerGamePanel (view.GUI.panels)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">WinnerGamePanel</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/117)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">WinnerGamePanel$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/3)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">WinnerGamePanel$2</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/3)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">WinnerGamePanel$3</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/3)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">WinnerGamePanel$4</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/3)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">WinnerGamePanel$5</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/3)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/18)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/132)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package view.GUI.panels;
+&nbsp;
+&nbsp;import view.GUI.layouts.AspectRatioLayout;
+&nbsp;import view.ViewLogic;
+&nbsp;
+&nbsp;import javax.swing.*;
+&nbsp;import java.awt.*;
+&nbsp;import java.awt.event.ActionEvent;
+&nbsp;import java.awt.event.ActionListener;
+&nbsp;import java.util.*;
+&nbsp;import java.util.List;
+&nbsp;import java.util.stream.Collectors;
+&nbsp;
+&nbsp;/**
+&nbsp; * This class extends JPanel and represents a graphical component that shows the leaderboard at the end of the game
+&nbsp; */
+&nbsp;public class WinnerGamePanel extends JPanel {
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Construct an {@link WinnerGamePanel} instance that uses the given {@link ActionListener} as listener for buttons events
+&nbsp;     * @param exitListener the ActionListener to be notified when the Exit button is pressed
+&nbsp;     * @param points player&#39;s points
+&nbsp;     * @param playerId id of the player
+&nbsp;     */
+<b class="nc">&nbsp;    public WinnerGamePanel(ActionListener exitListener, Map&lt;String,Integer&gt; points, String playerId) {</b>
+<b class="nc">&nbsp;        this.initializeLayout(points, playerId);</b>
+&nbsp;
+<b class="nc">&nbsp;        this.exitButton.addActionListener(e -&gt;</b>
+<b class="nc">&nbsp;                exitListener.actionPerformed(new ActionEvent(this,ViewLogic.LEAVE_GAME,&quot;&quot;))</b>
+&nbsp;        );
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    /*-------------------- GRAPHIC LAYOUT ------------------*/
+&nbsp;    /**
+&nbsp;     * This is the background image of this component, it is used into {@link #paintComponent(Graphics)}
+&nbsp;     */
+&nbsp;
+<b class="nc">&nbsp;    private final Image createGame = new ImageIcon(Objects.requireNonNull(this.getClass().getResource(&quot;/leaderboardBackground.png&quot;))).getImage();</b>
+&nbsp;    /**
+&nbsp;     * This is the background image of components generated into {@link #createPointsContainer(String)} and {@link #createPlayerIdContainer(String, String)}
+&nbsp;     */
+<b class="nc">&nbsp;    private final Image filter = new ImageIcon(Objects.requireNonNull(this.getClass().getResource(&quot;/BackgroundFilter.png&quot;))).getImage();</b>
+&nbsp;    /**
+&nbsp;     * This is the background image of {@link #exitButton}
+&nbsp;     */
+<b class="nc">&nbsp;    private final Image buttonBackground = new ImageIcon(Objects.requireNonNull(this.getClass().getResource(&quot;/img.png&quot;))).getImage();</b>
+&nbsp;    /**
+&nbsp;     *This is the main font used in this panel
+&nbsp;     */
+<b class="nc">&nbsp;    private final Font font = new Font(&quot;Century&quot;, Font.BOLD, 20);</b>
+&nbsp;    /**
+&nbsp;     * This is the exit button
+&nbsp;     */
+<b class="nc">&nbsp;    private final JButton exitButton = new JButton(&quot;EXIT&quot;){</b>
+&nbsp;        protected void paintComponent(Graphics g) {
+<b class="nc">&nbsp;            g.drawImage(WinnerGamePanel.this.buttonBackground, 0, 0, this.getWidth(), this.getHeight(), null);</b>
+<b class="nc">&nbsp;            super.paintComponent(g);</b>
+&nbsp;        }
+&nbsp;    };
+&nbsp;
+&nbsp;    /**This method initialize the layout of the Panel
+&nbsp;     * @param points player&#39;s points
+&nbsp;     * @param playerId id of the player
+&nbsp;     */
+&nbsp;    private void initializeLayout(Map&lt;String,Integer&gt; points, String playerId){
+<b class="nc">&nbsp;        this.setLayout(new GridBagLayout());</b>
+<b class="nc">&nbsp;        ImageIcon titleImage = new ImageIcon(Objects.requireNonNull(this.getClass().getResource(&quot;/title.png&quot;)));</b>
+&nbsp;
+&nbsp;        //set exitButton options and place it into a fixed-ratio container
+<b class="nc">&nbsp;        this.exitButton.setBackground(new Color(0,0,0,0));</b>
+<b class="nc">&nbsp;        this.exitButton.setFont(this.font);</b>
+<b class="nc">&nbsp;        Container exitContainer = new Container();</b>
+<b class="nc">&nbsp;        exitContainer.setLayout(new AspectRatioLayout((float) 2));</b>
+<b class="nc">&nbsp;        exitContainer.add(this.exitButton);</b>
+&nbsp;
+&nbsp;        //create a label that displays title image and place it into a fixed-ratio container
+<b class="nc">&nbsp;        JLabel title = new JLabel() {</b>
+&nbsp;            protected void paintComponent(Graphics g) {
+<b class="nc">&nbsp;                super.paintComponent(g);</b>
+<b class="nc">&nbsp;                g.drawImage(titleImage.getImage(), 0, 0, this.getWidth(), this.getHeight(), null);</b>
+&nbsp;            }
+&nbsp;        };
+<b class="nc">&nbsp;        title.setOpaque(false);</b>
+<b class="nc">&nbsp;        title.setPreferredSize(new Dimension(0,0));</b>
+<b class="nc">&nbsp;        Container titleContainer = new Container();</b>
+<b class="nc">&nbsp;        titleContainer.setLayout(new AspectRatioLayout((float)2000/618));</b>
+<b class="nc">&nbsp;        titleContainer.add(title);</b>
+&nbsp;
+&nbsp;        //create leaderboard
+<b class="nc">&nbsp;        Container leaderboardPanel = this.createLeaderboardPanel(points, playerId);</b>
+&nbsp;
+<b class="nc">&nbsp;        GridBagConstraints panelConstraints = new GridBagConstraints(</b>
+&nbsp;                0,0,
+&nbsp;                1,1,
+&nbsp;                1,1,
+&nbsp;                GridBagConstraints.NORTHWEST,
+&nbsp;                GridBagConstraints.BOTH,
+&nbsp;                new Insets(0,0,0,0),
+&nbsp;                0,0
+&nbsp;        );
+&nbsp;
+&nbsp;        // topSpacer
+<b class="nc">&nbsp;        panelConstraints.weighty = 0.10;</b>
+<b class="nc">&nbsp;        panelConstraints.gridwidth = 3;</b>
+<b class="nc">&nbsp;        this.add(new Container(),panelConstraints);</b>
+&nbsp;
+&nbsp;        // title
+<b class="nc">&nbsp;        panelConstraints.gridy++;</b>
+<b class="nc">&nbsp;        panelConstraints.weighty = 0.2;</b>
+<b class="nc">&nbsp;        this.add(titleContainer,panelConstraints);</b>
+&nbsp;
+&nbsp;        // leftSpacer | leaderboard | rightSpacer
+<b class="nc">&nbsp;        panelConstraints.gridy++;</b>
+<b class="nc">&nbsp;        panelConstraints.gridwidth = 1;</b>
+<b class="nc">&nbsp;        panelConstraints.weighty = 0.4;</b>
+<b class="nc">&nbsp;        panelConstraints.weightx = 0.1;</b>
+<b class="nc">&nbsp;        this.add(new Container(), panelConstraints);</b>
+<b class="nc">&nbsp;        panelConstraints.gridx++;</b>
+<b class="nc">&nbsp;        panelConstraints.weightx = 0.3;</b>
+<b class="nc">&nbsp;        this.add(leaderboardPanel, panelConstraints);</b>
+<b class="nc">&nbsp;        panelConstraints.gridx++;</b>
+<b class="nc">&nbsp;        panelConstraints.weightx = 0.1;</b>
+<b class="nc">&nbsp;        this.add(new Container(), panelConstraints);</b>
+&nbsp;
+&nbsp;        // exitButton
+<b class="nc">&nbsp;        panelConstraints.gridx=0;</b>
+<b class="nc">&nbsp;        panelConstraints.gridy++;</b>
+<b class="nc">&nbsp;        panelConstraints.gridwidth=3;</b>
+<b class="nc">&nbsp;        panelConstraints.weighty = 0.04;</b>
+<b class="nc">&nbsp;        this.add(exitContainer, panelConstraints);</b>
+&nbsp;
+&nbsp;        // bottomSpacer
+<b class="nc">&nbsp;        panelConstraints.gridy++;</b>
+<b class="nc">&nbsp;        panelConstraints.weighty = 0.1;</b>
+<b class="nc">&nbsp;        this.add(new Container(), panelConstraints);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /** This method creates the leaderboard Panel when the game ends
+&nbsp;     * @param points player&#39;s points
+&nbsp;     * @param thisPlayerId id of the player
+&nbsp;     * @return final leaderboard
+&nbsp;     */
+&nbsp;    private Container createLeaderboardPanel(Map&lt;String, Integer&gt; points, String thisPlayerId) {
+<b class="nc">&nbsp;        Image firstCup = new ImageIcon(Objects.requireNonNull(this.getClass().getResource(&quot;/firstCup.png&quot;))).getImage();</b>
+<b class="nc">&nbsp;        Image secondCup = new ImageIcon(Objects.requireNonNull(this.getClass().getResource(&quot;/secondCup.png&quot;))).getImage();</b>
+<b class="nc">&nbsp;        Image thirdCup = new ImageIcon(Objects.requireNonNull(this.getClass().getResource(&quot;/thirdCup.png&quot;))).getImage();</b>
+&nbsp;
+<b class="nc">&nbsp;        GridBagConstraints leaderboardConstraints = new GridBagConstraints(</b>
+&nbsp;                0,0,
+&nbsp;                1,1,
+&nbsp;                1,1,
+&nbsp;                GridBagConstraints.NORTHWEST,
+&nbsp;                GridBagConstraints.BOTH,
+&nbsp;                new Insets(5,5,5,5),
+&nbsp;                0,0
+&nbsp;        );
+&nbsp;
+&nbsp;        //create a table that displays the leaderboard: POSITION | PLAYER_ID | POINTS
+<b class="nc">&nbsp;        Container leaderboardPanel = new Container();</b>
+<b class="nc">&nbsp;        leaderboardPanel.setLayout(new GridBagLayout());</b>
+&nbsp;
+&nbsp;        //Subdivide the points-map into groups by amount of points and generate a sorted list of groups
+<b class="nc">&nbsp;        Map&lt;Integer, List&lt;Map.Entry&lt;String, Integer&gt;&gt;&gt; grouped = points.entrySet().stream().collect(Collectors.groupingBy(Map.Entry::getValue));</b>
+<b class="nc">&nbsp;        List&lt;Map.Entry&lt;Integer, List&lt;Map.Entry&lt;String, Integer&gt;&gt;&gt;&gt; sorted = new ArrayList&lt;&gt;(grouped.entrySet().stream().sorted(Map.Entry.comparingByKey()).toList());</b>
+<b class="nc">&nbsp;        Collections.reverse(sorted);</b>
+&nbsp;
+&nbsp;        //foreach groups, foreach player into groups create and display a row into leaderboard
+<b class="nc">&nbsp;        int position = 1;</b>
+<b class="nc">&nbsp;        for (Map.Entry&lt;Integer, List&lt;Map.Entry&lt;String, Integer&gt;&gt;&gt; group : sorted) {</b>
+<b class="nc">&nbsp;            Image cupImage = switch (position) {</b>
+<b class="nc">&nbsp;                case 1 -&gt; firstCup;</b>
+<b class="nc">&nbsp;                case 2 -&gt; secondCup;</b>
+<b class="nc">&nbsp;                case 3 -&gt; thirdCup;</b>
+<b class="nc">&nbsp;                default -&gt; null;</b>
+&nbsp;            };
+&nbsp;
+<b class="nc">&nbsp;            for (Map.Entry&lt;String, Integer&gt; player : group.getValue()) {</b>
+&nbsp;
+&nbsp;                // create a cupContainer for this player
+<b class="nc">&nbsp;                Container cupContainer = this.createCupContainer(cupImage);</b>
+&nbsp;                // create a playerIdContainer for this player
+<b class="nc">&nbsp;                JPanel playerIdTextContainer = this.createPlayerIdContainer(thisPlayerId, player.getKey());</b>
+&nbsp;                // create a pointsContainer for this player
+<b class="nc">&nbsp;                JPanel playerIdPointsContainer = this.createPointsContainer(String.valueOf(player.getValue()));</b>
+&nbsp;
+&nbsp;                // add to leaderboardPanel grid the created components
+<b class="nc">&nbsp;                leaderboardConstraints.weightx=1;</b>
+<b class="nc">&nbsp;                leaderboardConstraints.gridx=0;</b>
+<b class="nc">&nbsp;                leaderboardPanel.add(cupContainer, leaderboardConstraints);</b>
+<b class="nc">&nbsp;                leaderboardConstraints.gridx++;</b>
+<b class="nc">&nbsp;                leaderboardConstraints.weightx=3;</b>
+<b class="nc">&nbsp;                leaderboardPanel.add(playerIdTextContainer, leaderboardConstraints);</b>
+<b class="nc">&nbsp;                leaderboardConstraints.gridx++;</b>
+<b class="nc">&nbsp;                leaderboardPanel.add(playerIdPointsContainer, leaderboardConstraints);</b>
+<b class="nc">&nbsp;                leaderboardConstraints.gridy++;</b>
+&nbsp;
+<b class="nc">&nbsp;                position++;</b>
+<b class="nc">&nbsp;            }</b>
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        return leaderboardPanel;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method creates a Panel that shows all the final players&#39; score
+&nbsp;     * @param points player&#39;s points
+&nbsp;     * @return Panel that contains players&#39; points
+&nbsp;     */
+&nbsp;    private JPanel createPointsContainer(String points) {
+&nbsp;        //Create a label that displays player points ...
+<b class="nc">&nbsp;        JLabel playerPoints = new JLabel(points,SwingConstants.CENTER);</b>
+<b class="nc">&nbsp;        playerPoints.setForeground(Color.WHITE);</b>
+<b class="nc">&nbsp;        playerPoints.setFont(this.font);</b>
+&nbsp;        // ... and place it into a container with colored background
+<b class="nc">&nbsp;        JPanel playerIdPointsContainer = new JPanel(){</b>
+&nbsp;            protected void paintComponent(Graphics g) {
+<b class="nc">&nbsp;                super.paintComponent(g);</b>
+<b class="nc">&nbsp;                g.drawImage(WinnerGamePanel.this.filter, 0, 0, this.getWidth(), this.getHeight(), null);</b>
+&nbsp;            }
+&nbsp;        };
+<b class="nc">&nbsp;        playerIdPointsContainer.setOpaque(false);</b>
+<b class="nc">&nbsp;        playerIdPointsContainer.setLayout(new AspectRatioLayout(1));</b>
+<b class="nc">&nbsp;        playerIdPointsContainer.add(playerPoints);</b>
+<b class="nc">&nbsp;        return playerIdPointsContainer;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method creates a Panel where to place the names of the players in order of score
+&nbsp;     * @param thisPlayerId id of the player that is using the ui
+&nbsp;     * @param playerId id of generic player
+&nbsp;     * @return Panel that contains players&#39; IDs
+&nbsp;     */
+&nbsp;    private JPanel createPlayerIdContainer(String thisPlayerId, String playerId) {
+&nbsp;        //Create a label that displays the playerId ....
+<b class="nc">&nbsp;        JLabel playerIdText = new JLabel(playerId.equals(thisPlayerId) ? &quot;YOU&quot; : playerId, SwingConstants.CENTER);</b>
+<b class="nc">&nbsp;        playerIdText.setFont(this.font);</b>
+<b class="nc">&nbsp;        playerIdText.setForeground(Color.WHITE);</b>
+&nbsp;        // ....  and place it into a container with colored background
+<b class="nc">&nbsp;        JPanel playerIdTextContainer = new JPanel(){</b>
+&nbsp;            protected void paintComponent(Graphics g) {
+<b class="nc">&nbsp;                super.paintComponent(g);</b>
+<b class="nc">&nbsp;                g.drawImage(WinnerGamePanel.this.filter, 0, 0, this.getWidth(), this.getHeight(), null);</b>
+&nbsp;            }
+&nbsp;        };
+<b class="nc">&nbsp;        playerIdTextContainer.setOpaque(false);</b>
+<b class="nc">&nbsp;        playerIdTextContainer.setLayout(new AspectRatioLayout(2));</b>
+<b class="nc">&nbsp;        playerIdTextContainer.add(playerIdText);</b>
+<b class="nc">&nbsp;        return playerIdTextContainer;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method creates a Panel where to place the images of the cups in order of score
+&nbsp;     * @param cupImage image of a cup
+&nbsp;     * @return Container that contains the cup&#39;s image
+&nbsp;     */
+&nbsp;    private Container createCupContainer(Image cupImage) {
+&nbsp;        //Create a Label that displays the cup image if needed ...
+<b class="nc">&nbsp;        JLabel cup = new JLabel();</b>
+<b class="nc">&nbsp;        if(cupImage !=null) {</b>
+<b class="nc">&nbsp;            cup = new JLabel() {</b>
+&nbsp;                protected void paintComponent(Graphics g) {
+<b class="nc">&nbsp;                    super.paintComponent(g);</b>
+<b class="nc">&nbsp;                    g.drawImage(cupImage, 0, 0, this.getWidth(), this.getHeight(), null);</b>
+&nbsp;                }
+&nbsp;            };
+&nbsp;        }
+<b class="nc">&nbsp;        cup.setOpaque(false);</b>
+<b class="nc">&nbsp;        cup.setPreferredSize(new Dimension(0, 0));</b>
+&nbsp;        // ... and place it into a fixed-ratio container
+<b class="nc">&nbsp;        Container cupContainer = new Container();</b>
+<b class="nc">&nbsp;        cupContainer.setLayout(new AspectRatioLayout(1));</b>
+<b class="nc">&nbsp;        cupContainer.add(cup);</b>
+<b class="nc">&nbsp;        return cupContainer;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method overrides {@link  JComponent#paintComponent(Graphics)} drawing an image as background
+&nbsp;     * @param g the &lt;code&gt;Graphics&lt;/code&gt; object to protect
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    protected void paintComponent(Graphics g) {
+<b class="nc">&nbsp;        super.paintComponent(g);</b>
+<b class="nc">&nbsp;        if(this.createGame !=null){</b>
+<b class="nc">&nbsp;            double ratio = 1.765;</b>
+<b class="nc">&nbsp;            double windowRatio = (double) this.getWidth()/ this.getHeight();</b>
+&nbsp;            int width;
+&nbsp;            int height;
+<b class="nc">&nbsp;            if(windowRatio&gt;ratio) {</b>
+<b class="nc">&nbsp;                width = this.getWidth();</b>
+<b class="nc">&nbsp;                height = (int) (this.getWidth()/ratio);</b>
+&nbsp;            }else{
+<b class="nc">&nbsp;                height = this.getHeight();</b>
+<b class="nc">&nbsp;                width = (int) (this.getHeight()*ratio);</b>
+&nbsp;            }
+<b class="nc">&nbsp;            g.drawImage(this.createGame, 0, 0, width, height, null);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;}
+&nbsp;
+&nbsp;
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-28 10:19</div>
+</div>
+</body>
+</html>

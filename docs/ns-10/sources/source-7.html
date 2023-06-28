@@ -1,0 +1,271 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > LivingRoomPanel</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">view.GUI.panels</a>
+</div>
+
+<h1>Coverage Summary for Class: LivingRoomPanel (view.GUI.panels)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">LivingRoomPanel</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/38)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package view.GUI.panels;
+&nbsp;
+&nbsp;import model.Tile;
+&nbsp;import model.Token;
+&nbsp;import view.GUI.layouts.AspectRatioLayout;
+&nbsp;import view.GUI.buttons.TileButton;
+&nbsp;import view.graphicInterfaces.LivingRoomGraphics;
+&nbsp;
+&nbsp;import javax.swing.*;
+&nbsp;import java.awt.*;
+&nbsp;import java.awt.event.ActionListener;
+&nbsp;import java.util.Objects;
+&nbsp;
+&nbsp;/**
+&nbsp; * This class extends JPanel and represents a graphical component that shows the living room board
+&nbsp; */
+&nbsp;@SuppressWarnings(&quot;DuplicatedCode&quot;)
+&nbsp;public class LivingRoomPanel extends JPanel implements LivingRoomGraphics {
+&nbsp;    /**
+&nbsp;     * Action listener for the buttons of the living room
+&nbsp;     */
+&nbsp;    private final ActionListener orderingTable;
+&nbsp;    /**
+&nbsp;     * This is the background image of this component, it is used into {@link #paintComponent(Graphics)}
+&nbsp;     **/
+<b class="nc">&nbsp;    private final Image background = new ImageIcon(Objects.requireNonNull(this.getClass().getResource(&quot;/LivingRoomBackground.png&quot;))).getImage();</b>
+&nbsp;    /**
+&nbsp;     * This is the background image of this component, it is used into {@link #paintComponent(Graphics)}
+&nbsp;     **/
+<b class="nc">&nbsp;    private final Image endGameToken = new ImageIcon(Objects.requireNonNull(this.getClass().getResource(&quot;/Token/&quot; + Token.TOKEN_GAME_END.name() + &quot;.png&quot;))).getImage();</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Boolean that represents when it&#39;s the last turn
+&nbsp;     */
+&nbsp;    private boolean isLastTurn;
+&nbsp;
+&nbsp;    /** Construct an {@link CreateGamePanel} instance that uses the given {@link ActionListener} as listener for buttons events
+&nbsp;     * @param orderingTable listener the ActionListener to be notified when a button is pressed
+&nbsp;     */
+&nbsp;    public LivingRoomPanel(ActionListener orderingTable) {
+<b class="nc">&nbsp;        super();</b>
+<b class="nc">&nbsp;        this.orderingTable = orderingTable;</b>
+<b class="nc">&nbsp;        this.isLastTurn = false;</b>
+<b class="nc">&nbsp;        this.setLayout(new GridBagLayout());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /** This method sets whether it is the last turn.
+&nbsp;     * @param isLastTurn boolean that represents when it&#39;s the last turn
+&nbsp;     */
+&nbsp;    public void setIsLastTurn(boolean isLastTurn) {
+<b class="nc">&nbsp;        this.isLastTurn = isLastTurn;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**{@inheritDoc}
+&nbsp;     * @param board board of the living room
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void updateBoardGraphics(Tile[][] board) {
+<b class="nc">&nbsp;        this.removeAll();</b>
+<b class="nc">&nbsp;        GridBagConstraints tileConstraints = new GridBagConstraints(</b>
+&nbsp;                0, 0,
+&nbsp;                1, 1,
+&nbsp;                298, 298,
+&nbsp;                GridBagConstraints.NORTHWEST,
+&nbsp;                GridBagConstraints.BOTH,
+&nbsp;                new Insets(0, 0, 0, 0),
+&nbsp;                0, 0
+&nbsp;        );
+&nbsp;        //topSpacerConstraints
+<b class="nc">&nbsp;        this.add(new Container(), new GridBagConstraints(</b>
+&nbsp;                0, 0,
+&nbsp;                11, 1,
+&nbsp;                1, 134,
+&nbsp;                GridBagConstraints.NORTHWEST,
+&nbsp;                GridBagConstraints.BOTH,
+&nbsp;                new Insets(0, 0, 0, 0),
+&nbsp;                0, 0
+&nbsp;        ));
+&nbsp;        //bottomSpacerConstraints
+<b class="nc">&nbsp;        this.add(new Container(), new GridBagConstraints(</b>
+&nbsp;                0, 10,
+&nbsp;                11, 1,
+&nbsp;                1, 135,
+&nbsp;                GridBagConstraints.NORTHWEST,
+&nbsp;                GridBagConstraints.BOTH,
+&nbsp;                new Insets(0, 0, 0, 0),
+&nbsp;                0, 0
+&nbsp;        ));
+&nbsp;        //leftSpacerConstraints
+<b class="nc">&nbsp;        this.add(new Container(), new GridBagConstraints(</b>
+&nbsp;                0, 1,
+&nbsp;                1, 9,
+&nbsp;                121, 300,
+&nbsp;                GridBagConstraints.NORTHWEST,
+&nbsp;                GridBagConstraints.BOTH,
+&nbsp;                new Insets(0, 0, 0, 0),
+&nbsp;                0, 0
+&nbsp;        ));
+&nbsp;        //rightSpacerConstraints
+<b class="nc">&nbsp;        this.add(new Container(), new GridBagConstraints(</b>
+&nbsp;                10, 1,
+&nbsp;                1, 9,
+&nbsp;                148, 300,
+&nbsp;                GridBagConstraints.NORTHWEST,
+&nbsp;                GridBagConstraints.BOTH,
+&nbsp;                new Insets(0, 0, 0, 0),
+&nbsp;                0, 0
+&nbsp;        ));
+&nbsp;
+<b class="nc">&nbsp;        for (int i = 0; i &lt; board.length; i++) {</b>
+<b class="nc">&nbsp;            for (int j = 0; j &lt; board[i].length; j++) {</b>
+<b class="nc">&nbsp;                tileConstraints.gridx = 1 + j;</b>
+<b class="nc">&nbsp;                tileConstraints.gridy = 1 + i;</b>
+&nbsp;
+<b class="nc">&nbsp;                Container imagetileContainer = new Container();</b>
+<b class="nc">&nbsp;                imagetileContainer.setLayout(new AspectRatioLayout(1));</b>
+&nbsp;
+<b class="nc">&nbsp;                if (board[i][j] == Tile.EMPTY) {</b>
+<b class="nc">&nbsp;                    imagetileContainer.add(new Container(), tileConstraints);</b>
+&nbsp;                } else {
+<b class="nc">&nbsp;                    TileButton tileButton = new TileButton(j, i, board[i][j]);</b>
+<b class="nc">&nbsp;                    if (this.isTilePickable(i, j, board))</b>
+<b class="nc">&nbsp;                        tileButton.addActionListener(this.orderingTable);</b>
+&nbsp;                    else {
+<b class="nc">&nbsp;                        tileButton.setEnabled(false);</b>
+&nbsp;                    }
+<b class="nc">&nbsp;                    imagetileContainer.add(tileButton);</b>
+&nbsp;                }
+&nbsp;
+<b class="nc">&nbsp;                this.add(imagetileContainer, tileConstraints);</b>
+&nbsp;            }
+&nbsp;        }
+<b class="nc">&nbsp;        this.revalidate();</b>
+<b class="nc">&nbsp;        this.repaint();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**This method checks whether a tile at the specified position on the board is clickable or not.
+&nbsp;     * @param row    row of the tile
+&nbsp;     * @param column column of the tile
+&nbsp;     * @param board  board to check
+&nbsp;     * @return true if tile is pickable, false otherwise
+&nbsp;     */
+&nbsp;    private boolean isTilePickable(int row, int column, Tile[][] board) {
+<b class="nc">&nbsp;        if (row &lt; 0 || column &lt; 0 || row &gt; board.length - 1 || column &gt; board[row].length - 1 || board[row][column] == Tile.EMPTY || board[row][column] == null)</b>
+<b class="nc">&nbsp;            return false;</b>
+&nbsp;
+<b class="nc">&nbsp;        if (row == 0 || column == 0 || row == board.length - 1 || column == board[0].length - 1)</b>
+<b class="nc">&nbsp;            return true;</b>
+&nbsp;
+<b class="nc">&nbsp;        return board[row - 1][column] == Tile.EMPTY</b>
+&nbsp;                || board[row + 1][column] == Tile.EMPTY
+&nbsp;                || board[row][column - 1] == Tile.EMPTY
+&nbsp;                || board[row][column + 1] == Tile.EMPTY;
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method overrides {@link  JComponent#paintComponent(Graphics)} drawing an image as background
+&nbsp;     * @param g the &lt;code&gt;Graphics&lt;/code&gt; object to protect
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    protected void paintComponent(Graphics g) {
+<b class="nc">&nbsp;        super.paintComponent(g);</b>
+<b class="nc">&nbsp;        g.drawImage(this.background, 0, 0, this.getWidth(), this.getHeight(), null);</b>
+<b class="nc">&nbsp;        if (!this.isLastTurn)</b>
+<b class="nc">&nbsp;            g.drawImage(this.endGameToken, 0, 0, this.getWidth(), this.getHeight(), null);</b>
+&nbsp;    }
+&nbsp;}
+&nbsp;
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-28 10:19</div>
+</div>
+</body>
+</html>

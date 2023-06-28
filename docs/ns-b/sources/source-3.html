@@ -1,0 +1,181 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > TimedLock</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">util</a>
+</div>
+
+<h1>Coverage Summary for Class: TimedLock (util)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">TimedLock</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (6/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (14/14)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package util;
+&nbsp;
+&nbsp;/**
+&nbsp; * This class implements a thread-lock that can be interrupted setting a value to be stored, the lock can be indefinite
+&nbsp; * or have a timeout, in this case a default value is set and stored after the timeout
+&nbsp; * @param &lt;ValueType&gt; the type of the stored value
+&nbsp; */
+&nbsp;public class TimedLock&lt;ValueType&gt;{
+&nbsp;    /**
+&nbsp;     * If the lock has been unlocked or not
+&nbsp;     */
+&nbsp;    private boolean unlocked;
+&nbsp;    /**
+&nbsp;     * The value the lock is storing
+&nbsp;     */
+&nbsp;    private ValueType value;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Construct an instance and set given value as default value
+&nbsp;     * @param defaultValue the value to be stored
+&nbsp;     */
+<b class="fc">&nbsp;    public TimedLock(ValueType defaultValue){</b>
+<b class="fc">&nbsp;        this.unlocked = false;</b>
+<b class="fc">&nbsp;        this.value = defaultValue;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method resets the lock storing the given value as default value
+&nbsp;     * @param defaultValue the value to be stored
+&nbsp;     */
+&nbsp;    public synchronized void reset(ValueType defaultValue){
+<b class="fc">&nbsp;        this.unlocked = false;</b>
+<b class="fc">&nbsp;        this.value = defaultValue;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method returns whether lock has been unlocked after a reset
+&nbsp;     * @return {@link #unlocked}
+&nbsp;     */
+&nbsp;    @SuppressWarnings( &quot;BooleanMethodIsAlwaysInverted&quot;)
+&nbsp;    public synchronized boolean hasBeenUnlocked(){
+<b class="fc">&nbsp;        return this.unlocked;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method returns the stored value
+&nbsp;     * @return {@link #value}
+&nbsp;     */
+&nbsp;    public synchronized ValueType getValue(){
+<b class="fc">&nbsp;        return this.value;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method locks the calling thread, the lock is indefinite if the given timeout value is &amp;lt;=0, otherwise locks for
+&nbsp;     * the given timeout amount of time
+&nbsp;     * @param timeoutMillis the timeout time amount
+&nbsp;     * @throws InterruptedException if an error occurred during lock
+&nbsp;     */
+&nbsp;    public synchronized void lock(long timeoutMillis) throws InterruptedException {
+<b class="fc">&nbsp;        this.unlocked = false;</b>
+<b class="fc">&nbsp;        if(timeoutMillis&lt;=0){</b>
+<b class="fc">&nbsp;            this.wait();</b>
+&nbsp;        }else {
+<b class="fc">&nbsp;            this.wait(timeoutMillis);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method stores the given value and unlocks the waiting threads
+&nbsp;     * @param newValue the value to be stored
+&nbsp;     */
+&nbsp;    public synchronized void unlock(ValueType newValue){
+<b class="fc">&nbsp;        this.unlocked = true;</b>
+<b class="fc">&nbsp;        this.value = newValue;</b>
+<b class="fc">&nbsp;        this.notifyAll();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-28 10:19</div>
+</div>
+</body>
+</html>

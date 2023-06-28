@@ -1,0 +1,769 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > ViewLogic</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">view</a>
+</div>
+
+<h1>Coverage Summary for Class: ViewLogic (view)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ViewLogic</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/30)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/187)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">ViewLogic$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/31)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/189)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package view;
+&nbsp;
+&nbsp;import distibuted.ClientEndPoint;
+&nbsp;import distibuted.interfaces.AppServer;
+&nbsp;import distibuted.interfaces.ClientInterface;
+&nbsp;import distibuted.interfaces.ServerInterface;
+&nbsp;import distibuted.socket.middleware.ClientSocketHandler;
+&nbsp;import model.StandardMessage;
+&nbsp;import model.User;
+&nbsp;import model.abstractModel.*;
+&nbsp;import modelView.*;
+&nbsp;import util.TimedLock;
+&nbsp;import view.graphicInterfaces.GameGraphics;
+&nbsp;import view.graphicInterfaces.AppGraphics;
+&nbsp;import view.interfaces.ViewCollection;
+&nbsp;
+&nbsp;import java.awt.event.ActionEvent;
+&nbsp;import java.awt.event.ActionListener;
+&nbsp;import java.rmi.NotBoundException;
+&nbsp;import java.rmi.Remote;
+&nbsp;import java.rmi.RemoteException;
+&nbsp;import java.rmi.registry.LocateRegistry;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.List;
+&nbsp;import java.util.concurrent.ExecutorService;
+&nbsp;import java.util.concurrent.Executors;
+&nbsp;
+&nbsp;/**
+&nbsp; * This class manages the view of the application and the communication with the server.
+&nbsp; */
+&nbsp;public class ViewLogic implements Remote, ViewCollection, ActionListener {
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Exit route
+&nbsp;     */
+&nbsp;    public static final int EXIT = -1;
+&nbsp;    /**
+&nbsp;     * Connection route
+&nbsp;     */
+&nbsp;    public static final int ROUTE_CONNECT = 0;
+&nbsp;    /**
+&nbsp;     * Join route
+&nbsp;     */
+&nbsp;    public static final int ROUTE_JOIN = 1;
+&nbsp;    /**
+&nbsp;     * Create route
+&nbsp;     */
+&nbsp;    public static final int ROUTE_CREATE = 2;
+&nbsp;    /**
+&nbsp;     * Game route
+&nbsp;     */
+&nbsp;    public static final int ROUTE_GAME = 3;
+&nbsp;    /**
+&nbsp;     * Home route
+&nbsp;     */
+&nbsp;    public static final int ROUTE_HOME = 4;
+&nbsp;    /**
+&nbsp;     * Connect action
+&nbsp;     */
+&nbsp;    public static final int CONNECT = 5;
+&nbsp;    /**
+&nbsp;     * Join action
+&nbsp;     */
+&nbsp;    public static final int JOIN = 6;
+&nbsp;    /**
+&nbsp;     * Create action
+&nbsp;     */
+&nbsp;    public static final int CREATE = 7;
+&nbsp;    /**
+&nbsp;     * Send message action
+&nbsp;     */
+&nbsp;    public static final int SEND_MESSAGE = 8;
+&nbsp;    /**
+&nbsp;     * Send move action
+&nbsp;     */
+&nbsp;    public static final int SEND_MOVE = 9;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Leave game action
+&nbsp;     */
+&nbsp;    public static final int LEAVE_GAME = 10;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * update Thread pool
+&nbsp;     */
+<b class="nc">&nbsp;    private final ExecutorService updateService = Executors.newFixedThreadPool(1);</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * RMI action
+&nbsp;     */
+&nbsp;    public static final String CONNECT_RMI = &quot;RMI&quot;;
+&nbsp;    /**
+&nbsp;     * Socket action
+&nbsp;     */
+&nbsp;    public static final String CONNECT_SOCKET = &quot;SOCKET&quot;;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This action performed is used to exchange messages between the view logic and the view
+&nbsp;     *
+&nbsp;     * @param e the event to be processed by the view
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public synchronized void actionPerformed(ActionEvent e) {
+<b class="nc">&nbsp;        if(e.getSource().equals(this.gameGraphics) || e.getSource().equals(this.appGraphics)){</b>
+<b class="nc">&nbsp;            switch (e.getID()){</b>
+<b class="nc">&nbsp;                case EXIT -&gt; this.exit();</b>
+<b class="nc">&nbsp;                case ROUTE_CONNECT -&gt; this.appGraphics.showConnection(e.getActionCommand());</b>
+<b class="nc">&nbsp;                case ROUTE_JOIN -&gt; this.appGraphics.showJoin(e.getActionCommand());</b>
+<b class="nc">&nbsp;                case ROUTE_CREATE -&gt; this.appGraphics.showCreate(e.getActionCommand());</b>
+<b class="nc">&nbsp;                case ROUTE_GAME -&gt; this.appGraphics.showGame(e.getActionCommand());</b>
+<b class="nc">&nbsp;                case ROUTE_HOME -&gt; this.appGraphics.showServerInteraction(e.getActionCommand());</b>
+&nbsp;                case CONNECT -&gt; {
+<b class="nc">&nbsp;                    if(!this.connected){</b>
+<b class="nc">&nbsp;                        this.connect(e.getActionCommand());</b>
+&nbsp;                    }else{
+<b class="nc">&nbsp;                        this.appGraphics.showServerInteraction(&quot;Already connected&quot;);</b>
+&nbsp;                    }
+<b class="nc">&nbsp;                }</b>
+<b class="nc">&nbsp;                case CREATE -&gt; this.createGame(e.getActionCommand());</b>
+<b class="nc">&nbsp;                case JOIN -&gt; this.joinGame(e.getActionCommand());</b>
+<b class="nc">&nbsp;                case SEND_MESSAGE -&gt; this.sendMessage(e.getActionCommand());</b>
+<b class="nc">&nbsp;                case SEND_MOVE -&gt; this.sendMove(e.getActionCommand());</b>
+<b class="nc">&nbsp;                case LEAVE_GAME -&gt; this.leaveGame();</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Application graphics Interface
+&nbsp;     */
+&nbsp;    private final AppGraphics appGraphics;
+&nbsp;    /**
+&nbsp;     * Game graphics Interface
+&nbsp;     */
+&nbsp;    private final GameGraphics gameGraphics;
+&nbsp;    /**
+&nbsp;     * Host IP
+&nbsp;     */
+&nbsp;    private final String hostIp;
+&nbsp;    /**
+&nbsp;     * Host RMI port
+&nbsp;     */
+&nbsp;    private final int RMIHostPort;
+&nbsp;    /**
+&nbsp;     * Host Socket port
+&nbsp;     */
+&nbsp;    private final int SocketHostPort;
+&nbsp;    /**
+&nbsp;     * Server reference
+&nbsp;     */
+&nbsp;    private AppServer server;
+&nbsp;    /**
+&nbsp;     * Server endpoint reference
+&nbsp;     */
+&nbsp;    private ServerInterface serverEndpoint;
+&nbsp;    /**
+&nbsp;     * Client endpoint reference
+&nbsp;     */
+&nbsp;    private final ClientInterface clientEndPoint;
+&nbsp;    /**
+&nbsp;     * time of the current session, used to check if incoming messages are valid
+&nbsp;     */
+<b class="nc">&nbsp;    private long currentSessionTime = -1;</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * field used to check if the client is connected to the server
+&nbsp;     */
+&nbsp;    private boolean connected;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Constructor of the view logic
+&nbsp;     *
+&nbsp;     * @param appGraphics application graphics interface
+&nbsp;     * @param hostIp host ip
+&nbsp;     * @param RMIHostPort host RMI port
+&nbsp;     * @param SocketHostPort host Socket port
+&nbsp;     * @throws RemoteException if the connection fails
+&nbsp;     */
+<b class="nc">&nbsp;    public ViewLogic(AppGraphics appGraphics, String hostIp, int RMIHostPort, int SocketHostPort) throws RemoteException {</b>
+<b class="nc">&nbsp;        this.hostIp = hostIp;</b>
+<b class="nc">&nbsp;        this.RMIHostPort = RMIHostPort;</b>
+<b class="nc">&nbsp;        this.SocketHostPort = SocketHostPort;</b>
+<b class="nc">&nbsp;        this.appGraphics = appGraphics;</b>
+<b class="nc">&nbsp;        this.gameGraphics = appGraphics.getGameGraphics();</b>
+<b class="nc">&nbsp;        this.appGraphics.setActionListener(this);</b>
+<b class="nc">&nbsp;        this.clientEndPoint = new ClientEndPoint(this,this::disconnect);</b>
+<b class="nc">&nbsp;        this.connected = false;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method is used start the view with the connection screen
+&nbsp;     */
+&nbsp;    public void start(){
+<b class="nc">&nbsp;        this.actionPerformed(new ActionEvent(this.appGraphics,ROUTE_CONNECT,&quot;&quot;));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method is used to exit the application
+&nbsp;     */
+&nbsp;    private void exit(){
+<b class="nc">&nbsp;        this.appGraphics.exit();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * disconnects the client from the server and returns to the connection screen
+&nbsp;     *
+&nbsp;     * @param message the message to be sent to the view
+&nbsp;     */
+&nbsp;    private void disconnect(String message){
+&nbsp;        try {
+<b class="nc">&nbsp;            if(this.server !=null)</b>
+<b class="nc">&nbsp;                this.server.disconnect(this.clientEndPoint);</b>
+<b class="nc">&nbsp;        } catch (RemoteException e) {</b>
+<b class="nc">&nbsp;            System.err.println(&quot;Error on disconnection, continue disconnecting.... &quot;);</b>
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        this.updateService.submit(() -&gt; {</b>
+<b class="nc">&nbsp;            this.connected = false;</b>
+<b class="nc">&nbsp;            this.currentSessionTime = -1;</b>
+<b class="nc">&nbsp;            this.serverEndpoint = null;</b>
+<b class="nc">&nbsp;            this.server = null;</b>
+<b class="nc">&nbsp;            this.actionPerformed(new ActionEvent(this.appGraphics,ROUTE_CONNECT,message));</b>
+&nbsp;        });
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method is used to connect to the server using specified connection type
+&nbsp;     *
+&nbsp;     * @param connectionType the type of connection to be used
+&nbsp;     */
+&nbsp;    private void connect(String connectionType) {
+<b class="nc">&nbsp;        if(!(connectionType.equals(CONNECT_RMI) || connectionType.equals(CONNECT_SOCKET)))</b>
+<b class="nc">&nbsp;            this.actionPerformed(new ActionEvent(this.appGraphics,ROUTE_CONNECT,&quot;Unknown Command&quot;));</b>
+&nbsp;        else{
+&nbsp;            try {
+<b class="nc">&nbsp;                this.serverWaiter.reset(true);</b>
+&nbsp;
+<b class="nc">&nbsp;                switch (connectionType) {</b>
+<b class="nc">&nbsp;                    case CONNECT_RMI -&gt; this.connectRMI(this.clientEndPoint);</b>
+<b class="nc">&nbsp;                    case CONNECT_SOCKET -&gt; this.connectSocket(this.clientEndPoint);</b>
+&nbsp;                }
+&nbsp;                //wait for the server to respond or timeout
+<b class="nc">&nbsp;                if (!this.serverWaiter.hasBeenUnlocked()) {</b>
+&nbsp;                    try {
+<b class="nc">&nbsp;                        this.serverWaiter.lock(6000);</b>
+<b class="nc">&nbsp;                    } catch (InterruptedException e) {</b>
+<b class="nc">&nbsp;                        throw new RemoteException(&quot;Timer interrupted&quot;);</b>
+<b class="nc">&nbsp;                    }</b>
+&nbsp;                }
+&nbsp;
+<b class="nc">&nbsp;                if (this.serverWaiter.getValue()) //if the server has not responded in time the connection is considered failed and we return to the connection screen</b>
+<b class="nc">&nbsp;                    this.actionPerformed(new ActionEvent(this.appGraphics, ROUTE_CONNECT, &quot;Unable to connect: connection timeout&quot;));</b>
+&nbsp;                else {//otherwise we are connected and we can proceed to the home screen
+<b class="nc">&nbsp;                    this.connected = true;</b>
+<b class="nc">&nbsp;                    this.actionPerformed(new ActionEvent(this.appGraphics, ROUTE_HOME, &quot;Successfully connected&quot;));</b>
+&nbsp;                }
+<b class="nc">&nbsp;            } catch (RemoteException e) {</b>
+<b class="nc">&nbsp;                this.actionPerformed(new ActionEvent(this.appGraphics,ROUTE_CONNECT,e.getMessage()));</b>
+<b class="nc">&nbsp;            }</b>
+&nbsp;        }
+&nbsp;
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method is used to connect to the server using RMI
+&nbsp;     *
+&nbsp;     * @param client the client to be connected to the server
+&nbsp;     * @throws RemoteException if the connection fails
+&nbsp;     */
+&nbsp;    private void connectRMI(ClientInterface client) throws RemoteException {
+&nbsp;        try {
+<b class="nc">&nbsp;            this.server = (AppServer) LocateRegistry.getRegistry(this.hostIp, this.RMIHostPort).lookup(&quot;server&quot;);</b>
+<b class="nc">&nbsp;            this.serverEndpoint = this.server.connect(client);</b>
+<b class="nc">&nbsp;        }catch (RemoteException | NotBoundException e){</b>
+<b class="nc">&nbsp;            throw new RemoteException(&quot;Unable to open rmi connection&quot;);</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method is used to connect to the server using Socket
+&nbsp;     *
+&nbsp;     * @param client the client to be connected to the server
+&nbsp;     * @throws RemoteException if the connection fails
+&nbsp;     */
+&nbsp;    private void connectSocket(ClientInterface client) throws RemoteException {
+&nbsp;        try {
+<b class="nc">&nbsp;            this.server = new ClientSocketHandler(this.hostIp, this.SocketHostPort);</b>
+<b class="nc">&nbsp;            this.serverEndpoint = this.server.connect(client);</b>
+<b class="nc">&nbsp;        }catch(RemoteException e){</b>
+<b class="nc">&nbsp;            throw new RemoteException(&quot;Unable to open socket connection&quot;);</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This field is used to lock the client until the server responds or the timeout expires
+&nbsp;     */
+<b class="nc">&nbsp;    private final TimedLock&lt;Boolean&gt; serverWaiter = new TimedLock&lt;&gt;(false);</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     *  This method is used to parse join game info and send it to the server
+&nbsp;     *  When the server responds the client is redirected to the game screen
+&nbsp;     *
+&nbsp;     * @param joinInfo the info to be sent to the server
+&nbsp;     */
+&nbsp;    // take PLAYERID GAMEID spaced
+&nbsp;    private void joinGame(String joinInfo) {
+&nbsp;        //check if the join info is valid
+<b class="nc">&nbsp;        if(joinInfo==null)</b>
+<b class="nc">&nbsp;            this.actionPerformed(new ActionEvent(this.appGraphics,ROUTE_JOIN,&quot;Null info value&quot;));</b>
+&nbsp;        else {
+&nbsp;            //count the number of parts to ensure that the string is well-formed
+<b class="nc">&nbsp;            String[] joinInfoParts = joinInfo.split(&quot; &quot;);</b>
+<b class="nc">&nbsp;            if (joinInfoParts.length != 2){</b>
+<b class="nc">&nbsp;                this.actionPerformed(new ActionEvent(this.appGraphics, ROUTE_JOIN, &quot;Wrong number of parameters: &quot;+joinInfoParts.length+&quot; (2 required)&quot;));</b>
+<b class="nc">&nbsp;            }else if(!(joinInfoParts[0].isBlank() || joinInfoParts[1].isBlank())){</b>
+&nbsp;                try {
+<b class="nc">&nbsp;                    this.gameGraphics.resetGameGraphics(joinInfoParts[0]);</b>
+&nbsp;
+<b class="nc">&nbsp;                    this.currentSessionTime = System.currentTimeMillis();</b>
+<b class="nc">&nbsp;                    this.serverWaiter.reset(true);</b>
+&nbsp;
+<b class="nc">&nbsp;                    this.serverEndpoint.joinGame(this.clientEndPoint, new LoginInfo(joinInfoParts[0], joinInfoParts[1], this.currentSessionTime));</b>
+&nbsp;                    //wait for server response or for timeout
+<b class="nc">&nbsp;                    if (!this.serverWaiter.hasBeenUnlocked()) {</b>
+&nbsp;                        try {
+<b class="nc">&nbsp;                            this.serverWaiter.lock(6000);</b>
+<b class="nc">&nbsp;                        } catch (InterruptedException e) {</b>
+<b class="nc">&nbsp;                            throw new RemoteException(&quot;Connection timeout error&quot;);</b>
+<b class="nc">&nbsp;                        }</b>
+&nbsp;                    }
+&nbsp;
+<b class="nc">&nbsp;                    if (this.serverWaiter.getValue()) //if the server didn&#39;t respond in time we return to the join screen</b>
+<b class="nc">&nbsp;                        this.actionPerformed(new ActionEvent(this.appGraphics,ROUTE_JOIN, this.userMessage));</b>
+&nbsp;                    else //otherwise we go to the game screen
+<b class="nc">&nbsp;                        this.actionPerformed(new ActionEvent(this.appGraphics,ROUTE_GAME,&quot;&quot;));</b>
+&nbsp;
+<b class="nc">&nbsp;                } catch (RemoteException e) {</b>
+<b class="nc">&nbsp;                    this.actionPerformed(new ActionEvent(this.appGraphics,ROUTE_JOIN,&quot;Unable to reach server&quot;));</b>
+<b class="nc">&nbsp;                }</b>
+&nbsp;            }else{
+<b class="nc">&nbsp;                this.actionPerformed(new ActionEvent(this.appGraphics, ROUTE_JOIN, &quot;One of the parameters is blank&quot;));</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     *  This method is used to parse create game info and send it to the server
+&nbsp;     *  When the server responds the client is redirected to the Home screen
+&nbsp;     *
+&nbsp;     * @param gameInfo the info to be sent to the server
+&nbsp;     */
+&nbsp;    //TAKE GAMETYPE GAMEID PLAYERNUMBER spaced
+&nbsp;    private void createGame(String gameInfo){
+&nbsp;        //if the gameInfo is null, the user is notified and the method returns
+<b class="nc">&nbsp;        if(gameInfo==null)</b>
+<b class="nc">&nbsp;            this.actionPerformed(new ActionEvent(this.appGraphics,ROUTE_CREATE,&quot;Null info value&quot;));</b>
+&nbsp;        else {
+&nbsp;            //counting the parts to ensure that the string is well-formed
+<b class="nc">&nbsp;            String[] gameInfoParts = gameInfo.split(&quot; &quot;);</b>
+<b class="nc">&nbsp;            if(gameInfoParts.length!=3)</b>
+<b class="nc">&nbsp;                this.actionPerformed(new ActionEvent(this.appGraphics,ROUTE_CREATE,&quot;Wrong number of parameters &quot;+gameInfoParts.length));</b>
+<b class="nc">&nbsp;            else if(!(gameInfoParts[0].isBlank() || gameInfoParts[1].isBlank() || gameInfoParts[2].isBlank())){</b>
+&nbsp;                try {
+<b class="nc">&nbsp;                    int playerNumber = Integer.parseInt(gameInfoParts[gameInfoParts.length-1]);</b>
+<b class="nc">&nbsp;                    this.currentSessionTime = System.currentTimeMillis();</b>
+<b class="nc">&nbsp;                    this.serverWaiter.reset(true);</b>
+&nbsp;
+<b class="nc">&nbsp;                    this.serverEndpoint.createGame(this.clientEndPoint, new NewGameInfo(gameInfoParts[1], gameInfoParts[0], playerNumber, this.currentSessionTime));</b>
+&nbsp;                    //waiting for the server to respond or the timeout to expire
+<b class="nc">&nbsp;                    if (!this.serverWaiter.hasBeenUnlocked()) {</b>
+&nbsp;                        try {
+<b class="nc">&nbsp;                            this.serverWaiter.lock(6000);</b>
+<b class="nc">&nbsp;                        } catch (InterruptedException e) {</b>
+<b class="nc">&nbsp;                            throw new RemoteException(&quot;Connection timeout error&quot;);</b>
+<b class="nc">&nbsp;                        }</b>
+&nbsp;                    }
+&nbsp;
+<b class="nc">&nbsp;                    if (this.serverWaiter.getValue()) //if timeout expired, the user is notified and we return to create screen</b>
+<b class="nc">&nbsp;                        this.actionPerformed(new ActionEvent(this.appGraphics, ROUTE_CREATE, this.userMessage));</b>
+&nbsp;                    else
+<b class="nc">&nbsp;                        this.actionPerformed(new ActionEvent(this.appGraphics, ROUTE_HOME, &quot;Game created successfully&quot;));</b>
+&nbsp;
+<b class="nc">&nbsp;                } catch (RemoteException e) {</b>
+<b class="nc">&nbsp;                    this.actionPerformed(new ActionEvent(this.appGraphics, ROUTE_CREATE, &quot;Unable to reach server&quot;));</b>
+<b class="nc">&nbsp;                } catch (NumberFormatException e) {</b>
+<b class="nc">&nbsp;                    this.actionPerformed(new ActionEvent(this.appGraphics, ROUTE_CREATE, &quot;\&quot;Number of player\&quot; parameter is not a number&quot;));</b>
+<b class="nc">&nbsp;                }</b>
+&nbsp;            } else{
+<b class="nc">&nbsp;                this.actionPerformed(new ActionEvent(this.appGraphics,ROUTE_CREATE,&quot;One of the parameters is blank&quot;));</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     *  This method is used to parse login info and send it to the server
+&nbsp;     *  When the server thows an exception the client is notified
+&nbsp;     *
+&nbsp;     * @param messageInfo the info to be sent to the server
+&nbsp;     */
+&nbsp;    //take idSender idSubject content spaced
+&nbsp;    private void sendMessage(String messageInfo){
+&nbsp;        //if the message is null the client is notified and the method returns
+<b class="nc">&nbsp;        if(messageInfo==null)</b>
+<b class="nc">&nbsp;            this.gameGraphics.updateErrorState(&quot;Null message info&quot;);</b>
+&nbsp;        else{
+&nbsp;            //otherwise we count the number of parts of the message to ensure that the message is well-formed
+<b class="nc">&nbsp;            String[] messageInfoParts = messageInfo.split(&quot;\n&quot;);</b>
+<b class="nc">&nbsp;            if(messageInfoParts.length!=3){</b>
+&nbsp;                //if the message is not well-formed the client is notified
+<b class="nc">&nbsp;                this.gameGraphics.updateErrorState(&quot;Message has wrong number of parts&quot;);</b>
+&nbsp;            }else{
+&nbsp;                try {
+<b class="nc">&nbsp;                    this.serverEndpoint.sendMessage(this.clientEndPoint, new StandardMessage(</b>
+&nbsp;                            messageInfoParts[0], messageInfoParts[1], messageInfoParts[2]
+&nbsp;                    ));
+<b class="nc">&nbsp;                }catch (RemoteException e){</b>
+<b class="nc">&nbsp;                    this.gameGraphics.updateErrorState(&quot;Unable to reach server&quot;);</b>
+<b class="nc">&nbsp;                }</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method is used to parse move info and send it to the server
+&nbsp;     * When the server thows an exception the client is notified
+&nbsp;     *
+&nbsp;     * @param moveInfo the info to be sent to the server
+&nbsp;     */
+&nbsp;    //take tiles row,col spaced and columnInShelf after \n
+&nbsp;    private void sendMove(String moveInfo){
+&nbsp;        //if the move is null the client is notified
+<b class="nc">&nbsp;        if(moveInfo==null)</b>
+<b class="nc">&nbsp;            this.gameGraphics.updateErrorState(&quot;Null move info&quot;);</b>
+&nbsp;        else{
+&nbsp;            //else we check the number of parts before sending the move to the server to ensure that the message is parsable
+<b class="nc">&nbsp;            String[] moveInfoParts = moveInfo.split(&quot;\n&quot;);</b>
+<b class="nc">&nbsp;            if(moveInfoParts.length!=2){</b>
+<b class="nc">&nbsp;                this.gameGraphics.updateErrorState(&quot;Move has wrong number of parts&quot;);</b>
+&nbsp;            }else{
+&nbsp;                try{
+&nbsp;                    //now we create the picked tiles list
+<b class="nc">&nbsp;                    List&lt;PickedTile&gt; tiles = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;                    String[] pickedParts = moveInfoParts[0].trim().split(&quot; &quot;);</b>
+&nbsp;
+<b class="nc">&nbsp;                    if(pickedParts.length&lt;1 || pickedParts.length&gt;3)</b>
+<b class="nc">&nbsp;                        throw new NumberFormatException();</b>
+&nbsp;
+<b class="nc">&nbsp;                    for(String picked : pickedParts){</b>
+<b class="nc">&nbsp;                        String[] tileParts = picked.split(&quot;,&quot;);</b>
+<b class="nc">&nbsp;                        if(tileParts.length!=2)</b>
+<b class="nc">&nbsp;                            throw new NumberFormatException();</b>
+&nbsp;
+<b class="nc">&nbsp;                        int x = Integer.parseInt(tileParts[0]);</b>
+<b class="nc">&nbsp;                        int y = Integer.parseInt(tileParts[1]);</b>
+<b class="nc">&nbsp;                        tiles.add(new PickedTile(x,y));</b>
+&nbsp;                    }
+&nbsp;
+<b class="nc">&nbsp;                    int sC = Integer.parseInt(moveInfoParts[1]);</b>
+&nbsp;
+<b class="nc">&nbsp;                    this.serverEndpoint.doPlayerMove(this.clientEndPoint,new PlayerMoveInfo(tiles,sC));</b>
+<b class="nc">&nbsp;                }catch(NumberFormatException e){</b>
+&nbsp;                    //if any argument is not a number we notify the user still to ensure that the message is parsable
+<b class="nc">&nbsp;                    this.gameGraphics.updateErrorState(&quot;Wrong move info format&quot;);</b>
+<b class="nc">&nbsp;                } catch (RemoteException e) {</b>
+<b class="nc">&nbsp;                    this.gameGraphics.updateErrorState(&quot;Unable to reach the server&quot;);</b>
+<b class="nc">&nbsp;                }</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method is used to leave the game
+&nbsp;     */
+&nbsp;    private void leaveGame(){
+&nbsp;        try {
+&nbsp;            //resetting the waiter
+<b class="nc">&nbsp;            this.serverWaiter.reset(true);</b>
+&nbsp;            //we leave the game and wait for the server to respond or the timeout to expire
+<b class="nc">&nbsp;            this.serverEndpoint.leaveGame(this.clientEndPoint);</b>
+&nbsp;
+<b class="nc">&nbsp;            if (!this.serverWaiter.hasBeenUnlocked()) {</b>
+&nbsp;                try {
+<b class="nc">&nbsp;                    this.serverWaiter.lock(6000);</b>
+<b class="nc">&nbsp;                } catch (InterruptedException e) {</b>
+<b class="nc">&nbsp;                    throw new RemoteException(&quot;Connection timeout error&quot;);</b>
+<b class="nc">&nbsp;                }</b>
+&nbsp;            }
+&nbsp;            //if the timeout has expired we notify the user
+<b class="nc">&nbsp;            if (this.serverWaiter.getValue())</b>
+<b class="nc">&nbsp;                this.gameGraphics.updateErrorState(&quot;Unable to leave game&quot;);</b>
+&nbsp;            else //otherwise we go back to the home screen
+<b class="nc">&nbsp;                this.actionPerformed(new ActionEvent(this.appGraphics,ROUTE_HOME,&quot;&quot;));</b>
+&nbsp;
+<b class="nc">&nbsp;        } catch (RemoteException e) {</b>
+<b class="nc">&nbsp;            this.gameGraphics.updateErrorState(&quot;Unable to reach the server&quot;);</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    /*----------------------------------------------------------*/
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     *
+&nbsp;     * @param o   the commonGoal info to be updated
+&nbsp;     * @param evt the event that has generated this update
+&nbsp;     * @throws RemoteException if the connection is lost
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
+<b class="nc">&nbsp;        this.updateService.submit(() -&gt;</b>
+<b class="nc">&nbsp;                this.gameGraphics.updateCommonGoalGraphics(o.id(), o.description(), o.tokenState())</b>
+&nbsp;        );
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     *
+&nbsp;     * @param o   the gameInfo to be updated
+&nbsp;     * @param evt the event that has generated this update
+&nbsp;     * @throws RemoteException if the connection is lost
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void update(GameInfo o, Game.Event evt) throws RemoteException {
+<b class="nc">&nbsp;        this.updateService.submit(()-&gt;</b>
+<b class="nc">&nbsp;                this.gameGraphics.updateGameInfoGraphics(o.status(),o.firstTurnPlayer(),o.playerOnTurn(),o.lastTurn(),o.points())</b>
+&nbsp;        );
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     *
+&nbsp;     * @param o   the livingRoom info to be updated
+&nbsp;     * @param evt the event that has generated this update
+&nbsp;     * @throws RemoteException if the connection is lost
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void update(LivingRoomInfo o, LivingRoom.Event evt) throws RemoteException {
+<b class="nc">&nbsp;        this.updateService.submit(() -&gt;</b>
+<b class="nc">&nbsp;                this.gameGraphics.updateBoardGraphics(o.board())</b>
+&nbsp;        );
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     *
+&nbsp;     * @param o   the personalGoal info to be updated
+&nbsp;     * @param evt the event that has generated this update
+&nbsp;     * @throws RemoteException if the connection is lost
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void update(PersonalGoalInfo o, PersonalGoal.Event evt) throws RemoteException {
+<b class="nc">&nbsp;        this.updateService.submit(() -&gt;</b>
+<b class="nc">&nbsp;                this.gameGraphics.updatePersonalGoalGraphics(o.id(),o.achieved(),o.description())</b>
+&nbsp;        );
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     *
+&nbsp;     * @param o   the playerChat info to be updated
+&nbsp;     * @param evt the event that has generated this update
+&nbsp;     * @throws RemoteException if the connection is lost
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void update(PlayerChatInfo o, PlayerChat.Event evt) throws RemoteException {
+<b class="nc">&nbsp;        this.updateService.submit(() -&gt;</b>
+<b class="nc">&nbsp;                this.gameGraphics.updatePlayerChatGraphics(o.messages())</b>
+&nbsp;        );
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     *
+&nbsp;     * @param o   the player info to be updated
+&nbsp;     * @param evt the event that has generated this update
+&nbsp;     * @throws RemoteException if the connection is lost
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void update(PlayerInfo o, Player.Event evt) throws RemoteException {
+<b class="nc">&nbsp;        this.updateService.submit(() -&gt; {</b>
+<b class="nc">&nbsp;            if (evt == null) {</b>
+&nbsp;                return;
+&nbsp;            }
+<b class="nc">&nbsp;            switch (evt) {</b>
+<b class="nc">&nbsp;                case ERROR_REPORTED -&gt; this.gameGraphics.updateErrorState(o.errorMessage());</b>
+<b class="nc">&nbsp;                case COMMON_GOAL_ACHIEVED -&gt; this.gameGraphics.updateAchievedCommonGoals(o.achievedCommonGoals());</b>
+&nbsp;            }
+&nbsp;        });
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     *
+&nbsp;     * @param o   the shelf info to be updated
+&nbsp;     * @param evt the event that has generated this update
+&nbsp;     * @throws RemoteException if the connection is lost
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void update(ShelfInfo o, Shelf.Event evt) throws RemoteException {
+<b class="nc">&nbsp;        this.updateService.submit(() -&gt;</b>
+<b class="nc">&nbsp;                this.gameGraphics.updatePlayerShelfGraphics(o.playerId(),o.shelf())</b>
+&nbsp;        );
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * message to be shown to be returned to the view
+&nbsp;     */
+<b class="nc">&nbsp;    private String userMessage = &quot;&quot;;</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     *
+&nbsp;     * @param o   the user info to be updated
+&nbsp;     * @param evt the event that has generated this update
+&nbsp;     * @throws RemoteException if the connection is lost
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void update(UserInfo o, User.Event evt) throws RemoteException {
+<b class="nc">&nbsp;        this.updateService.submit(() -&gt;{</b>
+&nbsp;            //if the session is not the current one, the update is ignored
+<b class="nc">&nbsp;            if (o.sessionID() != this.currentSessionTime)</b>
+&nbsp;                return;
+&nbsp;            //if the event is null, we unlock the server waiter and return
+<b class="nc">&nbsp;            if (evt == null) {</b>
+<b class="nc">&nbsp;                this.serverWaiter.unlock(false);</b>
+&nbsp;                return;
+&nbsp;            }
+&nbsp;
+<b class="nc">&nbsp;            switch (evt) {</b>
+<b class="nc">&nbsp;                case GAME_JOINED, GAME_CREATED, GAME_LEAVED -&gt; this.serverWaiter.unlock(false); //unlock the server waiter</b>
+&nbsp;                //otherwise we update the user message and unlock the server waiter
+&nbsp;                case ERROR_REPORTED -&gt; {
+<b class="nc">&nbsp;                    this.userMessage = o.eventMessage();</b>
+<b class="nc">&nbsp;                    this.serverWaiter.unlock(true);</b>
+&nbsp;                }
+&nbsp;            }
+&nbsp;        });
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-28 10:19</div>
+</div>
+</body>
+</html>

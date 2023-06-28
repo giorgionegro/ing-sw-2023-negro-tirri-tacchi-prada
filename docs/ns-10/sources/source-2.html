@@ -1,0 +1,234 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > CommonGoalsPanel</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">view.GUI.panels</a>
+</div>
+
+<h1>Coverage Summary for Class: CommonGoalsPanel (view.GUI.panels)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">CommonGoalsPanel</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/25)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">CommonGoalsPanel$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/6)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/31)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package view.GUI.panels;
+&nbsp;
+&nbsp;import model.Token;
+&nbsp;
+&nbsp;import view.GUI.layouts.AspectRatioLayout;
+&nbsp;import view.graphicInterfaces.CommonGoalGraphics;
+&nbsp;import javax.swing.*;
+&nbsp;import java.awt.*;
+&nbsp;import java.util.HashMap;
+&nbsp;import java.util.Map;
+&nbsp;import java.util.Objects;
+&nbsp;/**
+&nbsp; * This class extends JPanel and represents a graphical component that represents the common goals
+&nbsp; */
+&nbsp;public class CommonGoalsPanel extends JPanel implements CommonGoalGraphics {
+&nbsp;    /**
+&nbsp;     *  This map contains associations between CommonGoalId and the token state
+&nbsp;     */
+<b class="nc">&nbsp;    private final Map&lt;String, Token&gt; commonGoals = new HashMap&lt;&gt;();</b>
+&nbsp;    /**
+&nbsp;     *  This map contains associations between CommonGoalId and token that the player has achived
+&nbsp;     */
+<b class="nc">&nbsp;    private final Map&lt;String, Token&gt; achieved = new HashMap&lt;&gt;();</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Construct an {@link CommonGoalsPanel} instance that sets the layout of the panel
+&nbsp;     */
+<b class="nc">&nbsp;    public CommonGoalsPanel(){</b>
+<b class="nc">&nbsp;        this.setOpaque(false);</b>
+<b class="nc">&nbsp;        this.setLayout(new GridBagLayout());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method updates the graphics of the player achieving a common goal with the specified parameter:
+&nbsp;     * @param achieved map of achieved common goals with earned token
+&nbsp;     */
+&nbsp;    public void setAchievedCommonGoals(Map&lt;String,Token&gt; achieved){
+<b class="nc">&nbsp;        this.achieved.putAll(achieved);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     *  This method refresh the graphics of the player achieving a common goal
+&nbsp;     */
+&nbsp;    private void refreshCommonGoalState(){
+<b class="nc">&nbsp;        this.removeAll();</b>
+&nbsp;
+<b class="nc">&nbsp;        GridBagConstraints cardConstraints = new GridBagConstraints(</b>
+&nbsp;                -1,-1,
+&nbsp;                1,1,
+&nbsp;                4,1,
+&nbsp;                GridBagConstraints.NORTHWEST,
+&nbsp;                GridBagConstraints.BOTH,
+&nbsp;                new Insets(0,0,0,0),
+&nbsp;                0,0
+&nbsp;        );
+&nbsp;
+<b class="nc">&nbsp;        GridBagConstraints spacerConstraints = new GridBagConstraints(</b>
+&nbsp;                -1,-1,
+&nbsp;                1,1,
+&nbsp;                1,1,
+&nbsp;                GridBagConstraints.NORTHWEST,
+&nbsp;                GridBagConstraints.BOTH,
+&nbsp;                new Insets(0,0,0,0),
+&nbsp;                0,0
+&nbsp;        );
+&nbsp;
+<b class="nc">&nbsp;        this.add(new Container(),spacerConstraints);</b>
+&nbsp;
+<b class="nc">&nbsp;        for(String id : this.commonGoals.keySet()){</b>
+<b class="nc">&nbsp;            Image commonGoalImg = new ImageIcon(Objects.requireNonNull(this.getClass().getResource(&quot;/CommonGoals/GUI/&quot; + id + &quot;.jpg&quot;))).getImage();</b>
+<b class="nc">&nbsp;            Image tokenImg = new ImageIcon(Objects.requireNonNull(this.getClass().getResource(&quot;/Token/&quot; + this.commonGoals.get(id).name() + &quot;.png&quot;))).getImage();</b>
+<b class="nc">&nbsp;            Image achievedImg = new ImageIcon(Objects.requireNonNull(this.getClass().getResource(&quot;/CommonGoals/GUI/achieved.png&quot;))).getImage();</b>
+&nbsp;
+<b class="nc">&nbsp;            JLabel commonGoal1 = new JLabel() {</b>
+&nbsp;                protected void paintComponent(Graphics g) {
+<b class="nc">&nbsp;                    super.paintComponent(g);</b>
+<b class="nc">&nbsp;                    g.drawImage(commonGoalImg, 0, 0, this.getWidth(), this.getHeight(), null);</b>
+<b class="nc">&nbsp;                    g.drawImage(tokenImg, 0, 0, this.getWidth(), this.getHeight(), null);</b>
+<b class="nc">&nbsp;                    if(CommonGoalsPanel.this.achieved.containsKey(id)){</b>
+<b class="nc">&nbsp;                        g.drawImage(achievedImg, 0, 0, this.getWidth(), this.getHeight(), null);</b>
+&nbsp;                    }
+&nbsp;                }
+&nbsp;            };
+&nbsp;
+<b class="nc">&nbsp;            Container c = new Container();</b>
+<b class="nc">&nbsp;            c.setLayout(new AspectRatioLayout((float)1385/913));</b>
+<b class="nc">&nbsp;            c.add(commonGoal1);</b>
+<b class="nc">&nbsp;            this.add(c,cardConstraints);</b>
+<b class="nc">&nbsp;            this.add(new Container(),spacerConstraints);</b>
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        this.revalidate();</b>
+<b class="nc">&nbsp;        this.repaint();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**This method updates the graphics of the common goal with the specified parameters:
+&nbsp;     * @param id the unique id of the common goal
+&nbsp;     * @param description the description of common goal specs
+&nbsp;     * @param tokenState  the current token value of the common goal
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void updateCommonGoalGraphics(String id, String description, Token tokenState) {
+<b class="nc">&nbsp;        this.commonGoals.put(id,tokenState);</b>
+<b class="nc">&nbsp;        this.refreshCommonGoalState();</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-28 10:19</div>
+</div>
+</body>
+</html>

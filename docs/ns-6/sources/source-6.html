@@ -1,0 +1,217 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > StandardPersonalGoal</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">model</a>
+</div>
+
+<h1>Coverage Summary for Class: StandardPersonalGoal (model)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">StandardPersonalGoal</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (6/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (18/18)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package model;
+&nbsp;
+&nbsp;import model.abstractModel.PersonalGoal;
+&nbsp;import modelView.PersonalGoalInfo;
+&nbsp;
+&nbsp;import java.util.Arrays;
+&nbsp;
+&nbsp;/**
+&nbsp; * This class is an implementation of {@link PersonalGoal}.
+&nbsp; * &lt;p&gt;
+&nbsp; * In order to achieve this personal goal there must be a particular {@link #tile} in a particular position in the shelf, defined as {@link #row} and {@link #column}
+&nbsp; */
+&nbsp;public class StandardPersonalGoal extends PersonalGoal {
+&nbsp;    /**
+&nbsp;     * Tile type target of the goal
+&nbsp;     */
+&nbsp;    private final Tile tile;
+&nbsp;    /**
+&nbsp;     * Shelf&#39;s row target of the goal
+&nbsp;     */
+&nbsp;    private final int row;
+&nbsp;    /**
+&nbsp;     * Shelf&#39;s column target of the goal
+&nbsp;     */
+&nbsp;    private final int column;
+&nbsp;    /**
+&nbsp;     * ID of the goal
+&nbsp;     */
+&nbsp;    private final int id;
+&nbsp;    /**
+&nbsp;     * Signal of achieved goal
+&nbsp;     */
+&nbsp;    private boolean achieved;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Constructor of StandardPersonalGoal not achieved and parameterized with given tile, row and column
+&nbsp;     *
+&nbsp;     * @param id     id of the goal
+&nbsp;     * @param tile   tile type target of the goal
+&nbsp;     * @param row    row target of the goal
+&nbsp;     * @param column column target of the goal
+&nbsp;     */
+&nbsp;    public StandardPersonalGoal(int id, model.Tile tile, int row, int column) {
+<b class="fc">&nbsp;        super();</b>
+<b class="fc">&nbsp;        this.id = id;</b>
+<b class="fc">&nbsp;        this.tile = tile;</b>
+<b class="fc">&nbsp;        this.row = row;</b>
+<b class="fc">&nbsp;        this.column = column;</b>
+<b class="fc">&nbsp;        this.achieved = false;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     *
+&nbsp;     * @return a Matrix with the description of the personal Goal
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public Tile[][] getDescription() {
+&nbsp;        //shelf dimension 6x5
+<b class="fc">&nbsp;        Tile[][] ShelfPersonalGoal = new Tile[6][5];</b>
+&nbsp;        //fill the shelf with empty tiles
+<b class="fc">&nbsp;        Arrays.stream(ShelfPersonalGoal).forEach(row -&gt; Arrays.fill(row, Tile.EMPTY));</b>
+<b class="fc">&nbsp;        ShelfPersonalGoal[this.row][this.column] = this.tile;</b>
+<b class="fc">&nbsp;        return ShelfPersonalGoal;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     *
+&nbsp;     * @return {@link #achieved}
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public boolean isAchieved() {
+<b class="fc">&nbsp;        return this.achieved;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void setAchieved() {
+<b class="fc">&nbsp;        this.achieved = true;</b>
+&nbsp;        //notify the observers, so that the view can receive the update
+<b class="fc">&nbsp;        this.setChanged();</b>
+<b class="fc">&nbsp;        this.notifyObservers(Event.GOAL_ACHIEVED);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     * &lt;p&gt;
+&nbsp;     * The implementation tests if there is a {@link Tile} equivalent to {@link #tile} in given shelf representation at
+&nbsp;     * the position defined by {@link #row} and {@link #column}
+&nbsp;     *
+&nbsp;     * @param playerShelf matrix of Tiles representing player shelf
+&nbsp;     * @return true if the player achieved the goal, false otherwise.
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public boolean evaluate(model.Tile[][] playerShelf) {
+<b class="fc">&nbsp;        if (playerShelf.length &lt; this.row &amp;&amp; playerShelf[0].length &lt; this.column) {</b>
+<b class="fc">&nbsp;            throw new IndexOutOfBoundsException(&quot;Shelf not big enough, cannot achieved the goal&quot;);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        return (this.tile.getColor()).equals(playerShelf[this.row][this.column].getColor());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     *
+&nbsp;     * @return A {@link PersonalGoalInfo} representing this object instance
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public PersonalGoalInfo getInfo() {
+<b class="fc">&nbsp;        return new PersonalGoalInfo(this.id, this.achieved, this.getDescription());</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-28 10:19</div>
+</div>
+</body>
+</html>

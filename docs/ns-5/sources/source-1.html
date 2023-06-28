@@ -1,0 +1,322 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > ClientSocketHandler</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">distibuted.socket.middleware</a>
+</div>
+
+<h1>Coverage Summary for Class: ClientSocketHandler (distibuted.socket.middleware)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ClientSocketHandler</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/16)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/63)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package distibuted.socket.middleware;
+&nbsp;
+&nbsp;import controller.interfaces.GameController;
+&nbsp;import distibuted.interfaces.AppServer;
+&nbsp;import distibuted.interfaces.ClientInterface;
+&nbsp;import distibuted.interfaces.ServerInterface;
+&nbsp;import model.abstractModel.Message;
+&nbsp;import modelView.LoginInfo;
+&nbsp;import modelView.NewGameInfo;
+&nbsp;import modelView.PlayerMoveInfo;
+&nbsp;
+&nbsp;import java.io.IOException;
+&nbsp;import java.rmi.RemoteException;
+&nbsp;
+&nbsp;/**
+&nbsp; * This class manages a socket connection on client side
+&nbsp; */
+&nbsp;public class ClientSocketHandler extends SocketHandler&lt;ClientInterface&gt; implements ServerInterface, AppServer {
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Thread responsible for reading the input stream
+&nbsp;     */
+&nbsp;    private Thread receiverLoop;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Class constructor, initialize a {@link SocketHandler} with the given ip and port
+&nbsp;     * @param ip Ip address of the socket
+&nbsp;     * @param port Port of the socket
+&nbsp;     */
+&nbsp;    public ClientSocketHandler(String ip, int port) {
+<b class="nc">&nbsp;        super(ip, port);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    ////APP SERVER//////////////////
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     * @param client The client that asked to be connected
+&nbsp;     * @return this object as a {@link ServerInterface}
+&nbsp;     * @throws RemoteException if socket connection fails to open
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public synchronized ServerInterface connect(ClientInterface client) throws RemoteException {
+&nbsp;        /* Calls SocketHandler to open the socket connection */
+<b class="nc">&nbsp;        super.open();</b>
+&nbsp;        
+&nbsp;        /* Create and runs input-stream-handler thread */
+<b class="nc">&nbsp;        this.receiverLoop = new Thread(() -&gt; {</b>
+&nbsp;            try {
+&nbsp;                while (true) {
+<b class="nc">&nbsp;                    this.waitForReceive(client);</b>
+&nbsp;                }
+<b class="nc">&nbsp;            } catch (RemoteException e) {</b>
+<b class="nc">&nbsp;                System.err.println(&quot;Cannot receive from server: &quot; + e.getMessage() + &quot;.\n-&gt; Closing this connection...&quot;);</b>
+&nbsp;            }
+&nbsp;        });
+<b class="nc">&nbsp;        this.receiverLoop.start();</b>
+&nbsp;
+&nbsp;        /* Returns this object as a serverInterface*/
+<b class="nc">&nbsp;        return this;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     * @param client The client that asked to be disconnected
+&nbsp;     * @throws RemoteException if socket connection fails to close
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public synchronized void disconnect(ClientInterface client) throws RemoteException {
+&nbsp;        try {
+&nbsp;            /* If a receiverLoop is running then stop it */
+<b class="nc">&nbsp;            if(this.receiverLoop !=null)</b>
+<b class="nc">&nbsp;                this.receiverLoop.interrupt();</b>
+&nbsp;            
+&nbsp;            /* Calls socketHandler to close socket connection */
+<b class="nc">&nbsp;            super.close();</b>
+<b class="nc">&nbsp;        } catch (IOException e) {</b>
+<b class="nc">&nbsp;            throw new RemoteException(&quot;Cannot close socket&quot;, e);</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    ///SERVER INTERFACE///////////////
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     * &lt;p&gt;
+&nbsp;     * Generates and send {@link SocketObject} that calls {@link GameController#doPlayerMove(ClientInterface, PlayerMoveInfo)} on receiver
+&nbsp;     * @param client The reference of the client who is doing the move
+&nbsp;     * @param info   The move info
+&nbsp;     * @throws RemoteException if fails to send the {@link SocketObject}
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void doPlayerMove(ClientInterface client, PlayerMoveInfo info) throws RemoteException {
+&nbsp;        try {
+<b class="nc">&nbsp;            this.send((SocketObject) (sender, receiver) -&gt; {</b>
+&nbsp;                try {
+<b class="nc">&nbsp;                    ((GameController) receiver).doPlayerMove((ClientInterface) sender, info);</b>
+<b class="nc">&nbsp;                } catch (ClassCastException e) {</b>
+<b class="nc">&nbsp;                    throw new RemoteException(&quot;Socket object not usable&quot;);</b>
+<b class="nc">&nbsp;                }</b>
+&nbsp;            });
+<b class="nc">&nbsp;        } catch (IOException e) {</b>
+<b class="nc">&nbsp;            throw new RemoteException(&quot;Unable to send the socket object&quot;);</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     * &lt;p&gt;
+&nbsp;     * Generates and send {@link SocketObject} that calls {@link GameController#sendMessage(ClientInterface, Message)} on receiver
+&nbsp;     * @param client     The reference of the client who is sending the message
+&nbsp;     * @param newMessage The message info
+&nbsp;     * @throws RemoteException if fails to send the {@link SocketObject}
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void sendMessage(ClientInterface client, Message newMessage) throws RemoteException {
+&nbsp;        try {
+<b class="nc">&nbsp;            this.send((SocketObject) (sender, receiver) -&gt; {</b>
+&nbsp;                try {
+<b class="nc">&nbsp;                    ((GameController) receiver).sendMessage((ClientInterface) sender, newMessage);</b>
+<b class="nc">&nbsp;                } catch (ClassCastException e) {</b>
+<b class="nc">&nbsp;                    throw new RemoteException(&quot;Socket object not usable&quot;);</b>
+<b class="nc">&nbsp;                }</b>
+&nbsp;            });
+<b class="nc">&nbsp;        } catch (IOException e) {</b>
+<b class="nc">&nbsp;            throw new RemoteException(&quot;Unable to send the socket object&quot;);</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     * &lt;p&gt;
+&nbsp;     * Generates and send {@link SocketObject} that calls {@link ServerInterface#joinGame(ClientInterface, LoginInfo)} on receiver
+&nbsp;     * @param client The client asking to join
+&nbsp;     * @param info   The join-info
+&nbsp;     * @throws RemoteException if fails to send the {@link SocketObject}
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void joinGame(ClientInterface client, LoginInfo info) throws RemoteException {
+&nbsp;        try {
+<b class="nc">&nbsp;            this.send((SocketObject) (sender, receiver) -&gt; {</b>
+&nbsp;                try {
+<b class="nc">&nbsp;                    ((ServerInterface) receiver).joinGame((ClientInterface) sender, info);</b>
+<b class="nc">&nbsp;                } catch (ClassCastException e) {</b>
+<b class="nc">&nbsp;                    throw new RemoteException(&quot;Socket object not usable&quot;);</b>
+<b class="nc">&nbsp;                }</b>
+&nbsp;            });
+<b class="nc">&nbsp;        } catch (IOException e) {</b>
+<b class="nc">&nbsp;            throw new RemoteException(&quot;Unable to send the socket object&quot;);</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     * &lt;p&gt;
+&nbsp;     * Generates and send {@link SocketObject} that calls {@link ServerInterface#leaveGame(ClientInterface)} on receiver
+&nbsp;     * @param client The client asking to leave
+&nbsp;     * @throws RemoteException if fails to send a {@link SocketObject}
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void leaveGame(ClientInterface client) throws RemoteException {
+&nbsp;        try {
+<b class="nc">&nbsp;            this.send((SocketObject) (sender, receiver) -&gt; {</b>
+&nbsp;                try {
+<b class="nc">&nbsp;                    ((ServerInterface) receiver).leaveGame((ClientInterface) sender);</b>
+<b class="nc">&nbsp;                } catch (ClassCastException e) {</b>
+<b class="nc">&nbsp;                    throw new RemoteException(&quot;Socket object not usable&quot;);</b>
+<b class="nc">&nbsp;                }</b>
+&nbsp;            });
+<b class="nc">&nbsp;        } catch (IOException e) {</b>
+<b class="nc">&nbsp;            throw new RemoteException(&quot;Unable to send the socket object&quot;);</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     * &lt;p&gt;
+&nbsp;     * Generates and send {@link SocketObject} that calls {@link ServerInterface#createGame(ClientInterface, NewGameInfo)} on receiver
+&nbsp;     * @param client The client asking to create the game
+&nbsp;     * @param info   The new-game info
+&nbsp;     * @throws RemoteException if fails to send a {@link SocketObject}
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void createGame(ClientInterface client, NewGameInfo info) throws RemoteException{
+&nbsp;        try {
+<b class="nc">&nbsp;            this.send((SocketObject) (sender, receiver) -&gt; {</b>
+&nbsp;                try {
+<b class="nc">&nbsp;                    ((ServerInterface) receiver).createGame((ClientInterface) sender, info);</b>
+<b class="nc">&nbsp;                } catch (ClassCastException e) {</b>
+<b class="nc">&nbsp;                    throw new RemoteException(&quot;Socket object not usable&quot;);</b>
+<b class="nc">&nbsp;                }</b>
+&nbsp;            });
+<b class="nc">&nbsp;        } catch (IOException e) {</b>
+<b class="nc">&nbsp;            throw new RemoteException(&quot;Unable to send the socket object&quot;);</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     * &lt;p&gt;
+&nbsp;     * Generates and send {@link SocketObject} that calls {@link ServerInterface#ping()} on receiver
+&nbsp;     * @throws RemoteException if fails to send a {@link SocketObject}
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void ping() throws RemoteException {
+&nbsp;        try {
+<b class="nc">&nbsp;            this.send((SocketObject) (sender, receiver) -&gt; {</b>
+&nbsp;                try {
+<b class="nc">&nbsp;                    ((ServerInterface) receiver).ping();</b>
+<b class="nc">&nbsp;                } catch (ClassCastException e) {</b>
+<b class="nc">&nbsp;                    throw new RemoteException(&quot;Socket object not usable&quot;);</b>
+<b class="nc">&nbsp;                }</b>
+&nbsp;            });
+<b class="nc">&nbsp;        } catch (IOException e) {</b>
+<b class="nc">&nbsp;            super.close();</b>
+<b class="nc">&nbsp;            throw new RemoteException(&quot;Unable to send the socket object&quot;);</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-28 10:19</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,410 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > StandardLivingRoom</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">model</a>
+</div>
+
+<h1>Coverage Summary for Class: StandardLivingRoom (model)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">StandardLivingRoom</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (17/17)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (100/100)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package model;
+&nbsp;
+&nbsp;import model.abstractModel.LivingRoom;
+&nbsp;import modelView.LivingRoomInfo;
+&nbsp;
+&nbsp;import java.util.Arrays;
+&nbsp;import java.util.Collections;
+&nbsp;import java.util.Stack;
+&nbsp;
+&nbsp;/**
+&nbsp; * This class is an implementation of {@link LivingRoom}
+&nbsp; */
+&nbsp;@SuppressWarnings(&quot;UseOfObsoleteCollectionType&quot;)
+&nbsp;public class StandardLivingRoom extends LivingRoom {
+&nbsp;    /**
+&nbsp;     * Bag of Tiles used to fill the board
+&nbsp;     */
+&nbsp;    private final Stack&lt;Tile&gt; bag;
+&nbsp;    /**
+&nbsp;     * Number of players of the game that uses this Living Room
+&nbsp;     */
+&nbsp;    private final int numberOfPlayers;
+&nbsp;    /**
+&nbsp;     * Game board of this living room
+&nbsp;     */
+&nbsp;    private Tile[][] board;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Class constructor, initializes the attribute numberOfPlayer, initializes the bag and loads it with {@link #loadBag()}, initializes the board with an empty board
+&nbsp;     *
+&nbsp;     * @param nPlayers the number of players for this game
+&nbsp;     * @throws IllegalArgumentException if the number of player is below 2 or over 4
+&nbsp;     */
+&nbsp;    public StandardLivingRoom(int nPlayers) throws IllegalArgumentException {
+<b class="fc">&nbsp;        super();</b>
+<b class="fc">&nbsp;        if (nPlayers &lt; 2 || nPlayers &gt; 4) {</b>
+<b class="fc">&nbsp;            throw new IllegalArgumentException(&quot;Number of players must be between 2 and 4.&quot;);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        this.numberOfPlayers = nPlayers;</b>
+<b class="fc">&nbsp;        this.bag = this.loadBag();</b>
+<b class="fc">&nbsp;        this.board = new Tile[9][9];</b>
+<b class="fc">&nbsp;        Arrays.stream(this.board).forEach(tiles -&gt; Arrays.fill(tiles, Tile.EMPTY));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * this method returns a copy of the game board
+&nbsp;     *
+&nbsp;     * @return a 2D array of Tiles representing the game board
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public Tile[][] getBoard() {
+<b class="fc">&nbsp;        return Arrays.stream(this.board).map(Tile[]::clone).toArray(Tile[][]::new);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * sets board attribute with a modified board
+&nbsp;     *
+&nbsp;     * @param modifiedBoard a 2D array of Tiles
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void setBoard(Tile[][] modifiedBoard) {
+<b class="fc">&nbsp;        this.board = Arrays.stream(modifiedBoard).map(Tile[]::clone).toArray(Tile[][]::new);</b>
+<b class="fc">&nbsp;        this.setChanged();</b>
+<b class="fc">&nbsp;        this.notifyObservers(Event.BOARD_MODIFIED);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * refillBoard() is called before every turn
+&nbsp;     * if {@link #needsToBeRefilled()} is true this method acquires a copy of the game board, uses the method {@link #refillAlgorithm(Tile[][])} to refill it and sets the board with this filled copy
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void refillBoard() {
+<b class="fc">&nbsp;        if (this.needsToBeRefilled()) {</b>
+<b class="fc">&nbsp;            Tile[][] newBoard = this.getBoard();</b>
+<b class="fc">&nbsp;            this.refillAlgorithm(newBoard);</b>
+<b class="fc">&nbsp;            this.setBoard(newBoard);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     *
+&nbsp;     * @return An {@link LivingRoomInfo} representing this object instance
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public LivingRoomInfo getInfo() {
+<b class="fc">&nbsp;        return new LivingRoomInfo(this.getBoard());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * this method returns the game bag
+&nbsp;     *
+&nbsp;     * @return {@link #bag}
+&nbsp;     */
+&nbsp;    public Stack&lt;Tile&gt; getBag() {
+<b class="fc">&nbsp;        return this.bag;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * load the game bag using {@link #initializeBag(Stack)}
+&nbsp;     *
+&nbsp;     * @return full stack of Tiles representing the game bag
+&nbsp;     */
+&nbsp;    private Stack&lt;Tile&gt; loadBag() {
+<b class="fc">&nbsp;        Stack&lt;Tile&gt; bag = new Stack&lt;&gt;();</b>
+<b class="fc">&nbsp;        this.initializeBag(bag);</b>
+<b class="fc">&nbsp;        return bag;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * this returns true if the board is empty and if the board is made only of &quot;islands&quot; of tiles (on which case the player can only pick one Tile at a time), false otherwise
+&nbsp;     *
+&nbsp;     * @return true or false whether the board needs to be refilled or not
+&nbsp;     */
+&nbsp;    private boolean needsToBeRefilled() {
+<b class="fc">&nbsp;        for (int i = 0; i &lt; this.board.length - 1; i++) {</b>
+<b class="fc">&nbsp;            for (int j = 0; j &lt; this.board[i].length - 1; j++) {</b>
+<b class="fc">&nbsp;                if (this.board[i][j] != Tile.EMPTY) {</b>
+<b class="fc">&nbsp;                    if (this.board[i + 1][j] != Tile.EMPTY || this.board[i][j + 1] != Tile.EMPTY) {</b>
+<b class="fc">&nbsp;                        return false;</b>
+&nbsp;                    }
+&nbsp;                }
+&nbsp;            }
+&nbsp;        }
+<b class="fc">&nbsp;        return true;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * this method is responsible for calling the methods needed to fill the board, namely
+&nbsp;     * {@link #fillCenterSquare(Tile[][])} that fills the center part of the board, always called
+&nbsp;     * {@link #fillSideSquares(Tile[][], int, int)} (Tile[][])} that fills the squares around the center, always called
+&nbsp;     * {@link #fillMissingCells(Tile[][])} (Tile[][])} that fills the missing cells needed for the 2 player board, always called
+&nbsp;     * {@link #fillMissingCells3Players(Tile[][])} (Tile[][])} (Tile[][])} that fills the missing cells needed for the 3 player board, called if 3 players are in the game
+&nbsp;     * {@link #fillMissingCells4Players(Tile[][])} (Tile[][])} (Tile[][])} that fills the missing cells needed for the 4 player board, called if 4 players are in the game
+&nbsp;     *
+&nbsp;     * @param board a 2D array of Tiles representing the game board
+&nbsp;     */
+&nbsp;    private void refillAlgorithm(Tile[][] board) {
+<b class="fc">&nbsp;        this.fillCenterSquare(board);</b>
+<b class="fc">&nbsp;        this.fillSideSquares(board, 1, 3);</b>
+<b class="fc">&nbsp;        this.fillSideSquares(board, 3, 6);</b>
+<b class="fc">&nbsp;        this.fillSideSquares(board, 6, 4);</b>
+<b class="fc">&nbsp;        this.fillSideSquares(board, 4, 1);</b>
+<b class="fc">&nbsp;        this.fillMissingCells(board);</b>
+<b class="fc">&nbsp;        if (this.numberOfPlayers == 3) {</b>
+<b class="fc">&nbsp;            this.fillMissingCells3Players(board);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        if (this.numberOfPlayers == 4) {</b>
+<b class="fc">&nbsp;            this.fillMissingCells4Players(board);</b>
+&nbsp;        }
+&nbsp;
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * this method fills the center part of the board (3x3 square) with tile form the bag
+&nbsp;     * if a cell is empty it is filled with a Tile removed from the bag, otherwise it is unchanged
+&nbsp;     * if the bag is empty it stops refilling
+&nbsp;     *
+&nbsp;     * @param board a 2D array of Tiles representing the game board
+&nbsp;     */
+&nbsp;    private void fillCenterSquare(Tile[][] board) {
+<b class="fc">&nbsp;        for (int i = 3; i &lt; 6; i++) {</b>
+<b class="fc">&nbsp;            for (int j = 3; j &lt; 6; j++) {</b>
+<b class="fc">&nbsp;                if (board[i][j] == Tile.EMPTY &amp;&amp; this.bag.size() != 0) {</b>
+<b class="fc">&nbsp;                    board[i][j] = this.bag.pop();</b>
+<b class="fc">&nbsp;                    if (this.bag.size() == 0)</b>
+<b class="fc">&nbsp;                        break;</b>
+<b class="fc">&nbsp;                } else if (this.bag.isEmpty())</b>
+<b class="fc">&nbsp;                    break;</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * this method fills a 2x2 square of the board starting from row &quot;row&quot; and column &quot;col&quot; with tiles from the bag
+&nbsp;     * if a cell is empty it is filled with a Tile removed from the bag, otherwise it is unchanged
+&nbsp;     * if the bag is empty it stops refilling
+&nbsp;     *
+&nbsp;     * @param board a 2D array of Tiles representing the game board
+&nbsp;     * @param row   starting row of square that needs to be filled
+&nbsp;     * @param col   starting column of square that need to be refilled
+&nbsp;     */
+&nbsp;    private void fillSideSquares(Tile[][] board, int row, int col) {
+<b class="fc">&nbsp;        for (int i = row; i &lt; row + 2; i++) {</b>
+<b class="fc">&nbsp;            for (int j = col; j &lt; col + 2; j++) {</b>
+<b class="fc">&nbsp;                if (board[i][j] == Tile.EMPTY &amp;&amp; this.bag.size() != 0) {</b>
+<b class="fc">&nbsp;                    board[i][j] = this.bag.pop();</b>
+<b class="fc">&nbsp;                    if (this.bag.size() == 0)</b>
+<b class="fc">&nbsp;                        break;</b>
+<b class="fc">&nbsp;                } else if (this.bag.isEmpty())</b>
+<b class="fc">&nbsp;                    break;</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * this method fills the missing cells of the 2 player board
+&nbsp;     * every two cells of the pair array represents the row and column of the cells that need to be filled
+&nbsp;     *
+&nbsp;     * @param board a 2D array of Tiles representing the game board
+&nbsp;     *              if a cell is empty it is filled with a Tile removed from the bag, otherwise it is unchanged
+&nbsp;     */
+&nbsp;    private void fillMissingCells(Tile[][] board) {
+<b class="fc">&nbsp;        int[] pairs = new int[]{2, 5, 3, 2, 5, 6, 6, 3};</b>
+<b class="fc">&nbsp;        for (int i = 0; i &lt; pairs.length; i = i + 2) {</b>
+<b class="fc">&nbsp;            if (board[pairs[i]][pairs[i + 1]] == Tile.EMPTY &amp;&amp; this.bag.size() != 0) {</b>
+<b class="fc">&nbsp;                board[pairs[i]][pairs[i + 1]] = this.bag.pop();</b>
+<b class="fc">&nbsp;                if (this.bag.size() == 0)</b>
+<b class="fc">&nbsp;                    break;</b>
+<b class="fc">&nbsp;            } else if (this.bag.isEmpty())</b>
+<b class="fc">&nbsp;                break;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * this method fills the missing cells of the 3 player board
+&nbsp;     * every two cells of the pair array represents the row and column of the cells that need to be filled
+&nbsp;     *
+&nbsp;     * @param board a 2D array of Tiles representing the game board
+&nbsp;     *              if a cell is empty it is filled with a Tile removed from the bag, otherwise it is unchanged
+&nbsp;     */
+&nbsp;    private void fillMissingCells3Players(Tile[][] board) {
+<b class="fc">&nbsp;        int[] pairs = new int[]{0, 3, 2, 2, 2, 6, 3, 8, 6, 6, 8, 5, 6, 2, 5, 0};</b>
+<b class="fc">&nbsp;        for (int i = 0; i &lt; pairs.length; i = i + 2) {</b>
+<b class="fc">&nbsp;            if (board[pairs[i]][pairs[i + 1]] == Tile.EMPTY &amp;&amp; this.bag.size() != 0) {</b>
+<b class="fc">&nbsp;                board[pairs[i]][pairs[i + 1]] = this.bag.pop();</b>
+<b class="fc">&nbsp;                if (this.bag.size() == 0)</b>
+<b class="fc">&nbsp;                    break;</b>
+<b class="fc">&nbsp;            } else if (this.bag.isEmpty())</b>
+<b class="fc">&nbsp;                break;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * this method fills the missing cells of the 4 player board
+&nbsp;     * every two cells of the pair array represents the row and column of the cells that need to be filled
+&nbsp;     *
+&nbsp;     * @param board a 2D array of Tiles representing the game board
+&nbsp;     *              if a cell is empty it is filled with a Tile removed from the bag, otherwise it is unchanged
+&nbsp;     */
+&nbsp;    private void fillMissingCells4Players(Tile[][] board) {
+<b class="fc">&nbsp;        this.fillMissingCells3Players(board);</b>
+<b class="fc">&nbsp;        int[] pairs = new int[]{0, 4, 1, 5, 4, 8, 5, 7, 8, 4, 7, 3, 4, 0, 3, 1};</b>
+<b class="fc">&nbsp;        for (int i = 0; i &lt; pairs.length; i = i + 2) {</b>
+<b class="fc">&nbsp;            if (board[pairs[i]][pairs[i + 1]] == Tile.EMPTY &amp;&amp; this.bag.size() != 0) {</b>
+<b class="fc">&nbsp;                board[pairs[i]][pairs[i + 1]] = this.bag.pop();</b>
+<b class="fc">&nbsp;                if (this.bag.size() == 0)</b>
+<b class="fc">&nbsp;                    break;</b>
+<b class="fc">&nbsp;            } else if (this.bag.isEmpty())</b>
+<b class="fc">&nbsp;                break;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * this method loads the bag with 132 tiles using methods
+&nbsp;     * {@link #fillBag7(Stack)}
+&nbsp;     * and
+&nbsp;     * {@link #fillBag8(Stack)}
+&nbsp;     * and then shuffles the Tiles so that they&#39;re in random order
+&nbsp;     *
+&nbsp;     * @param initialBag the stack of Tiles representing the bag
+&nbsp;     */
+&nbsp;    private void initializeBag(Stack&lt;Tile&gt; initialBag) {
+<b class="fc">&nbsp;        this.fillBag7(initialBag);</b>
+<b class="fc">&nbsp;        this.fillBag8(initialBag);</b>
+<b class="fc">&nbsp;        Collections.shuffle(initialBag);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * fills the bag with 8 of one type of one color Tile foreach color of Tile
+&nbsp;     *
+&nbsp;     * @param bag stack of Tiles representing the game bag
+&nbsp;     */
+&nbsp;    private void fillBag8(Stack&lt;? super Tile&gt; bag) {
+<b class="fc">&nbsp;        for (int i = 0; i &lt; 8; i++) {</b>
+<b class="fc">&nbsp;            bag.push(Tile.BOOKS_1);</b>
+<b class="fc">&nbsp;            bag.push(Tile.CATS_1);</b>
+<b class="fc">&nbsp;            bag.push(Tile.FRAMES_1);</b>
+<b class="fc">&nbsp;            bag.push(Tile.GAMES_1);</b>
+<b class="fc">&nbsp;            bag.push(Tile.PLANTS_1);</b>
+<b class="fc">&nbsp;            bag.push(Tile.TROPHIES_1);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * fills the bag with 7 of two types of one color Tile foreach color of Tile
+&nbsp;     *
+&nbsp;     * @param bag stack of Tiles representing the game bag
+&nbsp;     */
+&nbsp;    private void fillBag7(Stack&lt;? super Tile&gt; bag) {
+<b class="fc">&nbsp;        for (int i = 0; i &lt; 7; i++) {</b>
+<b class="fc">&nbsp;            bag.push(Tile.BOOKS_2);</b>
+<b class="fc">&nbsp;            bag.push(Tile.BOOKS_3);</b>
+<b class="fc">&nbsp;            bag.push(Tile.CATS_2);</b>
+<b class="fc">&nbsp;            bag.push(Tile.CATS_3);</b>
+<b class="fc">&nbsp;            bag.push(Tile.FRAMES_2);</b>
+<b class="fc">&nbsp;            bag.push(Tile.FRAMES_3);</b>
+<b class="fc">&nbsp;            bag.push(Tile.GAMES_2);</b>
+<b class="fc">&nbsp;            bag.push(Tile.GAMES_3);</b>
+<b class="fc">&nbsp;            bag.push(Tile.PLANTS_2);</b>
+<b class="fc">&nbsp;            bag.push(Tile.PLANTS_3);</b>
+<b class="fc">&nbsp;            bag.push(Tile.TROPHIES_2);</b>
+<b class="fc">&nbsp;            bag.push(Tile.TROPHIES_3);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-28 10:19</div>
+</div>
+</body>
+</html>

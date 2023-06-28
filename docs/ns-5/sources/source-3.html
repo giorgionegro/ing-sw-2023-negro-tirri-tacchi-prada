@@ -1,0 +1,235 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > SocketHandler</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">distibuted.socket.middleware</a>
+</div>
+
+<h1>Coverage Summary for Class: SocketHandler (distibuted.socket.middleware)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">SocketHandler</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/33)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package distibuted.socket.middleware;
+&nbsp;
+&nbsp;import java.io.IOException;
+&nbsp;import java.io.ObjectInputStream;
+&nbsp;import java.io.ObjectOutputStream;
+&nbsp;import java.net.InetSocketAddress;
+&nbsp;import java.net.Socket;
+&nbsp;import java.rmi.RemoteException;
+&nbsp;
+&nbsp;/**
+&nbsp; * This class is used to manage socket connections
+&nbsp; * &lt;p&gt;
+&nbsp; * This class only send and receives SocketObjects,
+&nbsp; * when it receives a {@link SocketObject} it tries to act as the sender of the interaction
+&nbsp; * @param &lt;ReceiverType&gt; type of the interaction-receiver object
+&nbsp; */
+&nbsp;public abstract class SocketHandler&lt;ReceiverType&gt; {
+&nbsp;    /**
+&nbsp;     * The socket output stream
+&nbsp;     */
+&nbsp;    private ObjectOutputStream oos;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * The socket input stream
+&nbsp;     */
+&nbsp;    private ObjectInputStream ois;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Ip address of the socket
+&nbsp;     */
+<b class="nc">&nbsp;    private String ip = null;</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Port of the socket
+&nbsp;     */
+<b class="nc">&nbsp;    private int port = 0;</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * The socket this class manages
+&nbsp;     */
+<b class="nc">&nbsp;    private Socket socket = null;</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Class constructor of socket
+&nbsp;     * @param ip the ip address to be assigned to the socket
+&nbsp;     * @param port the port to be assigned to the socket
+&nbsp;     */
+&nbsp;    public SocketHandler(String ip, int port) {
+<b class="nc">&nbsp;        super();</b>
+<b class="nc">&nbsp;        this.ip = ip;</b>
+<b class="nc">&nbsp;        this.port = port;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Class constructor of socket
+&nbsp;     * @param socket an already existing socket
+&nbsp;     */
+&nbsp;    public SocketHandler(Socket socket) {
+<b class="nc">&nbsp;        super();</b>
+<b class="nc">&nbsp;        this.socket = socket;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method opens a socket connection
+&nbsp;     * @throws RemoteException if the connection fails to open
+&nbsp;     */
+&nbsp;    public void open() throws RemoteException {
+&nbsp;        try {
+&nbsp;            /* If there is no currently managed socket then creates a new one */
+<b class="nc">&nbsp;            if (this.socket == null) {</b>
+<b class="nc">&nbsp;                this.socket = new Socket(this.ip, this.port);</b>
+&nbsp;            }
+&nbsp;
+&nbsp;            /* If managed socket is not connected then open a new connection */
+<b class="nc">&nbsp;            if (!this.socket.isConnected()) {</b>
+<b class="nc">&nbsp;                this.socket.connect(new InetSocketAddress(this.ip, this.port), 1000);</b>
+&nbsp;            }
+&nbsp;
+&nbsp;            /* Creates a new input and output stream on connected socket */
+<b class="nc">&nbsp;            this.oos = new ObjectOutputStream(this.socket.getOutputStream());</b>
+<b class="nc">&nbsp;            this.ois = new ObjectInputStream(this.socket.getInputStream());</b>
+<b class="nc">&nbsp;        } catch (IOException e) {</b>
+<b class="nc">&nbsp;            throw new RemoteException(&quot;Unable to open the socket connection&quot;);</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method closes a socket connection
+&nbsp;     * @throws RemoteException if the connection fails to close
+&nbsp;     */
+&nbsp;    public void close() throws RemoteException {
+&nbsp;        try {
+<b class="nc">&nbsp;            if (this.socket != null) {</b>
+<b class="nc">&nbsp;                this.socket.close();</b>
+&nbsp;            } else {
+<b class="nc">&nbsp;                throw new IOException(&quot;Socket is non been initialized&quot;);</b>
+&nbsp;            }
+<b class="nc">&nbsp;        } catch (IOException e) {</b>
+<b class="nc">&nbsp;            throw new RemoteException(&quot;Unable to close the socket connection&quot;);</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method waits for a SocketObject sent on the input stream and call interaction on it, acting as the sender
+&nbsp;     * @param receiver the {@link SocketObject} receiver object
+&nbsp;     * @throws RemoteException when an input/output exception occurs
+&nbsp;     */
+&nbsp;    protected void waitForReceive(ReceiverType receiver) throws RemoteException {
+&nbsp;        try {
+&nbsp;            /* Wait to receive a SocketObject on input stream */
+<b class="nc">&nbsp;            SocketObject so = (SocketObject) this.ois.readObject();</b>
+&nbsp;            /* Call interaction on SocketObject */
+<b class="nc">&nbsp;            so.interact(this, receiver);</b>
+<b class="nc">&nbsp;        } catch (IOException e) {</b>
+<b class="nc">&nbsp;            throw new RemoteException(&quot;Unable to communicate with socket&quot;);</b>
+<b class="nc">&nbsp;        } catch (ClassNotFoundException e) {</b>
+<b class="nc">&nbsp;            System.err.println(&quot;Received not a SocketObject&quot;);</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method sends a SocketObject on the output stream
+&nbsp;     * @param o SocketObject to send
+&nbsp;     * @throws IOException when an input/output error occurs
+&nbsp;     */
+&nbsp;    protected synchronized void send(SocketObject o) throws IOException {
+<b class="nc">&nbsp;        this.oos.writeObject(o);</b>
+<b class="nc">&nbsp;        this.oos.flush();</b>
+<b class="nc">&nbsp;        this.oos.reset();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-28 10:19</div>
+</div>
+</body>
+</html>

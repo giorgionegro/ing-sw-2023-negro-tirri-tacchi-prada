@@ -1,0 +1,277 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > GUI</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">view.GUI</a>
+</div>
+
+<h1>Coverage Summary for Class: GUI (view.GUI)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">GUI</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/43)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package view.GUI;
+&nbsp;
+&nbsp;import view.GUI.panels.*;
+&nbsp;import view.graphicInterfaces.AppGraphics;
+&nbsp;import view.graphicInterfaces.GameGraphics;
+&nbsp;
+&nbsp;import javax.swing.*;
+&nbsp;import java.awt.*;
+&nbsp;import java.awt.event.ActionEvent;
+&nbsp;import java.awt.event.ActionListener;
+&nbsp;import java.util.Objects;
+&nbsp;
+&nbsp;/**
+&nbsp; * This class extends JFrame and represents the main frame of the GUI
+&nbsp; */
+&nbsp;public class GUI extends JFrame implements AppGraphics, ActionListener {
+&nbsp;    /**
+&nbsp;     * This is the panel that allows the user to choose the network type
+&nbsp;     */
+<b class="nc">&nbsp;    private final NetworkChoicePanel networkChoice = new NetworkChoicePanel(this);</b>
+&nbsp;    /**
+&nbsp;     * This is the panel that allows the user to switch between join and create panels
+&nbsp;     */
+<b class="nc">&nbsp;    private final HomePanel homePanel = new HomePanel(this);</b>
+&nbsp;    /**
+&nbsp;     * This is the panel that allows the user to join a game
+&nbsp;     */
+<b class="nc">&nbsp;    private final JoinGamePanel join = new JoinGamePanel(this);</b>
+&nbsp;    /**
+&nbsp;     * This is the panel that allows the user to create a game
+&nbsp;     */
+<b class="nc">&nbsp;    private final CreateGamePanel create = new CreateGamePanel(this);</b>
+&nbsp;    /**
+&nbsp;     * This is the panel that allows the user to play the game
+&nbsp;     */
+<b class="nc">&nbsp;    private final GamePanel game = new GamePanel(this);</b>
+&nbsp;    /**
+&nbsp;     * root container of the frame
+&nbsp;     */
+&nbsp;    private final Container root;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * view logic
+&nbsp;     */
+&nbsp;    private ActionListener viewLogic;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Construct an instance of this class initializing the frame
+&nbsp;     */
+&nbsp;    public GUI(){
+<b class="nc">&nbsp;        super();</b>
+&nbsp;
+<b class="nc">&nbsp;        this.setLayout(new BorderLayout());</b>
+&nbsp;
+<b class="nc">&nbsp;        Image icon = new ImageIcon (Objects.requireNonNull(this.getClass().getResource(&quot;/AppIcon.png&quot;))).getImage();</b>
+<b class="nc">&nbsp;        this.setIconImage(icon);</b>
+&nbsp;
+<b class="nc">&nbsp;        this.setTitle(&quot;My Shelfie&quot;);</b>
+<b class="nc">&nbsp;        this.setDefaultCloseOperation(EXIT_ON_CLOSE);</b>
+&nbsp;
+<b class="nc">&nbsp;        this.setSize(new Dimension(1100, 700));</b>
+<b class="nc">&nbsp;        this.setMinimumSize(new Dimension(825,525));</b>
+&nbsp;
+<b class="nc">&nbsp;        this.setResizable(true);</b>
+<b class="nc">&nbsp;        this.setVisible(true);</b>
+&nbsp;
+<b class="nc">&nbsp;        this.root = this.getContentPane();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method refreshes the frame
+&nbsp;     */
+&nbsp;    public void refresh() {
+<b class="nc">&nbsp;        this.root.revalidate();</b>
+<b class="nc">&nbsp;        this.root.repaint();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     * @param e the event to be processed
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void actionPerformed(ActionEvent e) {
+<b class="nc">&nbsp;        if(e.getSource()== this.game)</b>
+<b class="nc">&nbsp;            this.viewLogic.actionPerformed(e);</b>
+&nbsp;        else
+<b class="nc">&nbsp;            this.viewLogic.actionPerformed(new ActionEvent(this,e.getID(),e.getActionCommand()));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     * @param actionListener the action listener to be set
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void setActionListener(ActionListener actionListener) {
+<b class="nc">&nbsp;        this.viewLogic = actionListener;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     * @return {@inheritDoc}
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public GameGraphics getGameGraphics() {
+<b class="nc">&nbsp;        return this.game;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     * @param error the error message to be displayed
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void showConnection(String error) {
+<b class="nc">&nbsp;        this.networkChoice.setErrorMessage(error);</b>
+<b class="nc">&nbsp;        this.root.removeAll();</b>
+<b class="nc">&nbsp;        this.root.add(this.networkChoice);</b>
+<b class="nc">&nbsp;        this.refresh();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     * @param message the message to be displayed
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void showServerInteraction(String message) {
+<b class="nc">&nbsp;        this.homePanel.setMessage(message);</b>
+<b class="nc">&nbsp;        this.root.removeAll();</b>
+<b class="nc">&nbsp;        this.root.add(this.homePanel);</b>
+<b class="nc">&nbsp;        this.refresh();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     * @param error the error message to be displayed
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void showJoin(String error) {
+<b class="nc">&nbsp;        this.join.setMessage(error);</b>
+<b class="nc">&nbsp;        this.root.removeAll();</b>
+<b class="nc">&nbsp;        this.root.add(this.join);</b>
+<b class="nc">&nbsp;        this.refresh();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     * @param error the error message to be displayed
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void showCreate(String error) {
+<b class="nc">&nbsp;        this.create.setMessage(error);</b>
+<b class="nc">&nbsp;        this.root.removeAll();</b>
+<b class="nc">&nbsp;        this.root.add(this.create);</b>
+<b class="nc">&nbsp;        this.refresh();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     * @param message the message to be displayed
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void showGame(String message) {
+<b class="nc">&nbsp;        this.root.removeAll();</b>
+<b class="nc">&nbsp;        this.root.add(this.game);</b>
+<b class="nc">&nbsp;        this.refresh();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void exit() {
+<b class="nc">&nbsp;        System.exit(0);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-28 10:19</div>
+</div>
+</body>
+</html>

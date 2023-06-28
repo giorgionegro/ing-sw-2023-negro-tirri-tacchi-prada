@@ -1,0 +1,350 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > ServerSocketHandler</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">distibuted.socket.middleware</a>
+</div>
+
+<h1>Coverage Summary for Class: ServerSocketHandler (distibuted.socket.middleware)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ServerSocketHandler</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/20)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/79)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package distibuted.socket.middleware;
+&nbsp;
+&nbsp;import distibuted.interfaces.ClientInterface;
+&nbsp;import distibuted.interfaces.ServerInterface;
+&nbsp;import model.User;
+&nbsp;import model.abstractModel.*;
+&nbsp;import modelView.*;
+&nbsp;import view.interfaces.*;
+&nbsp;
+&nbsp;import java.io.IOException;
+&nbsp;import java.net.Socket;
+&nbsp;import java.rmi.RemoteException;
+&nbsp;
+&nbsp;/**
+&nbsp; * This class manages a socket connection on server side
+&nbsp; */
+&nbsp;public class ServerSocketHandler extends SocketHandler&lt;ServerInterface&gt; implements ClientInterface {
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Class constructor, initialize a {@link SocketHandler} with the given socket
+&nbsp;     * @param socket socket to manage
+&nbsp;     * @throws RemoteException if fails to open the socket
+&nbsp;     */
+&nbsp;    public ServerSocketHandler(Socket socket) throws RemoteException {
+<b class="nc">&nbsp;        super(socket);</b>
+<b class="nc">&nbsp;        super.open();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     * &lt;p&gt;
+&nbsp;     * Generates and send {@link SocketObject} that calls {@link CommonGoalView#update(CommonGoalInfo, CommonGoal.Event)} on receiver
+&nbsp;     * @param o the commonGoal info
+&nbsp;     * @param evt the event that has generated this update
+&nbsp;     * @throws RemoteException if fails to send a {@link SocketObject}
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void update(CommonGoalInfo o, CommonGoal.Event evt) throws RemoteException {
+&nbsp;        try {
+<b class="nc">&nbsp;            this.send((SocketObject) (sender, receiver) -&gt; {</b>
+&nbsp;                try {
+<b class="nc">&nbsp;                    ((CommonGoalView) receiver).update(o, evt);</b>
+<b class="nc">&nbsp;                } catch (ClassCastException e) {</b>
+<b class="nc">&nbsp;                    throw new RemoteException(&quot;Socket object not usable&quot;);</b>
+<b class="nc">&nbsp;                }</b>
+&nbsp;            });
+<b class="nc">&nbsp;        } catch (IOException e) {</b>
+<b class="nc">&nbsp;            throw new RemoteException(&quot;Unable to send the socket object&quot;);</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     * &lt;p&gt;
+&nbsp;     * Generates and send {@link SocketObject} that calls {@link GameView#update(GameInfo, Game.Event)} on receiver
+&nbsp;     * @param o the gameInfo
+&nbsp;     * @param evt the event that has generated this update
+&nbsp;     * @throws RemoteException if fails to send a {@link SocketObject}
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void update(GameInfo o, Game.Event evt) throws RemoteException {
+&nbsp;        try {
+<b class="nc">&nbsp;            this.send((SocketObject) (sender, receiver) -&gt; {</b>
+&nbsp;                try {
+<b class="nc">&nbsp;                    ((GameView) receiver).update(o, evt);</b>
+<b class="nc">&nbsp;                } catch (ClassCastException e) {</b>
+<b class="nc">&nbsp;                    throw new RemoteException(&quot;Socket object not usable&quot;);</b>
+<b class="nc">&nbsp;                }</b>
+&nbsp;            });
+<b class="nc">&nbsp;        } catch (IOException e) {</b>
+<b class="nc">&nbsp;            throw new RemoteException(&quot;Unable to send the socket object&quot;);</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     * &lt;p&gt;
+&nbsp;     * Generates and send {@link SocketObject} that calls {@link LivingRoomView#update(LivingRoomInfo, LivingRoom.Event)} on receiver
+&nbsp;     * @param o the livingRoom info
+&nbsp;     * @param evt the event that has generated this update
+&nbsp;     * @throws RemoteException if fails to send a {@link SocketObject}
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void update(LivingRoomInfo o, LivingRoom.Event evt) throws RemoteException {
+&nbsp;        try {
+<b class="nc">&nbsp;            this.send((SocketObject) (sender, receiver) -&gt; {</b>
+&nbsp;                try {
+<b class="nc">&nbsp;                    ((LivingRoomView) receiver).update(o, evt);</b>
+<b class="nc">&nbsp;                } catch (ClassCastException e) {</b>
+<b class="nc">&nbsp;                    throw new RemoteException(&quot;Socket object not usable&quot;);</b>
+<b class="nc">&nbsp;                }</b>
+&nbsp;            });
+<b class="nc">&nbsp;        } catch (IOException e) {</b>
+<b class="nc">&nbsp;            throw new RemoteException(&quot;Unable to send the socket object&quot;);</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     * &lt;p&gt;
+&nbsp;     * Generates and send {@link SocketObject} that calls {@link PersonalGoalView#update(PersonalGoalInfo, PersonalGoal.Event)} on receiver
+&nbsp;     * @param o the personalGoal info
+&nbsp;     * @param evt the event that has generated this update
+&nbsp;     * @throws RemoteException if fails to send a {@link SocketObject}
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void update(PersonalGoalInfo o, PersonalGoal.Event evt) throws RemoteException {
+&nbsp;        try {
+<b class="nc">&nbsp;            this.send((SocketObject) (sender, receiver) -&gt; {</b>
+&nbsp;                try {
+<b class="nc">&nbsp;                    ((PersonalGoalView) receiver).update(o, evt);</b>
+<b class="nc">&nbsp;                } catch (ClassCastException e) {</b>
+<b class="nc">&nbsp;                    throw new RemoteException(&quot;Socket object not usable&quot;);</b>
+<b class="nc">&nbsp;                }</b>
+&nbsp;            });
+<b class="nc">&nbsp;        } catch (IOException e) {</b>
+<b class="nc">&nbsp;            throw new RemoteException(&quot;Unable to send the socket object&quot;);</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     * &lt;p&gt;
+&nbsp;     * Generates and send {@link SocketObject} that calls {@link PlayerChatView#update(PlayerChatInfo, PlayerChat.Event)} on receiver
+&nbsp;     * @param o the playerChat info
+&nbsp;     * @param evt the event that has generated this update
+&nbsp;     * @throws RemoteException if fails to send a {@link SocketObject}
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void update(PlayerChatInfo o, PlayerChat.Event evt) throws RemoteException {
+&nbsp;        try {
+<b class="nc">&nbsp;            this.send((SocketObject) (sender, receiver) -&gt; {</b>
+&nbsp;                try {
+<b class="nc">&nbsp;                    ((PlayerChatView) receiver).update(o, evt);</b>
+<b class="nc">&nbsp;                } catch (ClassCastException e) {</b>
+<b class="nc">&nbsp;                    throw new RemoteException(&quot;Socket object not usable&quot;);</b>
+<b class="nc">&nbsp;                }</b>
+&nbsp;            });
+<b class="nc">&nbsp;        } catch (IOException e) {</b>
+<b class="nc">&nbsp;            throw new RemoteException(&quot;Unable to send the socket object&quot;);</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     * &lt;p&gt;
+&nbsp;     * Generates and send {@link SocketObject} that calls {@link ShelfView#update(ShelfInfo, Shelf.Event)} on receiver
+&nbsp;     * @param o the shelf info
+&nbsp;     * @param evt the event that has generated this update
+&nbsp;     * @throws RemoteException if fails to send a {@link SocketObject}
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void update(ShelfInfo o, Shelf.Event evt) throws RemoteException {
+&nbsp;        try {
+<b class="nc">&nbsp;            this.send((SocketObject) (sender, receiver) -&gt; {</b>
+&nbsp;                try {
+<b class="nc">&nbsp;                    ((ShelfView) receiver).update(o, evt);</b>
+<b class="nc">&nbsp;                } catch (ClassCastException e) {</b>
+<b class="nc">&nbsp;                    throw new RemoteException(&quot;Socket object not usable&quot;);</b>
+<b class="nc">&nbsp;                }</b>
+&nbsp;            });
+<b class="nc">&nbsp;        } catch (IOException e) {</b>
+<b class="nc">&nbsp;            throw new RemoteException(&quot;Unable to send the socket object&quot;);</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     * &lt;p&gt;
+&nbsp;     * Generates and send {@link SocketObject} that calls {@link UserView#update(UserInfo, User.Event)} on receiver
+&nbsp;     * @param o the user info
+&nbsp;     * @param evt the event that has generated this update
+&nbsp;     * @throws RemoteException if fails to send a {@link SocketObject}
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void update(UserInfo o, User.Event evt) throws RemoteException {
+&nbsp;        try {
+<b class="nc">&nbsp;            this.send((SocketObject) (sender, receiver) -&gt; {</b>
+&nbsp;                try {
+<b class="nc">&nbsp;                    ((UserView) receiver).update(o, evt);</b>
+<b class="nc">&nbsp;                } catch (ClassCastException e) {</b>
+<b class="nc">&nbsp;                    throw new RemoteException(&quot;Socket object not usable&quot;);</b>
+<b class="nc">&nbsp;                }</b>
+&nbsp;            });
+<b class="nc">&nbsp;        } catch (IOException e) {</b>
+<b class="nc">&nbsp;            throw new RemoteException(&quot;Unable to send the socket object&quot;);</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     * &lt;p&gt;
+&nbsp;     * Generates and send {@link SocketObject} that calls {@link PlayerView#update(PlayerInfo, Player.Event)} on receiver
+&nbsp;     * @param o the player info
+&nbsp;     * @param evt the event that has generated this update
+&nbsp;     * @throws RemoteException if fails to send a {@link SocketObject}
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void update(PlayerInfo o, Player.Event evt) throws RemoteException {
+&nbsp;        try {
+<b class="nc">&nbsp;            this.send((SocketObject) (sender, receiver) -&gt; {</b>
+&nbsp;                try {
+<b class="nc">&nbsp;                    ((PlayerView) receiver).update(o, evt);</b>
+<b class="nc">&nbsp;                } catch (ClassCastException e) {</b>
+<b class="nc">&nbsp;                    throw new RemoteException(&quot;Socket object not usable&quot;);</b>
+<b class="nc">&nbsp;                }</b>
+&nbsp;            });
+<b class="nc">&nbsp;        } catch (IOException e) {</b>
+<b class="nc">&nbsp;            throw new RemoteException(&quot;Unable to send the socket object&quot;);</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     * &lt;p&gt;
+&nbsp;     * Generates and send {@link SocketObject} that calls {@link ClientInterface#bind(ServerInterface)} on receiver
+&nbsp;     * &lt;p&gt;
+&nbsp;     * Create and runs input-stream-handler thread
+&nbsp;     * @param server the {@link ServerInterface} of the server that client have to bind to
+&nbsp;     * @throws RemoteException if fails to send a {@link SocketObject}
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void bind(ServerInterface server) throws RemoteException {
+&nbsp;        try {
+<b class="nc">&nbsp;            this.send((SocketObject) (sender, receiver) -&gt; {</b>
+&nbsp;                try {
+<b class="nc">&nbsp;                    ((ClientInterface) receiver).bind((ServerInterface) sender);</b>
+<b class="nc">&nbsp;                } catch (ClassCastException e) {</b>
+<b class="nc">&nbsp;                    throw new RemoteException(&quot;Socket object not usable&quot;);</b>
+<b class="nc">&nbsp;                }</b>
+&nbsp;            });
+<b class="nc">&nbsp;        } catch (IOException e) {</b>
+<b class="nc">&nbsp;            throw new RemoteException(&quot;Unable to send the socket object&quot;);</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;
+&nbsp;        /* Create and runs input-stream-handler thread */
+<b class="nc">&nbsp;        new Thread(() -&gt; {</b>
+&nbsp;            try {
+&nbsp;                while (true) {
+<b class="nc">&nbsp;                    this.waitForReceive(server);</b>
+&nbsp;                }
+<b class="nc">&nbsp;            } catch (RemoteException e) {</b>
+<b class="nc">&nbsp;                System.err.println(&quot;Cannot receive from client: &quot; + e.getMessage() + &quot;.\n-&gt; Closing this connection...&quot;);</b>
+&nbsp;            }
+<b class="nc">&nbsp;        }).start();</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-28 10:19</div>
+</div>
+</body>
+</html>

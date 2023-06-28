@@ -1,0 +1,277 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > ServerEndpoint</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">distibuted</a>
+</div>
+
+<h1>Coverage Summary for Class: ServerEndpoint (distibuted)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ServerEndpoint</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    22.2%
+  </span>
+  <span class="absValue">
+    (2/9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    28.9%
+  </span>
+  <span class="absValue">
+    (13/45)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package distibuted;
+&nbsp;
+&nbsp;import controller.interfaces.GameController;
+&nbsp;import controller.interfaces.GameManagerController;
+&nbsp;import controller.interfaces.ServerController;
+&nbsp;import distibuted.interfaces.ClientInterface;
+&nbsp;import distibuted.interfaces.ServerInterface;
+&nbsp;import model.abstractModel.Message;
+&nbsp;import model.exceptions.GameNotExistsException;
+&nbsp;import modelView.LoginInfo;
+&nbsp;import modelView.NewGameInfo;
+&nbsp;import modelView.PlayerMoveInfo;
+&nbsp;import util.TimedLock;
+&nbsp;
+&nbsp;import java.rmi.RemoteException;
+&nbsp;import java.rmi.server.UnicastRemoteObject;
+&nbsp;import java.util.function.Consumer;
+&nbsp;
+&nbsp;/**
+&nbsp; * This class is an implementation of {@link ServerInterface} and represents the server endpoint for socket and RMI connections
+&nbsp; */
+&nbsp;public class ServerEndpoint extends UnicastRemoteObject implements ServerInterface {
+&nbsp;
+&nbsp;    /**
+&nbsp;     * The server controller this endpoint interacts with
+&nbsp;     */
+&nbsp;    private final ServerController serverController;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * The game manager controller this endpoint interacts with
+&nbsp;     */
+&nbsp;    private final GameManagerController gameManagerController;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * The game controller this endpoint interacts with
+&nbsp;     */
+&nbsp;    private GameController gameController;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This is the lock used to wait for the ping
+&nbsp;     */
+<b class="fc">&nbsp;    private final TimedLock&lt;Boolean&gt; pingWaiter = new TimedLock&lt;&gt;(false);</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This class constructor crates an instance of this class with a given {@link controller.interfaces.ServerController}, {@link controller.interfaces.GameManagerController} and null {@link controller.interfaces.GameController}
+&nbsp;     * @param serverController a given server controller
+&nbsp;     * @param gameManagerController a given game manager controller
+&nbsp;     * @param disconnectionCallback a callback to be called when the client disconnects
+&nbsp;     * @throws RemoteException in case of an error occurred exporting this remote object
+&nbsp;     */
+&nbsp;    public ServerEndpoint(ServerController serverController, GameManagerController gameManagerController, Consumer&lt;String&gt; disconnectionCallback) throws RemoteException {
+<b class="fc">&nbsp;        super();</b>
+<b class="fc">&nbsp;        this.serverController = serverController;</b>
+<b class="fc">&nbsp;        this.gameManagerController = gameManagerController;</b>
+<b class="fc">&nbsp;        this.gameController = null;</b>
+&nbsp;
+<b class="fc">&nbsp;        new Thread(()-&gt;{</b>
+&nbsp;            try {
+<b class="fc">&nbsp;                Thread.sleep(2000);</b>
+&nbsp;
+&nbsp;                do {
+<b class="fc">&nbsp;                    this.pingWaiter.reset(false);</b>
+&nbsp;
+<b class="fc">&nbsp;                    this.pingWaiter.lock(2000);</b>
+&nbsp;
+<b class="fc">&nbsp;                } while (this.pingWaiter.hasBeenUnlocked());</b>
+&nbsp;
+<b class="nc">&nbsp;            } catch (InterruptedException e) {</b>
+<b class="nc">&nbsp;                System.err.println(&quot;Error: Ping thread had been interrupted&quot;);</b>
+&nbsp;            } finally {
+<b class="fc">&nbsp;                disconnectionCallback.accept(&quot;Ping timeout&quot;);</b>
+<b class="fc">&nbsp;            }</b>
+<b class="fc">&nbsp;        }).start();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     * @param client      The client asking to create the game
+&nbsp;     * @param newGameInfo The new-game info
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public synchronized void createGame(ClientInterface client, NewGameInfo newGameInfo) {
+&nbsp;        try {
+<b class="nc">&nbsp;            this.serverController.createGame(client, newGameInfo);</b>
+<b class="nc">&nbsp;        } catch (RemoteException e) {</b>
+<b class="nc">&nbsp;            this.printError(&quot;CreateGame&quot;, e.getMessage());</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     * @param client    The client asking to join
+&nbsp;     * @param loginInfo The join-info
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void joinGame(ClientInterface client, LoginInfo loginInfo) {
+&nbsp;        try {
+<b class="nc">&nbsp;            this.serverController.joinGame(client, loginInfo);</b>
+<b class="nc">&nbsp;            this.gameController = this.gameManagerController.getGame(loginInfo.gameId());</b>
+<b class="nc">&nbsp;        } catch (RemoteException e) {</b>
+<b class="nc">&nbsp;            this.printError(&quot;JoinGame&quot;, e.getMessage());</b>
+<b class="nc">&nbsp;        } catch (GameNotExistsException e) {</b>
+<b class="nc">&nbsp;            this.gameController = null;</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     * @param client The client asking to leave
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void leaveGame(ClientInterface client) {
+&nbsp;        try {
+<b class="nc">&nbsp;            this.serverController.leaveGame(client);</b>
+<b class="nc">&nbsp;            this.gameController = null;</b>
+<b class="nc">&nbsp;        } catch (RemoteException e) {</b>
+<b class="nc">&nbsp;            this.printError(&quot;LeaveGame&quot;, e.getMessage());</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     * @param client The reference of the client who is doing the move
+&nbsp;     * @param move   The move info
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void doPlayerMove(ClientInterface client, PlayerMoveInfo move) {
+<b class="nc">&nbsp;        if (this.gameController != null) {</b>
+&nbsp;            try {
+<b class="nc">&nbsp;                this.gameController.doPlayerMove(client, move);</b>
+<b class="nc">&nbsp;            } catch (RemoteException e) {</b>
+<b class="nc">&nbsp;                this.printError(&quot;DoPlayerMove&quot;, e.getMessage());</b>
+<b class="nc">&nbsp;            }</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     *{@inheritDoc}
+&nbsp;     * @param client  The reference of the client who is sending the message
+&nbsp;     * @param message The message info
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void sendMessage(ClientInterface client, Message message) {
+<b class="nc">&nbsp;        if (this.gameController != null) {</b>
+&nbsp;            try {
+<b class="nc">&nbsp;                this.gameController.sendMessage(client, message);</b>
+<b class="nc">&nbsp;            } catch (RemoteException e) {</b>
+<b class="nc">&nbsp;                this.printError(&quot;SendMessage&quot;, e.getMessage());</b>
+<b class="nc">&nbsp;            }</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method prints an error that has occurred
+&nbsp;     * @param from source of the error
+&nbsp;     * @param message the message of the error
+&nbsp;     */
+&nbsp;    private void printError(String from, String message) {
+<b class="nc">&nbsp;        if (!message.isBlank())</b>
+<b class="nc">&nbsp;            message = &quot; : &quot; + message;</b>
+<b class="nc">&nbsp;        System.err.print(&quot;ServerEndpoint: exception from &quot; + from + message);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * {@inheritDoc}
+&nbsp;     * &lt;p&gt;
+&nbsp;     * It notifies the ping handler Thread that a ping has been received
+&nbsp;     * @throws RemoteException {@inheritDoc}
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void ping() throws RemoteException {
+<b class="nc">&nbsp;        this.pingWaiter.unlock(true);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-06-28 10:19</div>
+</div>
+</body>
+</html>
