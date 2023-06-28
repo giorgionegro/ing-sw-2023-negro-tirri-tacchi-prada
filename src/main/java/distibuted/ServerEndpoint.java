@@ -39,7 +39,7 @@ public class ServerEndpoint extends UnicastRemoteObject implements ServerInterfa
     /**
      * This is the lock used to wait for the ping
      */
-    private final TimedLock<Boolean> pingWaiter = new TimedLock<>(false);
+    private final TimedLock<Boolean> pingWaiter = new TimedLock<>(true);
 
 
     /**

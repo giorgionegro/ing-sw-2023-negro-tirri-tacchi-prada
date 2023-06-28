@@ -97,18 +97,18 @@ public class StandardGameController implements GameController, LobbyController {
                 /* Try to join the player */
                 this.game.addPlayer(playerId);
 
-                /* Authorize the client to use this controller*/
-                this.userAssociation.put(newClient, newUser);
-
-                /* Put newUser into known users */
-                this.playerAssociation.put(newUser, playerId);
-
                 /* Attach all the observers to the client */
                 try {
                     this.addObservers(newClient, playerId);
                 } catch (PlayerNotExistsException e) {
                     this.printModelError("Player that should exists does not exists, warning due to possible malfunctions");
                 }
+
+                /* Authorize the client to use this controller*/
+                this.userAssociation.put(newClient, newUser);
+
+                /* Put newUser into known users */
+                this.playerAssociation.put(newUser, playerId);
 
                 /* Get model status after the player has joined */
                 Game.GameStatus newStatus = this.game.getGameStatus();
