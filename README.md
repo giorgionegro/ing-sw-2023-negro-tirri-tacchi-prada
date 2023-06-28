@@ -35,13 +35,13 @@ As part of the grading of the project, a number of possible functionalities coul
 - Disconnection resilience: players can disconnect and reconnect to the server, game will continue without them allowing rejoining.
 
 ## Running the Game
-The game consists of a two jar files by the name <code>placeholder1.jar</code> and <code>placeholder2.jar</code>. They can be found in <code>/target</code> directory after building the project with Maven. 
+The game consists of a two jar files by the name <code>MyShelfieClient.jar</code> and <code>MyShelfieServer.jar</code>. They can be found in <code>/target</code> directory after building the project with Maven. 
 
 [//]: # (TODO: change name of jar file)
 
 To run the  client file, use the command
 
-<code>java -jar placeholder1.jar</code>
+<code>java -jar MyShelfieClient.jar</code>
 
 with the following options:
 
@@ -56,7 +56,7 @@ from the command line in the jar's folder.
 
 To run the server file, use the command
 
-<code>java -jar placeholder2.jar</code>
+<code>java -jar MyShelfieServer.jar</code>
 
 with the following options:
 
@@ -66,7 +66,7 @@ with the following options:
 
 
 
-Linux consoles are supported. Windows cmd console and Powershell < 5.0 are supported, but the colors and cursor position may not be displayed correctly. Powershell >= 5.0 is fully supported.
+TUI is only supported on command line that support ansi escape codes.
 
 ### Server
 
