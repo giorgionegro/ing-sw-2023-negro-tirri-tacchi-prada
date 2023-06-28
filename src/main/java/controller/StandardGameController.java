@@ -190,9 +190,13 @@ public class StandardGameController implements GameController, LobbyController {
         /* Add Shelf status observer of new player to all already joined players */
         /* Add Shelf status observer of all already joined players to new player */
         for (Map.Entry<ClientInterface, User> association : this.userAssociation.entrySet()) {
-            newPlayerShelf.addObserver(this.getShelfObserver(association.getKey(), newPlayerId));
+            Observer<Shelf, Shelf.Event> newPlayerShelfEventObserver = this.getShelfObserver(association.getKey(), newPlayerId);
+            newPlayerShelf.addObserver(newPlayerShelfEventObserver);
+            this.observerAssociation.get(association.getKey()).put(newPlayerShelf,newPlayerShelfEventObserver);
+
             String joinedPlayerId = this.playerAssociation.get(association.getValue());
             Shelf joinedPlayerShelf = this.game.getPlayer(joinedPlayerId).getShelf();
+
             Observer<Shelf, Shelf.Event> joinedPlayerShelfEventObserver = this.getShelfObserver(newClient, joinedPlayerId);
             newObserverAssociation.put(joinedPlayerShelf, joinedPlayerShelfEventObserver);
             joinedPlayerShelf.addObserver(joinedPlayerShelfEventObserver);
