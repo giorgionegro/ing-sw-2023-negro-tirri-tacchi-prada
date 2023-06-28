@@ -65,7 +65,7 @@ with the following options:
 
 
 
-Linux's consoles are supported. Windows cmd console and Powershell < 5.0 are supported, but the colors and cursor position may not be displayed correctly. Powershell >= 5.0 is fully supported.
+TUI is only supported on command line that support ansi escape codes.
 
 ### Server
 
