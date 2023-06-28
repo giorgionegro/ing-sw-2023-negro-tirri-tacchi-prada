@@ -9,12 +9,20 @@ import java.util.List;
 import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
+/**
+ * This class tests the StandardPlayerChat class
+ */
 class StandardPlayerChatTest {
+    /**
+     * Methods under test:
+     * <ul>
+     *     <li>{@link StandardPlayerChat#addMessage(Message)}
+     *     <li>{@link StandardPlayerChat#getMessages()}
+     * </ul>
+     *
+     *
+     */
     @Test
     void chatMessagesInsertionAndGet() {
         PlayerChat chat = new StandardPlayerChat();
@@ -64,6 +72,10 @@ class StandardPlayerChatTest {
                 fail("Chat saved an message wrong");
         }
     }
+
+    /**
+     * Method under test: {@link StandardPlayerChat#getInfo()}
+     */
     @Test
     void getInfoTest(){
         PlayerChat chat = new StandardPlayerChat();

@@ -9,24 +9,17 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
+/**
+ * This class tests the StandardPlayer class
+ */
 class StandardPlayerTest {
 
+
     /**
-     * Method under test:{@link StandardPlayer()}
-     *
-     * <p>
-     * <p>
-     * Test if the constructor correctly creates a player from a player instance
+     * Method under test: {@link StandardPlayer#StandardPlayer(model.abstractModel.Shelf, List, model.abstractModel.PlayerChat)}
      */
     @Test
-    void testConstructor() {
-        //TODO
-    }
-
-
-    @Test
     void testPlayerCreation() {
-        String playerId = this.getPlayerId();
 
         List<PersonalGoal> personalGoals = this.getPersonalGoals();
 
@@ -52,6 +45,9 @@ class StandardPlayerTest {
         }
     }
 
+    /**
+     * Method under test: {@link StandardPlayer#getShelf()}
+     */
     @Test
     void testPlayerShelfModification() {
         Player p = new StandardPlayer(new StandardShelf(), new ArrayList<>(), new StandardPlayerChat());
@@ -83,6 +79,9 @@ class StandardPlayerTest {
         }
     }
 
+    /**
+     * Method under test: {@link StandardPlayer#addAchievedCommonGoal(String, Token)}
+     */
     @Test
     void testPlayerAchievingCommonGoal() {
         Player p = new StandardPlayer(new StandardShelf(), new ArrayList<>(), new StandardPlayerChat());
@@ -107,14 +106,10 @@ class StandardPlayerTest {
     }
 
 
-    private String getPlayerId() {
-        StringBuilder playerId = new StringBuilder();
-        Random r = new Random();
-        for (int j = 0; j < 5; j++)
-            playerId.append((char) r.nextInt(97, 123));
-        return playerId.toString();
-    }
-
+    /**
+     * Utility method to get a list of personal goals
+     * @return a list of personal goals
+     */
     private List<PersonalGoal> getPersonalGoals() {
         List<PersonalGoal> r = new ArrayList<>();
         r.add(new StandardPersonalGoal(0, Tile.CATS_1, 0, 0));
@@ -126,19 +121,24 @@ class StandardPlayerTest {
         return r;
     }
 
+    /**
+     *  Method under test: {@link StandardPlayer#reportError(String)}
+     */
     @Test
     void reportErrorTest() {
         Player test = new StandardPlayer(new StandardShelf(), new ArrayList<>(), new StandardPlayerChat());
         test.reportError("Error test");
-        assertEquals(test.getReportedError(), "Error test");
+       assert  test.getInfo().errorMessage().equals("Error test");
     }
 
+    /**
+     * Method under test: {@link StandardPlayer#addAchievedCommonGoal(String, Token)}
+     */
     @Test
     void getInfoTest() {
         Player test = new StandardPlayer(new StandardShelf(), new ArrayList<>(), new StandardPlayerChat());
         test.reportError("Error test");
         test.addAchievedCommonGoal("Test", Token.TOKEN_6_POINTS);
-        assertEquals(test.getReportedError(), test.getInfo().errorMessage());
         assertEquals(test.getInfo().achievedCommonGoals(), test.getAchievedCommonGoals());
     }
 

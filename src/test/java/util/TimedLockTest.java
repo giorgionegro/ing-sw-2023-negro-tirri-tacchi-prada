@@ -4,19 +4,19 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import util.TimedLock;
 
+/**
+ * This class tests the TimedLock class
+ */
 class TimedLockTest {
     /**
      * Methods under test:
      *
      * <ul>
      *   <li>{@link TimedLock#TimedLock(Object)}
-     *   <li>{@link TimedLock#setValue(Object)}
-     *   <li>{@link TimedLock#reset()}
-     *   <li>{@link TimedLock#hasBeenNotified()}
+     *   <li>{@link TimedLock#reset(Object)}
+     *   <li>{@link TimedLock#hasBeenUnlocked()}
      * </ul>
      *
      * <p>Reason: the methods are closely related and can be tested together.
@@ -25,12 +25,12 @@ class TimedLockTest {
     @Test
     void testGeneral() {
         TimedLock<Object> actualTimedLock = new TimedLock<>("Default Value");
-        actualTimedLock.setValue("Value");
+        actualTimedLock.reset("Value");
         //check that the value is set correctly
         assertEquals("Value", actualTimedLock.getValue());
-        actualTimedLock.reset();
+        actualTimedLock.reset("Value2");
         //check that the value is reset to the default value
-        assertFalse(actualTimedLock.hasBeenNotified());
+        assertFalse(actualTimedLock.hasBeenUnlocked());
     }
 
     /**
@@ -45,18 +45,18 @@ class TimedLockTest {
     void testLock() throws InterruptedException {
         TimedLock<Object> timedLock = new TimedLock<>("Default Value");
         timedLock.lock(10L);
-        assertFalse(timedLock.hasBeenNotified());
+        assertFalse(timedLock.hasBeenUnlocked());
         new Thread(() -> {
             try {
                 timedLock.lock(100L);
-                timedLock.notify("Value");
+                timedLock.unlock("Value");
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }).start();
-        assertFalse(timedLock.hasBeenNotified());
+        assertFalse(timedLock.hasBeenUnlocked());
         Thread.sleep(200L);
-        assertTrue(timedLock.hasBeenNotified());
+        assertTrue(timedLock.hasBeenUnlocked());
 
     }
 
@@ -72,13 +72,13 @@ class TimedLockTest {
         new Thread(() -> {
             try {
                 timedLock.lock(-1L);
-                timedLock.notify("Value");
+                timedLock.unlock("Value");
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }).start();
         Thread.sleep(100L);
-        assertFalse(timedLock.hasBeenNotified());
+        assertFalse(timedLock.hasBeenUnlocked());
     }
 
 

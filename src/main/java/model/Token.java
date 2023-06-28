@@ -1,7 +1,8 @@
 package model;
 
 /**
- * This enumerable contains all the possible token of the game
+ * This enumerable contains all the possible tokens of the game
+ * <p>
  * Every instance is characterized by the points that represent
  */
 public enum Token {
@@ -26,9 +27,9 @@ public enum Token {
      */
     TOKEN_EMPTY(0),
     /**
-     * This token represents 1 points
+     * This token represents 1 point
      * <p>
-     * Player that obtain this token is the first that has completed the shelf
+     * Player that obtains this token is the first that has completed the shelf
      */
     TOKEN_GAME_END(1);
 
@@ -38,7 +39,7 @@ public enum Token {
     private final int points;
 
     /**
-     * Construct a token that rwith given points
+     * Construct a token with given points
      * @param points the token points amount
      */
     Token(int points){
@@ -50,6 +51,6 @@ public enum Token {
      * @return {@link #points}
      */
     public int getPoints(){
-        return points;
+        return this.points;
     }
 }

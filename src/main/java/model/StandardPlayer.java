@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This class is an implementation of Player.
+ * This class is an implementation of {@link Player}.
  * <p>
  * It uses a Map to manage achieved common goals
  */
@@ -106,7 +106,7 @@ public class StandardPlayer extends Player {
     public void addAchievedCommonGoal(String description, Token token) {
         this.achievedCommonGoals.put(description, token);
         this.setChanged();
-        this.notifyObservers(Event.COMMONGOAL_ACHIEVED);
+        this.notifyObservers(Event.COMMON_GOAL_ACHIEVED);
     }
 
     /**
@@ -121,15 +121,7 @@ public class StandardPlayer extends Player {
         this.notifyObservers(Event.ERROR_REPORTED);
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @return {@link #errorReport}
-     */
-    @Override
-    public String getReportedError() {
-        return this.errorReport;
-    }
+
 
     /**
      * {@inheritDoc}

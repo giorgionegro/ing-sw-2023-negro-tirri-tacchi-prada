@@ -54,9 +54,21 @@ public abstract class Game extends Observable<Game.Event>{
      * This enumeration represents all the statuses of the game
      */
     public enum GameStatus{
+        /**
+         * This status is set when the game is in matchmaking phase
+         */
         MATCHMAKING,
+        /**
+         * This status is set when the game is started
+         */
         STARTED,
+        /**
+         * This status is set when the game is suspended
+         */
         SUSPENDED,
+        /**
+         * This status is set when the game is ended
+         */
         ENDED
     }
 
@@ -74,7 +86,7 @@ public abstract class Game extends Observable<Game.Event>{
     /**
      * This method marks the current turn sequence to be the last one.
      * <p>
-     * If invoked then isLastTurn method will then return {@code true}
+     * If invoked then isLastTurn method will return {@code true}
      */
     public abstract void setLastTurn();
 

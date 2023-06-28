@@ -6,6 +6,9 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * This class tests the goal evaluators
+ */
 class GoalsEvaluatorsTest {
 
 
@@ -81,6 +84,7 @@ class GoalsEvaluatorsTest {
      *             <li>test with a correct configuration</li>
      *             <li>test with an incorrect configuration</li>
      *             <li>test get description</li>
+     *             </ul>
      */
     @Test
     void testStandard34ColumnsRowMax3Types() {
@@ -107,7 +111,6 @@ class GoalsEvaluatorsTest {
      * <ul>
      *     <li>{@link Standard4Groups4Tiles#evaluate(Tile[][])}
      *     <li>{@link Standard4Groups4Tiles#getDescription()}
-     *     <li>{@link Standard4Groups4Tiles)} default constructor
      *     </ul>
      * <p>
      *         Reasons:
@@ -134,7 +137,6 @@ class GoalsEvaluatorsTest {
      * <ul>
      *     <li>{@link Standard5TileDiagonal#evaluate(Tile[][])}
      *     <li>{@link Standard5TileDiagonal#getDescription()}
-     *     <li>{@link Standard5TileDiagonal)} default constructor
      *     </ul>
      * <p>
      *         Reasons:
@@ -159,6 +161,13 @@ class GoalsEvaluatorsTest {
         assertNotEquals(null, goal.getDescription());
     }
 
+    /**
+     * Methods under test:
+     * <ul>
+     *     <li>{@link Standard8TilesSameType#evaluate(Tile[][])}
+     *     <li>{@link Standard8TilesSameType#getDescription()}
+     *     </ul>
+     */
     @Test
     void testStandard8TileSameType() {
         Standard8TilesSameType goal = new Standard8TilesSameType();
@@ -170,6 +179,13 @@ class GoalsEvaluatorsTest {
         assertNotEquals(null, goal.getDescription());
     }
 
+    /**
+     * Methods under test:
+     * <ul>
+     *     <li>{@link StandardCorners#evaluate(Tile[][])}
+     *     <li>{@link StandardCorners#getDescription()}
+     * </ul>
+     */
     @Test
     void testStandardCorners() {
         StandardCorners goal = new StandardCorners();
@@ -185,6 +201,13 @@ class GoalsEvaluatorsTest {
     }
 
 
+    /**
+     * Methods under test:
+     * <ul>
+     *     <li>{@link StandardSixGroup2Tiles#evaluate(Tile[][])}
+     *     <li>{@link StandardSixGroup2Tiles#getDescription()}
+     * </ul>
+     */
     @Test
     void testStandard6Group2Tiles() {
         StandardSixGroup2Tiles goal = new StandardSixGroup2Tiles();
@@ -199,6 +222,13 @@ class GoalsEvaluatorsTest {
         assertNotEquals(null, goal.getDescription());
     }
 
+    /**
+     * Methods under test:
+     * <ul>
+     *     <li>{@link StandardTwoSquares#evaluate(Tile[][])}
+     *     <li>{@link StandardTwoSquares#getDescription()}
+     * </ul>
+     */
     @Test
     void testStandardTwoSquares() {
         StandardTwoSquares goal = new StandardTwoSquares();
@@ -215,6 +245,13 @@ class GoalsEvaluatorsTest {
     }
 
 
+    /**
+     * Methods under test:
+     * <ul>
+     *     <li>{@link StandardStairs#evaluate(Tile[][])}
+     *     <li>{@link StandardStairs#getDescription()}
+     * </ul>
+     */
     @Test
     void testStandardStairs() {
         StandardStairs goal = new StandardStairs();
@@ -232,6 +269,13 @@ class GoalsEvaluatorsTest {
         assertNotEquals(null, goal.getDescription());
     }
 
+    /**
+     * Methods under test:
+     * <ul>
+     *     <li>{@link StandardXOfDifferentTiles#evaluate(Tile[][])}
+     *     <li>{@link StandardXOfDifferentTiles#getDescription()}
+     * </ul>
+     */
     @Test
     void testStandardXOfDifferentTiles() {
         StandardXOfDifferentTiles goal = new StandardXOfDifferentTiles();
@@ -246,12 +290,20 @@ class GoalsEvaluatorsTest {
         assertNotEquals(null, goal.getDescription());
     }
 
+    /**
+     * Method under test {@link Standard4Groups4Tiles#getId()}
+     */
     @Test
     void testConstructor() {
         // Arrange, Act and Assert
         assertEquals("Standard4Groups4Tiles", (new Standard4Groups4Tiles()).getId());
     }
 
+    /**
+     * Utility method to convert a string array to a Tile[][] array
+     * @param input String array of tiles
+     * @return Tile[][] of the input
+     */
     private Tile[][] StringToTileArray(String[] input) {
         //String will be in the form of {"RRRRRR", "GGGGGG", "YYYYYY", "BBBBBB", "LLLLLL", "MMMMMM"}
         Tile[][] output = new Tile[input.length][input[0].length()];

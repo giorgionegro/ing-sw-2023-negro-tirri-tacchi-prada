@@ -4,9 +4,14 @@ import modelView.UserInfo;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
+/**
+ * This class tests the User class
+ */
 class UserTest {
+    /**
+     * Method under test: {@link User#User()}
+     */
     @Test
     void constructorWorksCorrectly() {
         User test = new User();
@@ -25,6 +30,9 @@ class UserTest {
         assertEquals(-1L, actualInfo.sessionID());
     }
 
+    /**
+     * Method under test: {@link User#reportEvent(User.Status, String, User.Event, long)}
+     */
     @Test
     void setStatusTest() {
         User test = new User();
@@ -33,6 +41,9 @@ class UserTest {
         assertEquals(test.getStatus(), User.Status.JOINED);
     }
 
+    /**
+     * Method under test: {@link User#reportEvent(User.Status, String, User.Event, long)}
+     */
     @Test
     void ReportErrorTest() {
         User test = new User();
@@ -41,6 +52,9 @@ class UserTest {
         assertEquals(test.getInfo().eventMessage(), "New error");
     }
 
+    /**
+     * Method under test: {@link User#getInfo()}
+     */
     @Test
     void infoTest(){
         User test = new User();

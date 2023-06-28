@@ -46,7 +46,7 @@ public class StandardGame extends Game {
     /**
      * First player that ever had the turn, it is assumed to be also the first player of every round
      */
-    private String firstPlayer = null;
+    private String firstPlayer = "";
     /**
      * Signal of last round of turns
      */
@@ -292,6 +292,10 @@ public class StandardGame extends Game {
     public GameInfo getInfo() {
         Map<String, Integer> points = new HashMap<>();
         this.players.forEach((s, player) -> {
+            /* If a player is disconnected does not send points */
+            if (this.availablePlayers.contains(player))
+                return;
+
             /*  Points earned by each player are the sum of points earned by
                 achieving common goals and by forming groups of tiles       */
             int playerPoints = this.getCommonGoalPoints(player.getAchievedCommonGoals().values().stream().toList())
@@ -304,7 +308,7 @@ public class StandardGame extends Game {
 
             points.put(s, playerPoints);
         });
-        return new GameInfo(this.status, this.lastTurn, this.getTurnPlayerId(), points);
+        return new GameInfo(this.status, this.lastTurn, this.firstPlayer, this.getTurnPlayerId(), points);
     }
 
     /**
@@ -313,7 +317,7 @@ public class StandardGame extends Game {
      * @param personalGoals list of all personal goals
      * @return the amount of points earned by personal goals
      */
-    private int getPersonalGoalPoints(List<PersonalGoal> personalGoals) {
+    private int getPersonalGoalPoints(List<? extends PersonalGoal> personalGoals) {
         int achieved = 0;
         for (PersonalGoal p : personalGoals)
             if (p.isAchieved())
@@ -381,6 +385,12 @@ public class StandardGame extends Game {
 
     /**
      * This function provides support for {@code getShelfTilesGroupPoints()} and provide a recursive depth search on tile groups
+     * @param i         row index
+     * @param j        column index
+     * @param shelf    the shelf to be evaluated
+     * @param checked  the matrix of checked tiles
+     * @param tileColor the color of the tile group
+     * @return the size of the tile group
      */
     private int depthSearch(int i, int j, Tile[][] shelf, boolean[][] checked, String tileColor) {
         if (i < 0 || i >= checked.length || j < 0 || j >= checked[0].length)

@@ -6,11 +6,11 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
+/**
+ *  This class tests the StandardPersonalGoal class
+ */
 class StandardPersonalGoalTest {
 
     /**
@@ -28,6 +28,9 @@ class StandardPersonalGoalTest {
         assertEquals(6, info.description().length);
     }
 
+    /**
+     * Method under test: {@link StandardPersonalGoal#StandardPersonalGoal(int,Tile, int, int)}
+     */
     @Test
     void TestDescription() {
         StandardPersonalGoal test = new StandardPersonalGoal(0,Tile.BOOKS_2, 3, 4);
@@ -37,6 +40,13 @@ class StandardPersonalGoalTest {
         assertArrayEquals(TestMatrix, test.getDescription());
     }
 
+    /**
+     * Methods under test:
+     * <ul>
+     *     <li>{@link StandardPersonalGoal#setAchieved()}</li>
+     *     <li>{@link StandardPersonalGoal#isAchieved()}</li>
+     * </ul>
+     */
     @Test
 
     void testAchieving() {
@@ -49,6 +59,9 @@ class StandardPersonalGoalTest {
             fail("Goal achieved is not set as achieved");
     }
 
+    /**
+     * Method under test: {@link StandardPersonalGoal#evaluate(Tile[][])}
+     */
     @Test
         //Test Tile out of bound.
     void TestEvaluate() {
@@ -61,6 +74,9 @@ class StandardPersonalGoalTest {
         }
     }
 
+    /**
+     * Method under test: {@link StandardPersonalGoal#evaluate(Tile[][])}
+     */
     @Test
         //Test shelf cell empty.
     void TestEvaluate2() {
@@ -74,6 +90,9 @@ class StandardPersonalGoalTest {
         }
     }
 
+    /**
+     * Method under test: {@link StandardPersonalGoal#evaluate(Tile[][])}
+     */
     @Test
         //Tile in the correct position.
     void TestEvaluate3() {
@@ -84,6 +103,9 @@ class StandardPersonalGoalTest {
         assertTrue(test.evaluate(matrice));
     }
 
+    /**
+     * Method under test: {@link StandardPersonalGoal#evaluate(Tile[][])}
+     */
     @Test
         //Tile in the wrong position.
     void TestEvaluate4() {
@@ -94,6 +116,9 @@ class StandardPersonalGoalTest {
         assertFalse(test.evaluate(matrice));
     }
 
+    /**
+     * Method under test: {@link StandardPersonalGoal#getInfo()}
+     */
     @Test
     void getInfoTest() {
         StandardPersonalGoal test = new StandardPersonalGoal(0,Tile.BOOKS_2, 3, 4);

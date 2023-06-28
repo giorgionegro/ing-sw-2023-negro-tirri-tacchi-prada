@@ -25,7 +25,7 @@ import java.util.function.Consumer;
 /**
  * This is a combined implementation of a {@link LobbyController} and a {@link GameController}
  * <p>
- * The game rules implemented follows the standard rules
+ * The game rules implemented follow the standard rules
  */
 public class StandardGameController implements GameController, LobbyController {
     /**
@@ -44,17 +44,17 @@ public class StandardGameController implements GameController, LobbyController {
     private final Map<User, String> playerAssociation;
 
     /**
-     * Map of association between a client and all the observer it is attached to, observers are also associated with
+     * Map of association between a client and all the observers it is attached to, observers are also associated with
      * the observable they are attached to.
      * This object is mainly used when a client needs to be detached from the game
      */
     private final Map<ClientInterface, Map<Observable, Observer>> observerAssociation;
 
     /**
-     * Consumer called after the game has been definitely closed. This allows to notify who generate this instance that
+     * Consumer called after the game has been definitely closed. This allows to notify who generated this instance that
      * this game controller is no longer useful
      */
-    private final Consumer<LobbyController> gameClosedCallback;
+    private final Consumer<? super LobbyController> gameClosedCallback;
 
     /**
      * The timed lock used by lobby controller to control leave and join flow
@@ -62,12 +62,13 @@ public class StandardGameController implements GameController, LobbyController {
     private final TimedLock<Boolean> lobbyLock = new TimedLock<>(false);
 
     /**
-     * This constructor build an instance that use the given game model and gameClosed callback and with empty user, player and observer assoiation
+     * This constructor builds an instance that uses the given game model and gameClosed callback,
+     * it is initialized with empty user, player and observer association
      *
      * @param game               The game model that the game controller need to use
      * @param gameClosedCallback The gameClosed callback
      */
-    public StandardGameController(Game game, Consumer<LobbyController> gameClosedCallback) {
+    public StandardGameController(Game game, Consumer<? super LobbyController> gameClosedCallback) {
         super();
         this.game = game;
         this.gameClosedCallback = gameClosedCallback;
@@ -90,31 +91,38 @@ public class StandardGameController implements GameController, LobbyController {
     public void joinPlayer(ClientInterface newClient, User newUser, String playerId) throws GameAccessDeniedException {
         synchronized (this.lobbyLock) {
             try {
+                /* Get model status before the player joins*/
                 Game.GameStatus previousStatus = this.game.getGameStatus();
 
+                /* Try to join the player */
                 this.game.addPlayer(playerId);
 
+                /* Authorize the client to use this controller*/
                 this.userAssociation.put(newClient, newUser);
 
                 /* Put newUser into known users */
                 this.playerAssociation.put(newUser, playerId);
 
+                /* Attach all the observers to the client */
                 try {
                     this.addObservers(newClient, playerId);
                 } catch (PlayerNotExistsException e) {
                     this.printModelError("Player that should exists does not exists, warning due to possible malfunctions");
                 }
 
+                /* Get model status after the player has joined */
                 Game.GameStatus newStatus = this.game.getGameStatus();
 
                 if (previousStatus == Game.GameStatus.SUSPENDED) {
-                    this.lobbyLock.notify(true);
+                    /* If the model was in suspended status then notify to resume the game */
+                    this.lobbyLock.unlock(true);
 
                 } else if (previousStatus == Game.GameStatus.MATCHMAKING && newStatus == Game.GameStatus.STARTED) {
                     /* If game is ready to be started we force the first turn*/
                     this.game.getLivingRoom().refillBoard();
                     this.game.updatePlayersTurn();
                 }
+
             } catch (PlayerAlreadyExistsException e) {
                 throw new GameAccessDeniedException("Player id already exists");
             } catch (MatchmakingClosedException | GameEndedException e) {
@@ -124,12 +132,14 @@ public class StandardGameController implements GameController, LobbyController {
     }
 
     /**
-     * Add observers to all needed objects
+     * Add observers to all needed observable model objects
      *
      * @param newClient   new player's ClientInterface
      * @param newPlayerId new player's id
+     * @throws PlayerNotExistsException if the player does not exists
      */
     private void addObservers(ClientInterface newClient, String newPlayerId) throws PlayerNotExistsException {
+        /* Creates a map to associate each observer to his observable */
         Map<Observable, Observer> newObserverAssociation = new HashMap<>();
 
         Player newPlayer = this.game.getPlayer(newPlayerId);
@@ -188,6 +198,7 @@ public class StandardGameController implements GameController, LobbyController {
             joinedPlayerShelf.addObserver(joinedPlayerShelfEventObserver);
         }
 
+        /* Associate the observers to the client they are updating */
         this.observerAssociation.put(newClient, newObserverAssociation);
     }
 
@@ -317,6 +328,7 @@ public class StandardGameController implements GameController, LobbyController {
      * Observer to update the Shelf
      *
      * @param newClient client to be added
+     * @param joinedPlayerId id of the player to be added
      * @return Observer of the Shelf to be added
      */
 
@@ -353,49 +365,54 @@ public class StandardGameController implements GameController, LobbyController {
 
             /* remove all observer associated with this user */
             Map<Observable, Observer> playerObserverAssociation = this.observerAssociation.get(client);
-            for (Map.Entry<Observable, Observer> association : playerObserverAssociation.entrySet()) {
-                association.getKey().deleteObserver(association.getValue());
-            }
+            playerObserverAssociation.forEach(Observable::deleteObserver);
 
+            /* Reports to the user it has leaved the game */
             leavedUser.reportEvent(User.Status.NOT_JOINED, "Player leaved", User.Event.GAME_LEAVED);
 
-            /* If the game is MatchMaking directly close the game */
             if (this.game.getGameStatus() == Game.GameStatus.MATCHMAKING)
+                /* If the game is Matchmaking then directly close the game */
                 this.closeTheGame("Game closed due to disconnection while matchmaking");
+
             else if (this.game.getGameStatus() == Game.GameStatus.SUSPENDED) {
-                this.lobbyLock.notify(false);
+                /* If the game was suspended then notify to close the game */
+                this.lobbyLock.unlock(false);
+
             } else if (this.game.getGameStatus() == Game.GameStatus.STARTED) {
+                /* If the game is running then remove the player */
                 try {
+                    /* Get the playerID */
                     String leavedPlayer = this.playerAssociation.remove(leavedUser);
 
-                    /* Else evaluate if game needs a turn-skip (is player who leaved has the turn) */
+                    /* Evaluate if game needs a turn-skip (is player who leaved has the turn) */
                     boolean skipNeeded = this.game.getTurnPlayerId().equals(leavedPlayer);
 
                     /* Remove player on model side */
                     this.game.removePlayer(leavedPlayer);
 
-                    /* If model signal SUSPENDED status then wait 6 second for a player to rejoin */
+                    /* If model signal SUSPENDED status then run a timer */
                     if (this.game.getGameStatus() == Game.GameStatus.SUSPENDED) {
                         new Thread(() -> {
-                            this.lobbyLock.reset();
-                            if (!this.lobbyLock.hasBeenNotified())
+                            /* Timer wait 6 seconds for a player to rejoin */
+                            this.lobbyLock.reset(false);
+                            if (!this.lobbyLock.hasBeenUnlocked())
                                 try {
                                     this.lobbyLock.lock(6000);
                                 } catch (InterruptedException e) {
                                     System.err.println("GameController: Timer is not working as intended");
                                 }
+
                             /* If nobody has rejoined then close the game */
                             if (!this.lobbyLock.getValue())
                                 this.closeTheGame("Game closed due to reconnection timeout");
                         }).start();
                     }
-
                     /* If a skip was needed then skip the turn */
                     else if (skipNeeded) {
                         try {
                             this.game.updatePlayersTurn();
                         } catch (GameEndedException e) {
-                            /* If skipping the turn game is ended then close the game */
+                            /* If skipping the turn makes game end, then close the game */
                             this.closeTheGame("Game Ended");
                         }
                     }
@@ -407,19 +424,22 @@ public class StandardGameController implements GameController, LobbyController {
     }
 
     /**
-     * This method close definitely the game, detach all the client and call the gameClosed callback, send the given message to all connected user
+     * This method permanently closes the game, detaches all the clients and calls the gameClosed callback, sends the given message to all connected users
      *
-     * @param message The message that needs to be sent to the connected user
+     * @param message The message that needs to be sent to the connected users
      */
     private void closeTheGame(String message) {
-
+        /* Reports to all connected user they left the game */
         for (User u : this.userAssociation.values()) {
             u.reportEvent(User.Status.NOT_JOINED, message, User.Event.GAME_LEAVED);
         }
 
+        /* Remove all allowed user */
         this.userAssociation.clear();
 
+        /* Signal the model to definitely end the game */
         this.game.close();
+        /* Detach all the observers from the model */
         this.game.deleteObservers();
         this.game.getCommonGoals().forEach(Observable::deleteObservers);
         this.game.getLivingRoom().deleteObservers();
@@ -435,6 +455,7 @@ public class StandardGameController implements GameController, LobbyController {
             }
         }
 
+        /* Calls gameClosedCallback to signal this controller is no longer useful */
         this.gameClosedCallback.accept(this);
     }
 
@@ -456,8 +477,8 @@ public class StandardGameController implements GameController, LobbyController {
                 /* Get player information associated with his client */
                 Player player = this.game.getPlayer(playerId);
 
-                /* If game is not started we discard the request */
                 if (this.game.getGameStatus() != Game.GameStatus.STARTED)
+                    /* If game is not started we discard the request */
                     player.reportError("Game not started yet");
 
                 else if (!playerId.equals(this.game.getTurnPlayerId()))
@@ -470,6 +491,7 @@ public class StandardGameController implements GameController, LobbyController {
                     Tile[][] board = this.game.getLivingRoom().getBoard();
 
                     try {
+                        /* Check if move object is well-formed and contains coherent info */
                         this.checkWellFormedMove(playerMove, shelf, board);
 
                         /* Foreach tile we pick it from board and put it on the shelf */
@@ -484,7 +506,7 @@ public class StandardGameController implements GameController, LobbyController {
                         this.game.getLivingRoom().refillBoard();
                         player.getShelf().setTiles(shelf);
 
-                        /* If shelf has been filled we signal that this will be the last round of turns */
+                        /* If player shelf has been filled we signal that this will be the last round of turns */
                         if (this.evaluateFullShelf(shelf)) {
                             /* If nobody else has already completed the shelf we assign a "GAME_END" token */
                             if (!this.game.isLastTurn())
@@ -512,6 +534,7 @@ public class StandardGameController implements GameController, LobbyController {
                         try {
                             this.game.updatePlayersTurn();
                         } catch (GameEndedException e) {
+                            /* If skipping the turn makes game end, then close the game */
                             this.closeTheGame("Game Ended");
                         }
 
@@ -542,14 +565,21 @@ public class StandardGameController implements GameController, LobbyController {
                 /* get player object associated with senderId */
                 Player sender = this.game.getPlayer(senderId);
 
-                /* If subject is not a player of this game then send an error */
-                if (!(newMessage.getReceiver().isEmpty() || this.playerAssociation.containsValue(newMessage.getReceiver())))
+                /* Checks if client and message sender info are coherent*/
+                if (!newMessage.getSender().equals(senderId))
+                    sender.reportError("Sender of the message is not the same of message info");
+
+                    /* If subject is not a player of this game then send an error */
+                else if (!(newMessage.getReceiver().isEmpty() || this.playerAssociation.containsValue(newMessage.getReceiver())))
                     sender.reportError("Subject of the message does not exists");
 
-                /* If subject is a player or all players send message */
-                for (String playerId : this.playerAssociation.values()) {
-                    if (newMessage.getReceiver().isEmpty() || newMessage.getReceiver().equals(playerId) || newMessage.getSender().equals(playerId))
-                        this.game.getPlayer(playerId).getPlayerChat().addMessage(newMessage);
+                    /* If subject is a player or all players send message */
+                else {
+                    for (String playerId : this.playerAssociation.values()) {
+                        /* Send the message to all if receiver is empty or only to sender or receiver if specified */
+                        if (newMessage.getReceiver().isEmpty() || newMessage.getReceiver().equals(playerId) || newMessage.getSender().equals(playerId))
+                            this.game.getPlayer(playerId).getPlayerChat().addMessage(newMessage);
+                    }
                 }
             } catch (PlayerNotExistsException e) {
                 this.printModelError("Player should exists but does not exists, skipping message sending");
@@ -589,6 +619,8 @@ public class StandardGameController implements GameController, LobbyController {
 
 
     /**
+     * This method checks whether the picked tiles are the same or not
+     *
      * @param pickedTiles list of picked tiles
      * @return true if tiles are different, false otherwise
      */
@@ -605,6 +637,8 @@ public class StandardGameController implements GameController, LobbyController {
 
 
     /**
+     * Given a column of a player shelf this method counts the number of free spaces
+     *
      * @param column column to check
      * @param shelf  player shelf
      * @return number of free spaces in the column
@@ -619,6 +653,8 @@ public class StandardGameController implements GameController, LobbyController {
     }
 
     /**
+     * This method inserts the picked tiles in the shelf
+     *
      * @param column column to check
      * @param shelf  player shelf
      * @param tile   tile to insert
@@ -632,6 +668,8 @@ public class StandardGameController implements GameController, LobbyController {
     }
 
     /**
+     * This method checks whether the selected tile is pickable or not
+     *
      * @param row    row of the tile
      * @param column column of the tile
      * @param board  board to check
@@ -651,6 +689,8 @@ public class StandardGameController implements GameController, LobbyController {
     }
 
     /**
+     * This method checks whether the shelf is full or not
+     *
      * @param shelf shelf to check
      * @return true if shelf is full, false otherwise
      */
@@ -664,6 +704,8 @@ public class StandardGameController implements GameController, LobbyController {
     }
 
     /**
+     * This method checks whether the picked tiles are aligned or not
+     *
      * @param pickedTiles Tiles picked from board
      * @return true if picked tiles are aligned ad adjacent one another
      */

@@ -36,6 +36,7 @@ public abstract class Shelf extends Observable<Shelf.Event>{
 
     /**
      * This method returns a {@link ShelfInfo} representing this object instance
+     * @param playerId the id of the player requesting the info
      * @return A {@link ShelfInfo} representing this object instance
      */
     public abstract ShelfInfo getInfo(String playerId);
