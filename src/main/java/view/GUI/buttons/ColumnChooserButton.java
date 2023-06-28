@@ -1,13 +1,11 @@
 package view.GUI.buttons;
 
-
-
 import javax.swing.*;
 import java.awt.*;
 import java.util.Objects;
 
 /**
- * This class extends JButton and represents a graphical component that allows the user to choose a column
+ * This class extends JButton and represents a graphical component that allows the user to choose a shelf column
  */
 public class ColumnChooserButton extends JButton {
 
@@ -16,11 +14,12 @@ public class ColumnChooserButton extends JButton {
      */
     private final ImageIcon insertArrow = new ImageIcon(Objects.requireNonNull(this.getClass().getResource("/insert.png")));
     /**
-     * Image of filter for the button
+     * Image of filter for the disabled button
      */
     private final Image disabledImage = new ImageIcon(Objects.requireNonNull(this.getClass().getResource("/ForegroundFilter.png"))).getImage();
 
     /**
+     * Constructor of an instance of this class that has the given column value as action command
      * @param column the column to be associated with this button
      */
     public ColumnChooserButton(int column) {

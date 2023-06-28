@@ -59,7 +59,7 @@ public class ShelfPanel extends JPanel implements PlayerShelfGraphics {
 
 
     /**
-     *  Override {@link JComponent#paintComponent(Graphics)} to enable resizing of the component
+     * Override {@link JComponent#paintComponent(Graphics)} to enable resizing of the component
      *
      * @param g the <code>Graphics</code> object to protect
      */

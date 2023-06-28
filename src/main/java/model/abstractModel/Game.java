@@ -98,7 +98,7 @@ public abstract class Game extends Observable<Game.Event>{
 
     /**
      * This method returns the playerId of the player that has currently the turn.
-     * @return {@code if(getGameStatus().equals(GameStatus.STARTED)} the playerId of the player that has currently the turn, {@code null} otherwise
+     * @return {@code if(getGameStatus().equals(GameStatus.STARTED)} the playerId of the player that has currently the turn, empty otherwise
      */
     public abstract String getTurnPlayerId();
 

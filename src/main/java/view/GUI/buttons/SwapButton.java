@@ -12,7 +12,7 @@ import java.util.Objects;
 public class SwapButton extends JButton {
 
     /**
-     * This image contains the swap arrow image
+     * This swap arrow image
      */
     private final Image swapArrowImage = new ImageIcon(Objects.requireNonNull(this.getClass().getResource("/SwapTilesIcon.png"))).getImage();
 

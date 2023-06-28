@@ -163,6 +163,7 @@ public class StandardGame extends Game {
             this.firstPlayer = this.playerTurnQueue.get(playerTurnCurrentIndex + 1);
         }
 
+        /* If the number of currently connected player is 1 then suspend the game */
         int online = this.players.size() - this.availablePlayers.size();
 
         if (online == 1) {

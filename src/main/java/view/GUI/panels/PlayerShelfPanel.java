@@ -52,7 +52,8 @@ public class PlayerShelfPanel extends JPanel implements PlayerShelfGraphics, Act
         this.isFirstPlayer = false;
     }
 
-    /**{@inheritDoc}
+    /**
+     * {@inheritDoc}
      * @param e the event to be processed
      */
     @Override
@@ -90,7 +91,8 @@ public class PlayerShelfPanel extends JPanel implements PlayerShelfGraphics, Act
         }
     }
 
-    /** {@inheritDoc}
+    /**
+     * {@inheritDoc}
      * @param playerId id of the player that owns the shelf
      * @param shelf    shelf representation of the player
      */
@@ -125,7 +127,7 @@ public class PlayerShelfPanel extends JPanel implements PlayerShelfGraphics, Act
     private final Image firstPlayerOverlay = new ImageIcon(Objects.requireNonNull(this.getClass().getResource("/FirstPlayerOverlay.png"))).getImage();
 
     /**
-     This method initializes the layout and the contents of the panel;
+     * This method initializes the layout and the contents of the panel;
      * The positions and dimensions of components within the grid are set.
      * @param orderingTable ActionListener used to send column selector events
      */

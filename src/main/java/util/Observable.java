@@ -42,9 +42,8 @@ import java.util.concurrent.Executors;
 public class Observable<Event extends Enum<Event>> {
 
     /**
-     * Thread pool used to notify observers
+     * Thread used to notify observers
      */
-    //TODO
     private final ExecutorService executorService = Executors.newFixedThreadPool(1);
     /**
      * Vector of observers
@@ -58,7 +57,6 @@ public class Observable<Event extends Enum<Event>> {
     /**
      * Construct an Observable with zero Observers.
      */
-
     public Observable() {
         super();
         this.obs = new Vector<>();
@@ -69,7 +67,8 @@ public class Observable<Event extends Enum<Event>> {
      * that it is not the same as some observer already in the set.
      * The order in which notifications will be delivered to multiple
      * observers is not specified. See the class comment.
-     *
+     * <p>
+     * It immediately notifies the observer of a null event
      * @param o an observer to be added.
      * @throws NullPointerException if the parameter o is null.
      */

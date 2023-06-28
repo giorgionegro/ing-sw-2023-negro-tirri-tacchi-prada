@@ -7,8 +7,6 @@ import java.util.Objects;
 
 /**
  * This class is the goal evaluator for the StandardStairs goal.
- * It implements the GoalEvaluator abstract class.
- * It is used by the CommonGoal class.
  */
 public class StandardStairs extends GoalEvaluator {
 
@@ -43,7 +41,7 @@ public class StandardStairs extends GoalEvaluator {
     }
 
     /**
-     * This method evaluates if the player has reached the goal
+     * {@inheritDoc}
      *
      * @param playerShelf the player's shelf
      * @return true if the player has at least 5 columns of increasing height or descending, false otherwise
