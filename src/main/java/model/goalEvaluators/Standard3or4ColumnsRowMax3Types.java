@@ -6,7 +6,7 @@ import model.abstractModel.GoalEvaluator;
 import java.util.Arrays;
 
 /**
- * This class is the goal evaluator for the standard game mode.
+ * This class is the goal evaluator for the Standard3ColumnsMax3Types or Standard4RowMax3Types goal.
  * It checks if the player has at least 3 columns , or 4 rows, of at most 3 different tiles.
  */
 public class Standard3or4ColumnsRowMax3Types extends GoalEvaluator {
@@ -37,6 +37,7 @@ public class Standard3or4ColumnsRowMax3Types extends GoalEvaluator {
     private final String standard4RowsMax3TypesId = "Standard4RowsMax3Types";
 
     /**
+     * Constructor of Standard3or4ColumnsRowMax3Types
      * @param column true if the goal is to have 3 columns of at most 3 different tiles, false if the goal is to have 4 rows of at most 3 different tiles
      */
     public Standard3or4ColumnsRowMax3Types(boolean column) {
@@ -65,6 +66,7 @@ public class Standard3or4ColumnsRowMax3Types extends GoalEvaluator {
     }
 
     /**
+     * {@inheritDoc}
      * @param playerShelf the player's shelf to evaluate
      * @return true if the player has at least 3 columns , or 4 rows, of at most 3 different tiles
      */

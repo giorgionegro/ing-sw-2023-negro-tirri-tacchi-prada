@@ -23,6 +23,5 @@ public interface Observer<SubjectType extends Observable<Event>, Event extends E
      * @param arg an argument passed to the {@code notifyObservers}
      *            method.
      */
-
     void update(SubjectType o, Event arg);
 }

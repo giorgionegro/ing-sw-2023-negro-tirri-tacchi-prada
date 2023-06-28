@@ -5,8 +5,6 @@ import model.abstractModel.GoalEvaluator;
 
 /**
  * This class is the goal evaluator for the Standard5TileDiagonal goal.
- * It implements the GoalEvaluator abstract class.
- * It is used by the CommonGoal class.
  **/
 public class Standard5TileDiagonal extends GoalEvaluator {
 
@@ -41,6 +39,7 @@ public class Standard5TileDiagonal extends GoalEvaluator {
     }
 
     /**
+     * {@inheritDoc}
      * @param playerShelf the player's shelf to evaluate
      * @return true if the player has at least 5 tiles of the same type that form a diagonal
      */
@@ -75,7 +74,5 @@ public class Standard5TileDiagonal extends GoalEvaluator {
         }
 
         return false;
-
-
     }
 }

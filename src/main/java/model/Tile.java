@@ -77,9 +77,8 @@ public enum Tile {
      */
     PLANTS_3("Magenta"),
     /**
-     * Empty tile variant 1
+     * Empty tile
      */
-
     EMPTY("Empty");
 
     /**

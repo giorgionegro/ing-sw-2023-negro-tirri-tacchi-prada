@@ -10,15 +10,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 /**
- * This class extends JPanel and represents a graphical component that represents the common goals
+ * This class extends JPanel and represents a graphical component that displays the common goals
  */
 public class CommonGoalsPanel extends JPanel implements CommonGoalGraphics {
     /**
-     *  This map contains associations between CommonGoalId and the token state
+     *  This map contains associations between CommonGoalId and its token state
      */
     private final Map<String, Token> commonGoals = new HashMap<>();
     /**
-     *  This map contains associations between CommonGoalId and token that the player has achived
+     *  This map contains associations between CommonGoalId and token that the player has achieved
      */
     private final Map<String, Token> achieved = new HashMap<>();
 

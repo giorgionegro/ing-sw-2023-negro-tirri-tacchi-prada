@@ -3,7 +3,7 @@ package util;
 import java.util.Map;
 
 /**
- * This class contain  the arguments parser
+ * This class contains the cli arguments parser
  */
 public final class Parser {
     /**

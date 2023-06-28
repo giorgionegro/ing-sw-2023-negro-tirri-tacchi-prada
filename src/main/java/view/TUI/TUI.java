@@ -103,7 +103,6 @@ public class TUI implements AppGraphics, GameGraphics {
      * players points
      */
     private Map<String, Integer> pointsValues;
-
     /**
      * is the last turn of the game
      */
@@ -120,18 +119,14 @@ public class TUI implements AppGraphics, GameGraphics {
      * current common goals of the game
      */
     private Map<String, Token> commonGoals;
-
     /**
      *  player achieved common goals
      */
-
     private Map<String, Token> achievedCommonGoals;
-
     /**
      * personal goal description
      */
     private Tile[][] personalGoalsDescription;
-
     /**
      * Thread used to read the input from the TUI
      */
@@ -598,7 +593,7 @@ public class TUI implements AppGraphics, GameGraphics {
      */
     @Override
     public void resetGameGraphics(String playerId) {
-        //we reset the game graphics for a new game9
+        //we reset the game graphics for a new game
         synchronized (this.updateLock) {
             this.playerId = playerId;
             this.playerOnTurn = "";

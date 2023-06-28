@@ -55,10 +55,10 @@ public class ServerEndpoint extends UnicastRemoteObject implements ServerInterfa
         this.gameManagerController = gameManagerController;
         this.gameController = null;
 
+        /* Run a thread that wait 5 seconds for a ping to be received, if not then disconnect the client */
         new Thread(()->{
             try {
                 Thread.sleep(2000);
-
                 do {
                     this.pingWaiter.reset(true);
 
@@ -97,7 +97,9 @@ public class ServerEndpoint extends UnicastRemoteObject implements ServerInterfa
     @Override
     public void joinGame(ClientInterface client, LoginInfo loginInfo) {
         try {
+            /* Try to join a game */
             this.serverController.joinGame(client, loginInfo);
+            /* Retrieves the gameController of the game it has joined */
             this.gameController = this.gameManagerController.getGame(loginInfo.gameId());
         } catch (RemoteException e) {
             this.printError("JoinGame", e.getMessage());
@@ -171,8 +173,10 @@ public class ServerEndpoint extends UnicastRemoteObject implements ServerInterfa
      */
     @Override
     public void ping() throws RemoteException {
-            if (!this.pingWaiter.getValue())
-                throw new RemoteException();
+        /* If client is not connected anymore then throw an exception */
+        if (!this.pingWaiter.getValue())
+            throw new RemoteException();
+        /* Else notify the ping thread */
         this.pingWaiter.unlock(true);
     }
 }

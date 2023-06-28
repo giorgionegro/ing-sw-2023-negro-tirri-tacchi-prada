@@ -7,8 +7,6 @@ import java.util.Arrays;
 
 /**
  * This class is the goal evaluator for the StandardTwoSquares goal.
- * It implements the GoalEvaluator abstract class.
- * It is used by the CommonGoal class.
  **/
 public class StandardTwoSquares extends GoalEvaluator {
 
@@ -43,7 +41,7 @@ public class StandardTwoSquares extends GoalEvaluator {
     }
 
     /**
-     * This method evaluates the player's shelf
+     * {@inheritDoc}
      *
      * @param playerShelf the player's shelf to evaluate
      * @return true if the player has at least 2 groups of 2x2 tiles of the same type

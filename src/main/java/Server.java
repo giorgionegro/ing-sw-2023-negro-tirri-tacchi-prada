@@ -16,8 +16,6 @@ import static util.Parser.argumentsParser;
  * This class represents the server
  */
 public class Server {
-
-
     /**
      * Default Rmi port used by the server
      */

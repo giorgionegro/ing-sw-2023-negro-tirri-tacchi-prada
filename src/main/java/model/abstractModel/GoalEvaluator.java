@@ -19,7 +19,6 @@ public abstract class GoalEvaluator implements Serializable{
      **/
     public abstract boolean evaluate(Tile[][] playerShelf);
 
-
     /**
      * This method returns the description of the goal
      * @return the description of the goal

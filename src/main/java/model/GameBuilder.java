@@ -21,11 +21,10 @@ public final class GameBuilder {
     }
 
     /**
-     * //TODO controllare
      * This method creates a new Game instance based on the type of game the user wants to create.
      * @param newGameInfo record containing information of a {@link model.abstractModel.Game} creation request
-     * @return a new Game instance
-     * @throws IllegalArgumentException if newGameInfo type is not supported
+     * @return a new {@link Game} instance
+     * @throws IllegalArgumentException if newGameInfo contains unsupported or unknown info
      */
     public static Game build(NewGameInfo newGameInfo) throws IllegalArgumentException {
         if (newGameInfo.type().equals("STANDARD")) {

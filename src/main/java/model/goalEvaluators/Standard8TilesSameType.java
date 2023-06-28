@@ -7,9 +7,7 @@ import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * This class is the goal evaluator for the Standard8TilesSameType goal.
- * It implements the GoalEvaluator abstract class.
- * It is used by the CommonGoal class.
+ * This class is the goal evaluator for the Standard8TilesSameType goal
  */
 public class Standard8TilesSameType extends GoalEvaluator {
     /**
@@ -48,7 +46,7 @@ public class Standard8TilesSameType extends GoalEvaluator {
     }
 
     /**
-     * This method evaluates if the goal is achieved
+     * {@inheritDoc}
      *
      * @param playerShelf the player's shelf
      * @return boolean true if 8 tiles of the same type are in the player's shelf
@@ -72,6 +70,5 @@ public class Standard8TilesSameType extends GoalEvaluator {
             }
         });
         return flag.get();
-
     }
 }

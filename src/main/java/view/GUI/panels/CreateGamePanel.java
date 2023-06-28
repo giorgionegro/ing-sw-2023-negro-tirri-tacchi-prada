@@ -31,7 +31,8 @@ public class CreateGamePanel extends JPanel {
         this.exitButton.addActionListener(e ->  listener.actionPerformed(new ActionEvent(this,ViewLogic.ROUTE_HOME,"")));
     }
 
-    /**This method prints out an error message
+    /**
+     * This method prints out an error message
      * @param error the error message to be displayed.
      */
     public void setMessage(String error){

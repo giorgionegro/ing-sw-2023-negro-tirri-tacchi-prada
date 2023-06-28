@@ -18,14 +18,14 @@ import java.util.*;
 public class ChatPanel extends JPanel implements PlayerChatGraphics {
 
     /**
-     * This map contains associations between player names and player ids
+     * This map contains associations between opponents names and opponents ids
      */
     private final Map<String, String> subjects = new HashMap<>() {{
         this.put("Everyone", "");
     }};
 
     /**
-     * The player ID of this client
+     * The playerID
      */
     private final String playerId;
     /**
@@ -35,14 +35,12 @@ public class ChatPanel extends JPanel implements PlayerChatGraphics {
 
 
     /*----------------- GRAPHICS LAYOUT ----------------*/
-
-
     /**
      * This is the background image of {@link #Send}
      */
     private final Image buttonBackground = new ImageIcon(Objects.requireNonNull(this.getClass().getResource("/img.png"))).getImage();
     /**
-     * The scrollable text area component used for displaying the messages from the other players.
+     * The scrollable text area component used for displaying the messages from opponents.
      */
     private final JScrollPane scrollTextArea = new JScrollPane(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
     /**
@@ -69,9 +67,9 @@ public class ChatPanel extends JPanel implements PlayerChatGraphics {
     private final JTextField mex = new JTextField();
 
 
-    /** Construct an {@link CreateGamePanel} instance that uses the given {@link ActionListener} as listener for buttons events
-     * @param viewLogic the ActionListener to be notified when a button is pressed
-     * @param playerId player id of the receiver of the message
+    /** Construct an {@link CreateGamePanel} instance that uses the given {@link ActionListener} as listener for sending messages
+     * @param viewLogic the ActionListener to be notified when a {@link #Send} is pressed
+     * @param playerId the playerID
      */
     public ChatPanel(ActionListener viewLogic, String playerId) {
         super();
@@ -87,7 +85,7 @@ public class ChatPanel extends JPanel implements PlayerChatGraphics {
     }
 
     /**
-     * This method adds a subject to the list of subjects (which are the receiver of the messages) and updates the subjects combo box.
+     * This method adds a subject to the list of subjects (opponents) and updates the subjects combo box.
      * @param subjectID player id
      */
     public void addSubject(String subjectID) {
@@ -98,7 +96,7 @@ public class ChatPanel extends JPanel implements PlayerChatGraphics {
     }
     /**
      * {@inheritDoc}
-     * @param chat list of messages sent to a player.
+     * @param chat list of messages sent to the player.
      */
     @Override
     public void updatePlayerChatGraphics(List<? extends Message> chat) {

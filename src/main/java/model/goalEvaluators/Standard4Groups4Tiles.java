@@ -7,8 +7,6 @@ import java.util.Arrays;
 
 /**
  * This class is the goal evaluator for the Standard4Groups4Tiles goal.
- * It implements the GoalEvaluator abstract class.
- * It is used by the CommonGoal class.
  **/
 public class Standard4Groups4Tiles extends GoalEvaluator {
 
@@ -43,6 +41,7 @@ public class Standard4Groups4Tiles extends GoalEvaluator {
     }
 
     /**
+     * {@inheritDoc}
      * @param playerShelf the player's shelf to evaluate
      * @return true if the player has at least 4 groups of 4 tiles of the same type
      */
@@ -68,7 +67,7 @@ public class Standard4Groups4Tiles extends GoalEvaluator {
                 }
             }
         }
-//then we check the vertical groups
+        //then we check the vertical groups
         for (int i = 0; i < clone.length - 3; i++) {
             for (int j = 0; j < clone[0].length; j++) {
                 if (clone[i][j].getColor().equals(clone[i + 1][j].getColor()) &&
