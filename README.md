@@ -141,5 +141,5 @@ If only one player remains in a game there will be a 6 seconds countdown before 
 * `src`: code of the project and tests
 
 ## Test Coverage
-![](documentation/coverage.png)
+![](deliverables/tests_coverage.png)
 [Test Details](https://giorgionegro.github.io/ing-sw-2023-negro-tirri-tacchi-prada?token=B0AF313F257B7B54AE9FEA84F98162A3)
