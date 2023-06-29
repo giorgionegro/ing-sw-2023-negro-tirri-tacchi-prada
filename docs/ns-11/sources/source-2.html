@@ -132,35 +132,35 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;     */
 &nbsp;    static void drawGrid(int startX, int startY, int gridRowDim, int gridColDim, char[][] canvas, int[][] canvasColor) {
 &nbsp;        //first we draw a template for a line of cells&#39; middle part
-<b class="nc">&nbsp;        String middle = &quot;?   &quot;.repeat(gridRowDim) + &quot;?&quot;;</b>
+<b class="nc">&nbsp;        String middle = &quot;│   &quot;.repeat(gridRowDim) + &quot;│&quot;;</b>
 &nbsp;        //then we draw the top line
 <b class="nc">&nbsp;        for (int i = 0; i &lt; gridColDim; i++) {</b>
 &nbsp;            String pattern;
 <b class="nc">&nbsp;            if (i == 0)</b>
-<b class="nc">&nbsp;                pattern = &quot;????&quot;;</b>
+<b class="nc">&nbsp;                pattern = &quot;┬───&quot;;</b>
 &nbsp;            else
-<b class="nc">&nbsp;                pattern = &quot;????&quot;;</b>
+<b class="nc">&nbsp;                pattern = &quot;┼───&quot;;</b>
 &nbsp;
 &nbsp;            //draw them to the canvas
 <b class="nc">&nbsp;            drawString(pattern.repeat(gridRowDim), startY + i * 2, startX, DEFAULT, 60, canvas, canvasColor);</b>
 <b class="nc">&nbsp;            drawString(middle, startY + i * 2 + 1, startX, DEFAULT, 60, canvas, canvasColor);</b>
 &nbsp;        }
 &nbsp;        //then we draw the bottom line
-<b class="nc">&nbsp;        drawString(&quot;????&quot;.repeat(gridRowDim), startY + gridColDim * 2, startX, DEFAULT, 60, canvas, canvasColor);</b>
+<b class="nc">&nbsp;        drawString(&quot;┴───&quot;.repeat(gridRowDim), startY + gridColDim * 2, startX, DEFAULT, 60, canvas, canvasColor);</b>
 &nbsp;
 &nbsp;        //then we correct the corners
 &nbsp;        char s;
 &nbsp;        char t;
 <b class="nc">&nbsp;        for (int i = 0; i &lt; gridColDim + 1; i++) {</b>
 <b class="nc">&nbsp;            if (i == 0) {</b>
-<b class="nc">&nbsp;                s = &#39;?&#39;;</b>
-<b class="nc">&nbsp;                t = &#39;?&#39;;</b>
+<b class="nc">&nbsp;                s = &#39;┌&#39;;</b>
+<b class="nc">&nbsp;                t = &#39;┐&#39;;</b>
 <b class="nc">&nbsp;            } else if (i == gridColDim) {</b>
-<b class="nc">&nbsp;                s = &#39;?&#39;;</b>
-<b class="nc">&nbsp;                t = &#39;?&#39;;</b>
+<b class="nc">&nbsp;                s = &#39;└&#39;;</b>
+<b class="nc">&nbsp;                t = &#39;┘&#39;;</b>
 &nbsp;            } else {
-<b class="nc">&nbsp;                s = &#39;?&#39;;</b>
-<b class="nc">&nbsp;                t = &#39;?&#39;;</b>
+<b class="nc">&nbsp;                s = &#39;├&#39;;</b>
+<b class="nc">&nbsp;                t = &#39;┤&#39;;</b>
 &nbsp;            }
 <b class="nc">&nbsp;            canvas[startY + i * 2][startX] = s;</b>
 <b class="nc">&nbsp;            canvasColor[startY + i * 2][startX] = DEFAULT;</b>
@@ -183,7 +183,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 <b class="nc">&nbsp;        for (int i = 0; i &lt; contents.length; i++) {</b>
 <b class="nc">&nbsp;            for (int j = 0; j &lt; contents[i].length; j++) {</b>
 <b class="nc">&nbsp;                int color = getColour(contents[i][j].getColor());</b>
-<b class="nc">&nbsp;                char c = &#39;?&#39;;</b>
+<b class="nc">&nbsp;                char c = &#39;█&#39;;</b>
 <b class="nc">&nbsp;                if (color == DEFAULT)</b>
 <b class="nc">&nbsp;                    c = &#39; &#39;;</b>
 &nbsp;
@@ -243,7 +243,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 <b class="nc">&nbsp;        String idTitle = &quot;      ID      &quot;;</b>
 <b class="nc">&nbsp;        String pointsTitle = &quot;  POINTS  &quot;;</b>
 &nbsp;
-<b class="nc">&nbsp;        drawCenteredString(positionTitle + &quot;?&quot; + idTitle + &quot;?&quot; + pointsTitle, gameEndX, gameEndY + 1, gameEndWidth, DEFAULT, canvas, canvasColor);</b>
+<b class="nc">&nbsp;        drawCenteredString(positionTitle + &quot;│&quot; + idTitle + &quot;│&quot; + pointsTitle, gameEndX, gameEndY + 1, gameEndWidth, DEFAULT, canvas, canvasColor);</b>
 &nbsp;        //we draw the leaderboard by group of players with the same points
 <b class="nc">&nbsp;        int leaderBoardY = gameEndY + 2;</b>
 <b class="nc">&nbsp;        int line = 0;</b>
@@ -305,25 +305,25 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;        //we draw the box pixel by pixel
 <b class="nc">&nbsp;        for (int i = 0; i &lt; height; i++) {</b>
 <b class="nc">&nbsp;            for (int j = 0; j &lt; width; j++) {</b>
-<b class="nc">&nbsp;                if (i == 0 &amp;&amp; j == 0) canvas[row + i][col + j] = &#39;?&#39;;</b>
-<b class="nc">&nbsp;                else if (i == 0 &amp;&amp; j == width - 1) canvas[row + i][col + j] = &#39;?&#39;;</b>
+<b class="nc">&nbsp;                if (i == 0 &amp;&amp; j == 0) canvas[row + i][col + j] = &#39;┌&#39;;</b>
+<b class="nc">&nbsp;                else if (i == 0 &amp;&amp; j == width - 1) canvas[row + i][col + j] = &#39;┐&#39;;</b>
 <b class="nc">&nbsp;                else if (i == height - 1 &amp;&amp; j == 0) {</b>
-<b class="nc">&nbsp;                    canvas[row + i][col + j] = &#39;?&#39;;</b>
+<b class="nc">&nbsp;                    canvas[row + i][col + j] = &#39;└&#39;;</b>
 <b class="nc">&nbsp;                    canvasColor[row + i][col + j] = colour;</b>
 <b class="nc">&nbsp;                } else if (i == height - 1 &amp;&amp; j == width - 1) {</b>
-<b class="nc">&nbsp;                    canvas[row + i][col + j] = &#39;?&#39;;</b>
+<b class="nc">&nbsp;                    canvas[row + i][col + j] = &#39;┘&#39;;</b>
 <b class="nc">&nbsp;                    canvasColor[row + i][col + j] = colour;</b>
 <b class="nc">&nbsp;                } else if (i == 0) {</b>
-<b class="nc">&nbsp;                    canvas[row + i][col + j] = &#39;?&#39;;</b>
+<b class="nc">&nbsp;                    canvas[row + i][col + j] = &#39;─&#39;;</b>
 <b class="nc">&nbsp;                    canvasColor[row + i][col + j] = colour;</b>
 <b class="nc">&nbsp;                } else if (i == height - 1) {</b>
-<b class="nc">&nbsp;                    canvas[row + i][col + j] = &#39;?&#39;;</b>
+<b class="nc">&nbsp;                    canvas[row + i][col + j] = &#39;─&#39;;</b>
 <b class="nc">&nbsp;                    canvasColor[row + i][col + j] = colour;</b>
 <b class="nc">&nbsp;                } else if (j == 0) {</b>
-<b class="nc">&nbsp;                    canvas[row + i][col + j] = &#39;?&#39;;</b>
+<b class="nc">&nbsp;                    canvas[row + i][col + j] = &#39;│&#39;;</b>
 <b class="nc">&nbsp;                    canvasColor[row + i][col + j] = colour;</b>
 <b class="nc">&nbsp;                } else if (j == width - 1) {</b>
-<b class="nc">&nbsp;                    canvas[row + i][col + j] = &#39;?&#39;;</b>
+<b class="nc">&nbsp;                    canvas[row + i][col + j] = &#39;│&#39;;</b>
 <b class="nc">&nbsp;                    canvasColor[row + i][col + j] = colour;</b>
 &nbsp;                }
 &nbsp;                //if not in the border we leave the pixel unchanged
@@ -525,7 +525,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;
 <b class="nc">&nbsp;                if (playerId.equals(firstPlayerId)) {</b>
 <b class="nc">&nbsp;                    spaceBefore -= 2;</b>
-<b class="nc">&nbsp;                    playersName.append(&quot; ?&quot;);</b>
+<b class="nc">&nbsp;                    playersName.append(&quot; ■&quot;);</b>
 &nbsp;                }
 <b class="nc">&nbsp;                playersName.append(&quot; &quot;.repeat(spaceBefore));</b>
 <b class="nc">&nbsp;                playersName.append(tempPlayerId);</b>
@@ -672,7 +672,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2023-06-28 19:27</div>
+    <div style="float:right;">generated on 2023-06-29 19:37</div>
 </div>
 </body>
 </html>

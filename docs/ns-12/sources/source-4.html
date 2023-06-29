@@ -4,7 +4,7 @@
 <!DOCTYPE html>
 <html id="htmlId">
 <head>
-  <title>Coverage Report > ServerController</title>
+  <title>Coverage Report > GameController</title>
   <style type="text/css">
     @import "../../css/coverage.css";
     @import "../../css/idea.min.css";
@@ -21,14 +21,14 @@ Current scope:     <a href="../../index.html">all classes</a>
     <a href="../index.html">controller.interfaces</a>
 </div>
 
-<h1>Coverage Summary for Class: ServerController (controller.interfaces)</h1>
+<h1>Coverage Summary for Class: GameController (controller.interfaces)</h1>
 
 <table class="coverageStats">
 <tr>
   <th class="name">Class</th>
 </tr>
 <tr>
-  <td class="name">ServerController</td>
+  <td class="name">GameController</td>
 </tr>
 
 </table>
@@ -41,40 +41,34 @@ Current scope:     <a href="../../index.html">all classes</a>
 <code class="sourceCode" id="sourceCode">&nbsp;package controller.interfaces;
 &nbsp;
 &nbsp;import distibuted.interfaces.ClientInterface;
-&nbsp;import modelView.LoginInfo;
-&nbsp;import modelView.NewGameInfo;
+&nbsp;import model.abstractModel.Message;
+&nbsp;import modelView.PlayerMoveInfo;
 &nbsp;
 &nbsp;import java.rmi.Remote;
 &nbsp;import java.rmi.RemoteException;
 &nbsp;
 &nbsp;/**
-&nbsp; * This is the interface of a server controller
+&nbsp; * This is the interface of a game controller
 &nbsp; * &lt;p&gt;
-&nbsp; * It specifies all the method needed to interact with the games-provider server
+&nbsp; * It defines all the method required to interact with a {@link model.abstractModel.Game} instance
 &nbsp; */
-&nbsp;public interface ServerController extends Remote {
-&nbsp;    /**
-&nbsp;     * This method allows a client to join a game
-&nbsp;     * @param client The client asking to join
-&nbsp;     * @param info The join-info
-&nbsp;     * @throws RemoteException If an error occurred reaching the remote object
-&nbsp;     */
-&nbsp;    void joinGame(ClientInterface client, LoginInfo info) throws RemoteException;
+&nbsp;public interface GameController extends Remote {
 &nbsp;
 &nbsp;    /**
-&nbsp;     * This method allows a client to leave the game it has joined
-&nbsp;     * @param client The client asking to leave
-&nbsp;     * @throws RemoteException If an error occurred reaching the remote object
+&nbsp;     * This method allows client to do a game move
+&nbsp;     * @param client The reference of the client that is doing the move
+&nbsp;     * @param move The move info
+&nbsp;     * @throws RemoteException if an error occurred reaching the remote object
 &nbsp;     */
-&nbsp;    void leaveGame(ClientInterface client) throws RemoteException;
+&nbsp;    void doPlayerMove(ClientInterface client, PlayerMoveInfo move) throws RemoteException;
 &nbsp;
 &nbsp;    /**
-&nbsp;     * This method allows a client to create a game, given the {@link NewGameInfo}
-&nbsp;     * @param client The client asking to create the game
-&nbsp;     * @param info The new-game info
-&nbsp;     * @throws RemoteException If an error occurred reaching the remote object
+&nbsp;     * This method allows client to send a message
+&nbsp;     * @param client The reference of the client that is sending the message
+&nbsp;     * @param newMessage The message info
+&nbsp;     * @throws RemoteException if an error occurred reaching the remote object
 &nbsp;     */
-&nbsp;    void createGame(ClientInterface client, NewGameInfo info) throws RemoteException;
+&nbsp;    void sendMessage(ClientInterface client, Message newMessage) throws RemoteException;
 &nbsp;}
 </code>
 </pre>
@@ -99,7 +93,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2023-06-28 19:27</div>
+    <div style="float:right;">generated on 2023-06-29 19:37</div>
 </div>
 </body>
 </html>

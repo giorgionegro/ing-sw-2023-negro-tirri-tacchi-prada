@@ -51,7 +51,7 @@ Current scope:     <a href="../../index.html">all classes</a>
     100%
   </span>
   <span class="absValue">
-    (60/60)
+    (61/61)
   </span>
 </td>
 </tr>
@@ -89,7 +89,7 @@ Current scope:     <a href="../../index.html">all classes</a>
     100%
   </span>
   <span class="absValue">
-    (66/66)
+    (67/67)
   </span>
 </td>
 </tr>
@@ -299,7 +299,10 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;        else
 &nbsp;            try {
 &nbsp;                /* Create a game using gameManager controller */
-<b class="fc">&nbsp;                this.createGame(gameInfo);</b>
+<b class="fc">&nbsp;                LobbyController lobby = this.createGame(gameInfo);</b>
+&nbsp;
+&nbsp;                /* Put lobby into known list */
+<b class="fc">&nbsp;                this.lobbies.put(gameInfo.gameId(), lobby);</b>
 &nbsp;
 &nbsp;                /* Reports user it created successfully a game*/
 <b class="fc">&nbsp;                this.users.get(client).reportEvent(User.Status.NOT_JOINED, &quot;Game created&quot;, User.Event.GAME_CREATED, gameInfo.sessionID());</b>
@@ -333,11 +336,12 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;     * {@inheritDoc}
 &nbsp;     *
 &nbsp;     * @param newGameInfo the new-game info that needs to be used
-&nbsp;     * @throws GameAlreadyExistsException If there is already a {@link LobbyController} associated with the given gameID
+&nbsp;     * @return a {@link LobbyController} associated with the same model of the created {@link GameController}
+&nbsp;     * @throws GameAlreadyExistsException If there is already a {@link GameController} associated with the given gameID
 &nbsp;     * @throws IllegalArgumentException   If {@link GameBuilder} couldn&#39;t build a game on given new-game info
 &nbsp;     */
 &nbsp;    @Override
-&nbsp;    public void createGame(NewGameInfo newGameInfo) throws GameAlreadyExistsException, IllegalArgumentException {
+&nbsp;    public LobbyController createGame(NewGameInfo newGameInfo) throws GameAlreadyExistsException, IllegalArgumentException {
 &nbsp;        /* If a lobby with the given id does not already exists ... */
 <b class="fc">&nbsp;        if (this.lobbies.containsKey(newGameInfo.gameId()))</b>
 <b class="fc">&nbsp;            throw new GameAlreadyExistsException();</b>
@@ -356,10 +360,10 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;                }
 &nbsp;        );
 &nbsp;
-&nbsp;        /* Put lobby into known list */
-<b class="fc">&nbsp;        this.lobbies.put(newGameInfo.gameId(), controller);</b>
 &nbsp;        /* Associate gameController to the lobby created */
 <b class="fc">&nbsp;        this.gameControllers.put(controller, controller);</b>
+&nbsp;
+<b class="fc">&nbsp;        return controller;</b>
 &nbsp;    }
 &nbsp;}
 </code>
@@ -385,7 +389,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2023-06-28 19:27</div>
+    <div style="float:right;">generated on 2023-06-29 19:37</div>
 </div>
 </body>
 </html>

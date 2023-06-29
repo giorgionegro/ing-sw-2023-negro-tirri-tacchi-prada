@@ -4,7 +4,7 @@
 <!DOCTYPE html>
 <html id="htmlId">
 <head>
-  <title>Coverage Report > LobbyController</title>
+  <title>Coverage Report > ServerController</title>
   <style type="text/css">
     @import "../../css/coverage.css";
     @import "../../css/idea.min.css";
@@ -21,14 +21,14 @@ Current scope:     <a href="../../index.html">all classes</a>
     <a href="../index.html">controller.interfaces</a>
 </div>
 
-<h1>Coverage Summary for Class: LobbyController (controller.interfaces)</h1>
+<h1>Coverage Summary for Class: ServerController (controller.interfaces)</h1>
 
 <table class="coverageStats">
 <tr>
   <th class="name">Class</th>
 </tr>
 <tr>
-  <td class="name">LobbyController</td>
+  <td class="name">ServerController</td>
 </tr>
 
 </table>
@@ -40,31 +40,41 @@ Current scope:     <a href="../../index.html">all classes</a>
 <pre>
 <code class="sourceCode" id="sourceCode">&nbsp;package controller.interfaces;
 &nbsp;
-&nbsp;import controller.exceptions.GameAccessDeniedException;
 &nbsp;import distibuted.interfaces.ClientInterface;
-&nbsp;import model.User;
+&nbsp;import modelView.LoginInfo;
+&nbsp;import modelView.NewGameInfo;
+&nbsp;
+&nbsp;import java.rmi.Remote;
+&nbsp;import java.rmi.RemoteException;
 &nbsp;
 &nbsp;/**
-&nbsp; * This is the interface of a game lobby controller
+&nbsp; * This is the interface of a server controller
 &nbsp; * &lt;p&gt;
-&nbsp; * It defines the methods to join or leave a {@link model.abstractModel.Game}
+&nbsp; * It specifies all the method needed to interact with the games-provider server
 &nbsp; */
-&nbsp;public interface LobbyController {
+&nbsp;public interface ServerController extends Remote {
 &nbsp;    /**
-&nbsp;     * This method allows a client to join the lobby and to be attached to the {@link model.abstractModel.Game}
-&nbsp;     * @param newClient the client interface that needs to be attached to the game
-&nbsp;     * @param user the user reference of the client into the server
-&nbsp;     * @param playerId the new player ID
-&nbsp;     * @throws GameAccessDeniedException if the client cannot join the specified game
+&nbsp;     * This method allows a client to join a game
+&nbsp;     * @param client The client asking to join
+&nbsp;     * @param info The join-info
+&nbsp;     * @throws RemoteException If an error occurred reaching the remote object
 &nbsp;     */
-&nbsp;    void joinPlayer(ClientInterface newClient, User user, String playerId) throws GameAccessDeniedException;
+&nbsp;    void joinGame(ClientInterface client, LoginInfo info) throws RemoteException;
 &nbsp;
 &nbsp;    /**
-&nbsp;     * This method allows a client to leave the lobby and to be detached from the {@link model.abstractModel.Game} it is attached to
-&nbsp;     * @param client the client that needs to be detached
-&nbsp;     * @throws GameAccessDeniedException if the client cannot leave the specified game
+&nbsp;     * This method allows a client to leave the game it has joined
+&nbsp;     * @param client The client asking to leave
+&nbsp;     * @throws RemoteException If an error occurred reaching the remote object
 &nbsp;     */
-&nbsp;    void leavePlayer(ClientInterface client) throws GameAccessDeniedException;
+&nbsp;    void leaveGame(ClientInterface client) throws RemoteException;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This method allows a client to create a game, given the {@link NewGameInfo}
+&nbsp;     * @param client The client asking to create the game
+&nbsp;     * @param info The new-game info
+&nbsp;     * @throws RemoteException If an error occurred reaching the remote object
+&nbsp;     */
+&nbsp;    void createGame(ClientInterface client, NewGameInfo info) throws RemoteException;
 &nbsp;}
 </code>
 </pre>
@@ -89,7 +99,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2023-06-28 19:27</div>
+    <div style="float:right;">generated on 2023-06-29 19:37</div>
 </div>
 </body>
 </html>

@@ -4,7 +4,7 @@
 <!DOCTYPE html>
 <html id="htmlId">
 <head>
-  <title>Coverage Report > GameInfoGraphics</title>
+  <title>Coverage Report > PlayerChatGraphics</title>
   <style type="text/css">
     @import "../../css/coverage.css";
     @import "../../css/idea.min.css";
@@ -21,14 +21,14 @@ Current scope:     <a href="../../index.html">all classes</a>
     <a href="../index.html">view.graphicInterfaces</a>
 </div>
 
-<h1>Coverage Summary for Class: GameInfoGraphics (view.graphicInterfaces)</h1>
+<h1>Coverage Summary for Class: PlayerChatGraphics (view.graphicInterfaces)</h1>
 
 <table class="coverageStats">
 <tr>
   <th class="name">Class</th>
 </tr>
 <tr>
-  <td class="name">GameInfoGraphics</td>
+  <td class="name">PlayerChatGraphics</td>
 </tr>
 
 </table>
@@ -40,26 +40,22 @@ Current scope:     <a href="../../index.html">all classes</a>
 <pre>
 <code class="sourceCode" id="sourceCode">&nbsp;package view.graphicInterfaces;
 &nbsp;
-&nbsp;import model.abstractModel.Game;
+&nbsp;import model.abstractModel.Message;
 &nbsp;
-&nbsp;import java.util.Map;
+&nbsp;import java.util.List;
 &nbsp;
 &nbsp;/**
-&nbsp; * This interface represents the graphics for the current match.
-&nbsp; * It provides a method to update the information of the match when the users are playing the game.
+&nbsp; * This interface represents the graphics for the user&#39;s chat.
+&nbsp; * It provides a method to update the information of the chat when users communicate with each other by sending messages.
 &nbsp; */
 &nbsp;@FunctionalInterface
-&nbsp;public interface GameInfoGraphics {
+&nbsp;public interface PlayerChatGraphics {
 &nbsp;    /**
-&nbsp;     * This method updates the information of the match with the specified parameters:
+&nbsp;     * This method updates the information of the chat with the specified parameter:
 &nbsp;     *
-&nbsp;     * @param status          status of the game
-&nbsp;     * @param firstTurnPlayer id of the player that has the first turn
-&nbsp;     * @param playerOnTurn    id of the player on turn
-&nbsp;     * @param isLastTurn      true if the game is in the last round of turns
-&nbsp;     * @param pointsValues    points amount of each player
+&nbsp;     * @param chat list of messages sent to the player
 &nbsp;     */
-&nbsp;    void updateGameInfoGraphics(Game.GameStatus status, String firstTurnPlayer, String playerOnTurn, boolean isLastTurn, Map&lt;String, Integer&gt; pointsValues);
+&nbsp;    void updatePlayerChatGraphics(List&lt;? extends Message&gt; chat);
 &nbsp;}
 </code>
 </pre>
@@ -84,7 +80,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2023-06-28 19:27</div>
+    <div style="float:right;">generated on 2023-06-29 19:37</div>
 </div>
 </body>
 </html>

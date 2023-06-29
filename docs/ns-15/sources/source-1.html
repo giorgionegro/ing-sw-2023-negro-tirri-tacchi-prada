@@ -4,7 +4,7 @@
 <!DOCTYPE html>
 <html id="htmlId">
 <head>
-  <title>Coverage Report > ClientInterface</title>
+  <title>Coverage Report > ServerInterface</title>
   <style type="text/css">
     @import "../../css/coverage.css";
     @import "../../css/idea.min.css";
@@ -21,25 +21,16 @@ Current scope:     <a href="../../index.html">all classes</a>
     <a href="../index.html">distibuted.interfaces</a>
 </div>
 
-<h1>Coverage Summary for Class: ClientInterface (distibuted.interfaces)</h1>
+<h1>Coverage Summary for Class: ServerInterface (distibuted.interfaces)</h1>
 
 <table class="coverageStats">
-
 <tr>
   <th class="name">Class</th>
 </tr>
-  <tr>
-    <td class="name">ClientInterface$MockitoMock$ItvjAnpB</td>
-  </tr>
-  <tr>
-    <td class="name">ClientInterface$MockitoMock$ItvjAnpB$auxiliary$s2uPX5Ni</td>
-  </tr>
-  <tr>
-    <td class="name">ClientInterface$MockitoMock$ItvjAnpB$auxiliary$TBZL9oyi</td>
-  </tr>
 <tr>
-  <td class="name"><strong>Total</strong></td>
+  <td class="name">ServerInterface</td>
 </tr>
+
 </table>
 
 <br/>
@@ -49,22 +40,20 @@ Current scope:     <a href="../../index.html">all classes</a>
 <pre>
 <code class="sourceCode" id="sourceCode">&nbsp;package distibuted.interfaces;
 &nbsp;
-&nbsp;import view.interfaces.*;
-&nbsp;
+&nbsp;import controller.interfaces.GameController;
+&nbsp;import controller.interfaces.ServerController;
 &nbsp;import java.rmi.Remote;
 &nbsp;import java.rmi.RemoteException;
 &nbsp;
 &nbsp;/**
-&nbsp; * This interface is a collection of interfaces and contains all the methods a server can call on client
+&nbsp; * This interface is a collection of interfaces and contains all the methods a client can call on server
 &nbsp; */
-&nbsp;public interface ClientInterface
-&nbsp;        extends Remote, ViewCollection{
+&nbsp;public interface ServerInterface extends Remote, ServerController, GameController{
 &nbsp;    /**
-&nbsp;     * This method binds a client to a server
-&nbsp;     * @param server the {@link ServerInterface} of the server that client have to bind to
-&nbsp;     * @throws RemoteException if the binding fails
+&nbsp;     * This method is used to ping the server
+&nbsp;     * @throws RemoteException if the ping fails
 &nbsp;     */
-&nbsp;    void bind(ServerInterface server) throws RemoteException;
+&nbsp;    void ping() throws RemoteException;
 &nbsp;}
 </code>
 </pre>
@@ -89,7 +78,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2023-06-28 19:27</div>
+    <div style="float:right;">generated on 2023-06-29 19:37</div>
 </div>
 </body>
 </html>

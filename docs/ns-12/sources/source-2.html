@@ -4,7 +4,7 @@
 <!DOCTYPE html>
 <html id="htmlId">
 <head>
-  <title>Coverage Report > GameController</title>
+  <title>Coverage Report > GameManagerController</title>
   <style type="text/css">
     @import "../../css/coverage.css";
     @import "../../css/idea.min.css";
@@ -21,14 +21,14 @@ Current scope:     <a href="../../index.html">all classes</a>
     <a href="../index.html">controller.interfaces</a>
 </div>
 
-<h1>Coverage Summary for Class: GameController (controller.interfaces)</h1>
+<h1>Coverage Summary for Class: GameManagerController (controller.interfaces)</h1>
 
 <table class="coverageStats">
 <tr>
   <th class="name">Class</th>
 </tr>
 <tr>
-  <td class="name">GameController</td>
+  <td class="name">GameManagerController</td>
 </tr>
 
 </table>
@@ -40,35 +40,33 @@ Current scope:     <a href="../../index.html">all classes</a>
 <pre>
 <code class="sourceCode" id="sourceCode">&nbsp;package controller.interfaces;
 &nbsp;
-&nbsp;import distibuted.interfaces.ClientInterface;
-&nbsp;import model.abstractModel.Message;
-&nbsp;import modelView.PlayerMoveInfo;
-&nbsp;
-&nbsp;import java.rmi.Remote;
-&nbsp;import java.rmi.RemoteException;
+&nbsp;import model.exceptions.GameAlreadyExistsException;
+&nbsp;import model.exceptions.GameNotExistsException;
+&nbsp;import modelView.NewGameInfo;
 &nbsp;
 &nbsp;/**
-&nbsp; * This is the interface of a game controller
+&nbsp; * This is the interface of a game manager controller
 &nbsp; * &lt;p&gt;
-&nbsp; * It defines all the method required to interact with a {@link model.abstractModel.Game} instance
+&nbsp; * It defines all the methods needed to manage {@link GameController}s
 &nbsp; */
-&nbsp;public interface GameController extends Remote {
+&nbsp;public interface GameManagerController {
+&nbsp;    /**
+&nbsp;     * This method returns a {@link GameController} associated with the given ID, the returned {@link GameController}
+&nbsp;     * has been built during a {@link #createGame(NewGameInfo)} call and has been associated to the given {@link NewGameInfo} gameID
+&nbsp;     * @param gameId the ID of the game
+&nbsp;     * @return the {@link GameController} associated with the given ID
+&nbsp;     * @throws GameNotExistsException if there is no {@link GameController} associated with the given ID
+&nbsp;     */
+&nbsp;    GameController getGame(String gameId) throws GameNotExistsException;
 &nbsp;
 &nbsp;    /**
-&nbsp;     * This method allows client to do a game move
-&nbsp;     * @param client The reference of the client that is doing the move
-&nbsp;     * @param move The move info
-&nbsp;     * @throws RemoteException if an error occurred reaching the remote object
+&nbsp;     * This method builds a {@link GameController} using the given {@link NewGameInfo}
+&nbsp;     * @param newGameInfo the new-game info that needs to be used
+&nbsp;     * @return a {@link LobbyController} associated with the same model of the created {@link GameController}
+&nbsp;     * @throws GameAlreadyExistsException if there already is an {@link GameController} associated with the given {@link NewGameInfo} gameID
+&nbsp;     * @throws IllegalArgumentException if the given {@link NewGameInfo} contains illegal or unknown parameters
 &nbsp;     */
-&nbsp;    void doPlayerMove(ClientInterface client, PlayerMoveInfo move) throws RemoteException;
-&nbsp;
-&nbsp;    /**
-&nbsp;     * This method allows client to send a message
-&nbsp;     * @param client The reference of the client that is sending the message
-&nbsp;     * @param newMessage The message info
-&nbsp;     * @throws RemoteException if an error occurred reaching the remote object
-&nbsp;     */
-&nbsp;    void sendMessage(ClientInterface client, Message newMessage) throws RemoteException;
+&nbsp;    LobbyController createGame(NewGameInfo newGameInfo) throws GameAlreadyExistsException, IllegalArgumentException;
 &nbsp;}
 </code>
 </pre>
@@ -93,7 +91,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2023-06-28 19:27</div>
+    <div style="float:right;">generated on 2023-06-29 19:37</div>
 </div>
 </body>
 </html>
