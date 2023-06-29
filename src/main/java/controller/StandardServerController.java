@@ -197,7 +197,10 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
         else
             try {
                 /* Create a game using gameManager controller */
-                this.createGame(gameInfo);
+                LobbyController lobby = this.createGame(gameInfo);
+
+                /* Put lobby into known list */
+                this.lobbies.put(gameInfo.gameId(), lobby);
 
                 /* Reports user it created successfully a game*/
                 this.users.get(client).reportEvent(User.Status.NOT_JOINED, "Game created", User.Event.GAME_CREATED, gameInfo.sessionID());
@@ -231,11 +234,12 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
      * {@inheritDoc}
      *
      * @param newGameInfo the new-game info that needs to be used
-     * @throws GameAlreadyExistsException If there is already a {@link LobbyController} associated with the given gameID
+     * @return a {@link LobbyController} associated with the same model of the created {@link GameController}
+     * @throws GameAlreadyExistsException If there is already a {@link GameController} associated with the given gameID
      * @throws IllegalArgumentException   If {@link GameBuilder} couldn't build a game on given new-game info
      */
     @Override
-    public void createGame(NewGameInfo newGameInfo) throws GameAlreadyExistsException, IllegalArgumentException {
+    public LobbyController createGame(NewGameInfo newGameInfo) throws GameAlreadyExistsException, IllegalArgumentException {
         /* If a lobby with the given id does not already exists ... */
         if (this.lobbies.containsKey(newGameInfo.gameId()))
             throw new GameAlreadyExistsException();
@@ -254,9 +258,9 @@ public class StandardServerController extends UnicastRemoteObject implements Ser
                 }
         );
 
-        /* Put lobby into known list */
-        this.lobbies.put(newGameInfo.gameId(), controller);
         /* Associate gameController to the lobby created */
         this.gameControllers.put(controller, controller);
+
+        return controller;
     }
 }

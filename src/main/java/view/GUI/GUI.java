@@ -70,7 +70,7 @@ public class GUI extends JFrame implements AppGraphics, ActionListener {
     /**
      * This method refreshes the frame
      */
-    public void refresh() {
+    private void refresh() {
         this.root.revalidate();
         this.root.repaint();
     }
