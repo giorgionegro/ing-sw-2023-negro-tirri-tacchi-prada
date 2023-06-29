@@ -22,8 +22,9 @@ public interface GameManagerController {
     /**
      * This method builds a {@link GameController} using the given {@link NewGameInfo}
      * @param newGameInfo the new-game info that needs to be used
+     * @return a {@link LobbyController} associated with the same model of the created {@link GameController}
      * @throws GameAlreadyExistsException if there already is an {@link GameController} associated with the given {@link NewGameInfo} gameID
      * @throws IllegalArgumentException if the given {@link NewGameInfo} contains illegal or unknown parameters
      */
-    void createGame(NewGameInfo newGameInfo) throws GameAlreadyExistsException, IllegalArgumentException;
+    LobbyController createGame(NewGameInfo newGameInfo) throws GameAlreadyExistsException, IllegalArgumentException;
 }
