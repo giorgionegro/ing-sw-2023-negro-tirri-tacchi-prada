@@ -578,9 +578,6 @@ public class ViewLogic implements Remote, ViewCollection, ActionListener {
     @Override
     public void update(PlayerInfo o, Player.Event evt) throws RemoteException {
         this.updateService.submit(() -> {
-            if (evt == null) {
-                return;
-            }
             if(evt == Player.Event.ERROR_REPORTED) {
                 this.gameGraphics.updateErrorState(o.errorMessage());
             }
