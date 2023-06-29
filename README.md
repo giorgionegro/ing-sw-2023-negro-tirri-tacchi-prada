@@ -136,7 +136,7 @@ If only one player remains in a game there will be a 6 seconds countdown before 
 * `deliverables\peer-reviews`: peer reviews written for "Prova finale Ingegneria del Software" course at Politecnico di Milano
 * `deliverables\specifications`: specifications for the project and ruleset for the game
 * `deliverables\target`: `jar` files for running the game
-* `deliverables\umls`: various explanatory documents, such as a description of the connection protocol and UMLs
+* `deliverables\UMLs`: various explanatory documents, such as a description of the connection protocol and UMLs
 * `deliverables\javadoc`: documentation for the classes and methods generated from the comments in the code
 * `src`: code of the project and tests
 
