@@ -1,4 +1,3 @@
-![](https://cf.geekdo-images.com/Sgg2B7kxtx8fFXz_2mPefA__imagepage/img/3ZDZnXBpj4mkjFbkz388qvmJ13w=/fit-in/900x600/filters:no_upscale():strip_icc()/pic7193695.png)
 
 # My Shelfie Videogame
 ## Overview
